@@ -14,3 +14,26 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# ---------------------------------------------------------------
+# AUDIO ET PROJET REAPER — ne JAMAIS pousser (plusieurs centaines de Mo)
+# Tout ça reste en local, sur le disque D:
+# ---------------------------------------------------------------
+REAPER_Medley/
+Audio (Adrien)/
+*.wav
+*.aiff
+*.flac
+*.mp4
+*.mov
+
+# Fichiers de travail Reaper
+*.rpp
+*.rpp-bak
+*.rpp-*
+*.reapeaks
+*-props
+Rendus_Blocs/
+
+# Exception : la musique d'ambiance du site web, elle, doit partir
+!musique.mp3
