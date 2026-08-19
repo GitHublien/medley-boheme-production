@@ -37,3 +37,7 @@ Rendus_Blocs/
 
 # Exception : la musique d'ambiance du site web, elle, doit partir
 !musique.mp3
+
+# Exception : la vidéo de mise en scène publiée sur le site
+!media/mise-en-scene-technique.mp4
+!media/mise-en-scene-chanteurs.mp4
