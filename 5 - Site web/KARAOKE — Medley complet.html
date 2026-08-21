@@ -425,7 +425,13 @@
    Sur un petit écran, on ne garde que l'essentiel : la présence,
    le plein écran, revoir l'intro, et la navigation. */
 @media (max-width: 820px){
-  #btnReg, #btnStyle{ display:none !important; }
+  #btnReg{ display:none !important; }
+  #btnStyle{
+    font-size:15px !important; padding:10px 16px !important;
+    min-height:48px;
+    border:1px solid rgba(212,175,55,.55) !important;
+    background:rgba(212,175,55,.10) !important;
+  }
   /* les Blocs, eux, restent : c'est la navigation, pas un réglage */
   #btnBlocs{ font-size:15px !important; padding:10px 16px !important;
              min-height:48px; }
@@ -2736,6 +2742,12 @@ window.PRESENCE = Object.assign({}, AVEC);
   .qui{ font-size:26px !important; }
   .qui.proche{ font-size:31px !important; }
   .dedans{ padding-left:4vw !important; padding-right:4vw !important; }
+  /* les indications de scène, lisibles sans zoomer */
+  .prep-ligne{ font-size:clamp(21px, 5.6vw, 27px) !important;
+               line-height:1.55 !important; }
+  .prep-ligne .pqui{ font-size:15px !important; }
+  /* et le texte chanté un cran au-dessus */
+  .ligne{ font-size:clamp(28px, 7.2vw, 58px) !important; }
 }
 </style>
 <script>
@@ -2744,11 +2756,24 @@ window.PRESENCE = Object.assign({}, AVEC);
    fait en local, sur l ordinateur ; la version en ligne, elle, est
    pour les six. Alors : si la page est servie par github.io, les
    boutons d atelier disparaissent. En local, tout reste. */
+/* Sur PORTABLE, il n'y a pas de présence : son bouton ne sert à
+   rien. À sa place : le choix du STYLE (Néon, 3D, Cinéma, Vague…),
+   qui est ludique et que chacun peut se régler. Les Réglages, eux,
+   restent l'atelier : jamais en ligne. */
+const SUR_MOBILE = matchMedia('(max-width: 820px)').matches;
 if (/github\.io$/i.test(location.hostname)){
-  for (const id of ['btnReg','btnStyle']){
+  for (const id of (SUR_MOBILE ? ['btnReg'] : ['btnReg','btnStyle'])){
     const b = document.getElementById(id);
     if (b) b.style.display = 'none';
   }
+}
+if (SUR_MOBILE){
+  const bp = document.getElementById('btnPresence');
+  if (bp) bp.style.display = 'none';
+  /* le Style vient se ranger dans le groupe, à la place laissée libre */
+  const st = document.getElementById('btnStyle');
+  const pl = document.getElementById('btnPlein');
+  if (st && pl && pl.parentNode) pl.parentNode.insertBefore(st, pl);
 }
 </script>
 <script>
