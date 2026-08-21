@@ -78,17 +78,12 @@ const R = Object.assign({
   zIndex    : 0
 }, window.PRESENCE || {});
 
-/* ─── SUR PORTABLE, ELLE SE FAIT PETITE ──────────────────────────
-   Un téléphone, c'est un petit écran tenu à trente centimètres :
-   la même opacité y cache bien plus de texte que sur un moniteur.
-   Alors, quel que soit le réglage de la page, on la bride. */
-if (matchMedia('(max-width: 820px), (pointer: coarse) and (max-width: 1100px)').matches){
-  R.force   = Math.min(R.force,   0.24);
-  R.franche = Math.min(R.franche, 0.46);
-  R.delaiMin += 4;   /* et elle vient un peu moins souvent */
-  R.delaiMax += 6;
-  R.flou = Math.max(R.flou, 3.5);
-}
+/* ─── SUR PORTABLE, ELLE N'EXISTE PAS ────────────────────────────
+   Sur un petit écran, elle cache plus qu'elle n'apporte : le
+   verdict est tombé le 21/08/2026. Le script se charge, mais ne
+   fait rien — l'ordinateur, lui, la garde entière. */
+const SANS_PRESENCE =
+  matchMedia('(max-width: 820px), (pointer: coarse) and (max-width: 1100px)').matches;
 
 /* ─── LES PLACES ─────────────────────────────────────────────────
    Où l'on emmène le visage, en pour cent de l'écran. Le zoom est
@@ -218,12 +213,12 @@ document.addEventListener('visibilitychange', () => {
 });
 
 window.presence = {
-  demarrer(){ arrete = false; programmer(); },
+  demarrer(){ if (SANS_PRESENCE) return; arrete = false; programmer(); },
   arreter(){ arrete = true; clearTimeout(minuteur);
              lecteurs.forEach(v => { v.style.opacity='0'; try{v.pause();}catch(e){} }); },
   maintenant(){ venir(); },
   regler(o){ Object.assign(R, o); }
 };
 
-setTimeout(programmer, R.premiere*1000);
+if (!SANS_PRESENCE) setTimeout(programmer, R.premiere*1000);
 })();
