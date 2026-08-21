@@ -2822,8 +2822,9 @@ if (SUR_MOBILE){
   /* l'aide est un CHOIX : elle ne s'active que si on l'a demandée,
      et le choix est retenu d'une fois sur l'autre */
   const aideOn = () => {
-    try { return localStorage.getItem('boheme-aide-' + cible) === '1'; }
-    catch(e){ return false; }
+    /* allumée par défaut : on ne l'éteint que si on l'a demandé */
+    try { return localStorage.getItem('boheme-aide-' + cible) !== '0'; }
+    catch(e){ return true; }
   };
   if (aideOn()) document.body.dataset.pour = cible;
 
@@ -3246,7 +3247,7 @@ if (SUR_MOBILE){
     { id:'btnIntro', t:'Revoir l\'intro',
       x:'Le film d\'ouverture, à revoir quand tu veux.' },
     { id:'btnAide',  t:'Ton aide personnelle',
-      x:'Les annonces qui te concernent : « prépare-toi », « à toi », les chœurs. À allumer ou éteindre librement — le réglage est retenu.',
+      x:'Allumée d\'office : « prépare-toi », « à toi », tes chœurs dans ta couleur. Quand tu connaîtras tes passages, éteins-la ici — le réglage est retenu.',
       si:'perso' },
   ];
 
@@ -3329,8 +3330,22 @@ if (SUR_MOBILE){
     fond.classList.add('plein');       /* pour la question : voile complet */
     boite.classList.add('la');
     anneau.classList.remove('la');
-    titre.textContent = 'Première fois ici ?';
-    texte.textContent = 'Veux-tu une visite rapide ? Chaque bouton s\'illumine et s\'explique — trente secondes, et tu sauras tout faire.';
+    const NOMS_B = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
+                     mickael:'Mickaël', bry:'Bry', elie:'Élie' };
+    const qui = (window.CIBLE_PERSO || '').toLowerCase();
+    if (qui && NOMS_B[qui]){
+      titre.textContent = 'Bienvenue, ' + NOMS_B[qui] + ' !';
+      texte.innerHTML =
+        'Ce karaoké est le tien. Trois conseils pour bien travailler :<br>'
+        + '🎧 mets des écouteurs · ⛶ passe en plein écran · 📱 garde le téléphone à la verticale.<br><br>'
+        + 'Ton <b>aide personnelle est déjà allumée</b> : elle t\'annonce « prépare-toi », '
+        + '« à toi », et tes chœurs s\'affichent dans ta couleur. '
+        + 'Le bouton ✦ Aide l\'éteint quand tu connaîtras tes passages.<br><br>'
+        + 'Veux-tu la visite rapide des commandes ?';
+    } else {
+      titre.textContent = 'Première fois ici ?';
+      texte.textContent = 'Veux-tu une visite rapide ? Chaque bouton s\'illumine et s\'explique — trente secondes, et tu sauras tout faire.';
+    }
     boutons.innerHTML = '';
     const oui = document.createElement('button');
     oui.className = 't-oui'; oui.textContent = 'Oui, montre-moi';
