@@ -2885,7 +2885,7 @@ if (SUR_MOBILE){
   background:rgba(0,0,0,.88); pointer-events:none;
   opacity:0; transition:opacity .6s ease;
 }
-#carton.la{ opacity:1; }
+#carton.la{ opacity:1; pointer-events:auto; cursor:pointer; }
 #carton .c-titre{
   font-size:clamp(26px,4.5vw,52px); font-weight:800; color:#ffc814;
   letter-spacing:1px; filter:drop-shadow(0 0 .3em rgba(255,200,20,.5));
@@ -2934,6 +2934,10 @@ if (SUR_MOBILE){
   /* ─── LA RAMPE : trois états, pilotés par un minuteur ────────── */
   let flashMinuteur = 0, dernierEtat = '';
   function majRampe(){
+    /* la rampe ne parle QUE sur un lien personnel : sur le lien
+       commun, tout le monde regarde le même écran, et une rampe qui
+       parle à tous parle tout le temps — plus personne ne l'écoute. */
+    if (!cible){ return; }
     const proche = document.querySelector('.qui.proche');
     const bientot = document.querySelector('.qui.bientot');
     let etat = '', texte = '', couleur = '', flash = false;
@@ -3018,9 +3022,19 @@ if (SUR_MOBILE){
       carton.querySelector('.c-perso').textContent = noteAuto(b);
       carton.classList.add('la');
       clearTimeout(cartonMinuteur);
-      cartonMinuteur = setTimeout(() => carton.classList.remove('la'), 4200);
+      /* le temps de LIRE : la durée dépend de la longueur du texte
+         (environ 60 ms par caractère), entre 6 et 13 secondes */
+      const texte = (b.titre||'') + (b.place||'') + noteAuto(b);
+      const duree = Math.min(13000, Math.max(6000, 1800 + texte.length * 60));
+      cartonMinuteur = setTimeout(() => carton.classList.remove('la'), duree);
     } catch(e){}
   }
+  /* pressé ? un toucher sur le carton le ferme tout de suite */
+  carton.addEventListener('click', () => {
+    clearTimeout(cartonMinuteur);
+    carton.classList.remove('la');
+  });
+
   const bBouton = document.getElementById('b');
   if (bBouton) bBouton.addEventListener('click', () => {
     setTimeout(() => { if (typeof au !== 'undefined' && !au.paused) montrerCarton(); }, 120);
