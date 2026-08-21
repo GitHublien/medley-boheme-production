@@ -2817,7 +2817,23 @@ if (SUR_MOBILE){
   const VALIDES = ['adrien','stephanie','candice','mickael','bry','elie'];
   if (!qui || !VALIDES.includes(qui.toLowerCase())) return;
   const cible = qui.toLowerCase();
-  document.body.dataset.pour = cible;
+  window.CIBLE_PERSO = cible;      /* le nom voyage jusqu'à la rampe */
+
+  /* l'aide est un CHOIX : elle ne s'active que si on l'a demandée,
+     et le choix est retenu d'une fois sur l'autre */
+  const aideOn = () => {
+    try { return localStorage.getItem('boheme-aide-' + cible) === '1'; }
+    catch(e){ return false; }
+  };
+  if (aideOn()) document.body.dataset.pour = cible;
+
+  window.basculerAide = function(){
+    const on = !aideOn();
+    try { localStorage.setItem('boheme-aide-' + cible, on ? '1' : '0'); } catch(e){}
+    if (on) document.body.dataset.pour = cible;
+    else delete document.body.dataset.pour;
+    return on;
+  };
 
   const css = document.createElement('style');
   css.textContent = `
@@ -2849,6 +2865,7 @@ if (SUR_MOBILE){
   /* même règle : un minuteur, jamais un observateur qui modifie ce
      qu'il observe */
   setInterval(() => {
+    if (!document.body.dataset.pour) return;      /* aide éteinte : rien */
     document.querySelectorAll('.qui.bientot').forEach(q => {
       if (!q.classList.contains('q-'+cible) && !q.classList.contains('q-tous'))
         q.classList.remove('bientot');
@@ -2911,7 +2928,8 @@ if (SUR_MOBILE){
                  mickael:'Mickaël', bry:'Bry', elie:'Élie' };
   const COULEURS = { adrien:'#ffc814', stephanie:'#ff4fa8', candice:'#b45cff',
                      mickael:'#00ffcc', bry:'#ff7a1f', elie:'#9dff35' };
-  const cible = (document.body.dataset.pour || '').toLowerCase() || null;
+  const cible = (window.CIBLE_PERSO || '').toLowerCase() || null;
+  const aideActive = () => !!document.body.dataset.pour;
 
   /* ─── NOTES PERSONNELLES ÉCRITES À LA MAIN ─────────────────────
      À compléter bloc par bloc, quand on veut dire quelque chose de
@@ -2960,7 +2978,10 @@ if (SUR_MOBILE){
 
   let dernierEtat = '';
   function majRampe(){
-    if (!cible) return;
+    if (!cible || !aideActive()){
+      if (dernierEtat){ rampe.classList.remove('la','flash'); dernierEtat = ''; }
+      return;
+    }
     let t;
     try { t = au.currentTime; } catch(e){ return; }
     const lignes = toutesLesLignes();
@@ -3005,7 +3026,7 @@ if (SUR_MOBILE){
   /* ─── LES EXPLICATIONS AUTOMATIQUES ────────────────────────────
      La page sait qui chante chaque ligne : on en tire une phrase. */
   function noteAuto(bloc){
-    if (!cible) return '';
+    if (!cible || !aideActive()) return '';
     const manuel = (NOTES_PERSO[cible] || {})[bloc.num];
     if (manuel) return manuel;
     const nom = NOMS[cible], bas = nom.toLowerCase();
@@ -3023,7 +3044,35 @@ if (SUR_MOBILE){
       }
       if (moi) dejaMoi = true;
     }
-    if (!solos && !choeurs) return nom + ' — rien pour toi dans ce bloc : tu peux souffler.';
+    if (!solos && !choeurs){
+      /* où est-il ? la mise en place du bloc le sait */
+      let ou = 'tu ne chantes pas dans ce bloc';
+      const place = bloc.place || '';
+      if (place.toLowerCase().includes(bas)){
+        const seg = place.split('·').find(x => x.toLowerCase().includes(bas)) || '';
+        ou = seg.toLowerCase().includes('coulisse')
+           ? 'tu es en coulisses, tu ne chantes pas encore'
+           : 'tu es en place sur scène, tu ne chantes pas encore';
+      }
+      /* et quand est sa prochaine intervention ? */
+      let proch = '';
+      try {
+        const idx = BLOCS.indexOf(bloc);
+        for (let i = idx + 1; i < BLOCS.length; i++){
+          let trouve = null;
+          for (const l of (BLOCS[i].lignes || [])){
+            const c2 = concerne(l.qui);
+            if (c2.actif){ trouve = c2; break; }
+          }
+          if (trouve){
+            proch = ' — prochaine intervention : bloc ' + BLOCS[i].num
+                  + (trouve.ch ? ', les chœurs avec tout le monde' : ', un passage à toi');
+            break;
+          }
+        }
+      } catch(e){}
+      return nom + ' — ' + ou + proch + '.';
+    }
     let t = nom + ' — dans ce bloc : ';
     if (solos) t += 'tu chantes ' + (solos === 1 ? 'un passage' : solos + ' passages');
     if (solos && choeurs) t += ', et ';
@@ -3058,6 +3107,24 @@ if (SUR_MOBILE){
     clearTimeout(cartonMinuteur);
     carton.classList.remove('la');
   });
+
+  /* ─── LE BOUTON AIDE, seulement sur un lien personnel ────────── */
+  if (cible && window.basculerAide){
+    const ba = document.createElement('button');
+    ba.className = 'btn-reg'; ba.id = 'btnAide';
+    ba.style.cssText = 'border:1px solid rgba(212,175,55,.55);font-weight:600;white-space:nowrap;';
+    const peindre = (on) => {
+      ba.textContent = (on ? '✦ Aide ' : '✧ Aide ') + NOMS[cible] + (on ? ' : oui' : ' : non');
+      ba.style.background = on ? 'rgba(157,255,53,.16)' : 'rgba(212,175,55,.10)';
+      ba.style.color = on ? '#9dff35' : '';
+      ba.title = on ? 'les annonces personnelles sont allumées — cliquer pour revenir au karaoké normal'
+                    : 'karaoké normal — cliquer pour allumer les annonces personnelles';
+    };
+    peindre(aideActive());
+    ba.addEventListener('click', () => peindre(window.basculerAide()));
+    const ancre = document.getElementById('btnIntro') || document.getElementById('btnPlein');
+    if (ancre && ancre.parentNode) ancre.parentNode.insertBefore(ba, ancre.nextSibling);
+  }
 
   const bBouton = document.getElementById('b');
   if (bBouton) bBouton.addEventListener('click', () => {
