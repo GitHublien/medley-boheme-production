@@ -403,6 +403,16 @@
 .ligne .mot{ text-shadow:0 0 4px #000, 0 0 9px rgba(0,0,0,.85); }
 .ligne.passee .mot .plein{ opacity:.55 !important; }
 
+
+/* ─── SUR TÉLÉPHONE : on épure ─────────────────────────────────
+   Les réglages servent à fabriquer le karaoké, pas à le suivre.
+   Sur un petit écran, on ne garde que l'essentiel : la présence,
+   le plein écran, revoir l'intro, et la navigation. */
+@media (max-width: 820px){
+  #btnReg, #btnBlocs, #btnStyle{ display:none !important; }
+  .barre{ flex-wrap:wrap; gap:6px; }
+  #btnPresence, #btnPlein, #btnIntro{ font-size:12px; padding:6px 10px; }
+}
 </style>
 
 <div class="barre">
