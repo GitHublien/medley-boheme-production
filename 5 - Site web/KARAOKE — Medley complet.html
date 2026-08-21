@@ -1,3 +1,19 @@
+<script>
+/* ═══ LA PREMIÈRE FOIS, ON VOIT L'INTRO ═══
+   Quelqu'un reçoit son lien et arrive ici directement : on l'envoie
+   d'abord voir le film, une seule fois. La porte note son passage
+   (boheme-intro-vue), et toutes les visites suivantes viennent
+   droit au karaoké. En local, sur l'ordinateur de travail, jamais
+   de détour. Placé tout en haut : la redirection part avant même
+   que la page ne se charge. */
+(function(){
+  try {
+    if (!/github\.io$/i.test(location.hostname)) return;
+    if (localStorage.getItem('boheme-intro-vue') === '1') return;
+    location.replace('PORTE — Bohème.html' + location.search);
+  } catch(e){}
+})();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Karaoké — Medley complet</title>
