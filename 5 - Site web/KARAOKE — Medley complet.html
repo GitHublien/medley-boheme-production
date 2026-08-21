@@ -2858,6 +2858,10 @@ if (SUR_MOBILE){
     }
     body[data-pour] .q-${cible}.qui{
       text-shadow:0 0 .5em currentColor;
+    }
+    /* les chœurs dans SA couleur : sa couleur = il chante */
+    body[data-pour] .q-tous .mot .plein{
+      color:var(--f-${cible}) !important;
     }`;
   document.head.appendChild(css);
 
@@ -2963,7 +2967,8 @@ if (SUR_MOBILE){
     try {
       LIGNES = [];
       for (const b of BLOCS) for (const l of (b.lignes || []))
-        if (l.debut != null) LIGNES.push(l);
+        if (l.debut != null)
+          LIGNES.push({ debut:l.debut, fin:l.fin, qui:l.qui, num:b.num });
       LIGNES.sort((x, y) => x.debut - y.debut);
     } catch(e){ LIGNES = []; }
     return LIGNES;
@@ -3012,11 +3017,34 @@ if (SUR_MOBILE){
       }
     }
 
+    /* ─── IL VIENT DE FINIR ? on le libère proprement ────────────
+       Sa dernière ligne s'est terminée il y a moins de 8 s, et la
+       prochaine est loin (ou n'existe pas) : « c'est fait ». */
+    if (!etat){
+      let derniere = null, suivante = null;
+      for (const l of lignes){
+        if (!concerne(l.qui).actif) continue;
+        if (l.fin <= t) derniere = l;
+        else if (l.debut > t){ suivante = l; break; }
+      }
+      if (derniere && t - derniere.fin >= 0.8 && t - derniere.fin <= 8
+          && (!suivante || suivante.debut - t > 25)){
+        if (suivante){
+          const c3 = concerne(suivante.qui);
+          texte = '✔ C\'est fait, ' + nom + ' — prochaine intervention : bloc '
+                + suivante.num + (c3.ch ? ', les chœurs avec tout le monde' : ', un passage à toi');
+        } else {
+          texte = '✔ C\'est fait, ' + nom + ' — rien d\'autre pour toi. Bravo !';
+        }
+        etat = 'fin-' + Math.round(derniere.fin);
+      }
+    }
+
     if (etat !== dernierEtat){
       dernierEtat = etat;
       if (!texte){ rampe.classList.remove('la','flash'); return; }
       rampe.textContent = texte;
-      rampe.style.color = flash && texte.startsWith('CHŒURS') ? '#ffffff' : coul;
+      rampe.style.color = coul;    /* sa couleur partout : c'est SON guide */
       rampe.classList.toggle('flash', flash);
       rampe.classList.add('la');
     }
@@ -3130,6 +3158,196 @@ if (SUR_MOBILE){
   if (bBouton) bBouton.addEventListener('click', () => {
     setTimeout(() => { if (typeof au !== 'undefined' && !au.paused) montrerCarton(); }, 120);
   });
+})();
+</script>
+<style>
+/* ═══ LA BARRE, RANGÉE EN PORTRAIT ═══
+   Deux rangées claires : les boutons ensemble, la lecture ensemble.
+   Fenêtre (plein écran) et Blocs côte à côte, le lecteur juste
+   en dessous avec ses flèches. */
+@media (max-width: 820px) and (orientation: portrait){
+  .barre{ display:flex !important; flex-wrap:wrap !important;
+          align-items:center; gap:8px !important; }
+  #btnStyle{ order:1; } #btnPlein{ order:2; } #btnBlocs{ order:3; }
+  #btnAide{ order:4; } #btnIntro{ order:5; } #btnTuto{ order:6; }
+  .ou{ order:7; width:100%; text-align:center; font-size:13px; }
+  #bPrev{ order:8; } .pl{ order:9; flex:1 1 auto; min-width:0; }
+  #bNext{ order:10; }
+}
+
+/* ═══ LE TUTORIEL ═══ */
+#tutoFond{ position:fixed; inset:0; background:rgba(0,0,0,.78);
+  z-index:90; opacity:0; pointer-events:none; transition:opacity .4s; }
+#tutoFond.la{ opacity:1; pointer-events:auto; }
+#tutoAnneau{ position:fixed; z-index:91; border:3px solid #ffc814;
+  border-radius:14px; pointer-events:none; opacity:0;
+  box-shadow:0 0 0 6px rgba(255,200,20,.25), 0 0 30px rgba(255,200,20,.5);
+  transition:all .45s cubic-bezier(.3,.8,.3,1); }
+#tutoAnneau.la{ opacity:1; }
+#tuto{ position:fixed; left:50%; transform:translateX(-50%);
+  top:max(120px, 18vh); z-index:92; width:min(560px, 90vw);
+  background:rgba(8,8,8,.96); border:1px solid rgba(212,175,55,.5);
+  border-radius:18px; padding:22px 26px; text-align:center;
+  opacity:0; pointer-events:none; transition:opacity .4s; }
+#tuto.la{ opacity:1; pointer-events:auto; }
+#tuto .t-titre{ font-size:clamp(19px,2.4vw,26px); font-weight:800;
+  color:#ffc814; margin-bottom:10px; }
+#tuto .t-texte{ font-size:clamp(15px,1.9vw,19px); color:#e8e2d2;
+  line-height:1.65; margin-bottom:18px; }
+#tuto button{ font-size:15px; font-weight:700; padding:11px 22px;
+  margin:0 6px; border-radius:12px; cursor:pointer;
+  border:1px solid rgba(212,175,55,.6); background:rgba(212,175,55,.14);
+  color:#f2ede1; min-height:44px; }
+#tuto button.t-oui{ background:rgba(255,200,20,.25); color:#ffc814; }
+</style>
+<div id="tutoFond"></div>
+<div id="tutoAnneau"></div>
+<div id="tuto">
+  <div class="t-titre"></div>
+  <div class="t-texte"></div>
+  <div class="t-boutons"></div>
+</div>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   LE TUTORIEL — la visite guidée du karaoké
+
+   À la première visite : « veux-tu la visite ? oui / non ».
+   Oui → chaque commande s'illumine à tour de rôle, avec son
+   explication. L'étape du Style fait défiler les styles tout seul,
+   pour qu'on VOIE au lieu de lire. Le bouton « ? » la relance.
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+  const fond = document.getElementById('tutoFond');
+  const anneau = document.getElementById('tutoAnneau');
+  const boite = document.getElementById('tuto');
+  const titre = boite.querySelector('.t-titre');
+  const texte = boite.querySelector('.t-texte');
+  const boutons = boite.querySelector('.t-boutons');
+
+  const ETAPES = [
+    { id:'b',        t:'Le bouton Lecture',
+      x:'C\'est lui qui lance le karaoké. Appuie dessus, la musique part, et les paroles s\'allument en rythme. Appuie encore : pause.' },
+    { id:'rail',     t:'La barre de temps',
+      x:'Elle montre où l\'on est dans le medley. On peut appuyer n\'importe où dessus pour sauter à cet endroit.' },
+    { id:'bPrev',    t:'Les flèches',
+      x:'Bloc précédent, bloc suivant. Un bloc = une chanson du medley. C\'est le moyen le plus rapide de se déplacer.' },
+    { id:'btnBlocs', t:'Le menu Blocs',
+      x:'La liste de toutes les chansons. On appuie, on choisit, on y est. Pour aller directement à SA chanson.' },
+    { id:'btnStyle', t:'Le Style',
+      x:'L\'habillage des paroles : Néon, 3D, Cinéma, Vague… Regarde, ils défilent tout seuls. Choisis celui qui te plaît, il sera retenu.',
+      demo:true },
+    { id:'btnPlein', t:'Le plein écran',
+      x:'Tout l\'écran pour le karaoké, rien d\'autre. Échap ou le même bouton pour en sortir.' },
+    { id:'btnIntro', t:'Revoir l\'intro',
+      x:'Le film du début, quand tu veux le revoir. Il est incroyable, mais tu le sais déjà.' },
+    { id:'btnAide',  t:'Ton aide personnelle',
+      x:'Le guide qui te dit quand TU chantes : « prépare-toi », « à toi ! », les chœurs. Allume-le tant que tu apprends, éteins-le quand tu sauras.',
+      si:'perso' },
+  ];
+
+  let etape = -1, demoMinuteur = null, demoAvant = null;
+
+  function pos(el){
+    const r = el.getBoundingClientRect();
+    anneau.style.left = (r.left - 8) + 'px';
+    anneau.style.top = (r.top - 8) + 'px';
+    anneau.style.width = (r.width + 16) + 'px';
+    anneau.style.height = (r.height + 16) + 'px';
+  }
+
+  function stopDemo(){
+    if (demoMinuteur){ clearInterval(demoMinuteur); demoMinuteur = null; }
+    if (demoAvant !== null){
+      try { STYLES.forEach(([c]) => c && document.body.classList.remove(c));
+            if (STYLES[demoAvant][0]) document.body.classList.add(STYLES[demoAvant][0]); } catch(e){}
+      demoAvant = null;
+    }
+  }
+
+  function montrer(i){
+    stopDemo();
+    /* on saute les étapes dont l'élément n'existe pas ici */
+    while (i < ETAPES.length){
+      const e = ETAPES[i];
+      const el = document.getElementById(e.id);
+      if (el && el.offsetParent !== null && (!e.si || e.si !== 'perso' || window.CIBLE_PERSO)) break;
+      i++;
+    }
+    if (i >= ETAPES.length){ finir(); return; }
+    etape = i;
+    const e = ETAPES[i];
+    const el = document.getElementById(e.id);
+    pos(el); anneau.classList.add('la');
+    titre.textContent = e.t;
+    texte.textContent = e.x;
+    boutons.innerHTML = '';
+    const suiv = document.createElement('button');
+    suiv.className = 't-oui';
+    suiv.textContent = (i >= ETAPES.length - 1) ? 'Terminer' : 'Suivant ⟶';
+    suiv.onclick = () => montrer(etape + 1);
+    const passer = document.createElement('button');
+    passer.textContent = 'Passer la visite';
+    passer.onclick = finir;
+    boutons.appendChild(suiv); boutons.appendChild(passer);
+
+    if (e.demo){
+      /* les styles défilent tout seuls : on VOIT au lieu de lire */
+      try {
+        demoAvant = stIdx;
+        let k = 0;
+        demoMinuteur = setInterval(() => {
+          k = (k + 1) % STYLES.length;
+          STYLES.forEach(([c]) => c && document.body.classList.remove(c));
+          if (STYLES[k][0]) document.body.classList.add(STYLES[k][0]);
+        }, 1200);
+      } catch(err){}
+    }
+  }
+
+  function finir(){
+    stopDemo();
+    fond.classList.remove('la');
+    anneau.classList.remove('la');
+    boite.classList.remove('la');
+    try { localStorage.setItem('boheme-tuto', '1'); } catch(e){}
+  }
+
+  function demarrerVisite(){
+    fond.classList.add('la');
+    boite.classList.add('la');
+    montrer(0);
+  }
+
+  function proposer(){
+    fond.classList.add('la');
+    boite.classList.add('la');
+    anneau.classList.remove('la');
+    titre.textContent = 'Première fois ici ?';
+    texte.textContent = 'Veux-tu une visite rapide ? Chaque bouton s\'illumine et s\'explique — trente secondes, et tu sauras tout faire.';
+    boutons.innerHTML = '';
+    const oui = document.createElement('button');
+    oui.className = 't-oui'; oui.textContent = 'Oui, montre-moi';
+    oui.onclick = () => demarrerVisite();
+    const non = document.createElement('button');
+    non.textContent = 'Non merci';
+    non.onclick = finir;
+    boutons.appendChild(oui); boutons.appendChild(non);
+  }
+
+  /* le bouton « ? » pour relancer la visite quand on veut */
+  const bt = document.createElement('button');
+  bt.className = 'btn-reg'; bt.id = 'btnTuto'; bt.textContent = '?';
+  bt.title = 'la visite guidée du karaoké';
+  bt.style.cssText = 'border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.10);font-weight:800;min-width:40px;';
+  bt.addEventListener('click', () => { montrerDepuisBouton(); });
+  function montrerDepuisBouton(){ demarrerVisite(); }
+  const ancre = document.getElementById('btnIntro');
+  if (ancre && ancre.parentNode) ancre.parentNode.insertBefore(bt, ancre.nextSibling);
+
+  /* première visite : on propose, sans imposer */
+  let deja = null;
+  try { deja = localStorage.getItem('boheme-tuto'); } catch(e){}
+  if (deja !== '1') setTimeout(proposer, 1400);
 })();
 </script>
 </body>
