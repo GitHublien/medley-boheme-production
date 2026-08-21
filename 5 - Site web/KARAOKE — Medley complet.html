@@ -3394,4 +3394,32 @@ if (SUR_MOBILE){
   if (deja !== '1') setTimeout(proposer, 1400);
 })();
 </script>
+<script>
+/* ═══ PAS DE MISE EN VEILLE PENDANT LE KARAOKÉ ═══
+   Le « verrou d'éveil » demande au téléphone de garder l'écran
+   allumé tant que la musique joue. Dès la pause, on le relâche :
+   la batterie reprend ses droits. Si le téléphone est trop vieux
+   pour connaître ce verrou, il ne se passe simplement rien. */
+(function(){
+  let verrou = null;
+  async function eveiller(){
+    try {
+      if (!('wakeLock' in navigator)) return;
+      verrou = await navigator.wakeLock.request('screen');
+    } catch(e){}
+  }
+  function relacher(){
+    if (verrou){ try { verrou.release(); } catch(e){} verrou = null; }
+  }
+  try {
+    au.addEventListener('play', eveiller);
+    au.addEventListener('pause', relacher);
+    au.addEventListener('ended', relacher);
+    /* quand on revient sur l'onglet, le verrou a sauté : on le reprend */
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && !au.paused) eveiller();
+    });
+  } catch(e){}
+})();
+</script>
 </body>

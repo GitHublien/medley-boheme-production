@@ -191,6 +191,8 @@ function entrer(){
   if (demarre) return;
   demarre = true;
   pleinEcran();
+  /* l'écran reste allumé pendant tout le film */
+  try { if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
   film.volume = R.volumeFilm;
   film.muted = false;
   film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
