@@ -1,43 +1,9 @@
-# OS files
-.DS_Store
-Thumbs.db
+# ═══ CE QUI PART EN LIGNE : le site, et rien d'autre ═══
+# On ignore tout par défaut…
+/*
+# …sauf le site et sa configuration
+!/5 - Site web/
+!/netlify.toml
+!/.gitignore
 
-# Editor files
-*.swp
-*.swo
-.vscode/
-.idea/
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp
-
-# ---------------------------------------------------------------
-# AUDIO ET PROJET REAPER — ne JAMAIS pousser (plusieurs centaines de Mo)
-# Tout ça reste en local, sur le disque D:
-# ---------------------------------------------------------------
-REAPER_Medley/
-Audio (Adrien)/
-*.wav
-*.aiff
-*.flac
-*.mp4
-*.mov
-
-# Fichiers de travail Reaper
-*.rpp
-*.rpp-bak
-*.rpp-*
-*.reapeaks
-*-props
-Rendus_Blocs/
-
-# Exception : la musique d'ambiance du site web, elle, doit partir
-!musique.mp3
-
-# Exception : la vidéo de mise en scène publiée sur le site
-!media/mise-en-scene-technique.mp4
-!media/mise-en-scene-chanteurs.mp4
+# et dans le site, on garde tout

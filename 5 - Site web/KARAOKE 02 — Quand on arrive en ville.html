@@ -1,0 +1,141 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karaoké 02 — Quand on arrive en ville · Adrien, puis tous</title>
+<style>
+  :root{ --or:#d4af37; --blanc:#f2ede1; --noir:#0a0908; --eteint:#4a4640; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{ background:var(--noir); color:#fff;
+        font-family:"Jost","Segoe UI",system-ui,sans-serif;
+        display:flex; flex-direction:column; overflow:hidden; }
+
+  .barre{ position:fixed; top:0; left:0; right:0; padding:16px 26px; z-index:10;
+          display:flex; align-items:center; gap:18px;
+          background:linear-gradient(#0a0908 60%, transparent); }
+  .titre{ font-size:11.5px; letter-spacing:3px; text-transform:uppercase; color:var(--or);
+          opacity:.8; white-space:nowrap; }
+  .tc{ font-size:11.5px; letter-spacing:2px; color:#5d584e; white-space:nowrap; }
+  .pl{ display:flex; align-items:center; gap:14px; flex:1; min-width:220px; }
+  .pl button{ flex:none; width:42px; height:42px; border-radius:50%; cursor:pointer;
+              background:transparent; border:1px solid var(--or); color:var(--or);
+              font-size:12px; display:grid; place-items:center; transition:.25s;
+              padding-left:3px; }
+  .pl button:hover{ background:var(--or); color:var(--noir); }
+  .pl button.on{ padding-left:0; }
+  .barre-tps{ flex:1; height:2px; background:rgba(212,175,55,.22); cursor:pointer; }
+  .fait{ height:100%; width:0; background:var(--or); }
+  .tps{ font-size:12px; color:#8a8478; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  .scene{ flex:1; overflow:hidden; position:relative; }
+  .lignes{ position:absolute; left:0; right:0; padding:0 6vw;
+           transition:transform .5s cubic-bezier(.22,.61,.36,1); }
+
+  .ligne{ font-weight:600; line-height:1.16; letter-spacing:-.5px;
+          font-size:clamp(26px, 4.6vw, 62px);
+          margin:0 0 .3em; color:var(--eteint);
+          transition:opacity .4s, transform .4s;
+          opacity:.22; transform:scale(.985); transform-origin:left center; }
+  .ligne.active{ opacity:1; transform:scale(1); }
+  .ligne.passee{ opacity:.2; }
+
+  .mot{ position:relative; display:inline-block; white-space:pre; color:var(--eteint); }
+  .mot .plein{ position:absolute; inset:0; width:0; overflow:hidden; white-space:pre;
+               color:var(--or); }
+  .ligne.c .mot .plein{ color:var(--blanc); }
+  .ligne.p .mot .plein{ color:#8fb0d8; }
+  .ligne.passee .mot .plein{ width:100%; opacity:.45; }
+
+  .aide{ position:fixed; bottom:16px; left:0; right:0; text-align:center;
+         font-size:11px; letter-spacing:2px; color:#3d3934; text-transform:uppercase; }
+  @media (max-width:680px){ .barre{ flex-wrap:wrap; gap:10px; } .titre,.tc{ width:100%; } }
+</style>
+
+<div class="barre">
+  <div class="titre">Quand on arrive en ville · Adrien, puis tous</div>
+  <div class="pl">
+    <button id="b" aria-label="Lecture">&#9654;</button>
+    <div class="barre-tps" id="bar"><div class="fait" id="fait"></div></div>
+    <div class="tps"><span id="a">0:00</span></div>
+  </div>
+  <div class="tc">0:30 → 1:48</div>
+</div>
+
+<div class="scene"><div class="lignes" id="L"></div></div>
+<div class="aide">Espace : lecture et pause &nbsp;·&nbsp; flèches : reculer, avancer</div>
+
+<audio id="au" src="media/karaoke-02.mp3" preload="auto"></audio>
+
+<script>
+const D = [{"type": "s", "texte": "Quand tout l'monde dort tranquille", "debut": 3.021, "fin": 4.541, "mots": [{"m": "Quand", "t": 3.021, "f": 3.161}, {"m": "tout", "t": 3.201, "f": 3.321}, {"m": "l'monde", "t": 3.321, "f": 3.681}, {"m": "dort", "t": 3.741, "f": 3.941}, {"m": "tranquille", "t": 3.961, "f": 4.541}]}, {"type": "s", "texte": "Dans les banlieues-dortoir", "debut": 5.381, "fin": 6.682, "mots": [{"m": "Dans", "t": 5.381, "f": 5.521}, {"m": "les", "t": 5.541, "f": 5.641}, {"m": "banlieues-dortoir", "t": 5.661, "f": 6.682}]}, {"type": "s", "texte": "C'est l'heure où les zonards descendent sur la ville", "debut": 7.842, "fin": 11.283, "mots": [{"m": "C'est", "t": 7.842, "f": 8.022}, {"m": "l'heure", "t": 8.022, "f": 8.222}, {"m": "où", "t": 8.262, "f": 8.302}, {"m": "les", "t": 8.362, "f": 8.502}, {"m": "zonards", "t": 8.562, "f": 9.102}, {"m": "descendent", "t": 9.402, "f": 10.082}, {"m": "sur", "t": 10.162, "f": 10.363}, {"m": "la", "t": 10.403, "f": 10.523}, {"m": "ville", "t": 10.663, "f": 11.283}]}, {"type": "s", "texte": "Qui est-ce qui viole les filles, le soir dans les parkings", "debut": 12.763, "fin": 16.804, "mots": [{"m": "Qui", "t": 12.763, "f": 12.883}, {"m": "est-ce", "t": 12.943, "f": 13.083}, {"m": "qui", "t": 13.103, "f": 13.183}, {"m": "viole", "t": 13.243, "f": 13.583}, {"m": "les", "t": 13.603, "f": 13.723}, {"m": "filles,", "t": 13.803, "f": 14.283}, {"m": "le", "t": 15.184, "f": 15.244}, {"m": "soir", "t": 15.304, "f": 15.504}, {"m": "dans", "t": 15.544, "f": 15.684}, {"m": "les", "t": 15.704, "f": 15.844}, {"m": "parkings", "t": 15.904, "f": 16.804}]}, {"type": "s", "texte": "Qui met l'feu aux buildings, c'est toujours les zonards", "debut": 17.644, "fin": 20.805, "mots": [{"m": "Qui", "t": 17.644, "f": 17.724}, {"m": "met", "t": 17.784, "f": 17.884}, {"m": "l'feu", "t": 17.904, "f": 18.124}, {"m": "aux", "t": 18.264, "f": 18.364}, {"m": "buildings,", "t": 18.404, "f": 19.085}, {"m": "c'est", "t": 19.185, "f": 19.345}, {"m": "toujours", "t": 19.405, "f": 19.905}, {"m": "les", "t": 19.945, "f": 20.105}, {"m": "zonards", "t": 20.165, "f": 20.805}]}, {"type": "s", "texte": "Alors c'est la panique sur les boulevards", "debut": 21.585, "fin": 24.486, "mots": [{"m": "Alors", "t": 21.585, "f": 22.065}, {"m": "c'est", "t": 22.505, "f": 22.666}, {"m": "la", "t": 22.706, "f": 22.766}, {"m": "panique", "t": 22.866, "f": 23.266}, {"m": "sur", "t": 23.326, "f": 23.526}, {"m": "les", "t": 23.626, "f": 23.786}, {"m": "boulevards", "t": 23.826, "f": 24.486}]}, {"type": "s", "texte": "Quand on arrive en ville", "debut": 25.366, "fin": 26.767, "mots": [{"m": "Quand", "t": 25.366, "f": 25.526}, {"m": "on", "t": 25.606, "f": 25.706}, {"m": "arrive", "t": 25.786, "f": 26.226}, {"m": "en", "t": 26.306, "f": 26.386}, {"m": "ville", "t": 26.466, "f": 26.767}]}, {"type": "s", "texte": "Quand on arrive en ville", "debut": 35.309, "fin": 36.389, "mots": [{"m": "Quand", "t": 35.309, "f": 35.429}, {"m": "on", "t": 35.469, "f": 35.549}, {"m": "arrive", "t": 35.609, "f": 35.869}, {"m": "en", "t": 35.929, "f": 35.989}, {"m": "ville", "t": 36.029, "f": 36.389}]}, {"type": "s", "texte": "Tout l'monde change de trottoir", "debut": 37.449, "fin": 38.849, "mots": [{"m": "Tout", "t": 37.449, "f": 37.569}, {"m": "l'monde", "t": 37.569, "f": 37.789}, {"m": "change", "t": 37.829, "f": 38.109}, {"m": "de", "t": 38.129, "f": 38.209}, {"m": "trottoir", "t": 38.249, "f": 38.849}]}, {"type": "s", "texte": "On n'a pas l'air virils, mais on fait peur à voir", "debut": 39.73, "fin": 42.45, "mots": [{"m": "On", "t": 39.73, "f": 39.77}, {"m": "n'a", "t": 39.81, "f": 39.89}, {"m": "pas", "t": 39.95, "f": 40.05}, {"m": "l'air", "t": 40.07, "f": 40.21}, {"m": "virils,", "t": 40.27, "f": 40.95}, {"m": "mais", "t": 41.03, "f": 41.17}, {"m": "on", "t": 41.21, "f": 41.29}, {"m": "fait", "t": 41.33, "f": 41.51}, {"m": "peur", "t": 41.61, "f": 41.85}, {"m": "à", "t": 41.93, "f": 41.95}, {"m": "voir", "t": 42.05, "f": 42.45}]}, {"type": "s", "texte": "Des gars qui se maquillent, ça fait rire les passants", "debut": 44.091, "fin": 47.612, "mots": [{"m": "Des", "t": 44.091, "f": 44.191}, {"m": "gars", "t": 44.211, "f": 44.331}, {"m": "qui", "t": 44.351, "f": 44.431}, {"m": "se", "t": 44.491, "f": 44.571}, {"m": "maquillent,", "t": 44.651, "f": 45.451}, {"m": "ça", "t": 46.231, "f": 46.331}, {"m": "fait", "t": 46.431, "f": 46.571}, {"m": "rire", "t": 46.591, "f": 46.831}, {"m": "les", "t": 46.891, "f": 47.011}, {"m": "passants", "t": 47.031, "f": 47.612}]}, {"type": "s", "texte": "Mais quand ils voient du sang sur nos lames de rasoir", "debut": 48.452, "fin": 51.152, "mots": [{"m": "Mais", "t": 48.452, "f": 48.552}, {"m": "quand", "t": 48.572, "f": 48.712}, {"m": "ils", "t": 48.772, "f": 48.872}, {"m": "voient", "t": 48.872, "f": 49.072}, {"m": "du", "t": 49.072, "f": 49.152}, {"m": "sang", "t": 49.252, "f": 49.632}, {"m": "sur", "t": 49.772, "f": 49.912}, {"m": "nos", "t": 49.952, "f": 50.072}, {"m": "lames", "t": 50.072, "f": 50.352}, {"m": "de", "t": 50.372, "f": 50.452}, {"m": "rasoir", "t": 50.552, "f": 51.152}]}, {"type": "c", "texte": "Ça fait comme un éclair dans le brouillard", "debut": 51.773, "fin": 54.493, "mots": [{"m": "Ça", "t": 51.773, "f": 51.873}, {"m": "fait", "t": 51.973, "f": 52.273}, {"m": "comme", "t": 52.793, "f": 52.953}, {"m": "un", "t": 52.973, "f": 53.053}, {"m": "éclair", "t": 53.093, "f": 53.353}, {"m": "dans", "t": 53.373, "f": 53.573}, {"m": "le", "t": 53.613, "f": 53.713}, {"m": "brouillard", "t": 53.833, "f": 54.493}]}, {"type": "s", "texte": "Quand on arrive en ville", "debut": 55.253, "fin": 57.214, "mots": [{"m": "Quand", "t": 55.253, "f": 55.374}, {"m": "on", "t": 55.434, "f": 55.534}, {"m": "arrive", "t": 55.614, "f": 56.174}, {"m": "en", "t": 56.274, "f": 56.374}, {"m": "ville", "t": 56.474, "f": 57.214}]}, {"type": "c", "texte": "Nous, tout c'qu'on veut, c'est être heureux", "debut": 64.556, "fin": 68.077, "mots": [{"m": "Nous,", "t": 64.556, "f": 65.856}, {"m": "tout", "t": 65.856, "f": 66.016}, {"m": "c'qu'on", "t": 66.056, "f": 66.296}, {"m": "veut,", "t": 66.376, "f": 66.516}, {"m": "c'est", "t": 66.576, "f": 66.956}, {"m": "être", "t": 66.956, "f": 67.076}, {"m": "heureux", "t": 67.076, "f": 68.077}]}, {"type": "c", "texte": "Être heureux avant d'être vieux", "debut": 68.077, "fin": 69.697, "mots": [{"m": "Être", "t": 68.077, "f": 68.357}, {"m": "heureux", "t": 68.357, "f": 68.817}, {"m": "avant", "t": 68.877, "f": 69.217}, {"m": "d'être", "t": 69.237, "f": 69.537}, {"m": "vieux", "t": 69.537, "f": 69.697}]}, {"type": "c", "texte": "On n'a pas l'temps d'attendre d'avoir trente ans", "debut": 71.277, "fin": 73.038, "mots": [{"m": "On", "t": 71.277, "f": 71.337}, {"m": "n'a", "t": 71.377, "f": 71.477}, {"m": "pas", "t": 71.577, "f": 71.677}, {"m": "l'temps", "t": 71.697, "f": 71.938}, {"m": "d'attendre", "t": 71.938, "f": 72.258}, {"m": "d'avoir", "t": 72.318, "f": 72.578}, {"m": "trente", "t": 72.578, "f": 72.758}, {"m": "ans", "t": 72.758, "f": 73.038}]}, {"type": "c", "texte": "Nous, tout c'qu'on veut, c'est être heureux", "debut": 73.358, "fin": 75.979, "mots": [{"m": "Nous,", "t": 73.358, "f": 74.658}, {"m": "tout", "t": 74.658, "f": 74.818}, {"m": "c'qu'on", "t": 74.858, "f": 75.078}, {"m": "veut,", "t": 75.118, "f": 75.278}, {"m": "c'est", "t": 75.318, "f": 75.578}, {"m": "être", "t": 75.578, "f": 75.758}, {"m": "heureux", "t": 75.758, "f": 75.979}]}, {"type": "c", "texte": "Être heureux avant d'être vieux", "debut": 76.879, "fin": 78.419, "mots": [{"m": "Être", "t": 76.879, "f": 77.139}, {"m": "heureux", "t": 77.139, "f": 77.559}, {"m": "avant", "t": 77.619, "f": 77.899}, {"m": "d'être", "t": 77.919, "f": 78.219}, {"m": "vieux", "t": 78.259, "f": 78.419}]}, {"type": "c", "texte": "On prend tout c'qu'on veut prendre, mais en attendant", "debut": 79.839, "fin": 81.54, "mots": [{"m": "On", "t": 79.839, "f": 79.899}, {"m": "prend", "t": 79.939, "f": 80.14}, {"m": "tout", "t": 80.22, "f": 80.32}, {"m": "c'qu'on", "t": 80.32, "f": 80.48}, {"m": "veut", "t": 80.52, "f": 80.66}, {"m": "prendre,", "t": 80.72, "f": 80.92}, {"m": "mais", "t": 80.92, "f": 81.02}, {"m": "en", "t": 81.02, "f": 81.06}, {"m": "attendant", "t": 81.1, "f": 81.54}]}];
+const L = document.getElementById('L'), au = document.getElementById('au');
+const b = document.getElementById('b'), fait = document.getElementById('fait');
+const bar = document.getElementById('bar'), ta = document.getElementById('a');
+const scene = document.querySelector('.scene');
+
+const lignes = D.map(l => {
+  const p = document.createElement('div');
+  p.className = 'ligne ' + l.type;
+  l.mots.forEach((m, i) => {
+    const s = document.createElement('span'); s.className = 'mot';
+    s.textContent = m.m + (i < l.mots.length - 1 ? ' ' : '');
+    const f = document.createElement('span'); f.className = 'plein';
+    f.textContent = s.textContent; s.appendChild(f);
+    p.appendChild(s);
+  });
+  L.appendChild(p);
+  return p;
+});
+
+const mmss = s => Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+let courante = -1;
+
+function rendu(){
+  const t = au.currentTime;
+  let active = -1;
+  D.forEach((l, i) => {
+    const el = lignes[i];
+    const est = t >= l.debut - 0.3 && t < l.fin + 0.6;
+    if (est) active = i;
+    el.classList.toggle('active', est);
+    el.classList.toggle('passee', t >= l.fin + 0.6);
+    const mots = el.querySelectorAll('.mot');
+    if (est) {
+      l.mots.forEach((m, k) => {
+        const d = Math.max(m.f - m.t, .08);
+        const r = Math.min(Math.max((t - m.t) / d, 0), 1);
+        mots[k].querySelector('.plein').style.width = (r * 100) + '%';
+      });
+    } else if (t < l.debut) {
+      mots.forEach(w => w.querySelector('.plein').style.width = '0%');
+    }
+  });
+  if (active >= 0 && active !== courante) {
+    courante = active;
+    const el = lignes[active];
+    const y = el.offsetTop + el.offsetHeight / 2 - scene.clientHeight / 2;
+    L.style.transform = 'translateY(' + (-y) + 'px)';
+  }
+  if (au.duration) {
+    fait.style.width = (au.currentTime / au.duration * 100) + '%';
+    ta.textContent = mmss(au.currentTime);
+  }
+  requestAnimationFrame(rendu);
+}
+addEventListener('load', () => {
+  L.style.transform = 'translateY(' + (scene.clientHeight/2 - 60) + 'px)';
+  rendu();
+});
+
+function bascule(){ au.paused ? au.play() : au.pause(); }
+b.onclick = bascule;
+au.onplay  = () => { b.innerHTML = '&#10073;&#10073;'; b.classList.add('on'); };
+au.onpause = () => { b.innerHTML = '&#9654;'; b.classList.remove('on'); };
+bar.onclick = e => { const r = bar.getBoundingClientRect();
+                     au.currentTime = (e.clientX - r.left) / r.width * (au.duration || 0);
+                     courante = -1; };
+addEventListener('keydown', e => {
+  if (e.code === 'Space'){ e.preventDefault(); bascule(); }
+  if (e.code === 'ArrowLeft'){ au.currentTime = Math.max(0, au.currentTime - 5); courante = -1; }
+  if (e.code === 'ArrowRight'){ au.currentTime += 5; courante = -1; }
+});
+</script>

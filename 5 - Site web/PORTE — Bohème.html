@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Bohème Production</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   LA PORTE
+
+   1.  un écran noir, le logo, et « entrer »
+   2.  au clic : PLEIN ÉCRAN + LE SON (le clic autorise les deux)
+   3.  le film entier, avec sa voix — 60 secondes
+   4.  à la dernière image, une PHOTO prend le relais au pixel près
+   5.  le logo respire, la présence rôde
+   6.  au clic : la chute à travers les visages, puis le karaoké
+   ═══════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
+          font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+          -webkit-tap-highlight-color:transparent}
+
+/* la présence, tout au fond : elle traverse le film sans le cacher */
+#presence{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;
+          opacity:0;pointer-events:none;z-index:0;
+          transition:opacity 2.6s ease;mix-blend-mode:screen}
+
+#halo{position:fixed;left:50%;top:50%;width:min(64vmin,640px);height:min(64vmin,640px);
+      transform:translate(-50%,-50%);pointer-events:none;opacity:0;z-index:1;
+      transition:opacity 2s ease;
+      background:radial-gradient(circle,rgba(255,207,124,.15) 0%,
+        rgba(212,175,55,.06) 32%,rgba(168,130,38,.018) 54%,transparent 72%);
+      animation:respire 8s ease-in-out infinite}
+@keyframes respire{0%,100%{transform:translate(-50%,-50%) scale(1)}
+                   50%{transform:translate(-50%,-50%) scale(1.12)}}
+#halo.la{opacity:1}
+
+/* le film et la photo : même cadrage, donc même calage à l'écran */
+#film,#photo,#passage{position:fixed;inset:0;width:100%;height:100%;
+                      object-fit:contain;background:#000;z-index:2}
+#fondNoir{position:fixed;inset:-10vmax;background:#000;z-index:-1}
+#photo{opacity:0;transition:opacity .4s ease;z-index:3}
+#photo.la{opacity:1}
+#passage{opacity:0;transition:opacity .25s;z-index:5;object-fit:cover}
+#passage.la{opacity:1}
+
+#poussieres{position:fixed;inset:0;width:100%;height:100%;
+            mix-blend-mode:screen;pointer-events:none;opacity:0;
+            transition:opacity 2s ease;z-index:4}
+#poussieres.la{opacity:1}
+
+/* ─── L'ÉCRAN D'ENTRÉE ─────────────────────────────────────────── */
+#entree{position:fixed;inset:0;z-index:40;background:#000;
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        gap:clamp(28px,5vh,54px);cursor:pointer;transition:opacity 1s ease}
+#entree.parti{opacity:0;pointer-events:none}
+#entree img{width:min(30vmin,300px);height:auto;
+            filter:drop-shadow(0 0 40px rgba(212,175,55,.28));
+            animation:pulse 4.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.82;transform:scale(1)}
+                 50%{opacity:1;transform:scale(1.035)}}
+#entree .mot{font-size:clamp(11px,1.5vw,14px);letter-spacing:.55em;font-weight:300;
+             color:rgba(226,196,132,.72);text-transform:uppercase;
+             text-shadow:0 0 24px rgba(212,175,55,.35);padding-left:.55em}
+#entree .trait{width:clamp(44px,8vw,72px);height:1px;
+               background:linear-gradient(90deg,transparent,rgba(212,175,55,.6),transparent)}
+#entree .note{position:absolute;bottom:5vh;font-size:10px;letter-spacing:.24em;
+              color:rgba(226,196,132,.26);text-transform:uppercase;text-align:center;
+              padding:0 6vw;line-height:1.9}
+
+/* ─── L'INVITATION, après le film ──────────────────────────────── */
+#invite{position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);
+        font-size:clamp(10px,1.3vw,12px);letter-spacing:.42em;font-weight:300;
+        color:rgba(226,196,132,.32);text-transform:uppercase;padding-left:.42em;
+        opacity:0;transition:opacity 2.4s ease;pointer-events:none;z-index:10}
+#invite.la{opacity:1}
+
+/* ─── le curseur (ordinateur seulement) ────────────────────────── */
+#curseur{position:fixed;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;
+         border-radius:50%;pointer-events:none;z-index:30;opacity:0;
+         background:radial-gradient(circle,rgba(255,228,168,.6) 0%,
+           rgba(212,175,55,.15) 44%,transparent 72%);
+         transition:width .35s,height .35s,margin .35s,opacity .4s}
+#curseur.chaud{width:74px;height:74px;margin:-37px 0 0 -37px}
+@media (hover:hover) and (pointer:fine){
+  html,body,#entree{cursor:none}
+  #curseur.actif{opacity:1}
+}
+
+/* ─── les deux petits boutons ──────────────────────────────────── */
+.btn{position:fixed;top:max(16px,env(safe-area-inset-top));z-index:25;
+     width:36px;height:36px;display:none;align-items:center;justify-content:center;
+     border-radius:50%;border:1px solid rgba(212,175,55,.3);
+     opacity:.24;transition:opacity .4s;cursor:pointer}
+.btn.la{display:flex}
+.btn:hover{opacity:.85}
+.btn svg{width:15px;height:15px;fill:rgba(226,196,132,.9)}
+#bSon{right:max(16px,env(safe-area-inset-right))}
+#bPlein{right:calc(max(16px,env(safe-area-inset-right)) + 46px)}
+
+#voile{position:fixed;inset:0;background:#000;opacity:0;
+       pointer-events:none;z-index:35;transition:opacity .55s}
+</style>
+</head>
+<body>
+
+<div id="fondNoir"></div>
+<div id="halo"></div>
+
+<video id="film" playsinline preload="auto">
+  <source src="media/porte/intro.mp4" type="video/mp4">
+</video>
+<img id="photo" src="media/porte/logo-cale.png" alt="Bohème Production">
+<canvas id="poussieres"></canvas>
+<video id="passage" playsinline preload="none">
+  <source src="media/porte/passage.mp4" type="video/mp4">
+</video>
+
+<div id="invite">entrer</div>
+
+<div class="btn" id="bPlein" title="plein écran">
+  <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+</div>
+<div class="btn" id="bSon" title="son">
+  <svg id="icoSon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+</div>
+
+<div id="curseur"></div>
+<div id="voile"></div>
+
+<div id="entree">
+  <img src="media/porte/logo-plein.png" alt="Bohème Production">
+  <div class="trait"></div>
+  <div class="mot">entrer</div>
+  <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   RÉGLAGES
+   ═══════════════════════════════════════════════════════════════ */
+const R = {
+  destination     : 'KARAOKE — Medley complet.html',
+
+  presenceDebut   : 3.0,    // elle est là presque tout de suite
+  presencePendant : 0.30,   // pendant le film : on la voit vraiment
+  presenceApres   : 0.38,   // une fois le logo posé
+  presenceFranche : 0.78,   // quand elle ose : elle est LÀ
+  chanceFranche   : 0.40,   // deux fois sur cinq
+  presenceMin     : 3.5,    // elle revient très vite
+  presenceMax     : 8.0,
+  presenceReste   : 7.0,    // et elle reste plus longtemps
+
+  inviteApres     : 5.0,    // après que le logo se soit posé
+  volumeFilm      : 1.0,
+  poussieres      : 55
+};
+const FRAGMENTS = ['eveil','regard','cote','veille','fin','respire'];
+
+const $ = id => document.getElementById(id);
+const film=$('film'), photo=$('photo'), halo=$('halo'), invite=$('invite'),
+      passage=$('passage'), voile=$('voile'),
+      entree=$('entree'), curseur=$('curseur'), pouss=$('poussieres');
+
+let demarre=false, relais=false, parti=false, minuteur=null, dernier=-1;
+
+/* ─── LE PLEIN ÉCRAN ────────────────────────────────────────────
+   Les navigateurs ne l'accordent que sur un vrai geste. C'est
+   pour ça qu'il y a un écran d'entrée : ce clic nous donne le
+   plein écran ET le son d'un seul coup. */
+function pleinEcran(){
+  const e = document.documentElement;
+  const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
+  if (f) { try { f.call(e, {navigationUI:'hide'}); } catch(err){ try{ f.call(e); }catch(e2){} } }
+  if (screen.orientation && screen.orientation.lock)
+    screen.orientation.lock('landscape').catch(()=>{});
+}
+$('bPlein').addEventListener('click', e => {
+  e.stopPropagation();
+  if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  else pleinEcran();
+});
+
+/* ─── L'ENTRÉE ─────────────────────────────────────────────────── */
+function entrer(){
+  if (demarre) return;
+  demarre = true;
+  pleinEcran();
+  film.volume = R.volumeFilm;
+  film.muted = false;
+  film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
+  entree.classList.add('parti');
+  setTimeout(() => entree.style.display = 'none', 1100);
+  $('bSon').classList.add('la');
+  $('bPlein').classList.add('la');
+  curseur.classList.add('actif');
+}
+entree.addEventListener('click', entrer);
+addEventListener('keydown', e => {
+  if (!demarre && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); entrer(); }
+});
+
+/* ─── LA PHOTO PREND LE RELAIS ──────────────────────────────────
+   Un peu avant la dernière image. Les deux font exactement
+   862x865 px, centrées en (935,538) : l'œil ne voit rien. */
+film.addEventListener('timeupdate', () => {
+  if (relais || !film.duration) return;
+  if (film.currentTime >= film.duration - 0.45){ relais = true; poser(); }
+});
+film.addEventListener('ended', () => { if (!relais){ relais = true; poser(); } });
+
+function poser(){
+  photo.classList.add('la');
+  halo.classList.add('la');
+  pouss.classList.add('la');
+  setTimeout(() => { if (!parti) invite.classList.add('la'); }, R.inviteApres*1000);
+}
+
+/* ─── LES POUSSIÈRES ────────────────────────────────────────────
+   Jamais devant le logo : zone interdite au centre. */
+const cv=pouss, ct=cv.getContext('2d');
+let L=0,H=0,DPR=Math.min(devicePixelRatio||1,2);
+function taille(){ L=innerWidth; H=innerHeight;
+  cv.width=L*DPR; cv.height=H*DPR; ct.setTransform(DPR,0,0,DPR,0,0); }
+taille(); addEventListener('resize', taille);
+addEventListener('orientationchange', () => setTimeout(taille,300));
+
+const P=[];
+for(let i=0;i<R.poussieres;i++)
+  P.push({x:Math.random(),y:Math.random(),r:Math.random()*1.2+.3,
+          v:Math.random()*7+2,d:(Math.random()-.5)*4,
+          p:Math.random()*6.28,w:Math.random()*.8+.22});
+const t0=performance.now();
+function boucle(now){
+  const t=(now-t0)/1000;
+  ct.clearRect(0,0,L,H); ct.globalCompositeOperation='lighter';
+  const RC=Math.min(L,H)*0.26;
+  for(const p of P){
+    const y=((p.y*H-p.v*t)%(H+60)+(H+60))%(H+60)-30;
+    const x=((p.x*L+p.d*t)%(L+60)+(L+60))%(L+60)-30;
+    const dx=x-L/2, dy=y-H/2;
+    if(dx*dx+dy*dy<RC*RC) continue;
+    const e=.18+.82*(.5+.5*Math.sin(t*p.w+p.p));
+    const g=ct.createRadialGradient(x,y,0,x,y,p.r*5);
+    g.addColorStop(0,`rgba(255,232,180,${e*.58})`);
+    g.addColorStop(.35,`rgba(212,175,55,${e*.15})`);
+    g.addColorStop(1,'rgba(212,175,55,0)');
+    ct.fillStyle=g; ct.beginPath(); ct.arc(x,y,p.r*5,0,6.2832); ct.fill();
+  }
+  ct.globalCompositeOperation='source-over';
+  requestAnimationFrame(boucle);
+}
+requestAnimationFrame(boucle);
+
+/* ─── LE CURSEUR (ordinateur) ──────────────────────────────────── */
+addEventListener('mousemove', e => {
+  curseur.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;
+  const d=Math.hypot(e.clientX-L/2, e.clientY-H/2);
+  curseur.classList.toggle('chaud', relais && d < Math.min(L,H)*0.30);
+});
+
+function programmerPresence(){
+  if (parti) return;
+  clearTimeout(minuteur);
+  const d = R.presenceMin + Math.random()*(R.presenceMax-R.presenceMin);
+  minuteur = setTimeout(venir, d*1000);
+}
+function venir(){
+  if (parti) return;
+  const franche = relais && Math.random() < R.chanceFranche;
+  const force = franche ? R.presenceFranche : (relais ? R.presenceApres : R.presencePendant);
+  pres.src = 'media/presence/' + tirer() + '.mp4';
+  pres.currentTime = 0;
+  pres.play().then(() => {
+    pres.style.transitionDuration = franche ? '1.1s' : '2.6s';
+    pres.style.opacity = force;
+    const reste = franche ? R.presenceReste*0.55 : R.presenceReste;
+    setTimeout(() => {
+      pres.style.transitionDuration = franche ? '1.4s' : '2.6s';
+      pres.style.opacity = 0;
+      setTimeout(()=>{ try{pres.pause();}catch(e){} }, 1700);
+      programmerPresence();
+    }, reste*1000);
+  }).catch(programmerPresence);
+}
+
+/* ─── LE BOUTON DU SON ─────────────────────────────────────────── */
+$('bSon').addEventListener('click', e => {
+  e.stopPropagation();
+  film.muted = !film.muted;
+  passage.muted = film.muted;
+  $('icoSon').innerHTML = film.muted
+    ? '<path d="M16.5 12A4.5 4.5 0 0014 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zM3 9v6h4l5 5v-6.59l-7.41-7.4L3 9zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25L19 15.5 4.27 3z"/>'
+    : '<path d="M3 9v6h4l5 5V4L7 9H3z"/>';
+  $('bSon').style.opacity = film.muted ? .24 : .5;
+});
+
+/* ─── LE DÉPART : LA CHUTE ─────────────────────────────────────── */
+function partir(){
+  if (parti || !relais || !demarre) return;
+  parti = true;
+  if (window.presence) window.presence.arreter();
+  invite.classList.remove('la');
+  curseur.style.opacity = 0;
+
+  passage.muted = film.muted;
+  passage.volume = 1;
+  passage.play().then(() => {
+    passage.classList.add('la');
+    halo.classList.remove('la'); pouss.classList.remove('la');
+    passage.addEventListener('ended', () => allerAuKaraoke(), {once:true});
+    setTimeout(allerAuKaraoke, 16500);   /* filet */
+  }).catch(() => {
+    photo.animate([{transform:'scale(1)',opacity:1},{transform:'scale(1.18)',opacity:0}],
+                  {duration:1500,easing:'cubic-bezier(.6,0,.85,.3)',fill:'forwards'});
+    halo.classList.remove('la'); pouss.classList.remove('la');
+    voile.style.opacity=1;
+    setTimeout(allerAuKaraoke, 1600);
+  });
+}
+
+/* on emporte le plein écran avec soi : le karaoké le remettra
+   tout seul en lisant ce petit mot laissé dans la mémoire du
+   navigateur */
+function allerAuKaraoke(){
+  try { sessionStorage.setItem('boheme-plein-ecran', '1'); } catch(e){}
+  location.href = R.destination;
+}
+addEventListener('click', e => { if (demarre) partir(); });
+addEventListener('keydown', e => {
+  if (demarre && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); partir(); }
+});
+</script>
+
+<!-- ═══ LA PRÉSENCE — la même que sur le reste du site ═══
+     Sur la porte elle est un peu plus insistante : c'est elle qui
+     doit donner envie d'entrer. -->
+<script>
+window.PRESENCE = {
+  force    : 0.55,
+  franche  : 0.92,
+  chance   : 0.38,
+  delaiMin : 3.5,
+  delaiMax : 8.5,
+  resteMin : 5.0,
+  resteMax : 10.0,
+  premiere : 3.0,
+  zIndex   : 0
+};
+</script>
+<script src="presence.js"></script>
+</body>
+</html>

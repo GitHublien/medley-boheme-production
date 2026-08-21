@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Medley Starmania — Cannes, 4 octobre 2026</title>
+<style>
+:root{
+  --nuit:#0B0E14;
+  --nuit-2:#121724;
+  --nuit-3:#1A2133;
+  --ambre:#E8A33D;
+  --ambre-clair:#F3C77E;
+  --antenne:#4FD1D9;
+  --rouge:#C4433A;
+  --os:#EDE6D8;
+  --os-doux:#A8A395;
+  --trait:#252D40;
+
+  --display:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --texte:Georgia,"Times New Roman",serif;
+  --data:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+
+  --marge:clamp(16px,4vw,48px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--nuit);color:var(--os);
+  font-family:var(--texte);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--ambre);outline-offset:3px;border-radius:2px}
+
+/* ---------- EN-TÊTE ---------- */
+.entete{
+  padding:clamp(40px,9vw,88px) var(--marge) clamp(28px,5vw,44px);
+  border-bottom:1px solid var(--trait);
+  background:
+    radial-gradient(120% 90% at 12% 0%,rgba(232,163,61,.13),transparent 62%),
+    radial-gradient(90% 70% at 92% 8%,rgba(79,209,217,.09),transparent 60%);
+}
+.antenne{
+  font-family:var(--data);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--antenne);display:flex;align-items:center;gap:10px;margin-bottom:22px;
+}
+.point{width:6px;height:6px;border-radius:50%;background:var(--antenne);
+  box-shadow:0 0 0 0 rgba(79,209,217,.7);animation:onde 2.6s infinite}
+@keyframes onde{
+  0%{box-shadow:0 0 0 0 rgba(79,209,217,.55)}
+  70%{box-shadow:0 0 0 9px rgba(79,209,217,0)}
+  100%{box-shadow:0 0 0 0 rgba(79,209,217,0)}
+}
+h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(2.6rem,10.5vw,6.4rem);line-height:.88;letter-spacing:-.035em;
+  text-transform:uppercase;margin:0 0 6px;
+}
+h1 .fin{display:block;color:var(--ambre)}
+.lieu{
+  font-family:var(--data);font-size:12.5px;letter-spacing:.1em;color:var(--os-doux);
+  text-transform:uppercase;margin-top:20px;line-height:1.9;
+}
+.lieu b{color:var(--os);font-weight:600}
+
+/* ---------- JAUGE DE MINUTAGE ---------- */
+.jauge{margin-top:34px;max-width:660px}
+.jauge-titre{
+  font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--os-doux);display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;
+}
+.barre-zone{position:relative;padding-top:22px}
+.barre{height:26px;background:var(--nuit-3);border:1px solid var(--trait);
+  border-radius:2px;display:flex;overflow:hidden}
+.barre span{display:block;height:100%}
+.b-fait{background:linear-gradient(90deg,#C98A2E,var(--ambre))}
+.b-reste{background:repeating-linear-gradient(135deg,var(--nuit-3) 0 5px,#2C3550 5px 10px)}
+.b-trop{background:repeating-linear-gradient(135deg,rgba(196,67,58,.85) 0 5px,rgba(196,67,58,.5) 5px 10px)}
+.limite{position:absolute;top:17px;bottom:-5px;width:2px;background:var(--os)}
+.limite::after{
+  content:"23:00 — plafond";position:absolute;left:7px;top:-17px;white-space:nowrap;
+  font-family:var(--data);font-size:10px;letter-spacing:.1em;color:var(--os)
+}
+.legende{display:flex;flex-wrap:wrap;gap:16px;margin-top:26px;
+  font-family:var(--data);font-size:11px;letter-spacing:.06em;color:var(--os-doux)}
+.legende i{width:9px;height:9px;display:inline-block;margin-right:6px;font-style:normal}
+.l-fait i{background:var(--ambre)} .l-reste i{background:#2C3550} .l-trop i{background:var(--rouge)}
+
+.alerte{
+  margin-top:26px;max-width:660px;border-left:3px solid var(--rouge);
+  background:rgba(196,67,58,.08);padding:14px 18px;font-size:15.5px;
+}
+.alerte b{color:var(--ambre-clair)}
+
+/* ---------- FILTRE PAR VOIX ---------- */
+.filtre{
+  position:sticky;top:0;z-index:20;background:rgba(11,14,20,.93);
+  backdrop-filter:blur(9px);border-bottom:1px solid var(--trait);
+  padding:13px var(--marge);display:flex;gap:8px;align-items:center;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.filtre-label{
+  font-family:var(--data);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--os-doux);white-space:nowrap;margin-right:4px;
+}
+.puce{
+  font-family:var(--data);font-size:12px;letter-spacing:.06em;
+  background:transparent;color:var(--os-doux);border:1px solid var(--trait);
+  padding:7px 13px;border-radius:99px;cursor:pointer;white-space:nowrap;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.puce:hover{border-color:var(--ambre);color:var(--os)}
+.puce[aria-pressed="true"]{background:var(--ambre);border-color:var(--ambre);color:var(--nuit);font-weight:700}
+
+/* ---------- FRISE ---------- */
+.frise{padding:clamp(28px,6vw,56px) var(--marge) 0;max-width:920px}
+.bloc{
+  display:grid;grid-template-columns:78px 1fr;gap:0 30px;
+  position:relative;padding-bottom:14px;
+}
+.tc{
+  font-family:var(--data);font-size:13px;color:var(--ambre);
+  padding-top:16px;text-align:right;letter-spacing:.02em;
+}
+.tc .duree{display:block;color:var(--os-doux);font-size:11px;margin-top:3px}
+.rail{position:relative}
+.rail::before{
+  content:"";position:absolute;left:-15px;top:0;bottom:-14px;width:1px;background:var(--trait);
+}
+.rail::after{
+  content:"";position:absolute;left:-19px;top:20px;width:9px;height:9px;
+  background:var(--ambre);border-radius:50%;box-shadow:0 0 0 4px var(--nuit);
+}
+.bloc.radio .rail::after{background:var(--antenne);width:7px;height:7px;left:-18px}
+.bloc.avenir .rail::after{background:var(--nuit);border:1px dashed var(--os-doux)}
+.bloc.avenir .rail::before{background:repeating-linear-gradient(180deg,var(--trait) 0 4px,transparent 4px 9px)}
+
+.carte{
+  background:var(--nuit-2);border:1px solid var(--trait);border-left:3px solid var(--ambre);
+  border-radius:3px;padding:16px 18px;transition:opacity .2s,border-color .2s;
+}
+.bloc.radio .carte{border-left-color:var(--antenne);background:transparent;border-style:dashed}
+.bloc.avenir .carte{border-left-color:var(--os-doux);background:transparent;border-style:dashed}
+.bloc.estompe .carte{opacity:.26}
+.bloc.estompe .tc{opacity:.26}
+
+.titre{
+  font-family:var(--display);font-weight:800;text-transform:uppercase;
+  letter-spacing:-.02em;line-height:1.05;margin:0 0 8px;
+  font-size:clamp(1.18rem,3.6vw,1.7rem);
+}
+.bloc.radio .titre{
+  font-size:.95rem;letter-spacing:.13em;font-weight:700;color:var(--antenne);
+}
+.voix{
+  font-family:var(--data);font-size:12px;letter-spacing:.05em;color:var(--ambre-clair);
+  margin-bottom:10px;line-height:1.7;
+}
+.bloc.radio .voix{color:var(--antenne)}
+.tutti{color:var(--rouge);font-weight:700}
+.note{font-size:15.5px;color:var(--os);margin:0}
+.note em{color:var(--ambre-clair);font-style:italic}
+
+details{margin-top:12px;border-top:1px solid var(--trait);padding-top:10px}
+summary{
+  font-family:var(--data);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--os-doux);cursor:pointer;list-style:none;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";color:var(--ambre)}
+details[open] summary::before{content:"▾ "}
+summary:hover{color:var(--os)}
+.paroles{
+  font-family:var(--texte);font-size:16px;line-height:1.85;color:var(--os);
+  white-space:pre-line;margin:12px 0 0;padding-left:14px;border-left:1px solid var(--trait);
+}
+
+/* ---------- FIN ---------- */
+.plafond{
+  margin:8px 0 0;display:grid;grid-template-columns:78px 1fr;gap:0 30px;
+}
+.plafond .trait{
+  border-top:2px solid var(--rouge);padding-top:10px;
+  font-family:var(--data);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--rouge);
+}
+.pied{
+  padding:clamp(40px,7vw,72px) var(--marge);margin-top:40px;
+  border-top:1px solid var(--trait);color:var(--os-doux);font-size:14.5px;
+}
+.pied p{max-width:620px}
+.pied b{color:var(--os)}
+
+@media (max-width:640px){
+  .bloc,.plafond{grid-template-columns:52px 1fr;gap:0 24px}
+  .rail::before{left:-12px} .rail::after{left:-16px}
+  .bloc.radio .rail::after{left:-15px}
+  .tc{font-size:12px}
+  .limite::after{font-size:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="entete">
+  <div class="antenne"><span class="point"></span> Radio Monopolis · conduite des chanteurs</div>
+  <h1>Medley<span class="fin">Starmania</span></h1>
+  <p class="lieu">
+    <b>Théâtre Debussy · Palais des Festivals, Cannes</b><br>
+    Dimanche 4 octobre 2026, 19h00 — 1<sup>re</sup> partie de l'Hommage à Balavoine<br>
+    Direction artistique : Mickaël Guedj &amp; Richard Ritelman
+  </p>
+
+  <div class="jauge">
+    <div class="jauge-titre"><span>Où en est le montage</span><span id="chiffres"></span></div>
+    <div class="barre-zone"><div class="barre" id="barre"></div><span class="limite" id="limite"></span></div>
+    <div class="legende">
+      <span class="l-fait"><i></i>monté (21:03)</span>
+      <span class="l-reste"><i></i>reste à monter (≈ 6:45)</span>
+      <span class="l-trop"><i></i>au-delà du plafond</span>
+    </div>
+  </div>
+
+  <p class="alerte">
+    Onze blocs sont montés, jusqu'au <b>Dilemme</b>. Il reste <b>Mon Frère</b>, <b>Aimer</b> et
+    <b>Stone</b> — soit environ 6 min 45 de matière pour <b>1 min 57 disponibles</b>.
+    En l'état, le medley finirait autour de <b>27:48</b>, contre 23:00 accordées par le Palais.
+    Une coupe reste à décider.
+  </p>
+</header>
+
+<nav class="filtre" id="filtre" aria-label="Filtrer par voix">
+  <span class="filtre-label">Ma voix</span>
+</nav>
+
+<main class="frise" id="frise"></main>
+
+<footer class="pied">
+  <p>
+    Cette page est le résumé de travail du medley : l'ordre réel, les minutages réels tels
+    qu'ils sont dans le montage, et qui chante quoi. Les textes complets, les plans de lumière
+    et les entrées-sorties sont dans la <b>conduite de mise en scène</b>.
+  </p>
+  <p style="margin-top:18px">
+    Les minutages viennent directement du montage et bougeront à chaque nouvelle version.
+    <b>Dernière mise à jour : 14 août 2026.</b>
+  </p>
+</footer>
+
+<script>
+const CHANTEURS = ["Adrien","Stéphanie","Mickaël","Candice","Bry","Élie"];
+
+const BLOCS = [
+ {t:0,   d:22,  type:"radio", titre:"Narration d'ouverture — « Paris, 1978 »",
+  voix:"Le narrateur, sur nappe orchestrale — personne en scène", qui:[],
+  note:"Noir total. La bande entre dans l'obscurité et se place. La musique de « Quand on arrive en ville » démarre exactement sur le mot « ville » : aucun trou."},
+
+ {t:30,  d:90,  titre:"Quand on arrive en ville",
+  voix:"ADRIEN (lead) + la bande — Stéphanie n'est pas en scène", qui:["Adrien","Mickaël","Candice","Bry","Élie"],
+  note:"Adrien chante seul les deux couplets, sous une seule douche. La bande entre à couvert. Sur « comme un éclair dans le brouillard » : flash blanc, on découvre les cinq silhouettes. Élie tient la présence physique du groupe — la silhouette qui installe le danger.",
+  paroles:`Quand tout l'monde dort tranquille / Dans les banlieues-dortoir
+C'est l'heure où les zonards descendent sur la ville
+Qui est-ce qui viole les filles, le soir dans les parkings
+Qui met l'feu aux buildings, c'est toujours les zonards
+Alors c'est la panique sur les boulevards
+Quand on arrive en ville
+
+Quand on arrive en ville / Tout l'monde change de trottoir
+On n'a pas l'air virils, mais on fait peur à voir
+Des gars qui se maquillent, ça fait rire les passants
+Mais quand ils voient du sang sur nos lames de rasoir
+Ça fait comme un éclair dans le brouillard
+Quand on arrive en ville
+
+Nous, tout c'qu'on veut, c'est être heureux
+Être heureux avant d'être vieux
+On n'a pas l'temps d'attendre d'avoir trente ans
+Nous, tout c'qu'on veut, c'est être heureux
+Être heureux avant d'être vieux
+On prend tout c'qu'on veut prendre, mais en attendant`},
+
+ {t:112, d:24, type:"radio", titre:"↯ Explosion, coups de feu, flash radio",
+  voix:"La radio Monopolis — l'émeute", qui:[],
+  note:"La bande part d'un bloc, elle ne s'efface pas. Adrien sort avec elle et reviendra sans son blouson. Stéphanie apparaît dans le vide qu'ils laissent."},
+
+ {t:116, d:110, titre:"Ziggy",
+  voix:"STÉPHANIE — seule en scène", qui:["Stéphanie"],
+  note:"Elle arrive neuve, après la violence. Une douche, rien d'autre.",
+  paroles:`Ziggy, il s'appelle Ziggy / Je suis folle de lui
+C'est un garçon pas comme les autres / Mais moi, je l'aime, c'est pas d'ma faute
+Même si je sais / Qu'il ne m'aimera jamais
+
+Ziggy, il s'appelle Ziggy / C'est mon seul ami
+Dans sa tête y a que d'la musique / Il vend des disques dans une boutique
+On dirait qu'il vit dans une autre galaxie
+
+Tous les soirs, il m'emmène danser / Dans des endroits très, très gais
+Où il a des tas d'amis / Oui, je sais, il aime les garçons`},
+
+ {t:212, d:113, titre:"La Chanson de Ziggy",
+  voix:"ADRIEN (lead, sans le blouson) + STÉPHANIE en tierce — duo de malentendu", qui:["Adrien","Stéphanie"],
+  note:"Il enlève le cuir : on passe du masque à l'homme. Le zonard qui gueulait dans la rue, c'était ce petit garçon-là.",
+  paroles:`Moi, j'étais un fils à maman
+Tous les soirs en m'endormant
+Elle me disait « quand tu seras grand »
+« Tu danseras le Prince Charmant »
+« Dans La Belle au Bois Dormant »
+
+Et tous les samedis après-midi
+Pendant que les gars du quartier
+Jouaient au football ou au volley`},
+
+ {t:314, d:51, type:"radio", titre:"↯ Interférences · Stéphane au studio · Christine sur la tour",
+  voix:"La radio Monopolis — duplex", qui:[],
+  note:"Le studio passe l'antenne au reportage. Prépare l'entrée du Blues."},
+
+ {t:365, d:100, titre:"Le Blues du Businessman",
+  voix:"ADRIEN · MICKAËL · BRY se partagent les phrases — STÉPHANIE et CANDICE posent les questions", qui:["Adrien","Mickaël","Bry","Stéphanie","Candice"], tutti:"Final « J'aurais voulu être un artiste » par tous",
+  note:"Trois voix d'hommes qui se relaient ligne à ligne. Les questions viennent des femmes : « Au moins es-tu heureux ? », « Qu'est-ce que tu veux mon vieux… ». Le découpage ligne par ligne est dans le document dédié."},
+
+ {t:514, d:11, type:"radio", titre:"↯ Christine rend l'antenne · transition chantée",
+  voix:"La radio Monopolis, puis « Merci Christine » chanté", qui:[],
+  note:"Enchaîne sans respiration sur Les uns contre les autres."},
+
+ {t:525, d:96, titre:"Les uns contre les autres",
+  voix:"STÉPHANIE (lead) + MICKAËL, CANDICE, ADRIEN — quatre solitudes côte à côte", qui:["Stéphanie","Mickaël","Candice","Adrien"],
+  note:"Chacun dans sa lumière, personne ne se regarde. Fin du bloc Starmania."},
+
+ {t:620, d:7, type:"radio", titre:"↯ Cloches de Notre-Dame · le narrateur",
+  voix:"Le narrateur, parlé sur les cloches", qui:[],
+  note:"Bascule d'univers : on quitte Monopolis pour la cathédrale."},
+
+ {t:627, d:105, titre:"Le Temps des Cathédrales",
+  voix:"MICKAËL (lead) et LE NARRATEUR — puis les six sur le refrain final", qui:["Mickaël"], tutti:"Les six sur le refrain final",
+  note:"Huit réponses chantées viennent ponctuer le récit. Le refrain final rassemble tout le monde."},
+
+ {t:732, d:20, type:"radio", titre:"↯ Bataille médiévale · intro criée",
+  voix:"Effets et cri d'entrée", qui:[],
+  note:"Lance Les Sans-papiers dans l'urgence."},
+
+ {t:752, d:106, titre:"Les Sans-papiers",
+  voix:"BRY (lead) — les cinq autres au sol", qui:["Bry","Adrien","Stéphanie","Mickaël","Candice","Élie"],
+  note:"Un homme debout, cinq corps au sol. L'image porte le morceau."},
+
+ {t:838, d:124, titre:"Bohémienne",
+  voix:"CANDICE (lead) — un homme seul avec elle sur le plateau", qui:["Candice"],
+  note:"Le plateau se vide autour d'elle."},
+
+ {t:960, d:153, titre:"Belle",
+  voix:"ÉLIE · MICKAËL · ADRIEN — trois solos successifs autour d'elle", qui:["Élie","Mickaël","Adrien"],
+  note:"Trois hommes, trois regards, la même femme. Le final à trois est le sommet du bloc Notre-Dame."},
+
+ {t:1112, d:42, type:"radio", titre:"↯ Les Dix Commandements — narration",
+  voix:"Le narrateur", qui:[],
+  note:"Amène Le Dilemme."},
+
+ {t:1154, d:109, titre:"Le Dilemme",
+  voix:"CANDICE (lead)", qui:["Candice"],
+  note:"Dernier bloc monté à ce jour. Le montage s'arrête à 21:03."},
+
+ {t:1263, d:135, avenir:true, titre:"Mon Frère",
+  voix:"MICKAËL + BRY — duo", qui:["Mickaël","Bry"],
+  note:"À monter. Version raccourcie prévue (≈ 2:15), plus le duo intégral d'origine."},
+
+ {t:1398, d:150, avenir:true, titre:"Aimer",
+  voix:"CANDICE + MICKAËL, puis tous", qui:["Candice","Mickaël"], tutti:"Ouverture à tous sur la fin",
+  note:"À monter. Sommet du medley, le seul morceau long conservé (≈ 2:30)."},
+
+ {t:1548, d:120, avenir:true, titre:"Stone (Le monde est stone)",
+  voix:"STÉPHANIE au début, puis tous", qui:["Stéphanie"], tutti:"Tous sur la fin",
+  note:"À monter. Fin imposée du medley."}
+];
+
+const PLAFOND = 23*60, MONTE = 1263, RESTE = 405;
+
+/* --- jauge --- */
+(function(){
+  const total = MONTE + RESTE;
+  const ech = Math.max(total, PLAFOND);
+  const pc = n => (n/ech*100).toFixed(2)+"%";
+  const trop = Math.max(0, total - PLAFOND);
+  const resteDansCadre = RESTE - trop;
+  document.getElementById("barre").innerHTML =
+    `<span class="b-fait" style="width:${pc(MONTE)}"></span>`+
+    `<span class="b-reste" style="width:${pc(resteDansCadre)}"></span>`+
+    `<span class="b-trop" style="width:${pc(trop)}"></span>`;
+  document.getElementById("limite").style.left = pc(PLAFOND);
+  document.getElementById("chiffres").textContent =
+    `projection ${mmss(total)} · plafond ${mmss(PLAFOND)}`;
+})();
+
+function mmss(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.round(s%60)).padStart(2,"0")}
+
+/* --- frise --- */
+const frise = document.getElementById("frise");
+frise.innerHTML = BLOCS.map(b=>{
+  const cls = ["bloc", b.type==="radio"?"radio":"", b.avenir?"avenir":""].filter(Boolean).join(" ");
+  const tutti = b.tutti ? `<br><span class="tutti">■ ${b.tutti}</span>` : "";
+  const paroles = b.paroles
+    ? `<details><summary>Texte chanté</summary><p class="paroles">${b.paroles}</p></details>` : "";
+  return `<article class="${cls}" data-qui="${(b.qui||[]).join("|")}">
+    <div class="tc">${mmss(b.t)}<span class="duree">${mmss(b.d)}</span></div>
+    <div class="rail"><div class="carte">
+      <h2 class="titre">${b.titre}</h2>
+      <p class="voix">${b.voix}${tutti}</p>
+      <p class="note">${b.note}</p>
+      ${paroles}
+    </div></div>
+  </article>`;
+}).join("") + `<div class="plafond"><div></div><div class="trait">23:00 — plafond accordé par le Palais</div></div>`;
+
+/* --- filtre par voix --- */
+const filtre = document.getElementById("filtre");
+let actif = null;
+CHANTEURS.forEach(nom=>{
+  const b = document.createElement("button");
+  b.className = "puce"; b.textContent = nom;
+  b.setAttribute("aria-pressed","false");
+  b.onclick = ()=>{
+    actif = (actif===nom) ? null : nom;
+    filtre.querySelectorAll(".puce").forEach(p=>
+      p.setAttribute("aria-pressed", String(p.textContent===actif)));
+    document.querySelectorAll(".bloc").forEach(el=>{
+      const qui = (el.dataset.qui||"").split("|").filter(Boolean);
+      el.classList.toggle("estompe", !!actif && !qui.includes(actif));
+    });
+  };
+  filtre.appendChild(b);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Karaoké 01 — Narration d'ouverture · Voix off</title>
+<style>
+  :root{ --or:#d4af37; --blanc:#f2ede1; --noir:#0a0908; --eteint:#4a4640; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{ background:var(--noir); color:#fff;
+        font-family:"Jost","Segoe UI",system-ui,sans-serif;
+        display:flex; flex-direction:column; overflow:hidden; }
+
+  .barre{ position:fixed; top:0; left:0; right:0; padding:16px 26px; z-index:10;
+          display:flex; align-items:center; gap:18px;
+          background:linear-gradient(#0a0908 60%, transparent); }
+  .titre{ font-size:11.5px; letter-spacing:3px; text-transform:uppercase; color:var(--or);
+          opacity:.8; white-space:nowrap; }
+  .tc{ font-size:11.5px; letter-spacing:2px; color:#5d584e; white-space:nowrap; }
+  .pl{ display:flex; align-items:center; gap:14px; flex:1; min-width:220px; }
+  .pl button{ flex:none; width:42px; height:42px; border-radius:50%; cursor:pointer;
+              background:transparent; border:1px solid var(--or); color:var(--or);
+              font-size:12px; display:grid; place-items:center; transition:.25s;
+              padding-left:3px; }
+  .pl button:hover{ background:var(--or); color:var(--noir); }
+  .pl button.on{ padding-left:0; }
+  .barre-tps{ flex:1; height:2px; background:rgba(212,175,55,.22); cursor:pointer; }
+  .fait{ height:100%; width:0; background:var(--or); }
+  .tps{ font-size:12px; color:#8a8478; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  .scene{ flex:1; overflow:hidden; position:relative; }
+  .lignes{ position:absolute; left:0; right:0; padding:0 6vw;
+           transition:transform .5s cubic-bezier(.22,.61,.36,1); }
+
+  .ligne{ font-weight:600; line-height:1.16; letter-spacing:-.5px;
+          font-size:clamp(26px, 4.6vw, 62px);
+          margin:0 0 .3em; color:var(--eteint);
+          transition:opacity .4s, transform .4s;
+          opacity:.22; transform:scale(.985); transform-origin:left center; }
+  .ligne.active{ opacity:1; transform:scale(1); }
+  .ligne.passee{ opacity:.2; }
+
+  .mot{ position:relative; display:inline-block; white-space:pre; color:var(--eteint); }
+  .mot .plein{ position:absolute; inset:0; width:0; overflow:hidden; white-space:pre;
+               color:var(--or); }
+  .ligne.c .mot .plein{ color:var(--blanc); }
+  .ligne.p .mot .plein{ color:#8fb0d8; }
+  .ligne.passee .mot .plein{ width:100%; opacity:.45; }
+
+  .aide{ position:fixed; bottom:16px; left:0; right:0; text-align:center;
+         font-size:11px; letter-spacing:2px; color:#3d3934; text-transform:uppercase; }
+  @media (max-width:680px){ .barre{ flex-wrap:wrap; gap:10px; } .titre,.tc{ width:100%; } }
+</style>
+
+<div class="barre">
+  <div class="titre">Narration d'ouverture · Voix off</div>
+  <div class="pl">
+    <button id="b" aria-label="Lecture">&#9654;</button>
+    <div class="barre-tps" id="bar"><div class="fait" id="fait"></div></div>
+    <div class="tps"><span id="a">0:00</span></div>
+  </div>
+  <div class="tc">0:00 → 0:30</div>
+</div>
+
+<div class="scene"><div class="lignes" id="L"></div></div>
+<div class="aide">Espace : lecture et pause &nbsp;·&nbsp; flèches : reculer, avancer</div>
+
+<audio id="au" src="media/karaoke-01.mp3" preload="auto"></audio>
+
+<script>
+const D = [{"type": "p", "texte": "Paris 1978", "debut": 4.463, "fin": 5.263, "mots": [{"m": "Paris", "t": 4.463, "f": 4.763}, {"m": "1978", "t": 4.763, "f": 5.263}]}, {"type": "p", "texte": "Un opéra rock va tout changer : Starmania.", "debut": 9.025, "fin": 12.067, "mots": [{"m": "Un", "t": 9.025, "f": 9.125}, {"m": "opéra", "t": 9.185, "f": 9.526}, {"m": "rock", "t": 9.626, "f": 9.906}, {"m": "va", "t": 10.046, "f": 10.126}, {"m": "tout", "t": 10.306, "f": 10.466}, {"m": "changer", "t": 10.526, "f": 10.986}, {"m": "Starmania.", "t": 11.347, "f": 12.067}]}, {"type": "p", "texte": "Dans le rôle de Johnny Rockfort : Daniel Balavoine.", "debut": 14.168, "fin": 18.271, "mots": [{"m": "Dans", "t": 14.168, "f": 14.288}, {"m": "le", "t": 14.308, "f": 14.368}, {"m": "rôle", "t": 14.448, "f": 14.689}, {"m": "de", "t": 14.729, "f": 14.789}, {"m": "Johnny", "t": 14.869, "f": 15.129}, {"m": "Rockfort", "t": 15.189, "f": 15.869}, {"m": "Daniel", "t": 16.95, "f": 17.35}, {"m": "Balavoine.", "t": 17.55, "f": 18.271}]}, {"type": "p", "texte": "Ce soir.", "debut": 19.672, "fin": 20.172, "mots": [{"m": "Ce", "t": 19.672, "f": 19.752}, {"m": "soir.", "t": 19.832, "f": 20.172}]}, {"type": "p", "texte": "Retour là où tout a commencé.", "debut": 21.613, "fin": 23.094, "mots": [{"m": "Retour", "t": 21.613, "f": 21.913}, {"m": "là", "t": 21.953, "f": 22.013}, {"m": "où", "t": 22.093, "f": 22.153}, {"m": "tout", "t": 22.233, "f": 22.413}, {"m": "a", "t": 22.473, "f": 22.493}, {"m": "commencé.", "t": 22.593, "f": 23.094}]}, {"type": "p", "texte": "Il est minuit. Les zonards descendent sur la ville.", "debut": 24.534, "fin": 28.537, "mots": [{"m": "Il", "t": 24.534, "f": 24.614}, {"m": "est", "t": 24.655, "f": 24.755}, {"m": "minuit.", "t": 24.755, "f": 25.155}, {"m": "Les", "t": 26.155, "f": 26.315}, {"m": "zonards", "t": 26.376, "f": 26.996}, {"m": "descendent", "t": 27.056, "f": 27.736}, {"m": "sur", "t": 27.776, "f": 27.916}, {"m": "la", "t": 27.956, "f": 28.036}, {"m": "ville.", "t": 28.097, "f": 28.537}]}];
+const L = document.getElementById('L'), au = document.getElementById('au');
+const b = document.getElementById('b'), fait = document.getElementById('fait');
+const bar = document.getElementById('bar'), ta = document.getElementById('a');
+const scene = document.querySelector('.scene');
+
+const lignes = D.map(l => {
+  const p = document.createElement('div');
+  p.className = 'ligne ' + l.type;
+  l.mots.forEach((m, i) => {
+    const s = document.createElement('span'); s.className = 'mot';
+    s.textContent = m.m + (i < l.mots.length - 1 ? ' ' : '');
+    const f = document.createElement('span'); f.className = 'plein';
+    f.textContent = s.textContent; s.appendChild(f);
+    p.appendChild(s);
+  });
+  L.appendChild(p);
+  return p;
+});
+
+const mmss = s => Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+let courante = -1;
+
+function rendu(){
+  const t = au.currentTime;
+  let active = -1;
+  D.forEach((l, i) => {
+    const el = lignes[i];
+    const est = t >= l.debut - 0.3 && t < l.fin + 0.6;
+    if (est) active = i;
+    el.classList.toggle('active', est);
+    el.classList.toggle('passee', t >= l.fin + 0.6);
+    const mots = el.querySelectorAll('.mot');
+    if (est) {
+      l.mots.forEach((m, k) => {
+        const d = Math.max(m.f - m.t, .08);
+        const r = Math.min(Math.max((t - m.t) / d, 0), 1);
+        mots[k].querySelector('.plein').style.width = (r * 100) + '%';
+      });
+    } else if (t < l.debut) {
+      mots.forEach(w => w.querySelector('.plein').style.width = '0%');
+    }
+  });
+  if (active >= 0 && active !== courante) {
+    courante = active;
+    const el = lignes[active];
+    const y = el.offsetTop + el.offsetHeight / 2 - scene.clientHeight / 2;
+    L.style.transform = 'translateY(' + (-y) + 'px)';
+  }
+  if (au.duration) {
+    fait.style.width = (au.currentTime / au.duration * 100) + '%';
+    ta.textContent = mmss(au.currentTime);
+  }
+  requestAnimationFrame(rendu);
+}
+addEventListener('load', () => {
+  L.style.transform = 'translateY(' + (scene.clientHeight/2 - 60) + 'px)';
+  rendu();
+});
+
+function bascule(){ au.paused ? au.play() : au.pause(); }
+b.onclick = bascule;
+au.onplay  = () => { b.innerHTML = '&#10073;&#10073;'; b.classList.add('on'); };
+au.onpause = () => { b.innerHTML = '&#9654;'; b.classList.remove('on'); };
+bar.onclick = e => { const r = bar.getBoundingClientRect();
+                     au.currentTime = (e.clientX - r.left) / r.width * (au.duration || 0);
+                     courante = -1; };
+addEventListener('keydown', e => {
+  if (e.code === 'Space'){ e.preventDefault(); bascule(); }
+  if (e.code === 'ArrowLeft'){ au.currentTime = Math.max(0, au.currentTime - 5); courante = -1; }
+  if (e.code === 'ArrowRight'){ au.currentTime += 5; courante = -1; }
+});
+</script>
