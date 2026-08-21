@@ -2594,12 +2594,12 @@ window.PRESENCE = Object.assign({}, AVEC);
   if (barre){
     const style = document.createElement('style');
     style.textContent = `
-      #btnPresence, #btnPlein, #btnIntro{
+      #btnPresence, #btnPlein, #btnIntro, #btnBlocs{
         border:1px solid rgba(212,175,55,.55) !important;
         background:rgba(212,175,55,.10) !important;
         font-weight:600; white-space:nowrap;
       }
-      #btnPresence:hover, #btnPlein:hover, #btnIntro:hover{
+      #btnPresence:hover, #btnPlein:hover, #btnIntro:hover, #btnBlocs:hover{
         background:rgba(212,175,55,.24) !important;
       }`;
     document.head.appendChild(style);
@@ -2645,6 +2645,11 @@ window.PRESENCE = Object.assign({}, AVEC);
       location.href = 'PORTE — Bohème.html';
     });
     barre.insertBefore(i, f.nextSibling);
+
+    /* et les Blocs viennent se ranger juste à côté : c'est de la
+       navigation, sa place est avec les autres commandes */
+    const bl = document.getElementById('btnBlocs');
+    if (bl) barre.insertBefore(bl, i.nextSibling);
   }
   addEventListener('keydown', e => {
     if (e.key === 'p' || e.key === 'P'){
@@ -2768,8 +2773,11 @@ if (/github\.io$/i.test(location.hostname)){
       if (estPersonne(tous[i])){ tous[i].classList.add('bientot'); break; }
     }
   }
-  new MutationObserver(ajuster).observe(document.body,
-    { subtree:true, attributes:true, attributeFilter:['class'] });
+  /* ⚠️ SURTOUT PAS un MutationObserver ici : ajuster() modifie des
+     classes, l'observateur se redéclencherait lui-même à l'infini et
+     gèlerait toute la page (c'est arrivé le 21/08 au soir : musique
+     qui joue, écran mort). Un minuteur ne peut pas boucler. */
+  setInterval(ajuster, 700);
 })();
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2813,13 +2821,14 @@ if (/github\.io$/i.test(location.hostname)){
   document.head.appendChild(css);
 
   /* le « prépare-toi » vise aussi uniquement cette personne */
-  const PERSONNES = ['q-'+cible];
-  new MutationObserver(() => {
+  /* même règle : un minuteur, jamais un observateur qui modifie ce
+     qu'il observe */
+  setInterval(() => {
     document.querySelectorAll('.qui.bientot').forEach(q => {
       if (!q.classList.contains('q-'+cible) && !q.classList.contains('q-tous'))
         q.classList.remove('bientot');
     });
-  }).observe(document.body, { subtree:true, attributes:true, attributeFilter:['class'] });
+  }, 700);
 })();
 </script>
 </body>
