@@ -3253,6 +3253,25 @@ if (SUR_MOBILE){
 
   let etape = -1, demoMinuteur = null, demoAvant = null;
 
+  /* ─── LA MUSIQUE DE LA VISITE ─────────────────────────────────
+     Une bossa douce, pas trop fort : elle habille, elle ne couvre
+     pas. Elle ne démarre qu'au clic (règle des navigateurs). */
+  const musique = new Audio('media/porte/tuto-bossa.mp3');
+  musique.loop = true; musique.preload = 'none';
+  let fonduMusique = null;
+  function musiqueDouce(cible_v, arreter){
+    clearInterval(fonduMusique);
+    fonduMusique = setInterval(() => {
+      const v = musique.volume;
+      const pas = 0.02;
+      if (Math.abs(v - cible_v) <= pas){
+        musique.volume = cible_v;
+        clearInterval(fonduMusique);
+        if (arreter) musique.pause();
+      } else musique.volume = v + (cible_v > v ? pas : -pas);
+    }, 60);
+  }
+
   function pos(el){
     const r = el.getBoundingClientRect();
     anneau.style.left = (r.left - 8) + 'px';
@@ -3312,6 +3331,7 @@ if (SUR_MOBILE){
 
   function finir(){
     stopDemo();
+    musiqueDouce(0, true);             /* la bossa s'éteint en fondu */
     fond.classList.remove('la','plein');
     anneau.classList.remove('la');
     boite.classList.remove('la');
@@ -3322,6 +3342,8 @@ if (SUR_MOBILE){
     fond.classList.add('la');
     fond.classList.remove('plein');    /* le projecteur remplace le voile */
     boite.classList.add('la');
+    musique.volume = 0;
+    musique.play().then(() => musiqueDouce(0.20, false)).catch(()=>{});
     montrer(0);
   }
 
