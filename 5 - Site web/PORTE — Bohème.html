@@ -42,14 +42,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
                       object-fit:contain;background:#000;z-index:2}
 #fondNoir{position:fixed;inset:-10vmax;background:#000;z-index:-1}
 #photo{opacity:0;transition:opacity .4s ease;z-index:3}
-#photo.la{opacity:1;animation:vitLogo 7.5s ease-in-out 1.4s infinite}
-/* le logo n'est pas une image posée : il flotte, comme au bout du
-   film. L'animation ne démarre qu'après 1,4 s, pour que le passage
-   vidéo → photo reste invisible. */
-@keyframes vitLogo{
-  0%,100%{ transform:scale(1) translateY(0); }
-  50%    { transform:scale(1.028) translateY(-0.7vh); }
-}
+#photo.la{opacity:1}
 #passage{opacity:0;transition:opacity .25s;z-index:5;object-fit:cover}
 #passage.la{opacity:1}
 
@@ -128,7 +121,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <source src="media/porte/attente.mp3" type="audio/mpeg">
 </audio>
 
-<div id="invite">entrer</div>
+<div id="invite">cliquez pour continuer</div>
 
 <div class="btn" id="bPlein" title="plein écran">
   <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
@@ -143,7 +136,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 <div id="entree">
   <img src="media/porte/logo-plein.png" alt="Bohème Production">
   <div class="trait"></div>
-  <div class="mot">entrer</div>
+  <div class="mot">cliquez pour entrer</div>
   <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
 </div>
 
@@ -163,7 +156,7 @@ const R = {
   presenceMax     : 8.0,
   presenceReste   : 7.0,    // et elle reste plus longtemps
 
-  inviteApres     : 5.0,    // après que le logo se soit posé
+  inviteApres     : 2.5,    // après que le logo se soit posé
   volumeFilm      : 1.0,
   poussieres      : 55
 };
@@ -357,8 +350,12 @@ function partir(){
    tout seul en lisant ce petit mot laissé dans la mémoire du
    navigateur */
 function allerAuKaraoke(){
-  try { sessionStorage.setItem('boheme-plein-ecran', '1'); } catch(e){}
-  location.href = R.destination;
+  try {
+    sessionStorage.setItem('boheme-plein-ecran', '1');
+    localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
+  } catch(e){}
+  /* le ?pour=elie du lien personnel suit jusqu'au karaoké */
+  location.href = R.destination + location.search;
 }
 addEventListener('click', e => { if (demarre) partir(); });
 addEventListener('keydown', e => {

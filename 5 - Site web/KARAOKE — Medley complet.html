@@ -2680,6 +2680,13 @@ window.PRESENCE = Object.assign({}, AVEC);
 .q-bry.qui.proche::before,      .q-elie.qui.proche::before{
   content:"⟶ À toi · "; font-weight:800;
 }
+/* les chœurs : tout le monde chante, tout le monde est prévenu */
+.q-tous.qui.proche{
+  font-size:clamp(25px, 3.2vw, 42px) !important;
+  filter:drop-shadow(0 0 .35em currentColor);
+  animation:appelle 1.1s ease-in-out infinite;
+}
+.q-tous.qui.proche::before{ content:"⟶ Tous en chœur · "; font-weight:800; }
 /* et quand la voix off ou l'intro approche, c'est le PROCHAIN
    chanteur qu'on prévient (la classe .bientot est posée par le
    script juste en dessous) */
@@ -2775,6 +2782,15 @@ if (/github\.io$/i.test(location.hostname)){
     }
     body[data-pour] .q-${cible}.qui.proche::before{ content:"⟶ À TOI · " !important; }
     body[data-pour] .q-${cible}.qui.bientot::before{ content:"⟶ Prépare-toi · " !important; }
+    /* les chœurs : il y chante aussi, donc on le lui dit */
+    body[data-pour] .q-tous.qui.proche{
+      animation:appelle 1.1s ease-in-out infinite !important;
+      filter:drop-shadow(0 0 .3em currentColor) !important;
+      font-size:clamp(24px, 3vw, 40px) !important;
+    }
+    body[data-pour] .q-tous.qui.proche::before{
+      content:"⟶ À toi aussi — chœurs · " !important; font-weight:800;
+    }
     body[data-pour] .q-${cible}.qui{
       text-shadow:0 0 .5em currentColor;
     }`;
@@ -2784,7 +2800,8 @@ if (/github\.io$/i.test(location.hostname)){
   const PERSONNES = ['q-'+cible];
   new MutationObserver(() => {
     document.querySelectorAll('.qui.bientot').forEach(q => {
-      if (!q.classList.contains('q-'+cible)) q.classList.remove('bientot');
+      if (!q.classList.contains('q-'+cible) && !q.classList.contains('q-tous'))
+        q.classList.remove('bientot');
     });
   }).observe(document.body, { subtree:true, attributes:true, attributeFilter:['class'] });
 })();
