@@ -2931,32 +2931,63 @@ if (SUR_MOBILE){
     return null;
   }
 
-  /* ─── LA RAMPE : trois états, pilotés par un minuteur ────────── */
-  let flashMinuteur = 0, dernierEtat = '';
-  function majRampe(){
-    /* la rampe ne parle QUE sur un lien personnel : sur le lien
-       commun, tout le monde regarde le même écran, et une rampe qui
-       parle à tous parle tout le temps — plus personne ne l'écoute. */
-    if (!cible){ return; }
-    const proche = document.querySelector('.qui.proche');
-    const bientot = document.querySelector('.qui.bientot');
-    let etat = '', texte = '', couleur = '', flash = false;
+  /* ─── LA RAMPE, PILOTÉE PAR LE TEMPS ──────────────────────────
+     Avant, la rampe réagissait aux classes du texte : elle parlait
+     trop tard. Maintenant elle lit directement les données du
+     medley et l'horloge de la musique : elle sait qu'Élie a des
+     chœurs dans douze secondes, et le prévient pendant que les
+     autres chantent encore. */
+  const PREAVIS = 12;          /* secondes d'avance pour « prépare-toi » */
 
-    if (proche){
-      const p = nomDe(proche.classList);
-      const choeur = proche.classList.contains('q-tous');
-      if (p && (!cible || p === cible)){
-        texte = 'À TOI, ' + NOMS[p].toUpperCase() + ' !';
-        couleur = COULEURS[p]; flash = true; etat = 'toi-' + p;
-      } else if (choeur){
-        texte = cible ? 'À toi aussi — chœurs !' : 'Tous en chœur !';
-        couleur = '#ffffff'; flash = true; etat = 'choeur';
-      } else if (bientot){
-        const b = nomDe(bientot.classList);
-        if (b && (!cible || b === cible)){
-          texte = '⟶ Prépare-toi ' + NOMS[b] + ' — juste après la voix off';
-          couleur = COULEURS[b]; etat = 'prep-' + b;
+  let LIGNES = null;
+  function toutesLesLignes(){
+    if (LIGNES) return LIGNES;
+    try {
+      LIGNES = [];
+      for (const b of BLOCS) for (const l of (b.lignes || []))
+        if (l.debut != null) LIGNES.push(l);
+      LIGNES.sort((x, y) => x.debut - y.debut);
+    } catch(e){ LIGNES = []; }
+    return LIGNES;
+  }
+
+  function concerne(q){
+    q = (q || '').toLowerCase();
+    const ch  = q.includes('chœur') || q.includes('choeur') || q.includes('tous');
+    const moi = q.includes(NOMS[cible].toLowerCase());
+    return { ch, moi, actif: moi || ch };
+  }
+
+  let dernierEtat = '';
+  function majRampe(){
+    if (!cible) return;
+    let t;
+    try { t = au.currentTime; } catch(e){ return; }
+    const lignes = toutesLesLignes();
+
+    let etat = '', texte = '', flash = false;
+    const nom = NOMS[cible], coul = COULEURS[cible];
+
+    for (const l of lignes){
+      const c = concerne(l.qui);
+      if (!c.actif) continue;
+      if (t >= l.debut - 0.3 && t <= l.fin + 1.2){
+        /* C'EST MAINTENANT */
+        texte = c.ch ? 'CHŒURS — AVEC TOUT LE MONDE !' : 'À TOI, ' + nom.toUpperCase() + ' !';
+        flash = true;
+        etat = 'go-' + Math.round(l.debut);
+        break;
+      }
+      if (l.debut > t){
+        /* LA PROCHAINE FOIS QU'ON A BESOIN DE LUI */
+        const dans = l.debut - t;
+        if (dans <= PREAVIS){
+          texte = c.ch
+            ? '⟶ Prépare-toi ' + nom + ' — les chœurs arrivent, avec tout le monde'
+            : '⟶ Prépare-toi ' + nom + ' — c\'est à toi dans quelques secondes';
+          etat = 'prep-' + Math.round(l.debut);
         }
+        break;      /* la première ligne à venir suffit */
       }
     }
 
@@ -2964,19 +2995,12 @@ if (SUR_MOBILE){
       dernierEtat = etat;
       if (!texte){ rampe.classList.remove('la','flash'); return; }
       rampe.textContent = texte;
-      rampe.style.color = couleur;
+      rampe.style.color = flash && texte.startsWith('CHŒURS') ? '#ffffff' : coul;
       rampe.classList.toggle('flash', flash);
       rampe.classList.add('la');
-      if (flash){          /* le « À toi ! » reste 5 s puis s'efface */
-        clearTimeout(flashMinuteur);
-        const memo = etat;
-        flashMinuteur = setTimeout(() => {
-          if (dernierEtat === memo){ rampe.classList.remove('la','flash'); dernierEtat = ''; }
-        }, 5000);
-      }
     }
   }
-  setInterval(majRampe, 500);
+  setInterval(majRampe, 400);
 
   /* ─── LES EXPLICATIONS AUTOMATIQUES ────────────────────────────
      La page sait qui chante chaque ligne : on en tire une phrase. */
