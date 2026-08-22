@@ -3044,7 +3044,7 @@ if (SUR_MOBILE){
     return { ch, moi, actif: moi || ch };
   }
 
-  let dernierEtat = '';
+  let dernierEtat = '', flashMinuteur = 0;
   function majRampe(){
     if (!cible || !aideActive()){
       if (dernierEtat){ rampe.classList.remove('la','flash'); dernierEtat = ''; }
