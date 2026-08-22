@@ -216,6 +216,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
      ?premiere=1 : le passage de test, qui efface tout */
 (function(){
   const q = new URLSearchParams(location.search);
+  /* le ?pour=elie du lien personnel est GRAVÉ dans le téléphone :
+     l'application installée s'ouvre sans paramètre, mais elle
+     saura toujours à qui elle appartient */
+  const VALIDES = ['adrien','stephanie','candice','mickael','bry','elie'];
+  const p = (q.get('pour') || '').toLowerCase();
+  if (VALIDES.includes(p)){
+    try { localStorage.setItem('boheme-pour', p); } catch(e){}
+  }
   if (q.get('premiere') === '1'){
     try {
       localStorage.removeItem('boheme-intro-vue');

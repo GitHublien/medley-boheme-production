@@ -2826,10 +2826,18 @@ if (SUR_MOBILE){
    personne d'autre n'est appelé. Chacun des six reçoit SON lien.
    ═══════════════════════════════════════════════════════════════ */
 (function(){
-  const qui = new URLSearchParams(location.search).get('pour');
   const VALIDES = ['adrien','stephanie','candice','mickael','bry','elie'];
-  if (!qui || !VALIDES.includes(qui.toLowerCase())) return;
-  const cible = qui.toLowerCase();
+  let qui = (new URLSearchParams(location.search).get('pour') || '').toLowerCase();
+  if (VALIDES.includes(qui)){
+    /* un lien personnel : on grave le prénom dans le téléphone */
+    try { localStorage.setItem('boheme-pour', qui); } catch(e){}
+  } else {
+    /* pas de paramètre (l'application s'ouvre sur son adresse fixe) :
+       on relit le prénom gravé */
+    try { qui = (localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
+  }
+  if (!VALIDES.includes(qui)) return;
+  const cible = qui;
   window.CIBLE_PERSO = cible;      /* le nom voyage jusqu'à la rampe */
 
   /* l'aide est un CHOIX : elle ne s'active que si on l'a demandée,
