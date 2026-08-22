@@ -384,5 +384,10 @@ window.PRESENCE = {
 };
 </script>
 <script src="presence.js"></script>
+<script>
+if ('serviceWorker' in navigator){
+  try { navigator.serviceWorker.register('sw.js'); } catch(e){}
+}
+</script>
 </body>
 </html>

@@ -3680,4 +3680,40 @@ if (SUR_MOBILE){
   document.addEventListener('pointerdown', montrer);
 })();
 </script>
+<script>
+/* ═══ L'INSTALLATION EN UN BOUTON ═══
+   Chrome cache l'installation dans son menu : personne ne l'y
+   trouve. Alors quand le téléphone est prêt à installer, un bouton
+   « Installer l'appli » apparaît dans la barre. Un appui, une
+   confirmation, et l'icône Bohème est sur l'écran d'accueil. */
+(function(){
+  if ('serviceWorker' in navigator){
+    try { navigator.serviceWorker.register('sw.js'); } catch(e){}
+  }
+  let promesse = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    promesse = e;
+    const barre = document.querySelector('.barre');
+    if (!barre || document.getElementById('btnInstall')) return;
+    const b = document.createElement('button');
+    b.className = 'btn-reg'; b.id = 'btnInstall';
+    b.textContent = '📲 Installer l\'appli';
+    b.style.cssText = 'border:1px solid rgba(157,255,53,.6);background:rgba(157,255,53,.12);color:#9dff35;font-weight:700;';
+    b.addEventListener('click', async () => {
+      if (!promesse) return;
+      promesse.prompt();
+      const choix = await promesse.userChoice;
+      if (choix && choix.outcome === 'accepted') b.remove();
+      promesse = null;
+    });
+    barre.insertBefore(b, barre.firstChild);
+  });
+  /* déjà installée ? le bouton ne sert plus */
+  window.addEventListener('appinstalled', () => {
+    const b = document.getElementById('btnInstall');
+    if (b) b.remove();
+  });
+})();
+</script>
 </body>
