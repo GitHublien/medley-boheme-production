@@ -3028,18 +3028,20 @@ if (SUR_MOBILE){
       if (!c.actif) continue;
       if (t >= l.debut - 0.3 && t <= l.fin + 1.2){
         /* C'EST MAINTENANT */
-        texte = c.ch ? 'CHŒURS — AVEC TOUT LE MONDE !' : 'À TOI, ' + nom.toUpperCase() + ' !';
+        texte = c.ch ? 'À toi — avec les chœurs !' : 'À TOI, ' + nom.toUpperCase() + ' !';
         flash = true;
         etat = 'go-' + Math.round(l.debut);
         break;
       }
       if (l.debut > t){
-        /* LA PROCHAINE FOIS QU'ON A BESOIN DE LUI */
+        /* en trois temps : prévenir (12 s), alerter (4,5 s), lancer */
         const dans = l.debut - t;
-        if (dans <= PREAVIS){
-          texte = c.ch
-            ? '⟶ Prépare-toi ' + nom + ' — les chœurs arrivent, avec tout le monde'
-            : '⟶ Prépare-toi ' + nom + ' — c\'est à toi dans quelques secondes';
+        if (dans <= 4.5){
+          texte = '⚡ Attention ' + nom + ' — ça va être à toi !';
+          flash = true;
+          etat = 'alerte-' + Math.round(l.debut);
+        } else if (dans <= PREAVIS){
+          texte = '⟶ Prépare-toi ' + nom + ' — la partie chantée arrive';
           etat = 'prep-' + Math.round(l.debut);
         }
         break;      /* la première ligne à venir suffit */
@@ -3068,16 +3070,20 @@ if (SUR_MOBILE){
         etat = 'fin-' + Math.round(derniere.fin);
       }
 
-      /* et pendant la longue attente : un statut calme */
+      /* et pendant la longue attente : un mot bref, qui s'efface */
       if (!etat && suivante && suivante.debut - t > 25){
-        let ou = 'Tranquille';
+        let ou = nom + ' — sur scène, tu ne chantes pas';
         try {
           const bc = BLOCS[blocCourant()];
+          const pl = (bc.place || '').toLowerCase();
           const seg = (bc.place || '').split('·')
             .find(x => x.toLowerCase().includes(nom.toLowerCase()));
-          if (seg && seg.toLowerCase().includes('coulisse')) ou = 'Tu es en coulisses';
+          if (seg && seg.toLowerCase().includes('coulisse'))
+            ou = nom + ' — en coulisses';
+          else if (pl.includes('rideau ferm'))
+            ou = nom + ' — sur scène, derrière le rideau';
         } catch(e){}
-        texte = '🎭 ' + ou + ', ' + nom + ' — tu reprends dans « ' + suivante.titre + ' »';
+        texte = '🎭 ' + ou;
         etat = 'attend-' + Math.round(suivante.debut);
       }
     }
@@ -3089,6 +3095,16 @@ if (SUR_MOBILE){
       rampe.style.color = coul;    /* sa couleur partout : c'est SON guide */
       rampe.classList.toggle('flash', flash);
       rampe.classList.add('la');
+      /* les messages brefs s'effacent seuls — et ne reviennent pas :
+         l'état reste en mémoire, donc pas de répétition */
+      const duree = flash ? 5000 : (etat.indexOf('attend') === 0 ? 4500 : 0);
+      if (duree){
+        clearTimeout(flashMinuteur);
+        const memo = etat;
+        flashMinuteur = setTimeout(() => {
+          if (dernierEtat === memo) rampe.classList.remove('la','flash');
+        }, duree);
+      }
     }
   }
   setInterval(majRampe, 400);
@@ -3211,10 +3227,17 @@ if (SUR_MOBILE){
   .barre{ display:flex !important; flex-wrap:wrap !important;
           align-items:center; gap:8px !important; }
   #btnStyle{ order:1; } #btnPlein{ order:2; } #btnBlocs{ order:3; }
-  #btnTuto{ order:4; } #btnAide{ order:5; } #btnIntro{ order:6; }
-  .ou{ order:7; width:100%; text-align:center; font-size:13px; }
-  #bPrev{ order:8; } .pl{ order:9; flex:1 1 auto; min-width:0; }
-  #bNext{ order:10; }
+  #btnTuto{ order:4; }
+  /* Aide et Revoir l'intro se partagent la rangée du ? : ils
+     s'étirent pour la remplir, plus de trou possible */
+  #btnAide{ order:5; flex:1 1 auto; text-align:center;
+            font-size:13px !important; padding:10px 8px !important; }
+  #btnIntro{ order:6; flex:1 1 auto; text-align:center;
+             font-size:13px !important; padding:10px 8px !important; }
+  /* le lecteur vient TOUT DE SUITE en dessous */
+  #bPrev{ order:7; } .pl{ order:8; flex:1 1 auto; min-width:0; }
+  #bNext{ order:9; }
+  .ou{ display:none; }      /* le petit tiret ne servait à rien ici */
 }
 
 /* ═══ LE TUTORIEL ═══ */
