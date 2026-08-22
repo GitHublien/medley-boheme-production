@@ -78,12 +78,20 @@ const R = Object.assign({
   zIndex    : 0
 }, window.PRESENCE || {});
 
-/* ─── SUR PORTABLE, ELLE N'EXISTE PAS ────────────────────────────
-   Sur un petit écran, elle cache plus qu'elle n'apporte : le
-   verdict est tombé le 21/08/2026. Le script se charge, mais ne
-   fait rien — l'ordinateur, lui, la garde entière. */
-const SANS_PRESENCE =
+/* ─── SUR PORTABLE : SEULEMENT QUAND ON NE JOUE PAS ─────────────
+   La règle du 22/08/2026 : pendant la lecture, JAMAIS. En pause ou
+   sur une page d'attente, elle peut venir — mais presque
+   transparente. C'est la page qui l'allume et l'éteint en suivant
+   Play et Pause. */
+const SUR_MOBILE =
   matchMedia('(max-width: 820px), (pointer: coarse) and (max-width: 1100px)').matches;
+const SANS_PRESENCE = false;
+if (SUR_MOBILE){
+  R.force   = Math.min(R.force,   0.13);
+  R.franche = Math.min(R.franche, 0.20);
+  R.delaiMin = Math.max(R.delaiMin, 8);
+  R.flou = Math.max(R.flou || 0, 4);
+}
 
 /* ─── LES PLACES ─────────────────────────────────────────────────
    Où l'on emmène le visage, en pour cent de l'écran. Le zoom est

@@ -44,7 +44,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
                       object-fit:contain;background:#000;z-index:2}
 #fondNoir{position:fixed;inset:-10vmax;background:#000;z-index:-1}
 #photo{opacity:0;transition:opacity .4s ease;z-index:3}
-#photo.la{opacity:1}
+#photo.la{opacity:1;animation:photoVit 6.5s ease-in-out 2s infinite}
+@keyframes photoVit{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 #passage{opacity:0;transition:opacity .25s;z-index:5;object-fit:cover}
 #passage.la{opacity:1}
 
@@ -73,10 +74,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
               padding:0 6vw;line-height:1.9}
 
 /* ─── L'INVITATION, après le film ──────────────────────────────── */
-#invite{position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);
-        font-size:clamp(10px,1.3vw,12px);letter-spacing:.42em;font-weight:300;
-        color:rgba(226,196,132,.32);text-transform:uppercase;padding-left:.42em;
-        opacity:0;transition:opacity 2.4s ease;pointer-events:none;z-index:10}
+#invite{position:fixed;left:50%;bottom:7vh;transform:translateX(-50%);
+        font-size:clamp(15px,2vw,20px);letter-spacing:.34em;font-weight:600;
+        color:rgba(255,214,120,.92);text-transform:uppercase;padding-left:.34em;
+        text-shadow:0 0 18px rgba(212,175,55,.55);
+        opacity:0;transition:opacity 1.8s ease;pointer-events:none;z-index:10;
+        animation:inviteBat 2.4s ease-in-out infinite}
+@keyframes inviteBat{0%,100%{opacity:.55}50%{opacity:1}}
+#invite:not(.la){animation:none}
 #invite.la{opacity:1}
 
 /* ─── le curseur (ordinateur seulement) ────────────────────────── */
@@ -123,7 +128,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <source src="media/porte/attente.mp3" type="audio/mpeg">
 </audio>
 
-<div id="invite">cliquez pour continuer</div>
+<div id="invite">▶ &nbsp;cliquez ici pour continuer</div>
 
 <div class="btn" id="bPlein" title="plein écran">
   <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
@@ -139,6 +144,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <img src="media/porte/logo-plein.png" alt="Bohème Production">
   <div class="trait"></div>
   <div class="mot">cliquez pour entrer</div>
+  <button id="btnInstallPorte" style="display:none;margin-top:6px;
+    padding:14px 30px;border-radius:16px;cursor:pointer;
+    border:1px solid rgba(157,255,53,.65);background:rgba(157,255,53,.14);
+    color:#9dff35;font-weight:700;font-size:15px;letter-spacing:.08em;">
+    📲 Installer l'application</button>
   <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
 </div>
 
@@ -146,6 +156,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 /* ═══════════════════════════════════════════════════════════════
    RÉGLAGES
    ═══════════════════════════════════════════════════════════════ */
+/* ?premiere=1 : rejouer le parcours complet comme un nouveau
+   venu (pour les tests) */
+if (new URLSearchParams(location.search).get('premiere') === '1'){
+  try {
+    localStorage.removeItem('boheme-intro-vue');
+    localStorage.removeItem('boheme-tuto');
+  } catch(e){}
+}
+
 const R = {
   destination     : 'KARAOKE — Medley complet.html',
 
@@ -158,7 +177,7 @@ const R = {
   presenceMax     : 8.0,
   presenceReste   : 7.0,    // et elle reste plus longtemps
 
-  inviteApres     : 2.5,    // après que le logo se soit posé
+  inviteApres     : 4.0,    // après que le logo se soit posé
   volumeFilm      : 1.0,
   poussieres      : 55
 };
@@ -179,8 +198,9 @@ function pleinEcran(){
   const e = document.documentElement;
   const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
   if (f) { try { f.call(e, {navigationUI:'hide'}); } catch(err){ try{ f.call(e); }catch(e2){} } }
-  if (screen.orientation && screen.orientation.lock)
-    screen.orientation.lock('landscape').catch(()=>{});
+  /* on ne touche plus à l'orientation : l'application vit en
+     portrait, la vidéo s'y affiche entière (bandes noires haut et
+     bas) — aucune manipulation à demander à personne */
 }
 $('bPlein').addEventListener('click', e => {
   e.stopPropagation();
@@ -231,9 +251,9 @@ function poser(){
   am.play().then(() => {
     let v = 0;
     const m = setInterval(() => {
-      v = Math.min(0.34, v + 0.34/80);
+      v = Math.min(0.52, v + 0.52/70);
       am.volume = v;
-      if (v >= 0.34) clearInterval(m);
+      if (v >= 0.52) clearInterval(m);
     }, 50);
   }).catch(()=>{});
 }
@@ -388,6 +408,25 @@ window.PRESENCE = {
 if ('serviceWorker' in navigator){
   try { navigator.serviceWorker.register('sw.js'); } catch(e){}
 }
+/* la grosse sonnette : dès que le téléphone sait installer,
+   le bouton vert apparaît sur l'écran d'entrée */
+(function(){
+  let promesse = null;
+  const b = document.getElementById('btnInstallPorte');
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); promesse = e;
+    if (b) b.style.display = 'inline-block';
+  });
+  if (b) b.addEventListener('click', async e => {
+    e.stopPropagation();               /* ne pas déclencher l'entrée */
+    if (!promesse) return;
+    promesse.prompt();
+    const c = await promesse.userChoice;
+    if (c && c.outcome === 'accepted') b.style.display = 'none';
+    promesse = null;
+  });
+  window.addEventListener('appinstalled', () => { if (b) b.style.display = 'none'; });
+})();
 </script>
 </body>
 </html>

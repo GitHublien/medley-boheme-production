@@ -8,6 +8,10 @@
    que la page ne se charge. */
 (function(){
   try {
+    if (new URLSearchParams(location.search).get('premiere') === '1'){
+      localStorage.removeItem('boheme-intro-vue');
+      localStorage.removeItem('boheme-tuto');
+    }
     if (!/github\.io$/i.test(location.hostname)) return;
     if (localStorage.getItem('boheme-intro-vue') === '1') return;
     location.replace('PORTE — Bohème.html' + location.search);
@@ -3339,13 +3343,17 @@ if (SUR_MOBILE){
       x:'Lance le karaoké, et le met en pause. La musique part, les paroles s\'allument en rythme.' },
     { id:'rail',     t:'La barre de temps',
       x:'La position dans le medley. Un appui n\'importe où : on saute à cet endroit.' },
-    { id:'bPrev',    t:'Les flèches',
-      x:'Titre précédent, titre suivant. Aller et retour dans le medley.' },
+    { id:'bNext',    t:'Les flèches — à toi d\'essayer',
+      x:'Titre précédent, titre suivant. Vas-y : appuie sur la flèche éclairée, et regarde le medley sauter au titre suivant.',
+      essai:'clic' },
     { id:'btnBlocs', t:'Blocs',
       x:'La liste des titres du medley. Un appui, et on est directement au bon endroit.' },
     { id:'btnStyle', t:'Style',
       x:'L\'habillage des paroles — ils défilent en ce moment sous tes yeux. Le choix est retenu.',
       demo:true },
+    { cible:'.ligne', t:'Les phrases — à toi d\'essayer',
+      x:'Chaque phrase est un raccourci : touche celle que tu veux, la musique va directement à cet endroit. Essaie sur une phrase éclairée.',
+      essai:'ligne' },
     { id:'btnPlein', t:'Plein écran',
       x:'Le karaoké seul à l\'écran. Échap ou le même bouton pour revenir.' },
     { id:'btnIntro', t:'Revoir l\'intro',
@@ -3393,31 +3401,59 @@ if (SUR_MOBILE){
     }
   }
 
+  let essaiEnCours = null;
+  function trouver(e){
+    return e.cible ? document.querySelector(e.cible) : document.getElementById(e.id);
+  }
   function montrer(i){
     stopDemo();
+    if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; }
+    fond.style.pointerEvents = '';
     /* on saute les étapes dont l'élément n'existe pas ici */
     while (i < ETAPES.length){
       const e = ETAPES[i];
-      const el = document.getElementById(e.id);
+      const el = trouver(e);
       if (el && el.offsetParent !== null && (!e.si || e.si !== 'perso' || window.CIBLE_PERSO)) break;
       i++;
     }
     if (i >= ETAPES.length){ finir(); return; }
     etape = i;
     const e = ETAPES[i];
-    const el = document.getElementById(e.id);
+    const el = trouver(e);
     pos(el); anneau.classList.add('la');
     titre.textContent = e.t;
     texte.textContent = e.x;
     boutons.innerHTML = '';
-    const suiv = document.createElement('button');
-    suiv.className = 't-oui';
-    suiv.textContent = (i >= ETAPES.length - 1) ? 'Terminer' : 'Suivant ⟶';
-    suiv.onclick = () => montrer(etape + 1);
-    const passer = document.createElement('button');
-    passer.textContent = 'Passer la visite';
-    passer.onclick = finir;
-    boutons.appendChild(suiv); boutons.appendChild(passer);
+    if (e.essai){
+      /* étape d'ESSAI : le voile laisse passer les doigts, on
+         attend le geste — puis « voilà ! » et on continue */
+      fond.style.pointerEvents = 'none';
+      const attendu = (e.essai === 'ligne')
+        ? (ev) => !!ev.target.closest('.ligne')
+        : (ev) => !!ev.target.closest('#' + e.id);
+      essaiEnCours = (ev) => {
+        if (!attendu(ev)) return;
+        document.removeEventListener('click', essaiEnCours, true);
+        essaiEnCours = null;
+        titre.textContent = 'Voilà !';
+        texte.textContent = 'C\'est aussi simple que ça.';
+        setTimeout(() => montrer(etape + 1), 1400);
+      };
+      document.addEventListener('click', essaiEnCours, true);
+      const passer = document.createElement('button');
+      passer.textContent = 'Passer';
+      passer.onclick = () => montrer(etape + 1);
+      boutons.appendChild(passer);
+    } else {
+      const suiv = document.createElement('button');
+      suiv.className = 't-oui';
+      suiv.textContent = (i >= ETAPES.length - 1) ? 'Terminer' : 'Suivant ⟶';
+      suiv.onclick = () => montrer(etape + 1);
+      const passer = document.createElement('button');
+      passer.textContent = 'Passer la visite';
+      passer.onclick = finir;
+      boutons.appendChild(suiv); boutons.appendChild(passer);
+    }
 
     if (e.demo){
       /* les styles défilent tout seuls : on VOIT au lieu de lire */
@@ -3435,6 +3471,8 @@ if (SUR_MOBILE){
 
   function finir(){
     stopDemo();
+    if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; }
+    fond.style.pointerEvents = '';
     musiqueDouce(0, true);             /* la bossa s'éteint en fondu */
     fond.classList.remove('la','plein');
     anneau.classList.remove('la');
@@ -3678,6 +3716,16 @@ if (SUR_MOBILE){
   au.addEventListener('play', montrer);
   au.addEventListener('pause', montrer);
   document.addEventListener('pointerdown', montrer);
+
+  /* ─── LA PRÉSENCE OBÉIT À PLAY ET PAUSE (sur téléphone) ──────
+     Play : elle disparaît sur-le-champ et ne revient pas.
+     Pause : elle a de nouveau le droit de venir, très discrète. */
+  const tactile = matchMedia('(max-width: 820px), (pointer: coarse) and (max-width: 1100px)').matches;
+  if (tactile && window.presence){
+    au.addEventListener('play',  () => window.presence.arreter());
+    au.addEventListener('pause', () => window.presence.demarrer());
+    if (!au.paused) window.presence.arreter();
+  }
 })();
 </script>
 <script>
