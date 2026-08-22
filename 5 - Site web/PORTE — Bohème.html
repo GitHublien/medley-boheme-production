@@ -125,25 +125,47 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <source src="media/porte/passage.mp4" type="video/mp4">
 </video>
 <div id="ecranInstall" style="display:none;position:fixed;inset:0;z-index:60;
-  background:#000;flex-direction:column;align-items:center;justify-content:center;
-  gap:26px;padding:8vw;text-align:center;">
-  <img src="media/porte/logo-plein.png" alt="" style="width:min(34vmin,220px)">
-  <div style="font-size:clamp(19px,5vw,26px);font-weight:800;color:#ffc814;
-    letter-spacing:.04em;">Installe l'application</div>
-  <div style="font-size:clamp(14px,3.8vw,17px);color:#e8e2d2;line-height:1.7;
-    max-width:520px;">Une icône <b>Bohème</b> arrive sur ton écran d'accueil.
-    Ensuite, tu ouvres toujours l'application directement —
-    plein écran, sans navigateur, sans messages.</div>
-  <button id="grosInstall" style="padding:18px 40px;border-radius:18px;cursor:pointer;
+  background:#000;flex-direction:column;align-items:center;justify-content:flex-start;
+  gap:18px;padding:9vw 7vw;text-align:center;overflow-y:auto;">
+  <img src="media/porte/logo-plein.png" alt="" style="width:min(30vmin,180px);margin-top:2vh">
+  <div style="font-size:clamp(20px,5.4vw,27px);font-weight:800;color:#ffc814;
+    letter-spacing:.04em;line-height:1.3;">Bohème Production<br>
+    <span style="font-size:.72em;color:#e8e2d2;font-weight:600;">le karaoké du medley — Cannes, 4 octobre 2026</span></div>
+
+  <div style="display:flex;gap:10px;justify-content:center;max-width:560px;width:100%;">
+    <img src="media/porte/apercu-film.jpg" alt="" style="width:48%;border-radius:12px;
+      border:1px solid rgba(212,175,55,.4);">
+    <img src="media/porte/apercu-logo.jpg" alt="" style="width:48%;border-radius:12px;
+      border:1px solid rgba(212,175,55,.4);">
+  </div>
+
+  <div style="font-size:clamp(14px,3.9vw,17px);color:#e8e2d2;line-height:1.75;
+    max-width:520px;text-align:left;">
+    Cette application, créée pour nous six, contient :<br>
+    🎬 &nbsp;<b>le film d'introduction</b> — tu le verras une fois à l'ouverture,
+    puis seulement si tu veux le revoir<br>
+    🎤 &nbsp;<b>le karaoké complet</b> — la bande, les paroles en couleurs,
+    chacun la sienne<br>
+    ✦ &nbsp;<b>ton guide personnel</b> — « prépare-toi », « à toi »,
+    tes chœurs dans ta couleur<br>
+    🎨 &nbsp;les styles, la visite guidée, tout en plein écran
+  </div>
+
+  <button id="grosInstall" style="padding:19px 42px;border-radius:18px;cursor:pointer;
     border:2px solid rgba(157,255,53,.7);background:rgba(157,255,53,.16);
-    color:#9dff35;font-weight:800;font-size:clamp(16px,4.6vw,20px);
-    letter-spacing:.06em;">📲 &nbsp;INSTALLER L'APPLICATION</button>
-  <div id="installAide" style="display:none;font-size:13px;color:rgba(226,196,132,.6);
-    line-height:1.8;max-width:480px;">Si rien ne se passe : menu <b>⋮</b> de ton
-    navigateur → « Ajouter à l'écran d'accueil »</div>
-  <button id="sansInstall" style="padding:10px 18px;border-radius:12px;cursor:pointer;
-    border:1px solid rgba(212,175,55,.35);background:transparent;
-    color:rgba(226,196,132,.55);font-size:13px;">continuer dans le navigateur</button>
+    color:#9dff35;font-weight:800;font-size:clamp(16px,4.8vw,21px);
+    letter-spacing:.06em;margin-top:4px;">📲 &nbsp;INSTALLER L'APPLICATION</button>
+
+  <div id="installAide" style="display:none;font-size:13px;color:rgba(226,196,132,.7);
+    line-height:1.9;max-width:480px;">
+    Sur ce téléphone, l'installation passe par le menu du navigateur :<br>
+    <b>Android</b> : menu ⋮ → « Ajouter à l'écran d'accueil »<br>
+    <b>iPhone</b> : bouton Partager → « Sur l'écran d'accueil »</div>
+
+  <div style="font-size:12px;color:rgba(226,196,132,.4);line-height:1.7;
+    max-width:460px;margin-bottom:3vh;">Une fois installée, ouvre toujours
+    l'application <b>Bohème</b> depuis ton écran d'accueil.<br>
+    (Sur ordinateur, ce même lien s'utilise directement dans le navigateur.)</div>
 </div>
 
 <div id="ecranPaysage" style="display:none;position:fixed;inset:0;z-index:58;
@@ -452,7 +474,10 @@ if ('serviceWorker' in navigator){
   const enApp = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
   const tactile = matchMedia('(pointer: coarse)').matches;
   const ecran = document.getElementById('ecranInstall');
-  if (enApp || !tactile || !ecran) return;
+  /* ?premiere=1 : le passage d'essai (pour les tests dans le
+     navigateur) saute le mur d'installation */
+  const essai = new URLSearchParams(location.search).get('premiere') === '1';
+  if (enApp || !tactile || !ecran || essai) return;
   ecran.style.display = 'flex';
 
   let promesse = null;
@@ -466,21 +491,19 @@ if ('serviceWorker' in navigator){
       const c = await promesse.userChoice;
       promesse = null;
       if (c && c.outcome === 'accepted'){
-        ecran.querySelector('#grosInstall').style.display = 'none';
-        ecran.querySelector('#sansInstall').style.display = 'none';
-        ecran.querySelectorAll('div')[1].textContent = 'C\'est installé !';
-        ecran.querySelectorAll('div')[2].innerHTML =
-          'Ferme cette page, et ouvre <b>Bohème</b> depuis ton écran d\'accueil.';
+        ecran.innerHTML = '<img src="media/porte/logo-plein.png" alt="" ' +
+          'style="width:min(34vmin,220px);margin-top:14vh">' +
+          '<div style="font-size:clamp(21px,5.6vw,28px);font-weight:800;color:#9dff35;">' +
+          'C\'est installé !</div>' +
+          '<div style="font-size:clamp(15px,4.2vw,18px);color:#e8e2d2;line-height:1.8;max-width:480px;">' +
+          'Ferme cette page, et ouvre l\'application <b>Bohème</b> ' +
+          'depuis ton écran d\'accueil.<br>Le film t\'y attend.</div>';
       }
     } else {
       /* le téléphone ne propose pas l'installation automatique :
          on montre le chemin manuel */
       document.getElementById('installAide').style.display = 'block';
     }
-  });
-  document.getElementById('sansInstall').addEventListener('click', e => {
-    e.stopPropagation();
-    ecran.style.display = 'none';
   });
   /* on ne laisse pas les clics traverser vers l'écran d'entrée */
   ecran.addEventListener('click', e => e.stopPropagation());
