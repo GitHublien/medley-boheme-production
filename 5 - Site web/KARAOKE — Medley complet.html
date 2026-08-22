@@ -593,7 +593,7 @@ BLOCS.forEach(bl => {
       l._q = q;
     }
     const p = document.createElement('div');
-    p.className = 'ligne ' + l.type + ' ' + classeQui(l.qui);
+    p.className = 'ligne ' + l.type + ' ' + classeQui(l.qui); l._p = p;
     p.title = 'Aller à ' + Math.floor(l.debut/60) + ':' + String(Math.floor(l.debut%60)).padStart(2,'0');
     let cible = p;
     l.mots.forEach((m, i) => {
@@ -2860,11 +2860,39 @@ if (SUR_MOBILE){
     body[data-pour] .q-${cible}.qui{
       text-shadow:0 0 .5em currentColor;
     }
-    /* les chœurs dans SA couleur : sa couleur = il chante */
-    body[data-pour] .q-tous .mot .plein{
+    /* SA couleur seulement là où IL chante vraiment (la classe
+       .moi est posée d'après les données, ligne par ligne) : les
+       vrais chœurs oui, les duos des autres non */
+    body[data-pour] .ligne.moi .mot .plein{
+      color:var(--f-${cible}) !important;
+    }
+    body[data-pour] .qui.moi{
       color:var(--f-${cible}) !important;
     }`;
   document.head.appendChild(css);
+
+  /* on lit les données : quelles lignes le concernent VRAIMENT ? */
+  function normaliser(x){
+    return (x || '').toLowerCase().replace(/œ/g,'oe')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+  function marquerLesSiennes(){
+    try {
+      const moi = normaliser({adrien:'Adrien',stephanie:'Stéphanie',candice:'Candice',
+                              mickael:'Mickaël',bry:'Bry',elie:'Élie'}[cible]);
+      for (const b of BLOCS) for (const l of (b.lignes || [])){
+        const q = normaliser(l.qui);
+        const vraiChoeur = q.includes('choeur') || q.includes('tous') || q.includes('les six');
+        if ((q.includes(moi) || vraiChoeur)){
+          if (l._p) l._p.classList.add('moi');
+          if (l._q) l._q.classList.add('moi');
+        }
+      }
+    } catch(e){}
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', marquerLesSiennes);
+  else setTimeout(marquerLesSiennes, 0);
 
   /* le « prépare-toi » vise aussi uniquement cette personne */
   /* même règle : un minuteur, jamais un observateur qui modifie ce
@@ -2969,7 +2997,7 @@ if (SUR_MOBILE){
       LIGNES = [];
       for (const b of BLOCS) for (const l of (b.lignes || []))
         if (l.debut != null)
-          LIGNES.push({ debut:l.debut, fin:l.fin, qui:l.qui, num:b.num });
+          LIGNES.push({ debut:l.debut, fin:l.fin, qui:l.qui, num:b.num, titre:b.titre });
       LIGNES.sort((x, y) => x.debut - y.debut);
     } catch(e){ LIGNES = []; }
     return LIGNES;
@@ -3032,12 +3060,25 @@ if (SUR_MOBILE){
           && (!suivante || suivante.debut - t > 25)){
         if (suivante){
           const c3 = concerne(suivante.qui);
-          texte = '✔ C\'est fait, ' + nom + ' — prochaine intervention : bloc '
-                + suivante.num + (c3.ch ? ', les chœurs avec tout le monde' : ', un passage à toi');
+          texte = '✔ C\'est fait, ' + nom + ' — tu reprends dans « ' + suivante.titre + ' »'
+                + (c3.ch ? ' (les chœurs, avec tout le monde)' : '');
         } else {
           texte = '✔ C\'est fait, ' + nom + ' — rien d\'autre pour toi. Bravo !';
         }
         etat = 'fin-' + Math.round(derniere.fin);
+      }
+
+      /* et pendant la longue attente : un statut calme */
+      if (!etat && suivante && suivante.debut - t > 25){
+        let ou = 'Tranquille';
+        try {
+          const bc = BLOCS[blocCourant()];
+          const seg = (bc.place || '').split('·')
+            .find(x => x.toLowerCase().includes(nom.toLowerCase()));
+          if (seg && seg.toLowerCase().includes('coulisse')) ou = 'Tu es en coulisses';
+        } catch(e){}
+        texte = '🎭 ' + ou + ', ' + nom + ' — tu reprends dans « ' + suivante.titre + ' »';
+        etat = 'attend-' + Math.round(suivante.debut);
       }
     }
 
@@ -3094,8 +3135,8 @@ if (SUR_MOBILE){
             if (c2.actif){ trouve = c2; break; }
           }
           if (trouve){
-            proch = ' — prochaine intervention : bloc ' + BLOCS[i].num
-                  + (trouve.ch ? ', les chœurs avec tout le monde' : ', un passage à toi');
+            proch = ' — tu reprends dans « ' + BLOCS[i].titre + ' »'
+                  + (trouve.ch ? ' (les chœurs, avec tout le monde)' : '');
             break;
           }
         }
@@ -3170,7 +3211,7 @@ if (SUR_MOBILE){
   .barre{ display:flex !important; flex-wrap:wrap !important;
           align-items:center; gap:8px !important; }
   #btnStyle{ order:1; } #btnPlein{ order:2; } #btnBlocs{ order:3; }
-  #btnAide{ order:4; } #btnIntro{ order:5; } #btnTuto{ order:6; }
+  #btnTuto{ order:4; } #btnAide{ order:5; } #btnIntro{ order:6; }
   .ou{ order:7; width:100%; text-align:center; font-size:13px; }
   #bPrev{ order:8; } .pl{ order:9; flex:1 1 auto; min-width:0; }
   #bNext{ order:10; }
@@ -3382,10 +3423,10 @@ if (SUR_MOBILE){
   const bt = document.createElement('button');
   bt.className = 'btn-reg'; bt.id = 'btnTuto'; bt.textContent = '?';
   bt.title = 'la visite guidée du karaoké';
-  bt.style.cssText = 'border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.10);font-weight:800;min-width:40px;';
+  bt.style.cssText = 'border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.10);font-weight:800;min-width:50px;min-height:44px;font-size:20px;';
   bt.addEventListener('click', () => { montrerDepuisBouton(); });
   function montrerDepuisBouton(){ demarrerVisite(); }
-  const ancre = document.getElementById('btnIntro');
+  const ancre = document.getElementById('btnBlocs') || document.getElementById('btnIntro');
   if (ancre && ancre.parentNode) ancre.parentNode.insertBefore(bt, ancre.nextSibling);
 
   /* première visite : on propose, sans imposer */
