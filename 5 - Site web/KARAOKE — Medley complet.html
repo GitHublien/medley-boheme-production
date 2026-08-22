@@ -3366,25 +3366,44 @@ if (SUR_MOBILE){
       x:'Lance le karaoké, et le met en pause. La musique part, les paroles s\'allument en rythme.' },
     { id:'rail',     t:'La barre de temps',
       x:'La position dans le medley. Un appui n\'importe où : on saute à cet endroit.' },
-    { id:'bNext',    t:'Les flèches — à toi d\'essayer',
-      x:'Titre précédent, titre suivant. Vas-y : appuie sur la flèche éclairée, et regarde le medley sauter au titre suivant.',
-      essai:'clic' },
-    { id:'btnBlocs', t:'Blocs',
-      x:'La liste des titres du medley. Un appui, et on est directement au bon endroit.' },
-    { id:'btnStyle', t:'Style',
-      x:'L\'habillage des paroles — ils défilent en ce moment sous tes yeux. Le choix est retenu.',
-      demo:true },
-    { cible:'.ligne', t:'Les phrases — à toi d\'essayer',
-      x:'Chaque phrase est un raccourci : touche celle que tu veux, la musique va directement à cet endroit. Essaie sur une phrase éclairée.',
-      essai:'ligne' },
-    { id:'btnPlein', t:'Plein écran',
-      x:'Le karaoké seul à l\'écran. Échap ou le même bouton pour revenir.' },
+    { id:'bNext',    t:'Les flèches — essaie',
+      x:'Titre précédent, titre suivant. Appuie sur la flèche éclairée : le medley saute au titre suivant.',
+      essai:{ zone:'#bNext' },
+      bravo:'Le medley a sauté au titre suivant. On remet tout en place.' },
+    { id:'btnBlocs', t:'Blocs — essaie',
+      x:'Voilà la liste des titres du medley (je viens de l\'ouvrir pour toi). Touche celui que tu veux — il t\'y emmène directement.',
+      avant:'ouvrirBlocs', essai:{ zone:'#menuB a' },
+      bravo:'Et voilà : on est arrivé pile sur ce titre. C\'est ça, les Blocs. On remet tout en place.',
+      apres:'fermerBlocs' },
+    { id:'btnStyle', t:'Style — essaie',
+      x:'L\'habillage des paroles (j\'ai ouvert le menu). Choisis-en un — Projecteur, Néon, 3D… — et regarde le texte changer de costume.',
+      avant:'ouvrirStyle', essai:{ zone:'#menuS *' },
+      bravo:'Joli choix — il est retenu, c\'est le tien maintenant.',
+      apres:'fermerStyle' },
+    { cible:'.ligne', t:'Les phrases — essaie',
+      x:'Chaque phrase est un raccourci : touche celle que tu veux, la musique va directement à cet endroit.',
+      essai:{ zone:'.ligne' },
+      bravo:'La musique a filé pile sur cette phrase. On remet tout en place.' },
+    { id:'btnPlein', t:'Plein écran — essaie',
+      x:'Le karaoké seul à l\'écran, rien d\'autre. Appuie dessus pour voir la différence.',
+      essai:{ zone:'#btnPlein' },
+      bravo:'Voilà la différence. Le même bouton (ou Échap) pour revenir.' },
     { id:'btnIntro', t:'Revoir l\'intro',
-      x:'Le film d\'ouverture, à revoir quand tu veux.' },
+      x:'Le film d\'ouverture. Celui-là, je ne te le fais pas essayer — il dure cinquante secondes et tu viens de le voir. Mais il t\'attend ici, quand tu veux.' },
     { id:'btnAide',  t:'Ton aide personnelle',
       x:'Allumée d\'office : « prépare-toi », « à toi », tes chœurs dans ta couleur. Quand tu connaîtras tes passages, éteins-la ici — le réglage est retenu.',
       si:'perso' },
   ];
+
+  /* les gestes que l'aide fait elle-même, pour montrer */
+  const GESTES = {
+    ouvrirBlocs(){ try { const m = document.getElementById('menuB');
+      if (m && !m.classList.contains('vu')) document.getElementById('btnBlocs').click(); } catch(e){} },
+    fermerBlocs(){ try { document.getElementById('menuB').classList.remove('vu'); } catch(e){} },
+    ouvrirStyle(){ try { const m = document.getElementById('menuS');
+      if (m && !m.classList.contains('vu')) document.getElementById('btnStyle').click(); } catch(e){} },
+    fermerStyle(){ try { document.getElementById('menuS').classList.remove('vu'); } catch(e){} },
+  };
 
   let etape = -1, demoMinuteur = null, demoAvant = null;
 
@@ -3430,7 +3449,7 @@ if (SUR_MOBILE){
   }
   function montrer(i){
     stopDemo();
-    if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; toutRemettre(); }
+    if (essaiEnCours){ fond.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; toutRemettre(); }
     if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
     fond.style.pointerEvents = '';
     /* on saute les étapes dont l'élément n'existe pas ici */
@@ -3448,33 +3467,44 @@ if (SUR_MOBILE){
     titre.textContent = e.t;
     texte.textContent = e.x;
     boutons.innerHTML = '';
+    if (e.avant && GESTES[e.avant]){ GESTES[e.avant](); setTimeout(() => pos(trouver(e)), 120); }
     if (e.essai){
-      /* étape d'ESSAI : le voile laisse passer les doigts, on
-         attend le geste — puis « voilà ! » et on continue */
-      fond.style.pointerEvents = 'none';
+      /* étape d'ESSAI : le voile RESTE maître de l'écran. C'est lui
+         qui reçoit le toucher, et il ne le transmet qu'à la zone de
+         l'exercice — impossible de « faire partir l'aide ». */
+      fond.style.pointerEvents = 'auto';
       if (window.__tutoDoigt){
-        const r = el.getBoundingClientRect();
+        const r = trouver(e).getBoundingClientRect();
         window.__tutoDoigt.style.left = Math.max(8, r.left) + 'px';
         window.__tutoDoigt.style.top = (r.bottom + 10) + 'px';
         window.__tutoDoigt.style.display = 'block';
       }
-      const attendu = (e.essai === 'ligne')
-        ? (ev) => !!ev.target.closest('.ligne')
-        : (ev) => !!ev.target.closest('#' + e.id);
       essaiEnCours = (ev) => {
-        if (!attendu(ev)) return;
-        document.removeEventListener('click', essaiEnCours, true);
+        /* que touche le doigt, sous le voile ? */
+        fond.style.pointerEvents = 'none';
+        const dessous = document.elementFromPoint(ev.clientX, ev.clientY);
+        fond.style.pointerEvents = 'auto';
+        const cibleOk = dessous && dessous.closest(e.essai.zone);
+        if (!cibleOk) return;                      /* ailleurs : rien ne bouge */
+        ev.stopPropagation(); ev.preventDefault();
+        fond.removeEventListener('click', essaiEnCours, true);
         essaiEnCours = null;
         if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
+        try { cibleOk.click(); } catch(err){}      /* l'aide fait le geste */
         titre.textContent = 'Voilà !';
-        texte.textContent = 'C\'est aussi simple que ça. (On remet tout en place — ce n\'était qu\'une démonstration.)';
-        /* on laisse VOIR l'effet une seconde, puis on remet tout */
-        setTimeout(() => { toutRemettre(); montrer(etape + 1); }, 1600);
+        texte.textContent = e.bravo || 'C\'est aussi simple que ça.';
+        boutons.innerHTML = '';
+        setTimeout(() => {
+          if (e.apres && GESTES[e.apres]) GESTES[e.apres]();
+          /* le Style se garde ; tout le reste se remet en place */
+          if (e.id !== 'btnStyle' && e.id !== 'btnPlein') toutRemettre();
+          montrer(etape + 1);
+        }, 2100);
       };
-      document.addEventListener('click', essaiEnCours, true);
+      fond.addEventListener('click', essaiEnCours, true);
       const passer = document.createElement('button');
       passer.textContent = 'Passer';
-      passer.onclick = () => montrer(etape + 1);
+      passer.onclick = () => { if (e.apres && GESTES[e.apres]) GESTES[e.apres](); montrer(etape + 1); };
       boutons.appendChild(passer);
     } else {
       const suiv = document.createElement('button');
@@ -3504,8 +3534,9 @@ if (SUR_MOBILE){
   function finir(){
     stopDemo();
     toutRemettre();
+    try { GESTES.fermerBlocs(); GESTES.fermerStyle(); } catch(e){}
     if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
-    if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; }
+    if (essaiEnCours){ fond.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; }
     fond.style.pointerEvents = '';
     musiqueDouce(0, true);             /* la bossa s'éteint en fondu */
     fond.classList.remove('la','plein');
