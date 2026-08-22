@@ -3377,7 +3377,7 @@ if (SUR_MOBILE){
       apres:'fermerBlocs' },
     { id:'btnStyle', t:'Style — essaie',
       x:'L\'habillage des paroles (j\'ai ouvert le menu). Choisis-en un — Projecteur, Néon, 3D… — et regarde le texte changer de costume.',
-      avant:'ouvrirStyle', essai:{ zone:'#menuS *' },
+      avant:'ouvrirStyle', essai:{ zone:'.menu-styles a' },
       bravo:'Joli choix — il est retenu, c\'est le tien maintenant.',
       apres:'fermerStyle' },
     { cible:'.ligne', t:'Les phrases — essaie',
@@ -3400,9 +3400,9 @@ if (SUR_MOBILE){
     ouvrirBlocs(){ try { const m = document.getElementById('menuB');
       if (m && !m.classList.contains('vu')) document.getElementById('btnBlocs').click(); } catch(e){} },
     fermerBlocs(){ try { document.getElementById('menuB').classList.remove('vu'); } catch(e){} },
-    ouvrirStyle(){ try { const m = document.getElementById('menuS');
+    ouvrirStyle(){ try { const m = document.querySelector('.menu-styles');
       if (m && !m.classList.contains('vu')) document.getElementById('btnStyle').click(); } catch(e){} },
-    fermerStyle(){ try { document.getElementById('menuS').classList.remove('vu'); } catch(e){} },
+    fermerStyle(){ try { document.querySelector('.menu-styles').classList.remove('vu'); } catch(e){} },
   };
 
   let etape = -1, demoMinuteur = null, demoAvant = null;
