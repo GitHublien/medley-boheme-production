@@ -3076,7 +3076,7 @@ if (SUR_MOBILE){
 
       /* et pendant la longue attente : un mot bref, qui s'efface */
       if (!etat && suivante && suivante.debut - t > 25){
-        let ou = nom + ' — en place, tu ne chantes pas';
+        let ou = nom + ' — sur scène, dans l\'ombre · tu ne chantes pas';
         try {
           const bc = BLOCS[blocCourant()];
           const pl = (bc.place || '').toLowerCase();
@@ -3256,25 +3256,15 @@ if (SUR_MOBILE){
   /* rangée 2 : l'aide et l'intro, côte à côte, compacts */
   #btnAide{ order:5; } #btnIntro{ order:6; }
 
-  /* rangée 3 : LE LECTEUR, façon application de musique.
-     display:contents libère les morceaux du lecteur pour qu'on
-     puisse les ranger un par un dans la barre */
-  .pl{ display:contents !important; }
-  #bPrev{ order:20; margin-left:auto !important;
-          width:52px; height:52px; border-radius:50% !important;
-          font-size:20px !important; }
-  #b{ order:21; width:72px !important; height:72px !important;
-      min-width:72px; border-radius:50% !important;
-      font-size:30px !important; margin:0 14px; }
-  #bNext{ order:22; margin-right:auto !important;
-          width:52px; height:52px; border-radius:50% !important;
-          font-size:20px !important; }
-
-  /* rangée 4 : la barre de temps, pleine largeur, le temps au bout */
-  .rail{ order:23; flex:1 1 auto !important; min-width:0;
-         height:26px !important; border-radius:13px; }
-  .tps{ order:24; flex:0 0 auto; font-size:13px; }
+  /* le lecteur quitte la barre du haut : il vit maintenant EN BAS
+     de l'écran, comme dans une application de musique */
+  .pl, #bPrev, #bNext{ display:none !important; }
   .ou{ display:none; }
+  #lecteurBas{ display:flex !important; }
+
+  /* et tout ce qui s'affichait en bas remonte au-dessus de lui */
+  #rampe{ bottom:calc(126px + env(safe-area-inset-bottom)) !important; }
+  #tuto{ bottom:calc(132px + env(safe-area-inset-bottom)) !important; }
 }
 
 /* ═══ LE TUTORIEL ═══ */
@@ -3531,6 +3521,118 @@ if (SUR_MOBILE){
       if (!document.hidden && !au.paused) eveiller();
     });
   } catch(e){}
+})();
+</script>
+<style>
+/* ═══ LE LECTEUR DU BAS — façon application de musique ═══
+   La bande tout en bas, un rond qu'on attrape avec le doigt, les
+   temps aux deux bouts, et les trois boutons en dessous. */
+#lecteurBas{
+  display:none; position:fixed; left:0; right:0; bottom:0; z-index:55;
+  flex-direction:column; gap:2px;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.94) 26%, #000);
+}
+#lbRang1{ display:flex; align-items:center; gap:10px; }
+#lbCourant, #lbTotal{
+  font-size:12px; color:rgba(226,196,132,.85); min-width:38px;
+  font-variant-numeric:tabular-nums;
+}
+#lbTotal{ text-align:right; }
+#lbBarre{
+  -webkit-appearance:none; appearance:none; flex:1;
+  height:26px; background:transparent; margin:0; min-width:0;
+}
+#lbBarre::-webkit-slider-runnable-track{
+  height:5px; border-radius:3px;
+  background:var(--lbFond, linear-gradient(90deg,#d4af37 0%, #3a352a 0%));
+}
+#lbBarre::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:20px; height:20px; border-radius:50%; margin-top:-7.5px;
+  background:#ffc814; border:2px solid #000;
+  box-shadow:0 0 10px rgba(255,200,20,.65);
+}
+#lbBarre::-moz-range-track{ height:5px; border-radius:3px; background:#3a352a; }
+#lbBarre::-moz-range-progress{ height:5px; border-radius:3px; background:#d4af37; }
+#lbBarre::-moz-range-thumb{
+  width:20px; height:20px; border-radius:50%;
+  background:#ffc814; border:2px solid #000;
+}
+#lbRang2{ display:flex; align-items:center; justify-content:center; gap:26px; }
+#lbRang2 button{
+  border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.08);
+  color:#ffc814; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+#lbPrec, #lbSuiv{ width:48px; height:48px; font-size:17px; }
+#lbPlay{ width:62px; height:62px; font-size:24px;
+         background:rgba(255,200,20,.16); }
+</style>
+<div id="lecteurBas">
+  <div id="lbRang1">
+    <span id="lbCourant">0:00</span>
+    <input id="lbBarre" type="range" min="0" max="1000" value="0" step="1">
+    <span id="lbTotal">–:––</span>
+  </div>
+  <div id="lbRang2">
+    <button id="lbPrec" aria-label="Titre précédent">&#9668;</button>
+    <button id="lbPlay" aria-label="Lecture">&#9654;</button>
+    <button id="lbSuiv" aria-label="Titre suivant">&#9658;</button>
+  </div>
+</div>
+<script>
+/* ═══ LE LECTEUR DU BAS pilote le vrai lecteur ═══
+   Il ne réinvente rien : ses boutons appuient sur les vrais boutons,
+   et son rond déplace la vraie musique. Une seule logique, deux
+   habillages. */
+(function(){
+  const barre = document.getElementById('lbBarre');
+  const play = document.getElementById('lbPlay');
+  const courant = document.getElementById('lbCourant');
+  const total = document.getElementById('lbTotal');
+
+  const mmss = x => isFinite(x)
+    ? Math.floor(x/60) + ':' + String(Math.floor(x%60)).padStart(2,'0')
+    : '–:––';
+
+  let glisse = false;
+
+  function peindre(){
+    if (!isFinite(au.duration)) return;
+    if (!glisse) barre.value = Math.round(au.currentTime / au.duration * 1000);
+    const p = (barre.value/10).toFixed(1) + '%';
+    barre.style.setProperty('--lbFond',
+      'linear-gradient(90deg,#d4af37 ' + p + ', #3a352a ' + p + ')');
+    courant.textContent = mmss(glisse ? barre.value/1000*au.duration : au.currentTime);
+    total.textContent = mmss(au.duration);
+    play.innerHTML = au.paused ? '&#9654;' : '&#10074;&#10074;';
+  }
+
+  au.addEventListener('timeupdate', peindre);
+  au.addEventListener('play', peindre);
+  au.addEventListener('pause', peindre);
+  au.addEventListener('loadedmetadata', peindre);
+
+  /* le rond : pendant qu'on le tient, on montre où l'on va ;
+     on ne saute qu'au lâcher */
+  barre.addEventListener('input', () => { glisse = true; peindre(); });
+  const lacher = () => {
+    if (!glisse) return;
+    glisse = false;
+    if (isFinite(au.duration)) au.currentTime = barre.value/1000 * au.duration;
+  };
+  barre.addEventListener('change', lacher);
+  barre.addEventListener('pointerup', lacher);
+
+  /* les boutons appuient sur les vrais boutons */
+  play.addEventListener('click', () => { const b = document.getElementById('b'); if (b) b.click(); });
+  document.getElementById('lbPrec').addEventListener('click',
+    () => { const x = document.getElementById('bPrev'); if (x) x.click(); });
+  document.getElementById('lbSuiv').addEventListener('click',
+    () => { const x = document.getElementById('bNext'); if (x) x.click(); });
+
+  peindre();
 })();
 </script>
 </body>
