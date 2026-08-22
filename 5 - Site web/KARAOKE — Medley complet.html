@@ -3764,4 +3764,54 @@ if (SUR_MOBILE){
   });
 })();
 </script>
+<div id="ecranPortrait" style="display:none;position:fixed;inset:0;z-index:96;
+  background:#000;flex-direction:column;align-items:center;justify-content:center;
+  gap:22px;padding:8vw;text-align:center;">
+  <div style="font-size:64px;animation:tournePort 2s ease-in-out infinite;">📱</div>
+  <div style="font-size:clamp(18px,5vw,24px);font-weight:800;color:#ffc814;">
+    Remets ton téléphone à la verticale</div>
+  <div style="font-size:clamp(14px,3.8vw,17px);color:#e8e2d2;">
+    Le karaoké se vit en <b>mode portrait</b></div>
+</div>
+<style>
+@keyframes tournePort{0%,100%{transform:rotate(90deg)}50%{transform:rotate(0)}}
+</style>
+<script>
+/* ═══ LE KARAOKÉ SE VIT À LA VERTICALE ═══
+   En paysage sur téléphone : écran noir et consigne. Au retour en
+   portrait : un petit carillon doré, et l'application apparaît. */
+(function(){
+  const tactile = matchMedia('(pointer: coarse)').matches;
+  const ecran = document.getElementById('ecranPortrait');
+  if (!tactile || !ecran) return;
+  const enPaysage = () => matchMedia('(orientation: landscape)').matches;
+
+  function carillon(){
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = ctx.currentTime;
+      [523.25, 659.25, 783.99].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = f; o.type = 'sine';
+        g.gain.setValueAtTime(0, t0 + i*0.09);
+        g.gain.linearRampToValueAtTime(0.16, t0 + i*0.09 + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.001, t0 + i*0.09 + 1.4);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t0 + i*0.09); o.stop(t0 + i*0.09 + 1.5);
+      });
+    } catch(e){}
+  }
+
+  let etaitPaysage = enPaysage();
+  function veille(){
+    const p = enPaysage();
+    ecran.style.display = p ? 'flex' : 'none';
+    if (p && !au.paused){ try { au.pause(); } catch(e){} }   /* on ne chante pas couché */
+    if (!p && etaitPaysage) carillon();                       /* l'app apparaît : ding */
+    etaitPaysage = p;
+  }
+  matchMedia('(orientation: landscape)').addEventListener('change', veille);
+  veille();
+})();
+</script>
 </body>

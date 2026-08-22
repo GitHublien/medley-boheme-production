@@ -124,6 +124,41 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 <video id="passage" playsinline preload="none">
   <source src="media/porte/passage.mp4" type="video/mp4">
 </video>
+<div id="ecranInstall" style="display:none;position:fixed;inset:0;z-index:60;
+  background:#000;flex-direction:column;align-items:center;justify-content:center;
+  gap:26px;padding:8vw;text-align:center;">
+  <img src="media/porte/logo-plein.png" alt="" style="width:min(34vmin,220px)">
+  <div style="font-size:clamp(19px,5vw,26px);font-weight:800;color:#ffc814;
+    letter-spacing:.04em;">Installe l'application</div>
+  <div style="font-size:clamp(14px,3.8vw,17px);color:#e8e2d2;line-height:1.7;
+    max-width:520px;">Une icône <b>Bohème</b> arrive sur ton écran d'accueil.
+    Ensuite, tu ouvres toujours l'application directement —
+    plein écran, sans navigateur, sans messages.</div>
+  <button id="grosInstall" style="padding:18px 40px;border-radius:18px;cursor:pointer;
+    border:2px solid rgba(157,255,53,.7);background:rgba(157,255,53,.16);
+    color:#9dff35;font-weight:800;font-size:clamp(16px,4.6vw,20px);
+    letter-spacing:.06em;">📲 &nbsp;INSTALLER L'APPLICATION</button>
+  <div id="installAide" style="display:none;font-size:13px;color:rgba(226,196,132,.6);
+    line-height:1.8;max-width:480px;">Si rien ne se passe : menu <b>⋮</b> de ton
+    navigateur → « Ajouter à l'écran d'accueil »</div>
+  <button id="sansInstall" style="padding:10px 18px;border-radius:12px;cursor:pointer;
+    border:1px solid rgba(212,175,55,.35);background:transparent;
+    color:rgba(226,196,132,.55);font-size:13px;">continuer dans le navigateur</button>
+</div>
+
+<div id="ecranPaysage" style="display:none;position:fixed;inset:0;z-index:58;
+  background:#000;flex-direction:column;align-items:center;justify-content:center;
+  gap:22px;padding:8vw;text-align:center;">
+  <div style="font-size:64px;animation:tourneTel 2s ease-in-out infinite;">📱</div>
+  <div style="font-size:clamp(18px,5vw,24px);font-weight:800;color:#ffc814;">
+    Tourne ton téléphone</div>
+  <div style="font-size:clamp(14px,3.8vw,17px);color:#e8e2d2;">
+    Le film se regarde en <b>mode paysage</b></div>
+</div>
+<style>
+@keyframes tourneTel{0%,100%{transform:rotate(0)}50%{transform:rotate(90deg)}}
+</style>
+
 <audio id="ambiance" loop preload="none">
   <source src="media/porte/attente.mp3" type="audio/mpeg">
 </audio>
@@ -144,11 +179,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <img src="media/porte/logo-plein.png" alt="Bohème Production">
   <div class="trait"></div>
   <div class="mot">cliquez pour entrer</div>
-  <button id="btnInstallPorte" style="display:none;margin-top:6px;
-    padding:14px 30px;border-radius:16px;cursor:pointer;
-    border:1px solid rgba(157,255,53,.65);background:rgba(157,255,53,.14);
-    color:#9dff35;font-weight:700;font-size:15px;letter-spacing:.08em;">
-    📲 Installer l'application</button>
+
   <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
 </div>
 
@@ -215,9 +246,14 @@ function entrer(){
   pleinEcran();
   /* l'écran reste allumé pendant tout le film */
   try { if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
-  film.volume = R.volumeFilm;
-  film.muted = false;
-  film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
+  const lancer = () => {
+    film.volume = R.volumeFilm;
+    film.muted = false;
+    film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
+  };
+  if (window.exigerPaysage){ window.exigerPaysage(lancer); }
+  else lancer();
+  if (false){ }
   entree.classList.add('parti');
   setTimeout(() => entree.style.display = 'none', 1100);
   $('bSon').classList.add('la');
@@ -408,24 +444,69 @@ window.PRESENCE = {
 if ('serviceWorker' in navigator){
   try { navigator.serviceWorker.register('sw.js'); } catch(e){}
 }
-/* la grosse sonnette : dès que le téléphone sait installer,
-   le bouton vert apparaît sur l'écran d'entrée */
+/* ═══ L'ÉCRAN D'INSTALLATION ═══
+   Sur téléphone, dans le navigateur : il passe AVANT tout. Un seul
+   gros bouton. Dans l'application installée (ou sur ordinateur),
+   il n'existe pas. */
 (function(){
+  const enApp = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+  const tactile = matchMedia('(pointer: coarse)').matches;
+  const ecran = document.getElementById('ecranInstall');
+  if (enApp || !tactile || !ecran) return;
+  ecran.style.display = 'flex';
+
   let promesse = null;
-  const b = document.getElementById('btnInstallPorte');
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault(); promesse = e;
-    if (b) b.style.display = 'inline-block';
   });
-  if (b) b.addEventListener('click', async e => {
-    e.stopPropagation();               /* ne pas déclencher l'entrée */
-    if (!promesse) return;
-    promesse.prompt();
-    const c = await promesse.userChoice;
-    if (c && c.outcome === 'accepted') b.style.display = 'none';
-    promesse = null;
+  document.getElementById('grosInstall').addEventListener('click', async e => {
+    e.stopPropagation();
+    if (promesse){
+      promesse.prompt();
+      const c = await promesse.userChoice;
+      promesse = null;
+      if (c && c.outcome === 'accepted'){
+        ecran.querySelector('#grosInstall').style.display = 'none';
+        ecran.querySelector('#sansInstall').style.display = 'none';
+        ecran.querySelectorAll('div')[1].textContent = 'C\'est installé !';
+        ecran.querySelectorAll('div')[2].innerHTML =
+          'Ferme cette page, et ouvre <b>Bohème</b> depuis ton écran d\'accueil.';
+      }
+    } else {
+      /* le téléphone ne propose pas l'installation automatique :
+         on montre le chemin manuel */
+      document.getElementById('installAide').style.display = 'block';
+    }
   });
-  window.addEventListener('appinstalled', () => { if (b) b.style.display = 'none'; });
+  document.getElementById('sansInstall').addEventListener('click', e => {
+    e.stopPropagation();
+    ecran.style.display = 'none';
+  });
+  /* on ne laisse pas les clics traverser vers l'écran d'entrée */
+  ecran.addEventListener('click', e => e.stopPropagation());
+})();
+
+/* ═══ LE FILM SE REGARDE EN PAYSAGE ═══
+   Au clic d'entrée, si le téléphone est tenu à la verticale :
+   écran noir, « tourne ton téléphone ». Le film ne part que
+   tourné. */
+(function(){
+  const tactile = matchMedia('(pointer: coarse)').matches;
+  const ecran = document.getElementById('ecranPaysage');
+  if (!tactile || !ecran) return;
+  const portrait = () => matchMedia('(orientation: portrait)').matches;
+  window.exigerPaysage = function(quandPret){
+    if (!portrait()){ quandPret(); return; }
+    ecran.style.display = 'flex';
+    const veille = () => {
+      if (!portrait()){
+        matchMedia('(orientation: portrait)').removeEventListener('change', veille);
+        ecran.style.display = 'none';
+        quandPret();
+      }
+    };
+    matchMedia('(orientation: portrait)').addEventListener('change', veille);
+  };
 })();
 </script>
 </body>
