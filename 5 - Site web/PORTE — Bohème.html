@@ -209,14 +209,27 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 /* ═══════════════════════════════════════════════════════════════
    RÉGLAGES
    ═══════════════════════════════════════════════════════════════ */
-/* ?premiere=1 : rejouer le parcours complet comme un nouveau
-   venu (pour les tests) */
-if (new URLSearchParams(location.search).get('premiere') === '1'){
+/* ═══ LE FILM NE SE MONTRE QU'UNE FOIS ═══
+   L'application s'ouvre toujours ici. Si le film a déjà été vu,
+   on file DIRECTEMENT au karaoké — sauf :
+     ?revoir=1   : le bouton « Revoir l'intro »
+     ?premiere=1 : le passage de test, qui efface tout */
+(function(){
+  const q = new URLSearchParams(location.search);
+  if (q.get('premiere') === '1'){
+    try {
+      localStorage.removeItem('boheme-intro-vue');
+      localStorage.removeItem('boheme-tuto');
+    } catch(e){}
+    return;
+  }
+  if (q.get('revoir') === '1') return;
   try {
-    localStorage.removeItem('boheme-intro-vue');
-    localStorage.removeItem('boheme-tuto');
+    if (localStorage.getItem('boheme-intro-vue') === '1'){
+      location.replace('KARAOKE — Medley complet.html' + location.search);
+    }
   } catch(e){}
-}
+})();
 
 const R = {
   destination     : 'KARAOKE — Medley complet.html',

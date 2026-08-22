@@ -2659,7 +2659,9 @@ window.PRESENCE = Object.assign({}, AVEC);
     i.title = 'revenir au début, avec le film';
     i.addEventListener('click', () => {
       try { localStorage.removeItem('boheme-sans-plein-ecran'); } catch(e){}
-      location.href = 'PORTE — Bohème.html';
+      const q = new URLSearchParams(location.search);
+      q.set('revoir', '1');
+      location.href = 'PORTE — Bohème.html?' + q.toString();
     });
     barre.insertBefore(i, f.nextSibling);
 
@@ -2987,6 +2989,19 @@ if (SUR_MOBILE){
 
   const rampe = document.getElementById('rampe');
   const carton = document.getElementById('carton');
+
+  /* le petit doigt du tutoriel : « essaie ici » */
+  const doigt = document.createElement('div');
+  doigt.style.cssText = 'position:fixed;z-index:93;display:none;' +
+    'font-size:15px;font-weight:800;color:#ffc814;pointer-events:none;' +
+    'text-shadow:0 0 12px rgba(0,0,0,.9);white-space:nowrap;' +
+    'animation:doigtBat 1s ease-in-out infinite;';
+  doigt.textContent = '👆 essaie ici';
+  document.body.appendChild(doigt);
+  const styleDoigt = document.createElement('style');
+  styleDoigt.textContent = '@keyframes doigtBat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}';
+  document.head.appendChild(styleDoigt);
+  window.__tutoDoigt = doigt;
 
   function nomDe(cls){
     for (const k in NOMS) if (cls.contains('q-'+k)) return k;
@@ -3407,7 +3422,8 @@ if (SUR_MOBILE){
   }
   function montrer(i){
     stopDemo();
-    if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; }
+    if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; toutRemettre(); }
+    if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
     fond.style.pointerEvents = '';
     /* on saute les étapes dont l'élément n'existe pas ici */
     while (i < ETAPES.length){
@@ -3428,6 +3444,12 @@ if (SUR_MOBILE){
       /* étape d'ESSAI : le voile laisse passer les doigts, on
          attend le geste — puis « voilà ! » et on continue */
       fond.style.pointerEvents = 'none';
+      if (window.__tutoDoigt){
+        const r = el.getBoundingClientRect();
+        window.__tutoDoigt.style.left = Math.max(8, r.left) + 'px';
+        window.__tutoDoigt.style.top = (r.bottom + 10) + 'px';
+        window.__tutoDoigt.style.display = 'block';
+      }
       const attendu = (e.essai === 'ligne')
         ? (ev) => !!ev.target.closest('.ligne')
         : (ev) => !!ev.target.closest('#' + e.id);
@@ -3435,9 +3457,11 @@ if (SUR_MOBILE){
         if (!attendu(ev)) return;
         document.removeEventListener('click', essaiEnCours, true);
         essaiEnCours = null;
+        if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
         titre.textContent = 'Voilà !';
-        texte.textContent = 'C\'est aussi simple que ça.';
-        setTimeout(() => montrer(etape + 1), 1400);
+        texte.textContent = 'C\'est aussi simple que ça. (On remet tout en place — ce n\'était qu\'une démonstration.)';
+        /* on laisse VOIR l'effet une seconde, puis on remet tout */
+        setTimeout(() => { toutRemettre(); montrer(etape + 1); }, 1600);
       };
       document.addEventListener('click', essaiEnCours, true);
       const passer = document.createElement('button');
@@ -3471,6 +3495,8 @@ if (SUR_MOBILE){
 
   function finir(){
     stopDemo();
+    toutRemettre();
+    if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
     if (essaiEnCours){ document.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; }
     fond.style.pointerEvents = '';
     musiqueDouce(0, true);             /* la bossa s'éteint en fondu */
@@ -3480,13 +3506,24 @@ if (SUR_MOBILE){
     try { localStorage.setItem('boheme-tuto', '1'); } catch(e){}
   }
 
+  let sauvegarde = null;
   function demarrerVisite(){
+    /* on photographie l'état du logiciel : les essais de la visite
+       ne sont que des DÉMONSTRATIONS, tout sera remis en place */
+    try { sauvegarde = { t: au.currentTime, enPause: au.paused }; } catch(e){ sauvegarde = null; }
     fond.classList.add('la');
     fond.classList.remove('plein');    /* le projecteur remplace le voile */
     boite.classList.add('la');
     musique.volume = 0;
     musique.play().then(() => musiqueDouce(0.20, false)).catch(()=>{});
     montrer(0);
+  }
+  function toutRemettre(){
+    if (!sauvegarde) return;
+    try {
+      if (au.currentTime !== sauvegarde.t) au.currentTime = sauvegarde.t;
+      if (sauvegarde.enPause && !au.paused) au.pause();
+    } catch(e){}
   }
 
   function proposer(){
