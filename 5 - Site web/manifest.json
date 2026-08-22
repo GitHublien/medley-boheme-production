@@ -1,0 +1,24 @@
+{
+  "name": "Bohème Production — Medley",
+  "short_name": "Bohème",
+  "description": "Le karaoké du medley Starmania — Cannes, 4 octobre 2026",
+  "start_url": "./PORTE%20%E2%80%94%20Boh%C3%A8me.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

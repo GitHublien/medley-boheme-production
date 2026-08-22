@@ -14,6 +14,9 @@
   } catch(e){}
 })();
 </script>
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Karaoké — Medley complet</title>
@@ -3076,19 +3079,29 @@ if (SUR_MOBILE){
 
       /* et pendant la longue attente : un mot bref, qui s'efface */
       if (!etat && suivante && suivante.debut - t > 25){
-        let ou = nom + ' — sur scène, dans l\'ombre · tu ne chantes pas';
+        /* la mise en scène est annoncée BLOC PAR BLOC : à chaque
+           changement de bloc, la situation est redite — et le
+           passage du rideau fermé au rideau ouvert est marqué */
+        let idx = 0, ou = nom + ' — tu ne chantes pas';
         try {
-          const bc = BLOCS[blocCourant()];
+          idx = blocCourant();
+          const bc = BLOCS[idx];
           const pl = (bc.place || '').toLowerCase();
           const seg = (bc.place || '').split('·')
             .find(x => x.toLowerCase().includes(nom.toLowerCase()));
+          const rideauAvant = idx > 0 &&
+            (BLOCS[idx-1].place || '').toLowerCase().includes('rideau ferm');
           if (seg && seg.toLowerCase().includes('coulisse'))
             ou = nom + ' — en coulisses';
           else if (pl.includes('rideau ferm'))
             ou = nom + ' — en place à ton emplacement · rideau fermé';
+          else if (rideauAvant)
+            ou = 'Le rideau s\'ouvre — ' + nom + ', sur scène dans l\'ombre';
+          else
+            ou = nom + ' — sur scène, dans l\'ombre · tu ne chantes pas';
         } catch(e){}
         texte = ou;
-        etat = 'attend-' + Math.round(suivante.debut);
+        etat = 'attend-' + idx + '-' + Math.round(suivante.debut);
       }
     }
 
@@ -3528,6 +3541,7 @@ if (SUR_MOBILE){
    La bande tout en bas, un rond qu'on attrape avec le doigt, les
    temps aux deux bouts, et les trois boutons en dessous. */
 #lecteurBas{
+  transition:transform .45s ease, opacity .45s ease;
   display:none; position:fixed; left:0; right:0; bottom:0; z-index:55;
   flex-direction:column; gap:2px;
   padding:10px 16px calc(10px + env(safe-area-inset-bottom));
@@ -3568,6 +3582,13 @@ if (SUR_MOBILE){
 #lbPrec, #lbSuiv{ width:48px; height:48px; font-size:17px; }
 #lbPlay{ width:62px; height:62px; font-size:24px;
          background:rgba(255,200,20,.16); }
+/* pendant le chant, tout s'efface : l'écran appartient aux paroles.
+   Un toucher n'importe où ramène les commandes quatre secondes. */
+#lecteurBas.cache{ transform:translateY(112%); opacity:0; pointer-events:none; }
+@media (max-width: 820px) and (orientation: portrait){
+  .barre{ transition:transform .45s ease, opacity .45s ease; }
+  .barre.cache{ transform:translateY(-112%); opacity:0; pointer-events:none; }
+}
 </style>
 <div id="lecteurBas">
   <div id="lbRang1">
@@ -3633,6 +3654,30 @@ if (SUR_MOBILE){
     () => { const x = document.getElementById('bNext'); if (x) x.click(); });
 
   peindre();
+
+  /* ─── S'EFFACER PENDANT LE CHANT ─────────────────────────────
+     La musique joue depuis 4 s sans qu'on touche à rien ? Le
+     lecteur et la barre glissent hors de l'écran : les paroles
+     ont toute la place. Un toucher les ramène. */
+  const lb = document.getElementById('lecteurBas');
+  const barreHaut = document.querySelector('.barre');
+  const actif = () => getComputedStyle(lb).display !== 'none';
+  let minuteurCache = null;
+  function cacher(){
+    if (au.paused || !actif()) return;
+    lb.classList.add('cache');
+    if (barreHaut) barreHaut.classList.add('cache');
+  }
+  function montrer(){
+    if (!actif()) return;
+    lb.classList.remove('cache');
+    if (barreHaut) barreHaut.classList.remove('cache');
+    clearTimeout(minuteurCache);
+    if (!au.paused) minuteurCache = setTimeout(cacher, 4000);
+  }
+  au.addEventListener('play', montrer);
+  au.addEventListener('pause', montrer);
+  document.addEventListener('pointerdown', montrer);
 })();
 </script>
 </body>
