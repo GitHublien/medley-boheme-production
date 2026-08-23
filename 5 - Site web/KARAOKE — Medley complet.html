@@ -435,7 +435,7 @@
    Les réglages servent à fabriquer le karaoké, pas à le suivre.
    Sur un petit écran, on ne garde que l'essentiel : la présence,
    le plein écran, revoir l'intro, et la navigation. */
-@media (max-width: 820px){
+@media (pointer: coarse) and (max-width: 1100px){
   #btnReg{ display:none !important; }
   #btnStyle{
     font-size:15px !important; padding:10px 16px !important;
@@ -3275,7 +3275,7 @@ if (SUR_MOBILE){
    Deux rangées claires : les boutons ensemble, la lecture ensemble.
    Fenêtre (plein écran) et Blocs côte à côte, le lecteur juste
    en dessous avec ses flèches. */
-@media (max-width: 820px) and (orientation: portrait){
+@media (pointer: coarse) and (max-width: 1100px){
   .barre{ display:flex !important; flex-wrap:wrap !important;
           align-items:center; gap:8px !important; }
   #btnStyle{ order:1; } #btnPlein{ order:2; } #btnBlocs{ order:3; }
@@ -3305,6 +3305,13 @@ if (SUR_MOBILE){
   /* et tout ce qui s'affichait en bas remonte au-dessus de lui */
   #rampe{ bottom:calc(126px + env(safe-area-inset-bottom)) !important; }
   #tuto{ bottom:calc(132px + env(safe-area-inset-bottom)) !important; }
+}
+/* couché, le karaoké devient une salle de cinéma : marges larges,
+   texte calibré sur la hauteur, commandes escamotées pareil */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
+  .dedans{ padding-left:9vw !important; padding-right:9vw !important; }
+  .ligne{ font-size:clamp(26px, 5.4vh, 46px) !important; }
+  #rampe{ bottom:calc(96px + env(safe-area-inset-bottom)) !important; }
 }
 
 /* ═══ LE TUTORIEL ═══ */
@@ -3655,7 +3662,7 @@ if (SUR_MOBILE){
    La bande tout en bas, un rond qu'on attrape avec le doigt, les
    temps aux deux bouts, et les trois boutons en dessous. */
 #lecteurBas{
-  transition:transform .45s ease, opacity .45s ease;
+  transition:transform .55s cubic-bezier(0.32,0.72,0,1), opacity .55s cubic-bezier(0.32,0.72,0,1);
   display:none; position:fixed; left:0; right:0; bottom:0; z-index:55;
   flex-direction:column; gap:2px;
   padding:10px 16px calc(10px + env(safe-area-inset-bottom));
@@ -3699,8 +3706,8 @@ if (SUR_MOBILE){
 /* pendant le chant, tout s'efface : l'écran appartient aux paroles.
    Un toucher n'importe où ramène les commandes quatre secondes. */
 #lecteurBas.cache{ transform:translateY(112%); opacity:0; pointer-events:none; }
-@media (max-width: 820px) and (orientation: portrait){
-  .barre{ transition:transform .45s ease, opacity .45s ease; }
+@media (pointer: coarse) and (max-width: 1100px){
+  .barre{ transition:transform .55s cubic-bezier(0.32,0.72,0,1), opacity .55s cubic-bezier(0.32,0.72,0,1); }
   .barre.cache{ transform:translateY(-112%); opacity:0; pointer-events:none; }
 }
 </style>
@@ -3840,54 +3847,63 @@ if (SUR_MOBILE){
   });
 })();
 </script>
-<div id="ecranPortrait" style="display:none;position:fixed;inset:0;z-index:96;
-  background:#000;flex-direction:column;align-items:center;justify-content:center;
-  gap:22px;padding:8vw;text-align:center;">
-  <div style="font-size:64px;animation:tournePort 2s ease-in-out infinite;">📱</div>
-  <div style="font-size:clamp(18px,5vw,24px);font-weight:800;color:#ffc814;">
-    Remets ton téléphone à la verticale</div>
-  <div style="font-size:clamp(14px,3.8vw,17px);color:#e8e2d2;">
-    Le karaoké se vit en <b>mode portrait</b></div>
-</div>
-<style>
-@keyframes tournePort{0%,100%{transform:rotate(90deg)}50%{transform:rotate(0)}}
-</style>
+<div id="toastOrient" style="position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));
+  z-index:96;transform:translateX(-50%) translateY(-160%);
+  padding:10px 22px;border-radius:999px;pointer-events:none;
+  background:rgba(5,5,5,.72);backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.08), 0 12px 40px rgba(0,0,0,.5);
+  color:#ffd678;font-size:12px;font-weight:600;letter-spacing:.22em;
+  text-transform:uppercase;white-space:nowrap;
+  transition:transform .7s cubic-bezier(0.32,0.72,0,1);">mode paysage</div>
 <script>
-/* ═══ LE KARAOKÉ SE VIT À LA VERTICALE ═══
-   En paysage sur téléphone : écran noir et consigne. Au retour en
-   portrait : un petit carillon doré, et l'application apparaît. */
+/* ═══ LE PAYSAGE EST UN MODE, PAS UNE FAUTE ═══
+   On tourne le téléphone, la musique CONTINUE — jamais coupée, même
+   sur une rotation accidentelle. Deux notes discrètes signent la
+   bascule, une pastille la nomme, et la mise en page suit. */
 (function(){
   const tactile = matchMedia('(pointer: coarse)').matches;
-  const ecran = document.getElementById('ecranPortrait');
-  if (!tactile || !ecran) return;
+  if (!tactile) return;
+  const toast = document.getElementById('toastOrient');
   const enPaysage = () => matchMedia('(orientation: landscape)').matches;
 
-  function carillon(){
+  function notes(haut){
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const t0 = ctx.currentTime;
-      [523.25, 659.25, 783.99].forEach((f, i) => {
+      const freqs = haut ? [659.25, 783.99] : [783.99, 659.25];
+      freqs.forEach((f, i) => {
         const o = ctx.createOscillator(), g = ctx.createGain();
         o.frequency.value = f; o.type = 'sine';
-        g.gain.setValueAtTime(0, t0 + i*0.09);
-        g.gain.linearRampToValueAtTime(0.16, t0 + i*0.09 + 0.03);
-        g.gain.exponentialRampToValueAtTime(0.001, t0 + i*0.09 + 1.4);
+        g.gain.setValueAtTime(0, t0 + i*0.11);
+        g.gain.linearRampToValueAtTime(0.10, t0 + i*0.11 + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.001, t0 + i*0.11 + 0.9);
         o.connect(g); g.connect(ctx.destination);
-        o.start(t0 + i*0.09); o.stop(t0 + i*0.09 + 1.5);
+        o.start(t0 + i*0.11); o.stop(t0 + i*0.11 + 1.0);
       });
     } catch(e){}
   }
 
-  let etaitPaysage = enPaysage();
-  function veille(){
-    const p = enPaysage();
-    ecran.style.display = p ? 'flex' : 'none';
-    if (p && !au.paused){ try { au.pause(); } catch(e){} }   /* on ne chante pas couché */
-    if (!p && etaitPaysage) carillon();                       /* l'app apparaît : ding */
-    etaitPaysage = p;
+  let minuteurToast = null;
+  function pastille(texte){
+    if (!toast) return;
+    toast.textContent = texte;
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(minuteurToast);
+    minuteurToast = setTimeout(() => {
+      toast.style.transform = 'translateX(-50%) translateY(-160%)';
+    }, 1900);
   }
-  matchMedia('(orientation: landscape)').addEventListener('change', veille);
-  veille();
+
+  let etaitPaysage = enPaysage();
+  matchMedia('(orientation: landscape)').addEventListener('change', () => {
+    const p = enPaysage();
+    if (p !== etaitPaysage){
+      notes(p);
+      pastille(p ? 'mode paysage' : 'mode portrait');
+      etaitPaysage = p;
+    }
+  });
 })();
 </script>
 </body>
