@@ -2680,6 +2680,17 @@ window.PRESENCE = Object.assign({}, AVEC);
     });
     barre.insertBefore(i, f.nextSibling);
 
+    /* ─── LA MISE À JOUR ─────────────────────────────────────────
+       Le medley continue de se construire. Ce bouton va chercher la
+       dernière version en ligne et l'installe sur-le-champ : pas de
+       réinstallation, rien à faire d'autre. */
+    const maj = document.createElement('button');
+    maj.className = 'btn-reg'; maj.id = 'btnMaj';
+    maj.textContent = '⟳ Mise à jour';
+    maj.title = 'chercher la dernière version';
+    maj.addEventListener('click', () => window.chercherMaj && window.chercherMaj());
+    barre.insertBefore(maj, i.nextSibling);
+
     /* et les Blocs viennent se ranger juste à côté : c'est de la
        navigation, sa place est avec les autres commandes */
     const bl = document.getElementById('btnBlocs');
@@ -2943,6 +2954,21 @@ if (SUR_MOBILE){
 })();
 </script>
 <style>
+/* ═══ LE MESSAGE DE MISE À JOUR ═══ */
+#toastMaj{
+  position:fixed; left:50%; bottom:calc(96px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(150%); z-index:88;
+  max-width:88vw; padding:14px 24px; border-radius:18px; text-align:center;
+  background:rgba(6,6,6,.94); border:1px solid rgba(212,175,55,.5);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  color:#f2ede1; font-size:clamp(14.5px,1.9vw,18px); font-weight:600;
+  line-height:1.5; pointer-events:none; opacity:0;
+  transition:transform .65s cubic-bezier(0.32,0.72,0,1), opacity .5s ease;
+}
+#toastMaj.la{ transform:translateX(-50%) translateY(0); opacity:1; }
+#toastMaj b{ color:#ffc814; }
+
 /* ═══ LE BANDEAU DE MISE EN SCÈNE ═══
    Une bande fixe EN HAUT, présente du début à la fin quand l'aide
    personnelle est allumée. Elle raconte ce qui se passe sur scène,
@@ -3030,6 +3056,7 @@ body[data-pour] #bandeau{ display:flex; }
   max-width:900px; line-height:1.45;
 }
 </style>
+<div id="toastMaj"></div>
 <div id="bandeau"><div class="b-etat"></div><div class="b-texte"></div><button class="b-aller"></button></div>
 <div id="carton"><div class="c-titre"></div><div class="c-place"></div><div class="c-perso"></div></div>
 <script>
@@ -3863,6 +3890,65 @@ body[data-pour] #bandeau{ display:flex; }
   if (deja !== '1') setTimeout(proposer, 1400);
 })();
 </script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   LA MISE À JOUR
+
+   Le medley n'est pas fini : Mickaël en ajoute au fur et à mesure.
+   Ce bouton demande au serveur la dernière version, la compare à
+   celle qui tourne, et l'installe s'il y en a une plus récente.
+   L'application ne se réinstalle jamais : c'est le contenu qui se
+   renouvelle, comme une page qu'on rafraîchit.
+   ═══════════════════════════════════════════════════════════════ */
+const VERSION_APPLI = '23/08/2026 · 17h17';
+(function(){
+  const toast = document.getElementById('toastMaj');
+  let minuteur = null;
+  function dire(html, duree){
+    toast.innerHTML = html;
+    toast.classList.add('la');
+    clearTimeout(minuteur);
+    if (duree) minuteur = setTimeout(() => toast.classList.remove('la'), duree);
+  }
+
+  async function poser(){
+    /* on efface tout ce qui pourrait être gardé en réserve, puis on
+       recharge en gardant le lien personnel (?pour=…) */
+    try { const cs = await caches.keys(); await Promise.all(cs.map(c => caches.delete(c))); } catch(e){}
+    try {
+      const rs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(rs.map(r => r.update()));
+    } catch(e){}
+    const q = new URLSearchParams(location.search);
+    q.set('maj', String(Date.now()));
+    location.replace(location.pathname + '?' + q.toString());
+  }
+
+  window.chercherMaj = async function(){
+    dire('⟳ Je cherche s\'il y a du nouveau…', 0);
+    try {
+      const r = await fetch(location.pathname + '?verif=' + Date.now(), { cache:'no-store' });
+      const t = await r.text();
+      const m = t.match(/VERSION_APPLI\s*=\s*'([^']+)'/);
+      const enLigne = m ? m[1] : null;
+      if (!enLigne){
+        dire('Je n\'ai pas pu vérifier. Réessaie dans un moment.', 5000);
+        return;
+      }
+      if (enLigne === VERSION_APPLI){
+        dire('✔ Tu as déjà la <b>dernière version</b>.<br>'
+           + '<span style="font-size:.86em;opacity:.8">Version ' + VERSION_APPLI + '</span>', 5000);
+        return;
+      }
+      dire('🎉 Une <b>nouvelle version</b> est arrivée !<br>Je l\'installe…', 0);
+      setTimeout(poser, 1200);
+    } catch(e){
+      dire('Pas de réseau pour l\'instant. Réessaie quand tu auras de la connexion.', 5000);
+    }
+  };
+})();
+</script>
+
 <script>
 /* ═══ PAS DE MISE EN VEILLE PENDANT LE KARAOKÉ ═══
    Le « verrou d'éveil » demande au téléphone de garder l'écran

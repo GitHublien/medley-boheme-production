@@ -509,21 +509,51 @@ if ('serviceWorker' in navigator){
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault(); promesse = e;
   });
+
+  /* ─── C'EST INSTALLÉ : ON REFERME DERRIÈRE SOI ─────────────────
+     Le but du lien est d'installer l'application, rien d'autre. Une
+     fois que c'est fait, cette page n'a plus lieu d'être : un
+     toucher et elle se ferme. Ainsi personne ne se retrouve à
+     chercher « où était le lien, déjà ? ». */
+  let dejaInstalle = false;
+  function ecranInstalle(){
+    if (dejaInstalle) return;
+    dejaInstalle = true;
+    ecran.innerHTML =
+      '<img src="media/porte/logo-plein.png" alt="" style="width:min(30vmin,190px);margin-top:11vh">'
+    + '<div style="font-size:clamp(22px,5.8vw,30px);font-weight:800;color:#9dff35;">'
+    + 'C\'est installé !</div>'
+    + '<div style="font-size:clamp(15px,4.2vw,18px);color:#e8e2d2;line-height:1.75;max-width:470px;">'
+    + 'L\'application <b>Bohème</b> est maintenant sur ton écran d\'accueil,<br>'
+    + 'avec le logo doré. C\'est par là que tu entres, désormais.</div>'
+    + '<div style="margin-top:26px;padding:15px 30px;border-radius:999px;'
+    + 'border:1px solid rgba(212,175,55,.7);background:rgba(212,175,55,.14);'
+    + 'color:#ffc814;font-size:clamp(16px,4.4vw,19px);font-weight:800;">'
+    + '👆 Touche l\'écran pour fermer cette page</div>'
+    + '<div id="fermeAide" style="display:none;margin-top:20px;max-width:440px;'
+    + 'font-size:clamp(13.5px,3.7vw,16px);color:#b9b2a0;line-height:1.65;">'
+    + 'Ton téléphone ne me laisse pas fermer la page tout seul.<br>'
+    + 'Ferme cet onglet à la main : ce n\'est pas grave, '
+    + '<b style="color:#e8e2d2">Bohème est déjà installée</b> sur ton écran d\'accueil.</div>';
+    ecran.style.cursor = 'pointer';
+    ecran.addEventListener('click', () => {
+      try { window.close(); } catch(e){}
+      setTimeout(() => {
+        const a = document.getElementById('fermeAide');
+        if (a) a.style.display = 'block';
+      }, 500);
+    });
+  }
+  /* que l'installation passe par notre bouton ou par le menu du
+     navigateur, on tombe au même endroit */
+  window.addEventListener('appinstalled', ecranInstalle);
   document.getElementById('grosInstall').addEventListener('click', async e => {
     e.stopPropagation();
     if (promesse){
       promesse.prompt();
       const c = await promesse.userChoice;
       promesse = null;
-      if (c && c.outcome === 'accepted'){
-        ecran.innerHTML = '<img src="media/porte/logo-plein.png" alt="" ' +
-          'style="width:min(34vmin,220px);margin-top:14vh">' +
-          '<div style="font-size:clamp(21px,5.6vw,28px);font-weight:800;color:#9dff35;">' +
-          'C\'est installé !</div>' +
-          '<div style="font-size:clamp(15px,4.2vw,18px);color:#e8e2d2;line-height:1.8;max-width:480px;">' +
-          'Ferme cette page, et ouvre l\'application <b>Bohème</b> ' +
-          'depuis ton écran d\'accueil.<br>Le film t\'y attend.</div>';
-      }
+      if (c && c.outcome === 'accepted') ecranInstalle();
     } else {
       /* le téléphone ne propose pas l'installation automatique :
          on montre le chemin manuel */
