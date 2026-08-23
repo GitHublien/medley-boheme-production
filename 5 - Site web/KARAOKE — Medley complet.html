@@ -2262,8 +2262,11 @@ if (RESTE.length){
 const STYLES = [['', 'Classique'], ['st-neon', 'Néon'], ['st-3d', '3D'],
                 ['st-cine', 'Cinéma'], ['st-vague', 'Vague'], ['st-loin', 'Horizon'],
                 ['st-scene', 'Projecteur'], ['st-braise', 'Braise']];
-let stIdx = 0;
-try { stIdx = parseInt(localStorage.getItem('karaoke-style') || '0', 10) || 0; } catch(e){}
+let stIdx = 1;        /* Néon : toutes les phrases restent lisibles et touchables */
+try {
+  const v = localStorage.getItem('karaoke-style');
+  if (v !== null){ const n = parseInt(v, 10); if (!isNaN(n)) stIdx = n; }
+} catch(e){}
 if (stIdx < 0 || stIdx >= STYLES.length) stIdx = 0;
 function appliquerStyle(){
   STYLES.forEach(([c]) => { if (c) document.body.classList.remove(c); });
@@ -2950,7 +2953,7 @@ if (SUR_MOBILE){
   position:fixed; left:0; right:0; top:0; z-index:70;
   display:none; flex-direction:column; justify-content:center;
   align-items:center; gap:5px; text-align:center;
-  height:calc(178px + env(safe-area-inset-top));
+  height:calc(202px + env(safe-area-inset-top));
   padding:calc(9px + env(safe-area-inset-top)) 15px 11px;
   background:rgba(3,3,3,.9);
   backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
@@ -2972,6 +2975,14 @@ body[data-pour] #bandeau{ display:flex; }
   color:#e4dece; max-width:940px;
 }
 /* le moment venu : la bande entière s'allume dans SA couleur */
+#bandeau .b-aller{
+  pointer-events:auto; visibility:hidden; font-family:inherit; cursor:pointer;
+  margin-top:1px; padding:6px 15px; min-height:30px; border-radius:999px;
+  font-size:13px; font-weight:700; letter-spacing:.2px; color:#fff;
+  border:1px solid var(--c-perso,#ffc814); background:rgba(255,255,255,.06);
+  transition:transform .4s cubic-bezier(0.32,0.72,0,1), background .4s; }
+#bandeau .b-aller.la{ visibility:visible; }
+#bandeau .b-aller:active{ transform:scale(.96); background:rgba(255,255,255,.13); }
 #bandeau.alerte{
   background:color-mix(in srgb, var(--c-perso,#ffc814) 13%, rgba(3,3,3,.92));
   border-bottom-color:var(--c-perso,#ffc814);
@@ -2985,7 +2996,8 @@ body[data-pour] #bandeau{ display:flex; }
   50%{ filter:drop-shadow(0 0 .85em currentColor); opacity:.86; }
 }
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
-  #bandeau{ height:calc(112px + env(safe-area-inset-top)); }
+  #bandeau{ height:calc(126px + env(safe-area-inset-top)); }
+  #bandeau .b-aller{ font-size:12px; min-height:26px; padding:4px 12px; }
   #bandeau .b-etat{ font-size:17px; }
   #bandeau .b-texte{ font-size:13.5px; line-height:1.32; }
 }
@@ -3018,7 +3030,7 @@ body[data-pour] #bandeau{ display:flex; }
   max-width:900px; line-height:1.45;
 }
 </style>
-<div id="bandeau"><div class="b-etat"></div><div class="b-texte"></div></div>
+<div id="bandeau"><div class="b-etat"></div><div class="b-texte"></div><button class="b-aller"></button></div>
 <div id="carton"><div class="c-titre"></div><div class="c-place"></div><div class="c-perso"></div></div>
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -3045,6 +3057,12 @@ body[data-pour] #bandeau{ display:flex; }
   const bandeau = document.getElementById('bandeau');
   const bEtat = bandeau.querySelector('.b-etat');
   const bTexte = bandeau.querySelector('.b-texte');
+  const bAller = bandeau.querySelector('.b-aller');
+  let ouAller = null;
+  bAller.addEventListener('click', () => {
+    if (ouAller == null) return;
+    try { au.currentTime = ouAller; if (au.paused) document.getElementById('b').click(); } catch(e){}
+  });
   const carton = document.getElementById('carton');
 
   /* ─── LA MISE EN SCÈNE, MOMENT PAR MOMENT ─────────────────────
@@ -3099,10 +3117,10 @@ body[data-pour] #bandeau{ display:flex; }
         titre:'Tu reviens · vous vous mettez en place',
         texte:'Plateau noir pendant la voix off de Radio Monopolis. Vous quatre, vous revenez '
             + 'vous placer. (La mise en scène précise de ce passage se travaille : elle sera écrite ici.)' },
-      { de:366, a:514,
+      { de:366, a:514, suivi:true,
         titre:'Le Blues du Businessman · tu chantes',
-        texte:'Vous êtes les quatre hommes en ligne, lumière froide et verticale. Tu chantes ici, '
-            + 'seul et avec les autres. La mise en scène détaillée n\'est pas encore arrêtée.' },
+        texte:'Les quatre hommes en ligne, lumière froide et verticale. Tu chantes ici, '
+            + 'seul et avec les autres.' },
       { de:514, a:99999,
         titre:'La suite arrive',
         texte:'Les blocs suivants du medley ne sont pas encore préparés dans l\'application. '
@@ -3149,17 +3167,51 @@ body[data-pour] #bandeau{ display:flex; }
       LIGNES = [];
       for (const b of BLOCS) for (const l of (b.lignes || []))
         if (l.debut != null)
-          LIGNES.push({ debut:l.debut, fin:l.fin, qui:l.qui, num:b.num, titre:b.titre });
+          LIGNES.push({ debut:l.debut, fin:l.fin, qui:l.qui, texte:l.texte,
+                        num:b.num, titre:b.titre });
       LIGNES.sort((x, y) => x.debut - y.debut);
     } catch(e){ LIGNES = []; }
     return LIGNES;
   }
 
+  /* les groupes nommés du medley : « Les 4 hommes », c'est bien lui
+     aussi — c'est ça qui manquait dans Le Blues du Businessman */
+  const QUATRE_HOMMES = ['adrien', 'mickael', 'bry', 'elie'];
+  function sansAccent(x){
+    return (x || '').toLowerCase().replace(/œ/g, 'oe').replace(/æ/g, 'ae')
+           .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
   function concerne(q){
-    q = (q || '').toLowerCase();
-    const ch  = q.includes('chœur') || q.includes('choeur') || q.includes('tous');
-    const moi = q.includes(NOMS[cible].toLowerCase());
-    return { ch, moi, actif: moi || ch };
+    const n = sansAccent(q);
+    const tous = n.includes('choeur') || n.includes('tous') || n.includes('les six');
+    const quatre = n.includes('4 hommes') || n.includes('quatre hommes');
+    const moi = n.includes(sansAccent(NOMS[cible]));
+    const ch = tous || quatre;
+    const type = n.includes('les six') ? 'six'
+               : quatre ? 'quatre'
+               : n.includes('choeur') ? 'choeurs'
+               : tous ? 'tous' : 'nom';
+    return { ch, moi, type,
+             actif: moi || tous || (quatre && QUATRE_HOMMES.includes(cible)) };
+  }
+
+  /* avec qui il chante cette phrase-là : c'est ce qu'il veut savoir */
+  function avecQui(q, texte){
+    const n = sansAccent(q);
+    const bout = texte ? ' « ' + texte.replace(/~/g, '') + ' »' : '';
+    if (n.includes('les six') || (n.includes('tous') && !n.includes('choeur')))
+      return 'Tous les six ensemble :' + bout;
+    if (n.includes('4 hommes') || n.includes('quatre hommes'))
+      return 'Vous quatre ensemble — Adrien, Mickaël, Bry et toi :' + bout;
+    if (n.includes('choeur')){
+      const avec = [];
+      for (const k in NOMS) if (k !== cible && n.includes(sansAccent(NOMS[k]))) avec.push(NOMS[k]);
+      return 'Les chœurs' + (avec.length ? ', avec ' + avec.join(' et ') : ', avec tout le monde') + ' :' + bout;
+    }
+    const autres = [];
+    for (const k in NOMS) if (k !== cible && n.includes(sansAccent(NOMS[k]))) autres.push(NOMS[k]);
+    if (autres.length) return 'Tu chantes avec ' + autres.join(' et ') + ' :' + bout;
+    return 'Tu chantes seul :' + bout;
   }
 
   /* ─── LE BANDEAU, PILOTÉ PAR L'HORLOGE ───────────────────────
@@ -3214,13 +3266,15 @@ body[data-pour] #bandeau{ display:flex; }
                              return { titre:a.titre, texte:a.texte, cle:'au' + a.titre }; })();
     const saut = Math.abs(t - tPrecedent) > 2.5;
     tPrecedent = t;
+    const attente = (m && m.suivi) ? 2500 : LECTURE_MIN;
     if (enCours && !saut && paire.cle !== enCours.cle
-        && Date.now() - depuis < LECTURE_MIN){
+        && Date.now() - depuis < attente){
       paire = enCours;                    /* pas encore lu : on garde */
     } else if (!enCours || paire.cle !== enCours.cle){
       enCours = paire; depuis = Date.now();
     }
     let titre = paire.titre, texte = paire.texte, cle = paire.cle;
+    const suivi = !!(m && m.suivi);
 
     /* 2 · L'ANNONCE D'ENTRÉE, qui prend la ligne du haut */
     let alerte = false;
@@ -3228,8 +3282,13 @@ body[data-pour] #bandeau{ display:flex; }
       const c = concerne(l.qui);
       if (!c.actif) continue;
       if (t >= l.debut - 0.3 && t <= l.fin + 1.2){
-        titre = c.ch ? '🎤 À TOI — avec les chœurs !'
-                     : '🎤 À TOI, ' + nom.toUpperCase() + ' !';
+        titre = c.type === 'choeurs' ? '🎤 À TOI — avec les chœurs !'
+              : c.type === 'quatre'   ? '🎤 À TOI — les quatre hommes !'
+              : (c.type === 'six' || c.type === 'tous') ? '🎤 À TOI — tous ensemble !'
+              : '🎤 À TOI, ' + nom.toUpperCase() + ' !';
+        /* là où la mise en scène n'est pas écrite, la ligne du bas
+           dit AVEC QUI il chante, phrase après phrase */
+        if (suivi){ texte = avecQui(l.qui, l.texte); cle = 'sv' + Math.round(l.debut); }
         alerte = true; cle += '|go' + Math.round(l.debut);
         break;
       }
@@ -3241,6 +3300,11 @@ body[data-pour] #bandeau{ display:flex; }
         } else if (dans <= PREAVIS){
           titre = '⟶ Bientôt à toi, ' + nom + ' — prépare-toi';
           cle += '|pr' + Math.round(l.debut);
+        }
+        if (suivi){
+          texte = 'Ensuite : ' + avecQui(l.qui, l.texte);
+          const barre = cle.indexOf('|');
+          cle = 'sv-av' + Math.round(l.debut) + (barre >= 0 ? cle.slice(barre) : '');
         }
         break;               /* la première ligne à venir suffit */
       }
@@ -3264,11 +3328,36 @@ body[data-pour] #bandeau{ display:flex; }
       }
     }
 
+    /* ─── L'ATTENTE EST LONGUE ? on propose d'y aller ─────────
+       Deux ou trois phrases avant son entrée : de quoi se lancer
+       sans écouter tout le medley. (Le conseil reste d'entendre
+       l'ensemble au moins une fois — mais pour travailler, on va
+       droit au but.) */
+    let proposition = '';
+    ouAller = null;
+    if (!alerte){
+      let suivante = null, iSuiv = -1;
+      for (let k = 0; k < lignes.length; k++){
+        const l = lignes[k];
+        if (l.debut > t && concerne(l.qui).actif){ suivante = l; iSuiv = k; break; }
+      }
+      if (suivante && suivante.debut - t > 45){
+        /* on recule de trois phrases : il entend ce qui amène la sienne */
+        const avant = lignes[Math.max(0, iSuiv - 3)];
+        ouAller = Math.max(0, Math.min(avant.debut, suivante.debut - 25) - 0.4);
+        proposition = '⏩ Aller à ton passage · ' + suivante.titre;
+        cle += '|go?' + Math.round(suivante.debut);
+      }
+    }
+
     if (cle === dernierEtat) return;      /* rien de neuf : on ne touche à rien */
     dernierEtat = cle;
     bandeau.style.setProperty('--c-perso', coul);
     bEtat.textContent = titre;
-    bTexte.textContent = texte;
+    bTexte.textContent = texte
+      + (proposition ? ' Tu peux aussi glisser ton doigt sur la barre du bas.' : '');
+    bAller.textContent = proposition;
+    bAller.classList.toggle('la', !!proposition);
     bandeau.classList.toggle('alerte', alerte);
   }
   setInterval(majBandeau, 400);

@@ -909,6 +909,16 @@ document.getElementById('simStyle').addEventListener('click', function(){
 });
 PREPARATIONS['style'] = () => {
   menuSimS.classList.remove('vu');
+  /* le Néon est le style de départ : c'est celui qui garde toutes les
+     phrases lisibles, donc touchables pour aller de l'une à l'autre */
+  if (![...ecranStyle.classList].some(c => c.startsWith('st-'))){
+    let dep = 1;
+    try { const v = localStorage.getItem('karaoke-style');
+          if (v !== null){ const n = parseInt(v, 10); if (!isNaN(n)) dep = n; } } catch(e){}
+    if (STYLES_SIM[dep] && STYLES_SIM[dep][0]) ecranStyle.classList.add(STYLES_SIM[dep][0]);
+    document.getElementById('s-nomstyle').textContent = (STYLES_SIM[dep] || STYLES_SIM[1])[1];
+    [...menuSimS.children].forEach((x, i) => x.classList.toggle('actif', i === dep));
+  }
   afficherLignes(document.getElementById('sceneStyle'), blocLecture.lignes);
 };
 
