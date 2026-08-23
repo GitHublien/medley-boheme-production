@@ -2673,7 +2673,12 @@ window.PRESENCE = Object.assign({}, AVEC);
     i.textContent = "⟲ Revoir l'intro";
     i.title = 'revenir au début, avec le film';
     i.addEventListener('click', () => {
-      try { localStorage.removeItem('boheme-sans-plein-ecran'); } catch(e){}
+      try {
+        localStorage.removeItem('boheme-sans-plein-ecran');
+        /* revoir l'intro, c'est repartir de zéro : l'aide se
+           represente juste après le film, comme au premier jour */
+        localStorage.removeItem('boheme-tuto');
+      } catch(e){}
       const q = new URLSearchParams(location.search);
       q.set('revoir', '1');
       location.href = 'PORTE — Bohème.html?' + q.toString();
@@ -3944,7 +3949,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 19h10';
+const VERSION_APPLI = '23/08/2026 · 19h19';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;

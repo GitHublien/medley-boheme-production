@@ -92,6 +92,14 @@ if (SUR_MOBILE){
   R.delaiMin = Math.max(R.delaiMin, 8);
   R.flou = Math.max(R.flou || 0, 4);
 }
+/* Un écran de téléphone est étroit et haut. Une vidéo large
+   « recadrée pour remplir » s'y retrouve zoomée à l'extrême : le
+   visage devient énorme, on n'en voit qu'un morceau, et il cache le
+   texte au lieu de l'accompagner. Sur téléphone on montre donc
+   l'image ENTIÈRE, réduite : on voit enfin un visage, et il ne
+   mange rien. (Le fond noir de la vidéo disparaît de lui-même :
+   elle est posée en mode « écran ».) */
+const REDUCTION_MOBILE = 0.5;
 
 /* ─── LES PLACES ─────────────────────────────────────────────────
    Où l'on emmène le visage, en pour cent de l'écran. Le zoom est
@@ -123,8 +131,8 @@ function fabriquer(){
   v.preload = 'none'; v.loop = true;
   Object.assign(v.style, {
     position:'fixed', left:'0', top:'0',
-    width:'100%', height:'100%',        /* TOUJOURS plein écran */
-    objectFit:'cover',                  /* jamais de bande noire */
+    width:'100%', height:'100%',
+    objectFit: SUR_MOBILE ? 'contain' : 'cover',
     opacity:'0', pointerEvents:'none',
     zIndex:String(R.zIndex), mixBlendMode:'screen',
     willChange:'opacity', transformOrigin:'50% 45%',
@@ -186,7 +194,8 @@ function venir(){
   const miroir = (!grosPlan && Math.random() < 0.4) ? -1 : 1;
   v.style.transition = 'opacity ' + (franche ? R.fonduBref : R.fondu) + 's ease';
   v.style.objectPosition = '50% 42%';        /* le visage est là, on n'y touche pas */
-  v.style.transform = `scale(${zoom}) translate(${dx/zoom}%, ${dy/zoom}%) scaleX(${miroir})`;
+  const z = SUR_MOBILE ? zoom * REDUCTION_MOBILE : zoom;
+  v.style.transform = `scale(${z}) translate(${dx/z}%, ${dy/z}%) scaleX(${miroir})`;
   v.style.filter = `blur(${flou}px)`;
   v.style.webkitMaskImage = masque;
   v.style.maskImage = masque;

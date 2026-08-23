@@ -28,6 +28,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 #presence{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;
           opacity:0;pointer-events:none;z-index:0;
           transition:opacity 2.6s ease;mix-blend-mode:screen}
+/* ─── SUR TÉLÉPHONE, ELLE SE FAIT PETITE ──────────────────────────
+   Un écran de téléphone est étroit et haut : une vidéo large
+   « recadrée pour remplir » se retrouve zoomée à l'extrême, et le
+   visage devient énorme au point de cacher le logo au lieu de
+   l'accompagner. On montre l'image ENTIÈRE, réduite et posée dans
+   le bas de l'écran : on voit enfin le visage, et il ne mange rien. */
+@media (pointer: coarse) and (max-width: 1100px){
+  #presence{
+    object-fit:contain;
+    transform:scale(.52) translateY(24%);
+    transform-origin:50% 62%;
+    filter:blur(1px);
+  }
+}
 
 #halo{position:fixed;left:50%;top:50%;width:min(64vmin,640px);height:min(64vmin,640px);
       transform:translate(-50%,-50%);pointer-events:none;opacity:0;z-index:1;
@@ -432,7 +446,7 @@ const R = {
 
   presenceDebut   : 3.0,    // elle est là presque tout de suite
   presencePendant : 0.30,   // pendant le film : on la voit vraiment
-  presenceApres   : 0.38,   // une fois le logo posé
+  presenceApres   : 0.38,   // une fois le logo posé (0.22 sur téléphone)
   presenceFranche : 0.78,   // quand elle ose : elle est LÀ
   chanceFranche   : 0.40,   // deux fois sur cinq
   presenceMin     : 3.5,    // elle revient très vite
@@ -584,10 +598,15 @@ function programmerPresence(){
   const d = R.presenceMin + Math.random()*(R.presenceMax-R.presenceMin);
   minuteur = setTimeout(venir, d*1000);
 }
+const TACTILE = matchMedia('(pointer: coarse)').matches;
 function venir(){
   if (parti) return;
+  /* sur téléphone, elle n'apparaît QUE sur l'écran d'attente (le
+     logo posé, c'est une pause). Jamais par-dessus le film. */
+  if (TACTILE && !relais){ programmerPresence(); return; }
   const franche = relais && Math.random() < R.chanceFranche;
-  const force = franche ? R.presenceFranche : (relais ? R.presenceApres : R.presencePendant);
+  let force = franche ? R.presenceFranche : (relais ? R.presenceApres : R.presencePendant);
+  if (TACTILE) force = Math.min(force, 0.30);   /* jamais envahissante */
   pres.src = 'media/presence/' + tirer() + '.mp4';
   pres.currentTime = 0;
   pres.play().then(() => {
