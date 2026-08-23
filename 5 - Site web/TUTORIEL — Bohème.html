@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le tutoriel — Bohème</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   LE TUTORIEL — une salle d'entraînement, pas une surcouche.
+
+   Ici, RIEN n'est caché : pas de voile, pas de projecteur qui
+   éteint l'écran. C'est une réplique du karaoké, une leçon à la
+   fois. On appuie pour de vrai, on voit l'effet pour de vrai,
+   et on prend le temps de regarder.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --or:#d4af37; --or-vif:#ffc814; --noir:#050505;
+  --encre:#e8e2d2; --gris:#8a8474;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ margin:0; padding:0; background:var(--noir); color:var(--encre);
+  font-family:"Jost","Segoe UI",system-ui,sans-serif;
+  min-height:100dvh; overflow-x:hidden; }
+body{
+  background:
+    radial-gradient(1000px 500px at 80% -10%, rgba(212,175,55,.07), transparent 60%),
+    radial-gradient(800px 600px at -10% 110%, rgba(212,175,55,.05), transparent 60%),
+    var(--noir);
+}
+button{ font-family:inherit; cursor:pointer; user-select:none; }
+
+/* ─── L'EN-TÊTE ────────────────────────────────────────────── */
+header{ display:flex; align-items:center; justify-content:space-between;
+  padding:calc(12px + env(safe-area-inset-top)) 18px 10px; }
+header .marque{ font-weight:800; letter-spacing:.24em; text-transform:uppercase;
+  font-size:13px; color:var(--or); }
+header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
+  color:var(--gris); margin-top:2px; text-transform:none; }
+#btnQuitter{ border:1px solid rgba(212,175,55,.4); background:rgba(212,175,55,.08);
+  color:var(--encre); border-radius:999px; padding:9px 16px; font-size:13px;
+  min-height:42px; transition:background .5s cubic-bezier(0.32,0.72,0,1); }
+#btnMusique{ border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05);
+  color:var(--encre); border-radius:999px; width:42px; height:42px; font-size:16px;
+  margin-right:8px; }
+
+/* ─── LA PROGRESSION (des points, toujours visibles) ───────── */
+#points{ display:flex; gap:8px; justify-content:center; padding:4px 0 12px; }
+#points i{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.14);
+  transition:all .6s cubic-bezier(0.32,0.72,0,1); }
+#points i.fait{ background:rgba(212,175,55,.5); }
+#points i.ici{ background:var(--or-vif); transform:scale(1.45);
+  box-shadow:0 0 12px rgba(255,200,20,.5); }
+
+/* ─── LES CHAPITRES ────────────────────────────────────────── */
+.chapitre{ display:none; padding:6px 16px calc(120px + env(safe-area-inset-bottom));
+  max-width:1080px; margin:0 auto; animation:arrive .7s cubic-bezier(0.32,0.72,0,1); }
+.chapitre.ici{ display:block; }
+@keyframes arrive{ from{ opacity:0; transform:translateY(26px); } to{ opacity:1; transform:none; } }
+
+.chapitre h1{ font-size:clamp(26px,6vw,40px); font-weight:800; margin:10px 0 4px;
+  color:#fff; letter-spacing:.01em; }
+.chapitre h1 .picto{ color:var(--or-vif); margin-right:10px; }
+.chapitre .sous{ color:var(--gris); font-size:clamp(14px,3.6vw,17px);
+  margin:0 0 18px; line-height:1.5; }
+
+/* les cases d'explication : autour de la démonstration, jamais dessus */
+.cases{ display:grid; gap:12px; margin:16px 0; }
+@media (min-width:760px){ .cases{ grid-template-columns:1fr 1fr; } }
+.case{ background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.09);
+  border-radius:18px; padding:14px 18px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.05); }
+.case b{ color:var(--or-vif); display:block; margin-bottom:5px; font-size:14px;
+  letter-spacing:.06em; text-transform:uppercase; }
+.case p{ margin:0; font-size:15px; line-height:1.6; color:var(--encre); }
+
+/* la consigne : ce qu'on te demande de faire, en clair */
+.consigne{ display:flex; align-items:center; gap:12px;
+  background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.45);
+  border-radius:16px; padding:13px 16px; margin:14px 0; font-size:16px;
+  font-weight:600; color:#fff; }
+.consigne .rond{ flex:none; width:34px; height:34px; border-radius:50%;
+  background:rgba(255,200,20,.18); display:flex; align-items:center;
+  justify-content:center; font-size:17px; }
+.consigne.reussi{ background:rgba(120,220,90,.1); border-color:rgba(120,220,90,.5); }
+.consigne.reussi .rond{ background:rgba(120,220,90,.18); }
+
+/* ─── L'ÉCRAN D'ENTRAÎNEMENT (la réplique du karaoké) ──────── */
+.ecran-cadre{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+  border-radius:26px; padding:8px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.06), 0 24px 70px rgba(0,0,0,.55); }
+.ecran{ background:#0a0a0a; border-radius:19px; overflow:hidden;
+  border:1px solid rgba(212,175,55,.22); position:relative; }
+.ecran .bandeau{ display:flex; align-items:baseline; gap:10px;
+  padding:11px 16px; border-bottom:1px solid rgba(212,175,55,.18);
+  background:rgba(212,175,55,.05); }
+.ecran .bandeau .n{ color:var(--or); font-weight:800; font-size:13px; opacity:.75; }
+.ecran .bandeau .t{ color:#fff; font-weight:800;
+  font-size:clamp(15px,4vw,19px); flex:1; }
+.ecran .bandeau .h{ color:var(--gris); font-size:12.5px;
+  font-variant-numeric:tabular-nums; }
+.scene-sim{ padding:22px 16px 26px; min-height:170px; display:flex;
+  flex-direction:column; gap:14px; justify-content:center; position:relative; }
+.sim-ligne{ text-align:center; font-family:"Nunito","Jost",sans-serif;
+  font-weight:900; font-size:clamp(19px,5.2vw,28px); line-height:1.35;
+  color:#4b4638; transition:color .3s; }
+.sim-ligne .quile{ display:block; font-family:"Jost",sans-serif; font-weight:600;
+  font-size:11.5px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--couleur-qui, var(--gris)); opacity:.85; margin-bottom:3px; }
+.sim-mot{ transition:color .18s, text-shadow .18s; }
+.sim-mot.ok{ color:var(--couleur-qui, var(--or-vif)); }
+.sim-ligne.chantee{ color:#6a6455; }
+
+/* les styles du karaoké, reproduits pour la démonstration */
+.ecran.st-neon .sim-mot.ok{ color:#7df9ff;
+  text-shadow:0 0 10px #00e5ff, 0 0 26px rgba(0,229,255,.55); }
+.ecran.st-3d .sim-mot.ok{ color:#ffd863;
+  text-shadow:1px 1px 0 #7a5c00, 2px 2px 0 #5c4500, 3px 3px 6px rgba(0,0,0,.7); }
+.ecran.st-cine .sim-ligne{ font-family:Georgia,"Times New Roman",serif;
+  font-weight:700; letter-spacing:.05em; }
+.ecran.st-cine .sim-mot.ok{ color:#f5e9c8; text-shadow:0 2px 18px rgba(245,233,200,.35); }
+.ecran.st-vague .sim-mot.ok{ color:#7fd8ff; display:inline-block;
+  animation:vague 1.1s ease-in-out infinite; }
+@keyframes vague{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
+.ecran.st-loin .scene-sim{ perspective:420px; }
+.ecran.st-loin .sim-ligne{ transform:rotateX(14deg); }
+.ecran.st-loin .sim-mot.ok{ color:#ffe9a8; text-shadow:0 0 14px rgba(255,233,168,.4); }
+.ecran.st-scene .scene-sim{ background:radial-gradient(300px 190px at 50% 46%,
+  rgba(255,244,200,.13), transparent 70%); }
+.ecran.st-scene .sim-mot.ok{ color:#fff3c4; text-shadow:0 0 16px rgba(255,243,196,.5); }
+.ecran.st-braise .sim-mot.ok{ color:#ff9c46;
+  text-shadow:0 0 9px rgba(255,90,20,.75), 0 -2px 18px rgba(255,140,40,.45); }
+
+/* ─── LES COMMANDES RÉPLIQUES (identiques au vrai karaoké) ─── */
+.pupitre{ display:flex; gap:10px; justify-content:center; align-items:center;
+  flex-wrap:wrap; padding:16px 10px 6px; }
+.btn-sim{ border:1px solid rgba(212,175,55,.55); background:rgba(212,175,55,.1);
+  color:var(--encre); border-radius:12px; padding:12px 20px; font-size:16px;
+  font-weight:600; min-height:48px;
+  transition:transform .4s cubic-bezier(0.32,0.72,0,1), background .4s; }
+.btn-sim:active{ transform:scale(.96); }
+.btn-sim.grand{ font-size:22px; padding:14px 30px; }
+.btn-sim.appelle{ animation:appelle 1.6s cubic-bezier(0.32,0.72,0,1) infinite; }
+@keyframes appelle{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,200,20,.5); }
+  55%{ box-shadow:0 0 0 13px rgba(255,200,20,0); } }
+
+/* la barre de temps réplique */
+.rail-sim{ position:relative; height:34px; display:flex; align-items:center;
+  margin:6px 14px; cursor:pointer; }
+.rail-sim .fondrail{ position:absolute; left:0; right:0; height:6px;
+  border-radius:3px; background:rgba(255,255,255,.12); }
+.rail-sim .fait{ position:absolute; left:0; height:6px; border-radius:3px;
+  background:linear-gradient(90deg, var(--or), var(--or-vif)); width:0%; }
+.rail-sim .tete{ position:absolute; width:18px; height:18px; border-radius:50%;
+  background:var(--or-vif); box-shadow:0 0 10px rgba(255,200,20,.6);
+  transform:translateX(-50%); left:0%; }
+
+/* le menu réplique (Blocs, Style) — même dessin que le vrai */
+.menu-sim{ display:none; background:rgba(10,10,10,.98);
+  border:1px solid rgba(212,175,55,.5); border-radius:14px; overflow:hidden;
+  margin:10px auto 4px; max-width:440px;
+  box-shadow:0 18px 60px rgba(0,0,0,.6); }
+.menu-sim.vu{ display:block; animation:arrive .45s cubic-bezier(0.32,0.72,0,1); }
+.menu-sim a{ display:flex; align-items:baseline; gap:12px; padding:13px 16px;
+  color:#c9c2b0; text-decoration:none; font-size:16.5px; cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.05); }
+.menu-sim a:last-child{ border-bottom:0; }
+.menu-sim a:active{ background:rgba(212,175,55,.16); }
+.menu-sim a .mn{ color:var(--or); opacity:.6; font-size:12px; width:22px; }
+.menu-sim a .mt{ flex:1; }
+.menu-sim a .mh{ color:#6d675a; font-size:12.5px; font-variant-numeric:tabular-nums; }
+
+/* l'encadré d'UN bloc : quand on choisit, on ne voit QUE lui */
+#ficheBloc{ display:none; margin:14px 0 0; border:1px solid rgba(212,175,55,.5);
+  background:rgba(212,175,55,.07); border-radius:20px; padding:18px 20px; }
+#ficheBloc.vu{ display:block; animation:arrive .55s cubic-bezier(0.32,0.72,0,1); }
+#ficheBloc .fb-num{ color:var(--or); font-weight:800; font-size:13px;
+  letter-spacing:.18em; }
+#ficheBloc .fb-titre{ color:#fff; font-weight:800; font-size:clamp(20px,5.4vw,27px);
+  margin:2px 0 6px; }
+#ficheBloc .fb-h{ color:var(--gris); font-size:14px;
+  font-variant-numeric:tabular-nums; margin-bottom:10px; }
+#ficheBloc .fb-place{ color:var(--encre); font-size:15px; line-height:1.55;
+  border-left:3px solid rgba(212,175,55,.5); padding-left:12px; margin-bottom:14px; }
+
+/* le compte du Style : dix secondes pour REGARDER */
+#compteStyle{ display:none; align-items:center; gap:10px; margin:10px 2px 0;
+  color:var(--gris); font-size:13.5px; }
+#compteStyle.vu{ display:flex; }
+#compteStyle .barre-c{ flex:1; height:4px; border-radius:2px;
+  background:rgba(255,255,255,.1); overflow:hidden; }
+#compteStyle .barre-c i{ display:block; height:100%; width:100%;
+  background:linear-gradient(90deg, var(--or), var(--or-vif));
+  transform-origin:left; }
+
+/* la démonstration de l'aide personnelle */
+#demoRampe{ min-height:96px; display:flex; align-items:center; justify-content:center;
+  padding:10px; }
+#demoRampe .carte-r{ border-radius:16px; padding:14px 26px; text-align:center;
+  font-weight:800; font-size:clamp(18px,5vw,26px); transition:all .5s cubic-bezier(0.32,0.72,0,1); }
+
+/* ─── LE PIED : précédent / suivant, toujours là ───────────── */
+#pied{ position:fixed; left:0; right:0; bottom:0; z-index:10;
+  display:flex; gap:10px; align-items:center; justify-content:space-between;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(5,5,5,.82); backdrop-filter:blur(18px);
+  border-top:1px solid rgba(255,255,255,.08); }
+#pied button{ border-radius:999px; min-height:50px; padding:12px 22px;
+  font-size:16px; font-weight:700;
+  transition:transform .4s cubic-bezier(0.32,0.72,0,1), opacity .4s; }
+#pied button:active{ transform:scale(.97); }
+#bPrec{ border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.05);
+  color:var(--encre); }
+#bSuiv{ border:1px solid rgba(212,175,55,.65); background:rgba(255,200,20,.2);
+  color:var(--or-vif); flex:1; max-width:340px; }
+#bPrec[disabled]{ opacity:.3; pointer-events:none; }
+
+/* la fin : le grand départ */
+.grand-depart{ display:block; width:100%; max-width:480px; margin:22px auto 10px;
+  text-align:center; border-radius:22px; padding:20px 26px; font-size:21px;
+  font-weight:800; color:#111; border:0;
+  background:linear-gradient(135deg, var(--or), var(--or-vif));
+  box-shadow:0 16px 50px rgba(212,175,55,.35);
+  transition:transform .45s cubic-bezier(0.32,0.72,0,1); }
+.grand-depart:active{ transform:scale(.97); }
+.petit-depart{ display:block; margin:0 auto; background:none; border:0;
+  color:var(--gris); font-size:14.5px; text-decoration:underline; padding:10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marque">Bohème<small>la salle d'entraînement</small></div>
+  <div>
+    <button id="btnMusique" title="musique d'ambiance">♪</button>
+    <button id="btnQuitter">✕ Aller au karaoké</button>
+  </div>
+</header>
+<div id="points"></div>
+
+<!-- ═══ CHAPITRE 0 · BIENVENUE ═══ -->
+<section class="chapitre" data-ch="accueil">
+  <h1><span class="picto">✦</span><span id="salut">Bienvenue !</span></h1>
+  <p class="sous" id="sousSalut">Ici, c'est la salle d'entraînement : une copie du karaoké
+    où tu peux tout essayer, sans risque et sans rien casser. Rien n'est caché,
+    tout s'explique. Cinq minutes, et tu sauras tout faire.</p>
+  <div class="cases">
+    <div class="case"><b>Comment ça marche</b>
+      <p>Une commande à la fois. Tu appuies pour de vrai, tu vois l'effet pour de vrai
+      — avec les vraies paroles et la vraie musique du medley.</p></div>
+    <div class="case"><b>À ton rythme</b>
+      <p>Les boutons « Précédent » et « Suivant » sont toujours en bas de l'écran.
+      Tu avances quand tu veux, tu reviens quand tu veux, tu quitte quand tu veux.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 1 · LECTURE ═══ -->
+<section class="chapitre" data-ch="lecture">
+  <h1><span class="picto">▶</span>Lancer la musique</h1>
+  <p class="sous">Le bouton le plus important. Un appui : la musique part et les
+    paroles s'allument en rythme. Un autre appui : tout se met en pause.</p>
+  <div class="ecran-cadre"><div class="ecran" id="ecranLecture">
+    <div class="bandeau"><span class="n" id="l-num"></span><span class="t" id="l-titre"></span><span class="h" id="l-h"></span></div>
+    <div class="scene-sim" id="sceneLecture"></div>
+  </div></div>
+  <div class="pupitre">
+    <button class="btn-sim grand appelle" id="simPlay">▶</button>
+  </div>
+  <div class="consigne" id="cLecture"><span class="rond">👆</span>
+    <span>Appuie sur <b>▶</b> : regarde les mots s'allumer au moment où ils se chantent.</span></div>
+  <div class="cases">
+    <div class="case"><b>Pourquoi les mots s'allument</b>
+      <p>Chaque mot s'éclaire pile quand il doit être chanté : c'est ton guide.
+      Tant que le mot est éteint, ce n'est pas encore le moment.</p></div>
+    <div class="case"><b>La pause</b>
+      <p>Le même bouton met en pause. Réappuie : la musique repart exactement
+      où elle s'était arrêtée.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 2 · LA BARRE DE TEMPS ═══ -->
+<section class="chapitre" data-ch="barre">
+  <h1><span class="picto">━</span>La barre de temps</h1>
+  <p class="sous">Elle montre où on en est dans le medley. Et on peut la toucher
+    n'importe où : la musique saute directement à cet endroit.</p>
+  <div class="ecran-cadre"><div class="ecran">
+    <div class="bandeau"><span class="n" id="r-num"></span><span class="t" id="r-titre"></span><span class="h" id="r-h"></span></div>
+    <div class="scene-sim" id="sceneRail"></div>
+    <div class="rail-sim" id="railSim">
+      <div class="fondrail"></div><div class="fait" id="railFait"></div><div class="tete" id="railTete"></div>
+    </div>
+  </div></div>
+  <div class="consigne" id="cRail"><span class="rond">👆</span>
+    <span>Touche la barre <b>n'importe où</b> : tu verras la musique sauter à cet endroit du medley.</span></div>
+  <div class="cases">
+    <div class="case"><b>À quoi ça sert en répétition</b>
+      <p>Revenir dix secondes en arrière pour refaire un passage, ou filer
+      directement à la fin : c'est le moyen le plus rapide de se déplacer.</p></div>
+    <div class="case"><b>Le curseur doré</b>
+      <p>Le petit rond, c'est « maintenant ». Tout ce qui est doré à sa gauche
+      est déjà passé.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 3 · LES FLÈCHES ═══ -->
+<section class="chapitre" data-ch="fleches">
+  <h1><span class="picto">⟨ ⟩</span>Les flèches</h1>
+  <p class="sous">Titre précédent, titre suivant. Le medley enchaîne sept titres :
+    les flèches sautent de l'un à l'autre, proprement, au début de chacun.</p>
+  <div class="ecran-cadre"><div class="ecran">
+    <div class="bandeau"><span class="n" id="f-num"></span><span class="t" id="f-titre"></span><span class="h" id="f-h"></span></div>
+    <div class="scene-sim" id="sceneFleches"></div>
+  </div></div>
+  <div class="pupitre">
+    <button class="btn-sim grand" id="simPrev">⟨</button>
+    <button class="btn-sim grand appelle" id="simNext">⟩</button>
+  </div>
+  <div class="consigne" id="cFleches"><span class="rond">👆</span>
+    <span>Appuie sur <b>⟩</b> puis encore : regarde le titre changer dans le bandeau.</span></div>
+  <div class="cases">
+    <div class="case"><b>Sept titres, deux flèches</b>
+      <p>⟨ revient au titre d'avant, ⟩ file au titre d'après. On tombe toujours
+      pile au début du titre, jamais au milieu d'une phrase.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 4 · LES BLOCS ═══ -->
+<section class="chapitre" data-ch="blocs">
+  <h1><span class="picto">≡</span>Les Blocs</h1>
+  <p class="sous">Le sommaire du medley. Un appui sur « Blocs » : la liste des sept
+    titres apparaît. Tu choisis, et tu y es. C'est tout, et c'est précieux.</p>
+  <div class="pupitre" style="padding-top:4px;">
+    <button class="btn-sim grand appelle" id="simBlocs">Blocs</button>
+  </div>
+  <div class="menu-sim" id="menuSimB"></div>
+  <div id="ficheBloc">
+    <div class="fb-num" id="fb-num"></div>
+    <div class="fb-titre" id="fb-titre"></div>
+    <div class="fb-h" id="fb-h"></div>
+    <div class="fb-place" id="fb-place"></div>
+    <div class="ecran-cadre"><div class="ecran">
+      <div class="scene-sim" id="sceneBloc" style="min-height:120px;"></div>
+    </div></div>
+    <div class="pupitre"><button class="btn-sim" id="simEcouteBloc">▶ Écouter le début de ce bloc</button></div>
+  </div>
+  <div class="consigne" id="cBlocs"><span class="rond">👆</span>
+    <span>Appuie sur <b>Blocs</b>, puis choisis un titre : tu ne verras QUE lui.</span></div>
+  <div class="cases">
+    <div class="case"><b>Ce que montre la fiche</b>
+      <p>Le titre choisi, son horaire dans le medley, et la mise en scène à ce
+      moment-là : qui est sur scène, qui est en coulisse, où en est le rideau.</p></div>
+    <div class="case"><b>Dans le vrai karaoké</b>
+      <p>Choisir un bloc t'y emmène immédiatement : la musique et les paroles
+      sautent au début de ce titre. Idéal pour travailler SON passage.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 5 · LE STYLE ═══ -->
+<section class="chapitre" data-ch="style">
+  <h1><span class="picto">✎</span>Le Style</h1>
+  <p class="sous">L'habillage des paroles. Huit costumes différents pour le même
+    texte : choisis-en un, et prends dix secondes pour le regarder vivre.</p>
+  <div class="pupitre" style="padding-top:4px;">
+    <button class="btn-sim grand appelle" id="simStyle">Style</button>
+  </div>
+  <div class="menu-sim" id="menuSimS"></div>
+  <div class="ecran-cadre" style="margin-top:12px;"><div class="ecran" id="ecranStyle">
+    <div class="bandeau"><span class="n"></span><span class="t" id="s-nomstyle">Classique</span><span class="h"></span></div>
+    <div class="scene-sim" id="sceneStyle"></div>
+  </div></div>
+  <div id="compteStyle"><span id="compteTexte">Regarde…</span><div class="barre-c"><i id="compteBarre"></i></div></div>
+  <div class="consigne" id="cStyle"><span class="rond">👆</span>
+    <span>Appuie sur <b>Style</b> et choisis un costume. Essaie-en plusieurs : chacun a dix secondes de démonstration.</span></div>
+  <div class="cases">
+    <div class="case"><b>Ton choix est retenu</b>
+      <p>Le style que tu préfères ici sera déjà en place quand tu ouvriras le
+      vrai karaoké. Tu peux en changer quand tu veux.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 6 · LES PHRASES ═══ -->
+<section class="chapitre" data-ch="phrases">
+  <h1><span class="picto">❝</span>Les phrases</h1>
+  <p class="sous">Chaque phrase affichée est aussi un raccourci : tu la touches,
+    la musique va directement à cette phrase-là. Parfait pour répéter UNE réplique.</p>
+  <div class="ecran-cadre"><div class="ecran">
+    <div class="bandeau"><span class="n" id="p-num"></span><span class="t" id="p-titre"></span><span class="h"></span></div>
+    <div class="scene-sim" id="scenePhrases"></div>
+  </div></div>
+  <div class="consigne" id="cPhrases"><span class="rond">👆</span>
+    <span>Touche une phrase, n'importe laquelle : la musique repart pile dessus.</span></div>
+  <div class="cases">
+    <div class="case"><b>Le geste de répétition</b>
+      <p>Une phrase difficile ? Touche-la, chante, touche-la encore, rechante.
+      C'est le geste que tu feras le plus souvent.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 7 · TON AIDE ═══ -->
+<section class="chapitre" data-ch="aide">
+  <h1><span class="picto">✦</span><span id="titreAide">Ton aide personnelle</span></h1>
+  <p class="sous" id="sousAide">Pendant le medley, une petite annonce te prévient
+    avant chacun de tes passages. Voilà exactement ce qu'elle fera :</p>
+  <div class="ecran-cadre"><div class="ecran">
+    <div id="demoRampe"><div class="carte-r" id="carteRampe">…</div></div>
+  </div></div>
+  <div class="pupitre"><button class="btn-sim" id="simRejoueRampe">↻ Revoir l'annonce</button></div>
+  <div class="cases">
+    <div class="case"><b>Les trois temps</b>
+      <p>« Prépare-toi » douze secondes avant · « Attention » juste avant ·
+      « À TOI » au moment exact. Tes chœurs sont annoncés pareil, dans ta couleur.</p></div>
+    <div class="case"><b>Le bouton ✦ Aide</b>
+      <p>Quand tu connaîtras tes passages par cœur, ce bouton éteint l'aide.
+      Le réglage est retenu — et le même bouton la rallume.</p></div>
+  </div>
+</section>
+
+<!-- ═══ CHAPITRE 8 · C'EST À TOI ═══ -->
+<section class="chapitre" data-ch="fin">
+  <h1><span class="picto">🎤</span>Tu sais tout</h1>
+  <p class="sous">▶ pour lancer · la barre pour se déplacer · ⟨ ⟩ pour changer de
+    titre · Blocs pour le sommaire · Style pour l'habillage · une phrase pour la
+    répéter. Le vrai karaoké t'attend.</p>
+  <button class="grand-depart" id="departKaraoke">Ouvrir le karaoké</button>
+  <button class="petit-depart" id="departIntro">⟲ Revoir le film d'introduction</button>
+  <div class="cases" style="margin-top:22px;">
+    <div class="case"><b>Revenir ici</b>
+      <p>Le bouton « ? » du karaoké ramène à cette salle d'entraînement,
+      quand tu veux, autant de fois que tu veux.</p></div>
+  </div>
+</section>
+
+<div id="pied">
+  <button id="bPrec">← Précédent</button>
+  <button id="bSuiv">Suivant →</button>
+</div>
+
+<audio id="ambiance" src="media/porte/tuto-musique.mp3" loop preload="none"></audio>
+<audio id="extrait" src="media/bande-voix-temoins.mp3" preload="metadata"></audio>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   LA SALLE D'ENTRAÎNEMENT
+   Un moteur d'extraits (la vraie bande, les vrais mots minutés),
+   et huit chapitres qui s'en servent chacun à leur façon.
+   ═══════════════════════════════════════════════════════════════ */
+const BLOCS = [{"num": "01", "titre": "Narration d'ouverture", "deb": 0, "fin": 30, "place": "Rideau fermé · Adrien, Mickaël, Bry, Candice et Élie déjà en place · Stéphanie en coulisse", "lignes": [{"texte": "Paris 1978", "qui": "Voix off", "debut": 4.483, "fin": 5.263, "mots": [{"m": "Paris", "t": 4.483, "f": 4.763}, {"m": "1978", "t": 4.763, "f": 5.263}]}, {"texte": "Un opéra rock va tout changer : Starmania.", "qui": "Voix off", "debut": 9.025, "fin": 12.047, "mots": [{"m": "Un", "t": 9.025, "f": 9.125}, {"m": "opéra", "t": 9.165, "f": 9.526}, {"m": "rock", "t": 9.626, "f": 9.906}, {"m": "va", "t": 10.046, "f": 10.126}, {"m": "tout", "t": 10.306, "f": 10.466}, {"m": "changer :", "t": 10.526, "f": 10.986}, {"m": "Starmania.", "t": 11.347, "f": 12.047}]}, {"texte": "Dans le rôle de Johnny Rockfort : Daniel Balavoine.", "qui": "Voix off", "debut": 14.168, "fin": 18.271, "mots": [{"m": "Dans", "t": 14.168, "f": 14.288}, {"m": "le", "t": 14.288, "f": 14.368}, {"m": "rôle", "t": 14.448, "f": 14.689}, {"m": "de", "t": 14.729, "f": 14.809}, {"m": "Johnny", "t": 14.869, "f": 15.129}, {"m": "Rockfort :", "t": 15.189, "f": 15.869}, {"m": "Daniel", "t": 16.95, "f": 17.35}, {"m": "Balavoine.", "t": 17.55, "f": 18.271}]}]}, {"num": "02", "titre": "Quand on arrive en ville", "deb": 30, "fin": 108, "place": "Adrien, Mickaël, Bry, Candice et Élie · Stéphanie n'entre pas encore", "lignes": [{"texte": "Quand tout l'monde dort tranquille", "qui": "Adrien", "debut": 31.021, "fin": 32.561, "mots": [{"m": "Quand", "t": 31.021, "f": 31.161}, {"m": "tout", "t": 31.201, "f": 31.321}, {"m": "l'monde", "t": 31.321, "f": 31.681}, {"m": "dort", "t": 31.741, "f": 31.921}, {"m": "tran", "t": 31.941, "f": 32.161}, {"m": "quille", "t": 32.241, "f": 32.561, "j": 1}]}, {"texte": "Dans les banlieues-dortoir", "qui": "Adrien", "debut": 33.381, "fin": 34.682, "mots": [{"m": "Dans", "t": 33.381, "f": 33.521}, {"m": "les", "t": 33.541, "f": 33.641}, {"m": "ban", "t": 33.661, "f": 33.781}, {"m": "lieues-dor", "t": 33.841, "f": 34.302, "j": 1}, {"m": "toir", "t": 34.382, "f": 34.682, "j": 1}]}, {"texte": "C'est l'heure où les zonards descendent sur la ville", "qui": "Adrien", "debut": 35.842, "fin": 39.303, "mots": [{"m": "C'est", "t": 35.842, "f": 36.022}, {"m": "l'heure", "t": 36.022, "f": 36.222}, {"m": "où", "t": 36.242, "f": 36.322}, {"m": "les", "t": 36.362, "f": 36.502}, {"m": "zo", "t": 36.542, "f": 36.662}, {"m": "nards", "t": 36.782, "f": 37.122, "j": 1}, {"m": "des", "t": 37.402, "f": 37.562}, {"m": "cendent", "t": 37.642, "f": 38.082, "j": 1}, {"m": "sur", "t": 38.162, "f": 38.363}, {"m": "la", "t": 38.423, "f": 38.523}, {"m": "ville", "t": 38.663, "f": 39.303}]}]}, {"num": "03", "titre": "Explosion, flash radio", "deb": 108, "fin": 130, "place": "Sortie de tous, d'un bloc · Stéphanie entre à cour", "lignes": [{"texte": "Ici Radio Monopolis, il est minuit passé, les émeutes embrasent la ville.", "qui": "Voix off", "debut": 112.565, "fin": 117.549, "mots": [{"m": "Ici", "t": 112.565, "f": 112.805}, {"m": "Radio", "t": 112.885, "f": 113.145}, {"m": "Monopolis,", "t": 113.246, "f": 113.946}, {"m": "il", "t": 114.446, "f": 114.527}, {"m": "est", "t": 114.547, "f": 114.627}, {"m": "minuit", "t": 114.627, "f": 114.927}, {"m": "passé,", "t": 114.967, "f": 115.287}, {"m": "les", "t": 116.168, "f": 116.288}, {"m": "émeutes", "t": 116.348, "f": 116.688}, {"m": "embrasent", "t": 116.708, "f": 117.149}, {"m": "la", "t": 117.169, "f": 117.249}, {"m": "ville.", "t": 117.269, "f": 117.549}]}, {"texte": "Pendant ce temps, dans un café des souterrains, une serveuse rêve les yeux ouverts d'un garçon qui ne l'aimera jamais.", "qui": "Voix off", "debut": 119.51, "fin": 126.856, "mots": [{"m": "Pendant", "t": 119.51, "f": 119.831}, {"m": "ce", "t": 119.871, "f": 119.951}, {"m": "temps,", "t": 120.051, "f": 120.28}, {"m": "dans", "t": 120.631, "f": 120.791}, {"m": "un", "t": 120.811, "f": 120.891}, {"m": "café", "t": 120.952, "f": 121.252}, {"m": "des", "t": 121.352, "f": 121.452}, {"m": "souterrains,", "t": 121.492, "f": 122.012}, {"m": "une", "t": 122.413, "f": 122.553}, {"m": "serveuse", "t": 122.593, "f": 123.033}, {"m": "rêve", "t": 123.093, "f": 123.473}, {"m": "les", "t": 123.554, "f": 123.694}, {"m": "yeux", "t": 123.734, "f": 123.874}, {"m": "ouverts", "t": 123.914, "f": 124.414}, {"m": "d'un", "t": 124.975, "f": 125.135}, {"m": "garçon", "t": 125.155, "f": 125.575}, {"m": "qui", "t": 125.795, "f": 125.875}, {"m": "ne", "t": 125.955, "f": 126.035}, {"m": "l'aimera", "t": 126.055, "f": 126.416}, {"m": "jamais.", "t": 126.496, "f": 126.856}]}, {"texte": "Un garçon pas comme les autres.", "qui": "Voix off", "debut": 127.517, "fin": 129.818, "mots": [{"m": "Un", "t": 127.517, "f": 127.597}, {"m": "garçon", "t": 127.637, "f": 128.057}, {"m": "pas", "t": 128.898, "f": 129.0}, {"m": "comme", "t": 129.078, "f": 129.278}, {"m": "les", "t": 129.318, "f": 129.458}, {"m": "autres.", "t": 129.518, "f": 129.818}]}]}, {"num": "04", "titre": "Ziggy", "deb": 131, "fin": 213, "place": "Stéphanie seule en scène", "lignes": [{"texte": "Ziggy", "qui": "Stéphanie", "debut": 131.861, "fin": 132.421, "mots": [{"m": "Zi", "t": 131.861, "f": 132.001}, {"m": "ggy", "t": 132.281, "f": 132.421, "j": 1}]}, {"texte": "Il s'appelle Ziggy", "qui": "Stéphanie", "debut": 134.841, "fin": 136.622, "mots": [{"m": "Il", "t": 134.841, "f": 134.941}, {"m": "s'a", "t": 135.041, "f": 135.141}, {"m": "ppelle", "t": 135.201, "f": 135.942, "j": 1}, {"m": "Zi", "t": 136.162, "f": 136.302}, {"m": "ggy", "t": 136.482, "f": 136.622, "j": 1}]}, {"texte": "Je suis folle de lui", "qui": "Stéphanie", "debut": 138.642, "fin": 140.363, "mots": [{"m": "Je", "t": 138.642, "f": 138.722}, {"m": "suis", "t": 138.862, "f": 139.062}, {"m": "folle", "t": 139.202, "f": 139.823}, {"m": "de", "t": 139.943, "f": 140.043}, {"m": "lui", "t": 140.143, "f": 140.363}]}]}, {"num": "05", "titre": "La chanson de Ziggy", "deb": 213, "fin": 316, "place": "Adrien et Stéphanie, eux seuls", "lignes": [{"texte": "Le voilà, le voilà, c'est lui, c'est lui.", "qui": "Pensée de Stéphanie", "debut": 214.944, "fin": 217.388, "mots": [{"m": "Le", "t": 214.944, "f": 215.044}, {"m": "voilà,", "t": 215.084, "f": 215.344}, {"m": "le", "t": 215.705, "f": 215.785}, {"m": "voilà,", "t": 215.825, "f": 216.086}, {"m": "c'est", "t": 216.366, "f": 216.506}, {"m": "lui,", "t": 216.546, "f": 216.647}, {"m": "c'est", "t": 217.107, "f": 217.268}, {"m": "lui.", "t": 217.308, "f": 217.388}]}, {"texte": "Tourne la tête, tourne la tête.", "qui": "Pensée de Stéphanie", "debut": 218.362, "fin": 219.925, "mots": [{"m": "Tourne", "t": 218.362, "f": 218.622}, {"m": "la", "t": 218.682, "f": 218.763}, {"m": "tête,", "t": 218.863, "f": 219.103}, {"m": "tourne", "t": 219.143, "f": 219.384}, {"m": "la", "t": 219.444, "f": 219.524}, {"m": "tête.", "t": 219.624, "f": 219.925}]}, {"texte": "Un seul instant, un seul instant, un seul, un seul.", "qui": "Pensée de Stéphanie", "debut": 219.916, "fin": 222.991, "mots": [{"m": "Un", "t": 219.916, "f": 220.003}, {"m": "seul", "t": 220.046, "f": 220.22}, {"m": "instant,", "t": 220.285, "f": 220.761}, {"m": "un", "t": 220.761, "f": 220.848}, {"m": "seul", "t": 220.87, "f": 221.042}, {"m": "instant,", "t": 221.107, "f": 221.562}, {"m": "un", "t": 221.714, "f": 221.8}, {"m": "seul,", "t": 221.909, "f": 222.169}, {"m": "un", "t": 222.516, "f": 222.624}, {"m": "seul.", "t": 222.71, "f": 222.991}]}]}, {"num": "06", "titre": "Radio Monopolis, le duplex", "deb": 316, "fin": 366, "place": "Plateau noir pendant la voix off · les quatre hommes se mettent en place dans l'obscurité", "lignes": [{"texte": "Excusez-moi, on a quelques interférences.", "qui": "Radio Monopolis — Stéphane", "debut": 318.202, "fin": 320.563, "mots": [{"m": "Excusez-moi,", "t": 318.202, "f": 318.802}, {"m": "on", "t": 319.042, "f": 319.122}, {"m": "a", "t": 319.162, "f": 319.242}, {"m": "quelques", "t": 319.302, "f": 319.642}, {"m": "interférences.", "t": 319.703, "f": 320.563}]}, {"texte": "Un certain Ziggy, apparemment.", "qui": "Radio Monopolis — Stéphane", "debut": 320.843, "fin": 322.605, "mots": [{"m": "Un", "t": 320.843, "f": 320.923}, {"m": "certain", "t": 320.983, "f": 321.384}, {"m": "Ziggy,", "t": 321.584, "f": 321.904}, {"m": "apparemment.", "t": 322.084, "f": 322.605}]}, {"texte": "Bon, je ne sais même pas qui c'est.", "qui": "Radio Monopolis — Stéphane", "debut": 322.945, "fin": 325.206, "mots": [{"m": "Bon,", "t": 322.945, "f": 323.125}, {"m": "je", "t": 323.965, "f": 324.046}, {"m": "ne", "t": 324.086, "f": 324.166}, {"m": "sais", "t": 324.226, "f": 324.346}, {"m": "même", "t": 324.386, "f": 324.566}, {"m": "pas", "t": 324.626, "f": 324.746}, {"m": "qui", "t": 324.766, "f": 324.866}, {"m": "c'est.", "t": 324.986, "f": 325.206}]}]}, {"num": "07", "titre": "Le Blues du Businessman", "deb": 366, "fin": 514, "place": "Les quatre hommes en ligne, lumière froide et verticale · Stéphanie et Candice en retrait dans l'ombre, elles n'apparaissent que sur leurs questions", "lignes": [{"texte": "J'ai du succès dans mes affaires", "qui": "Mickaël", "debut": 370.421, "fin": 373.061, "mots": [{"m": "J'ai", "t": 370.343352127102, "f": 370.4577426783022}, {"m": "du", "t": 370.46553578974834, "f": 370.5733205855271}, {"m": "suc", "t": 370.58267231926243, "f": 370.6922945144381}, {"m": "cès", "t": 370.70164624817346, "f": 370.9392644650353, "j": 1}, {"m": "dans", "t": 371.12474051745335, "f": 371.3398517186595}, {"m": "mes", "t": 371.36167243070855, "f": 371.43080043070853}, {"m": "a", "t": 371.802864622869, "f": 372.22770940902234}, {"m": "ffaires", "t": 372.2635577216746, "f": 372.3280147216746, "j": 1}]}, {"texte": "J'ai du succès dans mes amours", "qui": "Bry", "debut": 373.641, "fin": 376.242, "mots": [{"m": "J'ai", "t": 373.641, "f": 373.781}, {"m": "du", "t": 373.821, "f": 373.901}, {"m": "suc", "t": 374.001, "f": 374.161}, {"m": "cès", "t": 374.221, "f": 374.461, "j": 1}, {"m": "dans", "t": 374.541, "f": 374.781}, {"m": "mes", "t": 374.841, "f": 375.402}, {"m": "a", "t": 375.45560315435466, "f": 375.53560315435465}, {"m": "mours", "t": 375.5725100313116, "f": 376.1925100313116, "j": 1}]}, {"texte": "Je change souvent de secrétaire", "qui": "Adrien", "debut": 376.624, "fin": 380.124, "mots": [{"m": "Je", "t": 376.624, "f": 376.704}, {"m": "change", "t": 376.804, "f": 377.184}, {"m": "sou", "t": 377.264, "f": 377.424}, {"m": "vent", "t": 377.47773795374565, "f": 377.55773795374563, "j": 1}, {"m": "de", "t": 377.7079542059933, "f": 377.8884984867927}, {"m": "se", "t": 377.94371858208666, "f": 378.2205619080753}, {"m": "cré", "t": 378.26357787313003, "f": 378.656983107194, "j": 1}, {"m": "taire", "t": 378.744, "f": 379.88315574626, "j": 1}]}]}];
+
+const COULEURS = { 'Adrien':'#ffc814', 'Mickaël':'#00ffcc', 'Bry':'#ff7a1f',
+  'Élie':'#9dff35', 'Stéphanie':'#ff4fa8', 'Candice':'#b45cff',
+  'Voix off':'#d4af37', 'Tous':'#ffffff' };
+const PRENOMS = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
+  mickael:'Mickaël', bry:'Bry', elie:'Élie' };
+const COULEURS_CLE = { adrien:'#ffc814', mickael:'#00ffcc', bry:'#ff7a1f',
+  elie:'#9dff35', stephanie:'#ff4fa8', candice:'#b45cff' };
+
+function mmss(t){ t = Math.max(0, Math.round(t));
+  return Math.floor(t/60) + ':' + String(t%60).padStart(2,'0'); }
+
+/* qui est-ce ? (lien personnel ou prénom gravé dans le téléphone) */
+let QUI = (new URLSearchParams(location.search).get('pour') || '').toLowerCase();
+if (!PRENOMS[QUI]){ try { QUI = (localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){} }
+if (!PRENOMS[QUI]) QUI = '';
+
+/* venir ici vaut pour « la visite a été proposée » : le karaoké
+   ne redemandera plus à chaque ouverture */
+try { localStorage.setItem('boheme-tuto', '1'); } catch(e){}
+
+/* ─── LA MUSIQUE D'AMBIANCE ─────────────────────────────────── */
+const ambiance = document.getElementById('ambiance');
+const extrait = document.getElementById('extrait');
+ambiance.volume = 0;
+let ambianceVoulue = true, ambianceLancee = false;
+function fonduAmbiance(cible){
+  clearInterval(fonduAmbiance._m);
+  fonduAmbiance._m = setInterval(() => {
+    const v = ambiance.volume, pas = 0.015;
+    if (Math.abs(v - cible) <= pas){ ambiance.volume = cible; clearInterval(fonduAmbiance._m); }
+    else ambiance.volume = v + (cible > v ? pas : -pas);
+  }, 70);
+}
+function lancerAmbiance(){
+  if (ambianceLancee || !ambianceVoulue) return;
+  ambiance.play().then(() => { ambianceLancee = true; fonduAmbiance(0.16); }).catch(()=>{});
+}
+document.addEventListener('pointerdown', lancerAmbiance, { once:false });
+document.getElementById('btnMusique').addEventListener('click', (e) => {
+  e.stopPropagation();
+  ambianceVoulue = !ambianceVoulue;
+  document.getElementById('btnMusique').textContent = ambianceVoulue ? '♪' : '♪̶';
+  document.getElementById('btnMusique').style.opacity = ambianceVoulue ? '1' : '.45';
+  if (ambianceVoulue){ ambianceLancee = false; lancerAmbiance(); }
+  else fonduAmbiance(0);
+});
+
+/* ─── LE MOTEUR D'EXTRAITS ──────────────────────────────────────
+   Il affiche des lignes (avec la couleur du chanteur), joue la
+   vraie bande, et allume chaque mot à son heure exacte. */
+let ticker = null, finExtrait = 0, apresExtrait = null;
+/* sauter dans la bande SEULEMENT quand elle est prête : sinon le
+   saut est perdu et l'extrait repartirait du tout début */
+function sauterPuisJouer(t){
+  const y = () => { try { extrait.currentTime = Math.max(0, t); } catch(e){}
+                    extrait.play().catch(()=>{}); };
+  if (extrait.readyState >= 1) y();
+  else { extrait.addEventListener('loadedmetadata', y, { once:true }); extrait.load(); }
+}
+function afficherLignes(zone, lignes){
+  zone.innerHTML = '';
+  lignes.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'sim-ligne';
+    d.style.setProperty('--couleur-qui', COULEURS[l.qui] || '#ffc814');
+    const q = document.createElement('span');
+    q.className = 'quile'; q.textContent = l.qui;
+    d.appendChild(q);
+    l.mots.forEach((w, i) => {
+      const s = document.createElement('span');
+      s.className = 'sim-mot';
+      /* w.j = syllabe qui se recolle au mot d'avant (« tran»+«quille ») */
+      s.textContent = (i && !w.j ? ' ' : '') + w.m;
+      s.dataset.t = w.t; d.appendChild(s);
+    });
+    d.dataset.debut = l.debut; d.dataset.fin = l.fin;
+    zone.appendChild(d);
+  });
+}
+function jouerExtrait(zone, lignes, quandFini, depuis){
+  arreterExtrait();
+  if (!lignes.length) return;
+  afficherLignes(zone, lignes);
+  const debut = (depuis !== undefined) ? depuis : lignes[0].debut - 0.35;
+  finExtrait = lignes[lignes.length - 1].fin + 0.45;
+  apresExtrait = quandFini || null;
+  fonduAmbiance(0.04);                       /* l'ambiance s'efface devant la bande */
+  sauterPuisJouer(debut);
+  ticker = setInterval(() => {
+    const t = extrait.currentTime;
+    zone.querySelectorAll('.sim-mot').forEach(s =>
+      s.classList.toggle('ok', parseFloat(s.dataset.t) <= t));
+    zone.querySelectorAll('.sim-ligne').forEach(d =>
+      d.classList.toggle('chantee', parseFloat(d.dataset.fin) < t));
+    if (t >= finExtrait) arreterExtrait(true);
+  }, 60);
+}
+function arreterExtrait(fini){
+  if (ticker){ clearInterval(ticker); ticker = null; }
+  try { extrait.pause(); } catch(e){}
+  if (ambianceVoulue && ambianceLancee) fonduAmbiance(0.16);
+  if (fini && apresExtrait){ const f = apresExtrait; apresExtrait = null; f(); }
+}
+
+function reussir(idConsigne, texte){
+  const c = document.getElementById(idConsigne);
+  if (!c || c.classList.contains('reussi')) return;
+  c.classList.add('reussi');
+  c.querySelector('.rond').textContent = '✓';
+  c.querySelector('span:last-child').innerHTML = texte;
+}
+
+/* ─── LES CHAPITRES ─────────────────────────────────────────── */
+const chapitres = [...document.querySelectorAll('.chapitre')];
+/* sans prénom, pas de chapitre « ton aide » */
+const actifs = chapitres.filter(c => c.dataset.ch !== 'aide' || QUI);
+let ici = 0;
+const points = document.getElementById('points');
+actifs.forEach(() => points.appendChild(document.createElement('i')));
+
+function allerChapitre(i){
+  arreterExtrait();
+  ici = Math.max(0, Math.min(actifs.length - 1, i));
+  chapitres.forEach(c => c.classList.remove('ici'));
+  actifs[ici].classList.add('ici');
+  [...points.children].forEach((p, j) => {
+    p.classList.toggle('ici', j === ici);
+    p.classList.toggle('fait', j < ici);
+  });
+  document.getElementById('bPrec').disabled = (ici === 0);
+  document.getElementById('bSuiv').style.visibility = (ici === actifs.length - 1) ? 'hidden' : 'visible';
+  window.scrollTo({ top:0, behavior:'smooth' });
+  const prepare = PREPARATIONS[actifs[ici].dataset.ch];
+  if (prepare) prepare();
+}
+document.getElementById('bPrec').onclick = () => allerChapitre(ici - 1);
+document.getElementById('bSuiv').onclick = () => allerChapitre(ici + 1);
+
+/* ─── CHAQUE CHAPITRE PRÉPARE SA SCÈNE ──────────────────────── */
+const PREPARATIONS = {};
+
+/* accueil : le prénom, si on le connaît */
+if (QUI){
+  document.getElementById('salut').textContent = 'Bienvenue, ' + PRENOMS[QUI] + ' !';
+  document.getElementById('sousSalut').textContent =
+    'Cette salle d’entraînement est à toi : une copie du karaoké où tu peux '
+    + 'tout essayer sans risque. Rien n’est caché, tout s’explique. '
+    + 'Cinq minutes, et tu sauras tout faire.';
+}
+
+/* 1 · LECTURE */
+const blocLecture = BLOCS[1];
+let lectureEnCours = false;
+PREPARATIONS['lecture'] = () => {
+  document.getElementById('l-num').textContent = blocLecture.num;
+  document.getElementById('l-titre').textContent = blocLecture.titre;
+  document.getElementById('l-h').textContent = mmss(blocLecture.deb) + ' → ' + mmss(blocLecture.fin);
+  afficherLignes(document.getElementById('sceneLecture'), blocLecture.lignes);
+};
+document.getElementById('simPlay').addEventListener('click', function(){
+  this.classList.remove('appelle');
+  if (!lectureEnCours){
+    lectureEnCours = true; this.textContent = '⏸';
+    jouerExtrait(document.getElementById('sceneLecture'), blocLecture.lignes,
+      () => { lectureEnCours = false; document.getElementById('simPlay').textContent = '▶'; });
+    reussir('cLecture', 'C’est ça ! La musique joue, les mots s’allument. '
+      + 'Le même bouton met en <b>pause</b> — essaie aussi.');
+  } else {
+    lectureEnCours = false; this.textContent = '▶';
+    arreterExtrait();
+    reussir('cLecture', 'Parfait : lecture, pause, c’est le même bouton.');
+  }
+});
+
+/* 2 · LA BARRE DE TEMPS */
+const DUREE_TOTALE = BLOCS[BLOCS.length - 1].fin;
+PREPARATIONS['barre'] = () => {
+  const b = BLOCS[1];
+  document.getElementById('r-num').textContent = b.num;
+  document.getElementById('r-titre').textContent = b.titre;
+  document.getElementById('r-h').textContent = mmss(b.deb) + ' / ' + mmss(DUREE_TOTALE);
+  afficherLignes(document.getElementById('sceneRail'), b.lignes.slice(0, 1));
+  majRail(b.deb);
+};
+function majRail(t){
+  const p = Math.max(0, Math.min(100, t / DUREE_TOTALE * 100));
+  document.getElementById('railFait').style.width = p + '%';
+  document.getElementById('railTete').style.left = p + '%';
+}
+document.getElementById('railSim').addEventListener('pointerdown', (ev) => {
+  const r = ev.currentTarget.getBoundingClientRect();
+  const t = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * DUREE_TOTALE;
+  majRail(t);
+  /* dans quel bloc est-on tombé ? on montre SA première phrase */
+  const b = BLOCS.filter(x => x.deb <= t).pop() || BLOCS[0];
+  document.getElementById('r-num').textContent = b.num;
+  document.getElementById('r-titre').textContent = b.titre;
+  document.getElementById('r-h').textContent = mmss(t) + ' / ' + mmss(DUREE_TOTALE);
+  if (b.lignes.length) jouerExtrait(document.getElementById('sceneRail'), b.lignes.slice(0, 1));
+  reussir('cRail', 'Et voilà : tu es tombé dans « ' + b.titre + ' ». '
+    + 'Un appui n’importe où, et la musique y va.');
+});
+
+/* 3 · LES FLÈCHES */
+let iFleche = 1, comptFleches = 0;
+function montrerFleche(joue){
+  const b = BLOCS[iFleche];
+  document.getElementById('f-num').textContent = b.num;
+  document.getElementById('f-titre').textContent = b.titre;
+  document.getElementById('f-h').textContent = mmss(b.deb) + ' → ' + mmss(b.fin);
+  if (joue && b.lignes.length) jouerExtrait(document.getElementById('sceneFleches'), b.lignes.slice(0, 1));
+  else afficherLignes(document.getElementById('sceneFleches'), b.lignes.slice(0, 1));
+}
+PREPARATIONS['fleches'] = () => montrerFleche(false);
+document.getElementById('simNext').addEventListener('click', function(){
+  this.classList.remove('appelle');
+  iFleche = (iFleche + 1) % BLOCS.length;
+  montrerFleche(true);
+  if (++comptFleches >= 2) reussir('cFleches',
+    'Tu as le geste : ⟨ et ⟩ sautent de titre en titre, toujours pile au début.');
+});
+document.getElementById('simPrev').addEventListener('click', () => {
+  iFleche = (iFleche - 1 + BLOCS.length) % BLOCS.length;
+  montrerFleche(true);
+  if (++comptFleches >= 2) reussir('cFleches',
+    'Tu as le geste : ⟨ et ⟩ sautent de titre en titre, toujours pile au début.');
+});
+
+/* 4 · LES BLOCS — le menu est FERMÉ au départ : c'est TOI qui l'ouvres */
+const menuSimB = document.getElementById('menuSimB');
+BLOCS.forEach((b, i) => {
+  const a = document.createElement('a');
+  a.innerHTML = '<span class="mn">' + b.num + '</span><span class="mt">' + b.titre
+    + '</span><span class="mh">' + mmss(b.deb) + '</span>';
+  a.addEventListener('click', () => {
+    menuSimB.classList.remove('vu');
+    const f = document.getElementById('ficheBloc');
+    document.getElementById('fb-num').textContent = 'BLOC ' + b.num;
+    document.getElementById('fb-titre').textContent = b.titre;
+    document.getElementById('fb-h').textContent = 'de ' + mmss(b.deb) + ' à ' + mmss(b.fin)
+      + ' — ' + mmss(b.fin - b.deb) + ' de musique';
+    document.getElementById('fb-place').textContent = b.place || '';
+    afficherLignes(document.getElementById('sceneBloc'), b.lignes.slice(0, 2));
+    f.classList.add('vu');
+    f.dataset.i = i;
+    reussir('cBlocs', 'Exactement ! Tu as choisi « ' + b.titre + ' » : la fiche ne montre '
+      + 'QUE lui. Dans le vrai karaoké, tu y serais déjà.');
+  });
+  menuSimB.appendChild(a);
+});
+document.getElementById('simBlocs').addEventListener('click', function(){
+  this.classList.remove('appelle');
+  menuSimB.classList.toggle('vu');
+});
+document.getElementById('simEcouteBloc').addEventListener('click', () => {
+  const b = BLOCS[parseInt(document.getElementById('ficheBloc').dataset.i || '1', 10)];
+  if (b.lignes.length) jouerExtrait(document.getElementById('sceneBloc'), b.lignes.slice(0, 2));
+});
+PREPARATIONS['blocs'] = () => {
+  menuSimB.classList.remove('vu');
+  document.getElementById('ficheBloc').classList.remove('vu');
+};
+
+/* 5 · LE STYLE — dix secondes pour REGARDER, pas deux */
+const STYLES_SIM = [
+  ['', 'Classique', 'Doré et net : le style de base, lisible partout.'],
+  ['st-neon', 'Néon', 'Bleu électrique qui vibre, ambiance Monopolis.'],
+  ['st-3d', '3D', 'Les lettres prennent du relief, comme en salle.'],
+  ['st-cine', 'Cinéma', 'Lettres de générique, élégance de projection.'],
+  ['st-vague', 'Vague', 'Les mots dansent doucement en rythme.'],
+  ['st-loin', 'Horizon', 'Le texte s’incline vers le lointain.'],
+  ['st-scene', 'Projecteur', 'Un rond de lumière chaude sur les paroles.'],
+  ['st-braise', 'Braise', 'Rouge orangé qui couve, comme un feu.']
+];
+const menuSimS = document.getElementById('menuSimS');
+const ecranStyle = document.getElementById('ecranStyle');
+let compteM = null;
+STYLES_SIM.forEach(([cl, nom, desc], i) => {
+  const a = document.createElement('a');
+  a.innerHTML = '<span class="mt">' + nom + '</span>';
+  a.addEventListener('click', () => {
+    menuSimS.classList.remove('vu');
+    STYLES_SIM.forEach(([c]) => c && ecranStyle.classList.remove(c));
+    if (cl) ecranStyle.classList.add(cl);
+    document.getElementById('s-nomstyle').textContent = nom;
+    try { localStorage.setItem('karaoke-style', String(i)); } catch(e){}
+    /* dix pleines secondes de démonstration, comptées sous tes yeux */
+    const compte = document.getElementById('compteStyle');
+    const barre = document.getElementById('compteBarre');
+    document.getElementById('compteTexte').textContent = nom + ' — ' + desc;
+    compte.classList.add('vu');
+    barre.style.transition = 'none'; barre.style.transform = 'scaleX(1)';
+    requestAnimationFrame(() => { requestAnimationFrame(() => {
+      barre.style.transition = 'transform 10s linear';
+      barre.style.transform = 'scaleX(0)';
+    }); });
+    jouerExtrait(document.getElementById('sceneStyle'), blocLecture.lignes);
+    clearTimeout(compteM);
+    compteM = setTimeout(() => compte.classList.remove('vu'), 10000);
+    reussir('cStyle', '« ' + nom + ' » — joli choix, il est retenu pour le vrai karaoké. '
+      + 'Rouvre <b>Style</b> pour en essayer d’autres.');
+  });
+  menuSimS.appendChild(a);
+});
+document.getElementById('simStyle').addEventListener('click', function(){
+  this.classList.remove('appelle');
+  menuSimS.classList.toggle('vu');
+});
+PREPARATIONS['style'] = () => {
+  menuSimS.classList.remove('vu');
+  afficherLignes(document.getElementById('sceneStyle'), blocLecture.lignes);
+};
+
+/* 6 · LES PHRASES */
+const blocPhrases = BLOCS[4] && BLOCS[4].lignes.length >= 2 ? BLOCS[4] : BLOCS[1];
+PREPARATIONS['phrases'] = () => {
+  document.getElementById('p-num').textContent = blocPhrases.num;
+  document.getElementById('p-titre').textContent = blocPhrases.titre;
+  const zone = document.getElementById('scenePhrases');
+  afficherLignes(zone, blocPhrases.lignes);
+  [...zone.children].forEach((d, i) => {
+    d.style.cursor = 'pointer';
+    d.addEventListener('click', () => {
+      /* on repart PILE sur la phrase touchée */
+      const l = blocPhrases.lignes[i];
+      jouerExtrait(zone, blocPhrases.lignes, null, l.debut - 0.3);
+      reussir('cPhrases', 'Pile dessus ! Touche, chante, retouche, rechante : '
+        + 'c’est comme ça qu’on travaille une phrase.');
+    });
+  });
+};
+
+/* 7 · TON AIDE (seulement sur un lien personnel) */
+let rampeM = [];
+function jouerDemoRampe(){
+  rampeM.forEach(clearTimeout); rampeM = [];
+  const carte = document.getElementById('carteRampe');
+  const coul = COULEURS_CLE[QUI] || '#9dff35';
+  const nom = PRENOMS[QUI] || '';
+  const etapes = [
+    [0,    '🕐 Prépare-toi, ' + nom + ' — dans 12 secondes', 'rgba(255,255,255,.07)', coul, '20px'],
+    [2600, '⚡ Attention…', 'rgba(255,200,20,.15)', '#ffc814', '24px'],
+    [4600, '🎤 À TOI, ' + nom.toUpperCase() + ' !', coul + '22', coul, '30px'],
+    [7600, '✦ Et voilà. Douze secondes d’avance, à chaque passage.', 'rgba(255,255,255,.05)', '#e8e2d2', '17px']
+  ];
+  etapes.forEach(([t, txt, fond, coule, taille]) => {
+    rampeM.push(setTimeout(() => {
+      carte.textContent = txt;
+      carte.style.background = fond;
+      carte.style.color = coule;
+      carte.style.fontSize = taille;
+      carte.style.border = '1px solid ' + coule + '55';
+    }, t));
+  });
+}
+PREPARATIONS['aide'] = () => {
+  if (!QUI) return;
+  document.getElementById('titreAide').textContent = 'Ton aide, ' + PRENOMS[QUI];
+  jouerDemoRampe();
+};
+document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRampe);
+
+/* 8 · LE GRAND DÉPART */
+document.getElementById('departKaraoke').addEventListener('click', () => {
+  location.href = 'KARAOKE — Medley complet.html' + location.search;
+});
+document.getElementById('departIntro').addEventListener('click', () => {
+  const q = new URLSearchParams(location.search); q.set('revoir', '1');
+  location.href = 'PORTE — Bohème.html?' + q.toString();
+});
+document.getElementById('btnQuitter').addEventListener('click', () => {
+  location.href = 'KARAOKE — Medley complet.html' + location.search;
+});
+
+allerChapitre(0);
+</script>
+</body>
+</html>

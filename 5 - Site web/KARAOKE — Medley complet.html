@@ -2265,8 +2265,7 @@ if (stIdx < 0 || stIdx >= STYLES.length) stIdx = 0;
 function appliquerStyle(){
   STYLES.forEach(([c]) => { if (c) document.body.classList.remove(c); });
   if (STYLES[stIdx][0]) document.body.classList.add(STYLES[stIdx][0]);
-  document.getElementById('btnStyle').textContent =
-    stIdx === 0 ? 'Style' : STYLES[stIdx][1];
+  document.getElementById('btnStyle').textContent = 'Style';
 }
 appliquerStyle();
 const menuS = document.createElement('div');
@@ -3624,15 +3623,15 @@ if (SUR_MOBILE){
         + 'Ton <b>aide personnelle est déjà allumée</b> : elle t\'annonce « prépare-toi », '
         + '« à toi », et tes chœurs s\'affichent dans ta couleur. '
         + 'Le bouton ✦ Aide l\'éteint quand tu connaîtras tes passages.<br><br>'
-        + 'Veux-tu la visite rapide des commandes ?';
+        + 'Veux-tu passer par la salle d\'entraînement ? Tu y essaies toutes les commandes, sans risque.';
     } else {
       titre.textContent = 'Première fois ici ?';
-      texte.textContent = 'Veux-tu une visite rapide ? Chaque bouton s\'illumine et s\'explique — trente secondes, et tu sauras tout faire.';
+      texte.textContent = 'Veux-tu passer par la salle d\'entraînement ? Une copie du karaoké où tu essaies chaque commande, sans risque — cinq minutes, et tu sauras tout faire.';
     }
     boutons.innerHTML = '';
     const oui = document.createElement('button');
-    oui.className = 't-oui'; oui.textContent = 'Oui, montre-moi';
-    oui.onclick = () => demarrerVisite();
+    oui.className = 't-oui'; oui.textContent = 'Oui, je m\'entraîne';
+    oui.onclick = () => { location.href = 'TUTORIEL — Bohème.html' + location.search; };
     const non = document.createElement('button');
     non.textContent = 'Non merci';
     non.onclick = finir;
@@ -3642,10 +3641,10 @@ if (SUR_MOBILE){
   /* le bouton « ? » pour relancer la visite quand on veut */
   const bt = document.createElement('button');
   bt.className = 'btn-reg'; bt.id = 'btnTuto'; bt.textContent = '?';
-  bt.title = 'la visite guidée du karaoké';
+  bt.title = 'la salle d\'entraînement (le tutoriel)';
   bt.style.cssText = 'border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.10);font-weight:800;min-width:50px;min-height:44px;font-size:20px;';
   bt.addEventListener('click', () => { montrerDepuisBouton(); });
-  function montrerDepuisBouton(){ demarrerVisite(); }
+  function montrerDepuisBouton(){ location.href = 'TUTORIEL — Bohème.html' + location.search; }
   const ancre = document.getElementById('btnBlocs') || document.getElementById('btnIntro');
   if (ancre && ancre.parentNode) ancre.parentNode.insertBefore(bt, ancre.nextSibling);
 
