@@ -441,14 +441,9 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 @media (pointer: coarse) and (max-width: 1100px){
   #btnReg{ display:none !important; }
   #btnStyle{
-    font-size:15px !important; padding:10px 16px !important;
-    min-height:48px;
     border:1px solid rgba(212,175,55,.55) !important;
     background:rgba(212,175,55,.10) !important;
   }
-  /* les Blocs, eux, restent : c'est la navigation, pas un réglage */
-  #btnBlocs{ font-size:15px !important; padding:10px 16px !important;
-             min-height:48px; }
   /* et leur menu devient tactile */
   #menuB a{ font-size:17px !important; padding:13px 16px !important; }
   .barre{ flex-wrap:wrap; gap:6px; }
@@ -3590,18 +3585,21 @@ body[data-pour] #bandeau{ display:flex; }
   .barre{ background:linear-gradient(180deg, rgba(0,0,0,.97) 84%, transparent) !important;
           justify-content:center !important; }
 
-  /* rangée 1 : les quatre outils, COMPACTS — rien ne s'étire */
-  #btnStyle{ order:1; } #btnPlein{ order:2; } #btnBlocs{ order:3; }
-  #btnTuto{ order:4; }
-  #btnStyle, #btnPlein, #btnBlocs, #btnTuto, #btnAide, #btnIntro{
+  /* DEUX LIGNES, PAS TROIS — tout en dur, tout visible :
+     rangée 1 : Mise à jour · Style · Blocs · ?
+     rangée 2 : Aide · Revoir l'intro · Instrumental (en dernier,
+                pour qu'on comprenne qu'on peut changer) */
+  #btnMaj{ order:1; } #btnStyle{ order:2; } #btnBlocs{ order:3; }
+  #btnTuto{ order:4; } #btnAide{ order:5; } #btnIntro{ order:6; }
+  #btnPlein{ order:7; } #btnBande{ order:8; }
+  #btnMaj, #btnStyle, #btnPlein, #btnBlocs, #btnTuto, #btnAide,
+  #btnIntro, #btnBande, #btnPresence{
     flex:0 0 auto !important;
-    font-size:12px !important; padding:8px 11px !important;
-    min-height:40px !important;
+    font-size:10.5px !important; padding:7px 8px !important;
+    min-height:36px !important; letter-spacing:1.2px !important;
   }
-  #btnTuto{ min-width:40px !important; font-size:16px !important; }
-
-  /* rangée 2 : l'aide et l'intro, côte à côte, compacts */
-  #btnAide{ order:5; } #btnIntro{ order:6; }
+  #btnTuto{ min-width:34px !important; font-size:14px !important; }
+  .barre{ gap:5px !important; row-gap:6px !important; padding:8px 6px !important; }
 
   /* le lecteur quitte la barre du haut : il vit maintenant EN BAS
      de l'écran, comme dans une application de musique */
@@ -4075,7 +4073,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 21h03';
+const VERSION_APPLI = '23/08/2026 · 21h18';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -4276,21 +4274,18 @@ const VERSION_APPLI = '23/08/2026 · 21h03';
      lecteur et la barre glissent hors de l'écran : les paroles
      ont toute la place. Un toucher les ramène. */
   const lb = document.getElementById('lecteurBas');
-  const barreHaut = document.querySelector('.barre');
   const actif = () => getComputedStyle(lb).display !== 'none';
   let minuteurCache = null;
-  const bandeauHaut = document.getElementById('bandeau');
   function cacher(){
     if (au.paused || !actif()) return;
+    /* seul le LECTEUR du bas s'efface pendant le chant. La barre du
+       haut, elle, reste EN DUR : toutes les commandes, tout le
+       temps, au même endroit. C'est le choix de Mickaël. */
     lb.classList.add('cache');
-    if (barreHaut) barreHaut.classList.add('cache');
-    if (bandeauHaut) bandeauHaut.classList.add('barre-effacee');
   }
   function montrer(){
     if (!actif()) return;
     lb.classList.remove('cache');
-    if (barreHaut) barreHaut.classList.remove('cache');
-    if (bandeauHaut) bandeauHaut.classList.remove('barre-effacee');
     clearTimeout(minuteurCache);
     if (!au.paused) minuteurCache = setTimeout(cacher, 4000);
   }
