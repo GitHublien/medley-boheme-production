@@ -206,6 +206,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 </div>
 
 <script>
+/* dans l'application installée, le plein écran est déjà là : ne jamais le redemander */
+window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+
 /* ═══════════════════════════════════════════════════════════════
    RÉGLAGES
    ═══════════════════════════════════════════════════════════════ */
@@ -270,6 +273,7 @@ let demarre=false, relais=false, parti=false, minuteur=null, dernier=-1;
    plein écran ET le son d'un seul coup. */
 function pleinEcran(){
   const e = document.documentElement;
+  if (window.EN_APPLI) return;
   const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
   if (f) { try { f.call(e, {navigationUI:'hide'}); } catch(err){ try{ f.call(e); }catch(e2){} } }
   /* on ne touche plus à l'orientation : l'application vit en

@@ -1,4 +1,7 @@
 <script>
+/* dans l'application installée, le plein écran est déjà là : ne jamais le redemander */
+window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+
 /* ═══ LA PREMIÈRE FOIS, ON VOIT L'INTRO ═══
    Quelqu'un reçoit son lien et arrive ici directement : on l'envoie
    d'abord voir le film, une seule fois. La porte note son passage
@@ -2452,7 +2455,8 @@ addEventListener('keydown', e => {
   if (localStorage.getItem('boheme-sans-plein-ecran') === '1') return;
   const remettre = () => {
     const e = document.documentElement;
-    const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
+    if (window.EN_APPLI) return;
+  const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
     if (f) { try { f.call(e, {navigationUI:'hide'}); } catch(err){ try{ f.call(e); }catch(e2){} } }
     document.removeEventListener('click', remettre);
     document.removeEventListener('keydown', remettre);
@@ -2642,12 +2646,14 @@ window.PRESENCE = Object.assign({}, AVEC);
         document.exitFullscreen().catch(()=>{});
       } else {
         const e = document.documentElement;
+        if (window.EN_APPLI) return;
         const g = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
         if (g){ try { g.call(e, {navigationUI:'hide'}); } catch(err){ try{ g.call(e); }catch(e2){} } }
       }
     });
     document.addEventListener('fullscreenchange', dessine);
     dessine();
+    if (window.EN_APPLI) f.style.display = 'none';   /* l'appli est déjà plein écran */
     barre.insertBefore(f, b.nextSibling);
 
     /* ─── REVOIR L'INTRO ─────────────────────────────────────────
