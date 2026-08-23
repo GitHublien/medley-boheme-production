@@ -3613,11 +3613,9 @@ if (SUR_MOBILE){
   const ancre = document.getElementById('btnBlocs') || document.getElementById('btnIntro');
   if (ancre && ancre.parentNode) ancre.parentNode.insertBefore(bt, ancre.nextSibling);
 
-  /* un toucher hors de la boîte ferme la visite : plus jamais
-     d'écran noir bloqué */
-  fond.addEventListener('click', e => {
-    if (!boite.contains(e.target)) finir();
-  });
+  /* (le clic hors de la boîte ne ferme PLUS la visite : c'était lui
+     qui éjectait l'aide dès qu'on touchait un bouton. Pour sortir,
+     il y a « Passer la visite » — et le filet de veille ci-dessous.) */
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && fond.classList.contains('la')
         && !boite.classList.contains('la')) finir();
