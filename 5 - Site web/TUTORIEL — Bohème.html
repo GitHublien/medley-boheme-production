@@ -255,11 +255,24 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   background:linear-gradient(90deg, var(--or), var(--or-vif));
   transform-origin:left; }
 
-/* la démonstration de l'aide personnelle */
-#demoRampe{ min-height:96px; display:flex; align-items:center; justify-content:center;
-  padding:10px; }
-#demoRampe .carte-r{ border-radius:16px; padding:14px 26px; text-align:center;
-  font-weight:800; font-size:clamp(18px,5vw,26px); transition:all .5s cubic-bezier(0.32,0.72,0,1); }
+/* la démonstration de l'aide : le bandeau du haut, en vrai */
+#bandeauDemo{ display:flex; flex-direction:column; justify-content:center;
+  align-items:center; gap:5px; text-align:center; height:126px; padding:10px 14px;
+  background:rgba(3,3,3,.9); border-bottom:1px solid rgba(212,175,55,.32);
+  overflow:hidden;
+  transition:background .6s cubic-bezier(0.32,0.72,0,1),
+             border-color .6s cubic-bezier(0.32,0.72,0,1); }
+#bandeauDemo .bd-etat{ font-weight:800; line-height:1.2; letter-spacing:.4px;
+  font-size:17px; color:var(--c-perso,#ffc814);
+  filter:drop-shadow(0 0 .32em currentColor);
+  transition:font-size .5s cubic-bezier(0.32,0.72,0,1); }
+#bandeauDemo .bd-texte{ font-size:12.5px; line-height:1.42; color:#ded8c8; }
+#bandeauDemo.alerte{ border-bottom-color:var(--c-perso,#ffc814); }
+#bandeauDemo.alerte .bd-etat{ font-size:22px;
+  animation:battement 1.5s cubic-bezier(0.32,0.72,0,1) infinite; }
+@keyframes battement{
+  0%,100%{ filter:drop-shadow(0 0 .3em currentColor); opacity:1; }
+  50%{ filter:drop-shadow(0 0 .85em currentColor); opacity:.86; } }
 
 /* ─── LE PIED : précédent / suivant, toujours là ───────────── */
 #pied{ position:fixed; left:0; right:0; bottom:0; z-index:10;
@@ -461,19 +474,28 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
 <!-- ═══ CHAPITRE 7 · TON AIDE ═══ -->
 <section class="chapitre" data-ch="aide">
   <h1><span class="picto">✦</span><span id="titreAide">Ton aide personnelle</span></h1>
-  <p class="sous" id="sousAide">Pendant le medley, une petite annonce te prévient
-    avant chacun de tes passages. Voilà exactement ce qu'elle fera :</p>
+  <p class="sous" id="sousAide">Pendant tout le medley, un bandeau reste en haut de
+    l'écran. Il raconte la mise en scène seconde par seconde, et il t'annonce tes
+    entrées. Il ne recouvre jamais les paroles : regarde, elles vivent en dessous.</p>
   <div class="ecran-cadre"><div class="ecran">
-    <div id="demoRampe"><div class="carte-r" id="carteRampe">…</div></div>
+    <div id="bandeauDemo"><div class="bd-etat">…</div><div class="bd-texte"></div></div>
+    <div class="scene-sim" id="sceneAide" style="height:180px;"></div>
   </div></div>
-  <div class="pupitre"><button class="btn-sim" id="simRejoueRampe">↻ Revoir l'annonce</button></div>
+  <div class="pupitre"><button class="btn-sim" id="simRejoueRampe">↻ Revoir la séquence</button></div>
   <div class="cases">
-    <div class="case"><b>Les trois temps</b>
-      <p>« Prépare-toi » douze secondes avant · « Attention » juste avant ·
-      « À TOI » au moment exact. Tes chœurs sont annoncés pareil, dans ta couleur.</p></div>
+    <div class="case"><b>La ligne du haut</b>
+      <p>Où tu en es : « tu es en place, rideau fermé », puis « bientôt à toi »,
+      « attention », « À TOI ». Au moment venu, tout le bandeau s'allume dans ta couleur.</p></div>
+    <div class="case"><b>La ligne du bas</b>
+      <p>Ce qui se passe sur scène à cette seconde : où tu te tiens, la douche de
+      lumière, le moment où vous avancez, la sortie. C'est fait pour répéter et
+      mettre la mise en scène dans la tête.</p></div>
+    <div class="case"><b>Rien n'est jamais caché</b>
+      <p>Le bandeau a sa place réservée en haut. Les paroles gardent la leur,
+      elles ne bougent pas d'un pixel et rien ne passe par-dessus.</p></div>
     <div class="case"><b>Le bouton ✦ Aide</b>
-      <p>Quand tu connaîtras tes passages par cœur, ce bouton éteint l'aide.
-      Le réglage est retenu — et le même bouton la rallume.</p></div>
+      <p>Quand tu connaîtras tes passages par cœur, ce bouton éteint tout :
+      le karaoké redevient un karaoké nu. Le même bouton le rallume.</p></div>
   </div>
 </section>
 
@@ -921,28 +943,37 @@ document.getElementById('scenePhrases').addEventListener('click', (ev) => {
 let rampeM = [];
 function jouerDemoRampe(){
   rampeM.forEach(clearTimeout); rampeM = [];
-  const carte = document.getElementById('carteRampe');
+  const bd = document.getElementById('bandeauDemo');
+  const etat = bd.querySelector('.bd-etat'), txt = bd.querySelector('.bd-texte');
   const coul = COULEURS_CLE[QUI] || '#9dff35';
   const nom = PRENOMS[QUI] || '';
+  bd.style.setProperty('--c-perso', coul);
+  /* la vraie séquence, celle du karaoké : la mise en scène en bas,
+     l'annonce en haut, et les paroles qui continuent en dessous */
   const etapes = [
-    [0,    '🕐 Prépare-toi, ' + nom + ' — dans 12 secondes', 'rgba(255,255,255,.07)', coul, '20px'],
-    [2600, '⚡ Attention…', 'rgba(255,200,20,.15)', '#ffc814', '24px'],
-    [4600, '🎤 À TOI, ' + nom.toUpperCase() + ' !', coul + '22', coul, '30px'],
-    [7600, '✦ Et voilà. Douze secondes d’avance, à chaque passage.', 'rgba(255,255,255,.05)', '#e8e2d2', '17px']
+    [0, false, 'Le rideau s’ouvre · tu es dans la pénombre',
+     'Adrien chante seul. On doit croire qu’il est seul en scène, mais vous êtes bien là, tous les cinq, dans l’ombre.'],
+    [3400, false, '⟶ Bientôt à toi, ' + nom + ' — prépare-toi',
+     'Adrien chante seul. On doit croire qu’il est seul en scène, mais vous êtes bien là, tous les cinq, dans l’ombre.'],
+    [6400, true, '⚡ Maintenant ' + nom + ' — attention, ça va être à toi',
+     'Adrien chante seul. Ton entrée dans les chœurs arrive.'],
+    [9000, true, '🎤 À TOI — avec les chœurs !',
+     'Ta première phrase avec les chœurs se chante SUR TA DOUCHE de lumière, à ta place : tu n’avances pas encore.'],
+    [13000, false, '✔ C’est fait, ' + nom,
+     'Et le bandeau repart aussitôt sur la mise en scène : ce que tu fais maintenant, et ce qui vient après.']
   ];
-  etapes.forEach(([t, txt, fond, coule, taille]) => {
+  etapes.forEach(([t, al, e, x]) => {
     rampeM.push(setTimeout(() => {
-      carte.textContent = txt;
-      carte.style.background = fond;
-      carte.style.color = coule;
-      carte.style.fontSize = taille;
-      carte.style.border = '1px solid ' + coule + '55';
+      etat.textContent = e; txt.textContent = x;
+      bd.classList.toggle('alerte', al);
     }, t));
   });
 }
 PREPARATIONS['aide'] = () => {
   if (!QUI) return;
   document.getElementById('titreAide').textContent = 'Ton aide, ' + PRENOMS[QUI];
+  /* les paroles vivent sous le bandeau : la preuve qu'il ne cache rien */
+  afficherLignes(document.getElementById('sceneAide'), BLOCS[1].lignes.slice(0, 3));
   jouerDemoRampe();
 };
 document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRampe);
