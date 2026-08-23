@@ -44,8 +44,41 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
                       object-fit:contain;background:#000;z-index:2}
 #fondNoir{position:fixed;inset:-10vmax;background:#000;z-index:-1}
 #photo{opacity:0;transition:opacity .4s ease;z-index:3}
-#photo.la{opacity:1;animation:photoVit 6.5s ease-in-out 2s infinite}
-@keyframes photoVit{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+/* le logo posé n'est pas une image morte : il balance doucement de
+   gauche à droite, comme une enseigne, et il s'éclaire par vagues */
+#photo.la{opacity:1;animation:photoVit 9s cubic-bezier(0.32,0.72,0,1) 1.4s infinite}
+@keyframes photoVit{
+  0%,100%{ transform:translateX(-1.1%) rotate(-1.1deg) scale(1);   filter:brightness(1) }
+  27%    { transform:translateX(0)      rotate(0deg)    scale(1.02);filter:brightness(1.16) }
+  50%    { transform:translateX(1.1%)  rotate(1.1deg)  scale(1);   filter:brightness(1) }
+  77%    { transform:translateX(0)      rotate(0deg)    scale(1.02);filter:brightness(1.16) }
+}
+
+/* ─── « APPUIE ICI », posé SUR le logo sans le cacher ─────────── */
+#appuie{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);
+        z-index:11;pointer-events:none;opacity:0;
+        transition:opacity 1.4s ease, transform 1.4s cubic-bezier(0.32,0.72,0,1);
+        display:flex;flex-direction:column;align-items:center;gap:7px}
+#appuie.la{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#appuie .rond{width:clamp(62px,13vmin,96px);height:clamp(62px,13vmin,96px);
+        border-radius:50%;border:1px solid rgba(255,214,120,.55);
+        background:radial-gradient(circle at 50% 42%,rgba(255,222,140,.16),
+                   rgba(0,0,0,.30) 68%);
+        backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+        display:grid;place-items:center;font-size:clamp(22px,4.6vmin,32px);
+        animation:appuieOnde 2.6s cubic-bezier(0.32,0.72,0,1) infinite}
+@keyframes appuieOnde{
+  0%,100%{ box-shadow:0 0 0 0 rgba(255,214,120,.34) }
+  60%    { box-shadow:0 0 0 18px rgba(255,214,120,0) }
+}
+#appuie .dit{font-size:clamp(11.5px,1.7vw,15px);letter-spacing:.3em;font-weight:800;
+        text-transform:uppercase;color:#ffe49a;padding:7px 18px 7px calc(18px + .3em);
+        border-radius:999px;white-space:nowrap;
+        background:rgba(4,4,4,.66);
+        backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+        border:1px solid rgba(255,214,120,.32);
+        box-shadow:0 10px 30px rgba(0,0,0,.55);
+        text-shadow:0 0 16px rgba(212,175,55,.55)}
 #passage{opacity:0;transition:opacity .25s;z-index:5;object-fit:cover}
 #passage.la{opacity:1}
 
@@ -135,8 +168,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
               padding:0 6vw;line-height:1.9}
 
 /* ─── L'INVITATION, après le film ──────────────────────────────── */
-#invite{position:fixed;left:50%;bottom:7vh;transform:translateX(-50%);
-        font-size:clamp(15px,2vw,20px);letter-spacing:.34em;font-weight:600;
+#invite{position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);
+        max-width:94vw;white-space:nowrap;text-align:center;
+        font-size:clamp(11px,1.5vw,15px);letter-spacing:.26em;font-weight:600;
         color:rgba(255,214,120,.92);text-transform:uppercase;padding-left:.34em;
         text-shadow:0 0 18px rgba(212,175,55,.55);
         opacity:0;transition:opacity 1.8s ease;pointer-events:none;z-index:10;
@@ -246,7 +280,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <source src="media/porte/attente.mp3" type="audio/mpeg">
 </audio>
 
-<div id="invite">▶ &nbsp;cliquez ici pour continuer</div>
+<div id="appuie"><div class="rond">👆</div><div class="dit">appuie ici</div></div>
+<div id="invite">pour entrer dans le karaoké</div>
 
 <div class="btn" id="bPlein" title="plein écran">
   <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
@@ -460,6 +495,10 @@ function entrer(){
   /* l'écran reste allumé pendant tout le film */
   try { if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{}); } catch(e){}
   const lancer = () => {
+    /* si le film est déjà passé (photo posée, ou départ engagé),
+       on ne le relance sous aucun prétexte : c'était le bug de la
+       rotation, la vidéo repartait sans qu'on la voie */
+    if (relais || parti) return;
     film.volume = R.volumeFilm;
     film.muted = false;
     film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
@@ -488,10 +527,19 @@ film.addEventListener('timeupdate', () => {
 film.addEventListener('ended', () => { if (!relais){ relais = true; poser(); } });
 
 function poser(){
+  /* le film a fini son travail : on le coupe pour de bon, sinon il
+     continue de tourner derrière la photo (et peut se rappeler à
+     nous au premier tournicotage du téléphone) */
+  try { film.pause(); } catch(e){}
   photo.classList.add('la');
   halo.classList.add('la');
   pouss.classList.add('la');
-  setTimeout(() => { if (!parti) invite.classList.add('la'); }, R.inviteApres*1000);
+  setTimeout(() => {
+    if (parti) return;
+    invite.classList.add('la');
+    const ap = document.getElementById('appuie');
+    if (ap) ap.classList.add('la');
+  }, R.inviteApres*1000);
 
   /* la musique d'attente : le clic d'entrée a déjà autorisé le son,
      donc elle peut monter toute seule, doucement */
@@ -499,10 +547,11 @@ function poser(){
   am.volume = 0;
   am.play().then(() => {
     let v = 0;
+    const CIBLE = 0.85;          /* elle habite l'attente, elle ne murmure plus */
     const m = setInterval(() => {
-      v = Math.min(0.52, v + 0.52/70);
+      v = Math.min(CIBLE, v + CIBLE/70);
       am.volume = v;
-      if (v >= 0.52) clearInterval(m);
+      if (v >= CIBLE) clearInterval(m);
     }, 50);
   }).catch(()=>{});
 }
@@ -595,12 +644,14 @@ function partir(){
   if (am && !am.paused){
     let v = am.volume;
     const f = setInterval(() => {
-      v = Math.max(0, v - 0.34/30); am.volume = v;
+      v = Math.max(0, v - 0.5/26); am.volume = v;
       if (v <= 0){ clearInterval(f); am.pause(); }
     }, 40);
   }
   if (window.presence) window.presence.arreter();
   invite.classList.remove('la');
+  const ap = document.getElementById('appuie');
+  if (ap) ap.classList.remove('la');
   curseur.style.opacity = 0;
 
   passage.muted = film.muted;
@@ -739,15 +790,17 @@ if ('serviceWorker' in navigator){
   const ecran = document.getElementById('ecranPaysage');
   if (!tactile || !ecran) return;
   const portrait = () => matchMedia('(orientation: portrait)').matches;
+  let dejaServi = false;      /* une seule fois, jamais deux */
   window.exigerPaysage = function(quandPret){
-    if (!portrait()){ quandPret(); return; }
+    if (dejaServi) return;
+    if (!portrait()){ dejaServi = true; quandPret(); return; }
     ecran.style.display = 'flex';
     const veille = () => {
-      if (!portrait()){
-        matchMedia('(orientation: portrait)').removeEventListener('change', veille);
-        ecran.style.display = 'none';
-        quandPret();
-      }
+      if (portrait() || dejaServi) return;
+      dejaServi = true;
+      matchMedia('(orientation: portrait)').removeEventListener('change', veille);
+      ecran.style.display = 'none';
+      quandPret();
     };
     matchMedia('(orientation: portrait)').addEventListener('change', veille);
   };
