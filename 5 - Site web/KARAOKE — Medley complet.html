@@ -2690,6 +2690,51 @@ window.PRESENCE = Object.assign({}, AVEC);
     });
     barre.insertBefore(i, f.nextSibling);
 
+    /* ─── VOIX TÉMOINS OU INSTRUMENTAL ───────────────────────────
+       Le medley existe en deux bandes : celle de travail, avec les
+       voix témoins qui montrent comment chanter, et l'instrumentale
+       — celle du concert. Ce bouton passe de l'une à l'autre SANS
+       bouger d'une seconde : on est au même endroit, seule la bande
+       change. Pour s'entraîner d'abord avec le guide, puis sans. */
+    const bb = document.createElement('button');
+    bb.className = 'btn-reg'; bb.id = 'btnBande';
+    const BANDES = {
+      voix:   { src:'media/bande-voix-temoins.mp3', nom:'🎙 Voix témoins' },
+      instru: { src:'media/bande-diffusee.mp3',     nom:'🎼 Instrumental' }
+    };
+    let bande = 'voix';
+    try { if (localStorage.getItem('boheme-bande') === 'instru') bande = 'instru'; } catch(e){}
+    function peindreBande(){
+      bb.textContent = BANDES[bande].nom;
+      bb.title = bande === 'voix'
+        ? 'tu entends les voix témoins — appuie pour passer à l\'instrumental'
+        : 'bande instrumentale (comme au concert) — appuie pour retrouver les voix témoins';
+    }
+    function poserBande(quelle, auDepart){
+      bande = quelle;
+      try { localStorage.setItem('boheme-bande', bande); } catch(e){}
+      peindreBande();
+      const t = au.currentTime || 0;
+      const jouait = !au.paused;
+      au.src = BANDES[bande].src;
+      /* on ne saute qu'une fois la nouvelle bande prête : sinon le
+         saut serait perdu et on repartirait de zéro */
+      au.addEventListener('loadedmetadata', function une(){
+        au.removeEventListener('loadedmetadata', une);
+        try { au.currentTime = t; } catch(e){}
+        if (jouait) au.play().catch(()=>{});
+      });
+      au.load();
+    }
+    bb.addEventListener('click', () => {
+      poserBande(bande === 'voix' ? 'instru' : 'voix');
+    });
+    peindreBande();
+    /* si son dernier choix était l'instrumental, on le respecte dès
+       l'ouverture (sans toucher à la position : on est à zéro) */
+    if (bande === 'instru') au.src = BANDES.instru.src;
+    barre.insertBefore(bb, barre.firstChild);
+
     /* ─── LA MISE À JOUR ─────────────────────────────────────────
        Le medley continue de se construire. Ce bouton va chercher la
        dernière version en ligne et l'installe sur-le-champ : pas de
@@ -3954,7 +3999,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 19h28';
+const VERSION_APPLI = '23/08/2026 · 19h45';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;

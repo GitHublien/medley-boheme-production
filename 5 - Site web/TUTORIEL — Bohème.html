@@ -499,6 +499,41 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   </div>
 </section>
 
+<!-- ═══ CHAPITRE · VOIX TÉMOINS OU INSTRUMENTAL ═══ -->
+<section class="chapitre" data-ch="bande">
+  <h1><span class="picto">🎙</span>Voix témoins ou instrumental</h1>
+  <p class="sous">Le medley existe en deux bandes. Celle de travail, avec des
+    <b>voix témoins</b> qui te montrent comment chaque phrase se chante. Et
+    l'<b>instrumentale</b> : la vraie bande du concert, sans personne. Un bouton
+    passe de l'une à l'autre, à tout moment.</p>
+
+  <div class="ecran-cadre"><div class="ecran">
+    <div class="bandeau"><span class="n">🎙</span><span class="t" id="bandeNom">Le bouton dans le karaoké</span><span class="h"></span></div>
+    <div class="scene-sim" style="height:auto;padding:24px 16px;overflow:visible;">
+      <div class="pupitre" style="padding:0;">
+        <button class="btn-sim appelle" id="simBande">🎙 Voix témoins</button>
+      </div>
+      <p id="bandeDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
+        Tu entends la bande de travail : les voix témoins te guident.</p>
+    </div>
+  </div></div>
+
+  <div class="consigne" id="cBande"><span class="rond">👆</span>
+    <span>Appuie sur le bouton : regarde-le changer. Dans le vrai karaoké, la
+    bande change <b>sans bouger d'une seconde</b> — tu restes exactement au même
+    endroit du medley.</span></div>
+
+  <div class="cases">
+    <div class="case"><b>Comment s'en servir</b>
+      <p>Apprends d'abord AVEC les voix témoins : elles te montrent la mélodie,
+      les départs, les respirations. Quand tu te sens prêt, passe à
+      l'instrumental et chante par-dessus : c'est la configuration du concert.</p></div>
+    <div class="case"><b>Toujours au même endroit</b>
+      <p>Le bouton est en haut, avec les autres commandes, et il dit toujours ce
+      que tu entends en ce moment. Ton choix est retenu pour la prochaine fois.</p></div>
+  </div>
+</section>
+
 <!-- ═══ CHAPITRE · LES MISES À JOUR ═══ -->
 <section class="chapitre" data-ch="maj">
   <h1><span class="picto">⟳</span>Les mises à jour</h1>
@@ -545,7 +580,8 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   <h1><span class="picto">🎤</span>Tu sais tout</h1>
   <p class="sous">▶ pour lancer · la barre pour se déplacer · ⟨ ⟩ pour changer de
     titre · Blocs pour le sommaire · Style pour l'habillage · une phrase pour la
-    répéter · ⟳ pour les mises à jour. Le vrai karaoké t'attend.</p>
+    répéter · 🎙 pour passer des voix témoins à l'instrumental · ⟳ pour les
+    mises à jour. Le vrai karaoké t'attend.</p>
   <div class="consigne"><span class="rond">🎧</span>
     <span>Pour cette première fois : <b>écoute le medley en entier</b>. C'est encore
     le début, il va jusqu'au Blues du Businessman, mais tu comprendras l'ensemble.</span></div>
@@ -1032,7 +1068,25 @@ PREPARATIONS['aide'] = () => {
 };
 document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRampe);
 
-/* 8 · LE GRAND DÉPART */
+/* 8 · VOIX TÉMOINS OU INSTRUMENTAL (la réplique du bouton) */
+(function(){
+  const b = document.getElementById('simBande');
+  if (!b) return;
+  let voix = true;
+  b.addEventListener('click', () => {
+    b.classList.remove('appelle');
+    voix = !voix;
+    b.textContent = voix ? '🎙 Voix témoins' : '🎼 Instrumental';
+    document.getElementById('bandeDit').textContent = voix
+      ? 'Tu entends la bande de travail : les voix témoins te guident.'
+      : 'Tu entends l\'instrumental : la bande du concert, à toi de chanter.';
+    reussir('cBande', voix
+      ? 'Et te revoilà avec les voix témoins. C\'est aussi simple que ça.'
+      : 'Te voilà sur l\'instrumental — comme au concert. Réappuie pour retrouver les voix témoins.');
+  });
+})();
+
+/* 9 · LE GRAND DÉPART */
 document.getElementById('departKaraoke').addEventListener('click', () => {
   location.href = 'KARAOKE — Medley complet.html' + location.search;
 });
