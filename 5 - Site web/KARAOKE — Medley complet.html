@@ -2296,6 +2296,8 @@ document.getElementById('btnStyle').onclick = e => {
   menuS.classList.toggle('vu');
 };
 addEventListener('click', e => {
+  const visiteS = document.getElementById('tutoFond');
+  if (visiteS && visiteS.classList.contains('la')) return;  /* la visite est maître */
   if (!menuS.contains(e.target)) menuS.classList.remove('vu');
 });
 
@@ -2322,6 +2324,8 @@ document.getElementById('btnBlocs').onclick = () => {
   }
 };
 addEventListener('click', e => {
+  const visite = document.getElementById('tutoFond');
+  if (visite && visite.classList.contains('la')) return;   /* la visite est maître */
   if (!e.target.closest('#menuB') && !e.target.closest('#btnBlocs'))
     menuB.classList.remove('vu');
 });
@@ -3385,12 +3389,12 @@ if (SUR_MOBILE){
       bravo:'Le medley a sauté au titre suivant. On remet tout en place.' },
     { id:'btnBlocs', t:'Blocs — essaie',
       x:'Voilà la liste des titres du medley (je viens de l\'ouvrir pour toi). Touche celui que tu veux — il t\'y emmène directement.',
-      avant:'ouvrirBlocs', essai:{ zone:'#menuB a' },
+      avant:'ouvrirBlocs', essai:{ zone:'#menuB a' }, lumiere:'#menuB',
       bravo:'Et voilà : on est arrivé pile sur ce titre. C\'est ça, les Blocs. On remet tout en place.',
       apres:'fermerBlocs' },
     { id:'btnStyle', t:'Style — essaie',
       x:'L\'habillage des paroles (j\'ai ouvert le menu). Choisis-en un — Projecteur, Néon, 3D… — et regarde le texte changer de costume.',
-      avant:'ouvrirStyle', essai:{ zone:'.menu-styles a' },
+      avant:'ouvrirStyle', essai:{ zone:'.menu-styles a' }, lumiere:'.menu-styles',
       bravo:'Joli choix — il est retenu, c\'est le tien maintenant.',
       apres:'fermerStyle' },
     { cible:'.ligne', t:'Les phrases — essaie',
@@ -3410,11 +3414,11 @@ if (SUR_MOBILE){
 
   /* les gestes que l'aide fait elle-même, pour montrer */
   const GESTES = {
-    ouvrirBlocs(){ try { const m = document.getElementById('menuB');
-      if (m && !m.classList.contains('vu')) document.getElementById('btnBlocs').click(); } catch(e){} },
+    ouvrirBlocs(){ setTimeout(() => { try { const m = document.getElementById('menuB');
+      if (m && !m.classList.contains('vu')) document.getElementById('btnBlocs').click(); } catch(e){} }, 0); },
     fermerBlocs(){ try { document.getElementById('menuB').classList.remove('vu'); } catch(e){} },
-    ouvrirStyle(){ try { const m = document.querySelector('.menu-styles');
-      if (m && !m.classList.contains('vu')) document.getElementById('btnStyle').click(); } catch(e){} },
+    ouvrirStyle(){ setTimeout(() => { try { const m = document.querySelector('.menu-styles');
+      if (m && !m.classList.contains('vu')) document.getElementById('btnStyle').click(); } catch(e){} }, 0); },
     fermerStyle(){ try { document.querySelector('.menu-styles').classList.remove('vu'); } catch(e){} },
   };
 
@@ -3439,12 +3443,24 @@ if (SUR_MOBILE){
     }, 60);
   }
 
-  function pos(el){
-    const r = el.getBoundingClientRect();
-    anneau.style.left = (r.left - 8) + 'px';
-    anneau.style.top = (r.top - 8) + 'px';
-    anneau.style.width = (r.width + 16) + 'px';
-    anneau.style.height = (r.height + 16) + 'px';
+  function pos(el, aussi){
+    /* le trou de lumière englobe l'élément — ET le menu ouvert
+       s'il y en a un (sinon le menu reste noyé dans le noir) */
+    let r = el.getBoundingClientRect();
+    let g = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+    if (aussi){
+      const r2 = aussi.getBoundingClientRect();
+      if (r2.width > 0 && r2.height > 0){
+        g.left = Math.min(g.left, r2.left);
+        g.top = Math.min(g.top, r2.top);
+        g.right = Math.max(g.right, r2.right);
+        g.bottom = Math.max(g.bottom, r2.bottom);
+      }
+    }
+    anneau.style.left = (g.left - 8) + 'px';
+    anneau.style.top = (g.top - 8) + 'px';
+    anneau.style.width = (g.right - g.left + 16) + 'px';
+    anneau.style.height = (g.bottom - g.top + 16) + 'px';
   }
 
   function stopDemo(){
@@ -3480,7 +3496,19 @@ if (SUR_MOBILE){
     titre.textContent = e.t;
     texte.textContent = e.x;
     boutons.innerHTML = '';
-    if (e.avant && GESTES[e.avant]){ GESTES[e.avant](); setTimeout(() => pos(trouver(e)), 120); }
+    const zoneLumiere = () => e.lumiere ? document.querySelector(e.lumiere) : null;
+    if (e.avant && GESTES[e.avant]){
+      GESTES[e.avant]();
+      /* le menu vient de s'ouvrir : on rallume le projecteur SUR LUI */
+      setTimeout(() => {
+        pos(trouver(e), zoneLumiere());
+        if (window.__tutoDoigt && zoneLumiere()){
+          const rm = zoneLumiere().getBoundingClientRect();
+          window.__tutoDoigt.style.left = Math.max(8, rm.left) + 'px';
+          window.__tutoDoigt.style.top = Math.min(innerHeight - 40, rm.bottom + 10) + 'px';
+        }
+      }, 150);
+    }
     if (e.essai){
       /* étape d'ESSAI : le voile RESTE maître de l'écran. C'est lui
          qui reçoit le toucher, et il ne le transmet qu'à la zone de
@@ -3493,13 +3521,15 @@ if (SUR_MOBILE){
         window.__tutoDoigt.style.display = 'block';
       }
       essaiEnCours = (ev) => {
+        /* le voile avale TOUT toucher : rien ne traverse jamais
+           (sinon le ferme-menu global de la page refermait le menu) */
+        ev.stopPropagation(); ev.preventDefault();
         /* que touche le doigt, sous le voile ? */
         fond.style.pointerEvents = 'none';
         const dessous = document.elementFromPoint(ev.clientX, ev.clientY);
         fond.style.pointerEvents = 'auto';
         const cibleOk = dessous && dessous.closest(e.essai.zone);
         if (!cibleOk) return;                      /* ailleurs : rien ne bouge */
-        ev.stopPropagation(); ev.preventDefault();
         fond.removeEventListener('click', essaiEnCours, true);
         essaiEnCours = null;
         if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
