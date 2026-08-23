@@ -111,6 +111,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
 .sim-mot{ transition:color .18s, text-shadow .18s; }
 .sim-mot.ok{ color:var(--couleur-qui, var(--or-vif)); }
 .sim-ligne.chantee{ color:#6a6455; }
+#scenePhrases .sim-ligne{ cursor:pointer; }
 
 /* les styles du karaoké, reproduits pour la démonstration */
 .ecran.st-neon .sim-mot.ok{ color:#7df9ff;
@@ -447,9 +448,29 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
    ═══════════════════════════════════════════════════════════════ */
 const BLOCS = [{"num": "01", "titre": "Narration d'ouverture", "deb": 0, "fin": 30, "place": "Rideau fermé · Adrien, Mickaël, Bry, Candice et Élie déjà en place · Stéphanie en coulisse", "lignes": [{"texte": "Paris 1978", "qui": "Voix off", "debut": 4.483, "fin": 5.263, "mots": [{"m": "Paris", "t": 4.483, "f": 4.763}, {"m": "1978", "t": 4.763, "f": 5.263}]}, {"texte": "Un opéra rock va tout changer : Starmania.", "qui": "Voix off", "debut": 9.025, "fin": 12.047, "mots": [{"m": "Un", "t": 9.025, "f": 9.125}, {"m": "opéra", "t": 9.165, "f": 9.526}, {"m": "rock", "t": 9.626, "f": 9.906}, {"m": "va", "t": 10.046, "f": 10.126}, {"m": "tout", "t": 10.306, "f": 10.466}, {"m": "changer :", "t": 10.526, "f": 10.986}, {"m": "Starmania.", "t": 11.347, "f": 12.047}]}, {"texte": "Dans le rôle de Johnny Rockfort : Daniel Balavoine.", "qui": "Voix off", "debut": 14.168, "fin": 18.271, "mots": [{"m": "Dans", "t": 14.168, "f": 14.288}, {"m": "le", "t": 14.288, "f": 14.368}, {"m": "rôle", "t": 14.448, "f": 14.689}, {"m": "de", "t": 14.729, "f": 14.809}, {"m": "Johnny", "t": 14.869, "f": 15.129}, {"m": "Rockfort :", "t": 15.189, "f": 15.869}, {"m": "Daniel", "t": 16.95, "f": 17.35}, {"m": "Balavoine.", "t": 17.55, "f": 18.271}]}]}, {"num": "02", "titre": "Quand on arrive en ville", "deb": 30, "fin": 108, "place": "Adrien, Mickaël, Bry, Candice et Élie · Stéphanie n'entre pas encore", "lignes": [{"texte": "Quand tout l'monde dort tranquille", "qui": "Adrien", "debut": 31.021, "fin": 32.561, "mots": [{"m": "Quand", "t": 31.021, "f": 31.161}, {"m": "tout", "t": 31.201, "f": 31.321}, {"m": "l'monde", "t": 31.321, "f": 31.681}, {"m": "dort", "t": 31.741, "f": 31.921}, {"m": "tran", "t": 31.941, "f": 32.161}, {"m": "quille", "t": 32.241, "f": 32.561, "j": 1}]}, {"texte": "Dans les banlieues-dortoir", "qui": "Adrien", "debut": 33.381, "fin": 34.682, "mots": [{"m": "Dans", "t": 33.381, "f": 33.521}, {"m": "les", "t": 33.541, "f": 33.641}, {"m": "ban", "t": 33.661, "f": 33.781}, {"m": "lieues-dor", "t": 33.841, "f": 34.302, "j": 1}, {"m": "toir", "t": 34.382, "f": 34.682, "j": 1}]}, {"texte": "C'est l'heure où les zonards descendent sur la ville", "qui": "Adrien", "debut": 35.842, "fin": 39.303, "mots": [{"m": "C'est", "t": 35.842, "f": 36.022}, {"m": "l'heure", "t": 36.022, "f": 36.222}, {"m": "où", "t": 36.242, "f": 36.322}, {"m": "les", "t": 36.362, "f": 36.502}, {"m": "zo", "t": 36.542, "f": 36.662}, {"m": "nards", "t": 36.782, "f": 37.122, "j": 1}, {"m": "des", "t": 37.402, "f": 37.562}, {"m": "cendent", "t": 37.642, "f": 38.082, "j": 1}, {"m": "sur", "t": 38.162, "f": 38.363}, {"m": "la", "t": 38.423, "f": 38.523}, {"m": "ville", "t": 38.663, "f": 39.303}]}]}, {"num": "03", "titre": "Explosion, flash radio", "deb": 108, "fin": 130, "place": "Sortie de tous, d'un bloc · Stéphanie entre à cour", "lignes": [{"texte": "Ici Radio Monopolis, il est minuit passé, les émeutes embrasent la ville.", "qui": "Voix off", "debut": 112.565, "fin": 117.549, "mots": [{"m": "Ici", "t": 112.565, "f": 112.805}, {"m": "Radio", "t": 112.885, "f": 113.145}, {"m": "Monopolis,", "t": 113.246, "f": 113.946}, {"m": "il", "t": 114.446, "f": 114.527}, {"m": "est", "t": 114.547, "f": 114.627}, {"m": "minuit", "t": 114.627, "f": 114.927}, {"m": "passé,", "t": 114.967, "f": 115.287}, {"m": "les", "t": 116.168, "f": 116.288}, {"m": "émeutes", "t": 116.348, "f": 116.688}, {"m": "embrasent", "t": 116.708, "f": 117.149}, {"m": "la", "t": 117.169, "f": 117.249}, {"m": "ville.", "t": 117.269, "f": 117.549}]}, {"texte": "Pendant ce temps, dans un café des souterrains, une serveuse rêve les yeux ouverts d'un garçon qui ne l'aimera jamais.", "qui": "Voix off", "debut": 119.51, "fin": 126.856, "mots": [{"m": "Pendant", "t": 119.51, "f": 119.831}, {"m": "ce", "t": 119.871, "f": 119.951}, {"m": "temps,", "t": 120.051, "f": 120.28}, {"m": "dans", "t": 120.631, "f": 120.791}, {"m": "un", "t": 120.811, "f": 120.891}, {"m": "café", "t": 120.952, "f": 121.252}, {"m": "des", "t": 121.352, "f": 121.452}, {"m": "souterrains,", "t": 121.492, "f": 122.012}, {"m": "une", "t": 122.413, "f": 122.553}, {"m": "serveuse", "t": 122.593, "f": 123.033}, {"m": "rêve", "t": 123.093, "f": 123.473}, {"m": "les", "t": 123.554, "f": 123.694}, {"m": "yeux", "t": 123.734, "f": 123.874}, {"m": "ouverts", "t": 123.914, "f": 124.414}, {"m": "d'un", "t": 124.975, "f": 125.135}, {"m": "garçon", "t": 125.155, "f": 125.575}, {"m": "qui", "t": 125.795, "f": 125.875}, {"m": "ne", "t": 125.955, "f": 126.035}, {"m": "l'aimera", "t": 126.055, "f": 126.416}, {"m": "jamais.", "t": 126.496, "f": 126.856}]}, {"texte": "Un garçon pas comme les autres.", "qui": "Voix off", "debut": 127.517, "fin": 129.818, "mots": [{"m": "Un", "t": 127.517, "f": 127.597}, {"m": "garçon", "t": 127.637, "f": 128.057}, {"m": "pas", "t": 128.898, "f": 129.0}, {"m": "comme", "t": 129.078, "f": 129.278}, {"m": "les", "t": 129.318, "f": 129.458}, {"m": "autres.", "t": 129.518, "f": 129.818}]}]}, {"num": "04", "titre": "Ziggy", "deb": 131, "fin": 213, "place": "Stéphanie seule en scène", "lignes": [{"texte": "Ziggy", "qui": "Stéphanie", "debut": 131.861, "fin": 132.421, "mots": [{"m": "Zi", "t": 131.861, "f": 132.001}, {"m": "ggy", "t": 132.281, "f": 132.421, "j": 1}]}, {"texte": "Il s'appelle Ziggy", "qui": "Stéphanie", "debut": 134.841, "fin": 136.622, "mots": [{"m": "Il", "t": 134.841, "f": 134.941}, {"m": "s'a", "t": 135.041, "f": 135.141}, {"m": "ppelle", "t": 135.201, "f": 135.942, "j": 1}, {"m": "Zi", "t": 136.162, "f": 136.302}, {"m": "ggy", "t": 136.482, "f": 136.622, "j": 1}]}, {"texte": "Je suis folle de lui", "qui": "Stéphanie", "debut": 138.642, "fin": 140.363, "mots": [{"m": "Je", "t": 138.642, "f": 138.722}, {"m": "suis", "t": 138.862, "f": 139.062}, {"m": "folle", "t": 139.202, "f": 139.823}, {"m": "de", "t": 139.943, "f": 140.043}, {"m": "lui", "t": 140.143, "f": 140.363}]}]}, {"num": "05", "titre": "La chanson de Ziggy", "deb": 213, "fin": 316, "place": "Adrien et Stéphanie, eux seuls", "lignes": [{"texte": "Le voilà, le voilà, c'est lui, c'est lui.", "qui": "Pensée de Stéphanie", "debut": 214.944, "fin": 217.388, "mots": [{"m": "Le", "t": 214.944, "f": 215.044}, {"m": "voilà,", "t": 215.084, "f": 215.344}, {"m": "le", "t": 215.705, "f": 215.785}, {"m": "voilà,", "t": 215.825, "f": 216.086}, {"m": "c'est", "t": 216.366, "f": 216.506}, {"m": "lui,", "t": 216.546, "f": 216.647}, {"m": "c'est", "t": 217.107, "f": 217.268}, {"m": "lui.", "t": 217.308, "f": 217.388}]}, {"texte": "Tourne la tête, tourne la tête.", "qui": "Pensée de Stéphanie", "debut": 218.362, "fin": 219.925, "mots": [{"m": "Tourne", "t": 218.362, "f": 218.622}, {"m": "la", "t": 218.682, "f": 218.763}, {"m": "tête,", "t": 218.863, "f": 219.103}, {"m": "tourne", "t": 219.143, "f": 219.384}, {"m": "la", "t": 219.444, "f": 219.524}, {"m": "tête.", "t": 219.624, "f": 219.925}]}, {"texte": "Un seul instant, un seul instant, un seul, un seul.", "qui": "Pensée de Stéphanie", "debut": 219.916, "fin": 222.991, "mots": [{"m": "Un", "t": 219.916, "f": 220.003}, {"m": "seul", "t": 220.046, "f": 220.22}, {"m": "instant,", "t": 220.285, "f": 220.761}, {"m": "un", "t": 220.761, "f": 220.848}, {"m": "seul", "t": 220.87, "f": 221.042}, {"m": "instant,", "t": 221.107, "f": 221.562}, {"m": "un", "t": 221.714, "f": 221.8}, {"m": "seul,", "t": 221.909, "f": 222.169}, {"m": "un", "t": 222.516, "f": 222.624}, {"m": "seul.", "t": 222.71, "f": 222.991}]}]}, {"num": "06", "titre": "Radio Monopolis, le duplex", "deb": 316, "fin": 366, "place": "Plateau noir pendant la voix off · les quatre hommes se mettent en place dans l'obscurité", "lignes": [{"texte": "Excusez-moi, on a quelques interférences.", "qui": "Radio Monopolis — Stéphane", "debut": 318.202, "fin": 320.563, "mots": [{"m": "Excusez-moi,", "t": 318.202, "f": 318.802}, {"m": "on", "t": 319.042, "f": 319.122}, {"m": "a", "t": 319.162, "f": 319.242}, {"m": "quelques", "t": 319.302, "f": 319.642}, {"m": "interférences.", "t": 319.703, "f": 320.563}]}, {"texte": "Un certain Ziggy, apparemment.", "qui": "Radio Monopolis — Stéphane", "debut": 320.843, "fin": 322.605, "mots": [{"m": "Un", "t": 320.843, "f": 320.923}, {"m": "certain", "t": 320.983, "f": 321.384}, {"m": "Ziggy,", "t": 321.584, "f": 321.904}, {"m": "apparemment.", "t": 322.084, "f": 322.605}]}, {"texte": "Bon, je ne sais même pas qui c'est.", "qui": "Radio Monopolis — Stéphane", "debut": 322.945, "fin": 325.206, "mots": [{"m": "Bon,", "t": 322.945, "f": 323.125}, {"m": "je", "t": 323.965, "f": 324.046}, {"m": "ne", "t": 324.086, "f": 324.166}, {"m": "sais", "t": 324.226, "f": 324.346}, {"m": "même", "t": 324.386, "f": 324.566}, {"m": "pas", "t": 324.626, "f": 324.746}, {"m": "qui", "t": 324.766, "f": 324.866}, {"m": "c'est.", "t": 324.986, "f": 325.206}]}]}, {"num": "07", "titre": "Le Blues du Businessman", "deb": 366, "fin": 514, "place": "Les quatre hommes en ligne, lumière froide et verticale · Stéphanie et Candice en retrait dans l'ombre, elles n'apparaissent que sur leurs questions", "lignes": [{"texte": "J'ai du succès dans mes affaires", "qui": "Mickaël", "debut": 370.421, "fin": 373.061, "mots": [{"m": "J'ai", "t": 370.343352127102, "f": 370.4577426783022}, {"m": "du", "t": 370.46553578974834, "f": 370.5733205855271}, {"m": "suc", "t": 370.58267231926243, "f": 370.6922945144381}, {"m": "cès", "t": 370.70164624817346, "f": 370.9392644650353, "j": 1}, {"m": "dans", "t": 371.12474051745335, "f": 371.3398517186595}, {"m": "mes", "t": 371.36167243070855, "f": 371.43080043070853}, {"m": "a", "t": 371.802864622869, "f": 372.22770940902234}, {"m": "ffaires", "t": 372.2635577216746, "f": 372.3280147216746, "j": 1}]}, {"texte": "J'ai du succès dans mes amours", "qui": "Bry", "debut": 373.641, "fin": 376.242, "mots": [{"m": "J'ai", "t": 373.641, "f": 373.781}, {"m": "du", "t": 373.821, "f": 373.901}, {"m": "suc", "t": 374.001, "f": 374.161}, {"m": "cès", "t": 374.221, "f": 374.461, "j": 1}, {"m": "dans", "t": 374.541, "f": 374.781}, {"m": "mes", "t": 374.841, "f": 375.402}, {"m": "a", "t": 375.45560315435466, "f": 375.53560315435465}, {"m": "mours", "t": 375.5725100313116, "f": 376.1925100313116, "j": 1}]}, {"texte": "Je change souvent de secrétaire", "qui": "Adrien", "debut": 376.624, "fin": 380.124, "mots": [{"m": "Je", "t": 376.624, "f": 376.704}, {"m": "change", "t": 376.804, "f": 377.184}, {"m": "sou", "t": 377.264, "f": 377.424}, {"m": "vent", "t": 377.47773795374565, "f": 377.55773795374563, "j": 1}, {"m": "de", "t": 377.7079542059933, "f": 377.8884984867927}, {"m": "se", "t": 377.94371858208666, "f": 378.2205619080753}, {"m": "cré", "t": 378.26357787313003, "f": 378.656983107194, "j": 1}, {"m": "taire", "t": 378.744, "f": 379.88315574626, "j": 1}]}]}];
 
-const COULEURS = { 'Adrien':'#ffc814', 'Mickaël':'#00ffcc', 'Bry':'#ff7a1f',
-  'Élie':'#9dff35', 'Stéphanie':'#ff4fa8', 'Candice':'#b45cff',
-  'Voix off':'#d4af37', 'Tous':'#ffffff' };
+/* LES COULEURS DU VRAI KARAOKÉ, à l'identique — rien d'inventé :
+   ce qu'on voit à l'entraînement est ce qu'on verra au concert */
+const COULEURS = {'q-adrien':'#d4af37','q-stephanie':'#f2a3c7','q-candice':'#c9a2ea',
+                  'q-mickael':'#6fd0bb','q-bry':'#f0955c','q-elie':'#a9d97f',
+                  'q-off':'#8fb0d8','q-pensee':'#bcd6f2','q-tous':'#f2ede1'};
+/* la même règle que le vrai karaoké : à chaque voix sa couleur,
+   narration en bleu, chœurs et duos en blanc */
+function classeQui(q){
+  const n = (q || '').toLowerCase()
+             .replace(/œ/g, 'oe').replace(/æ/g, 'ae')
+             .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  if (n.includes('pensee')) return 'q-pensee';
+  if (n.includes('choeur') || n.includes('tous') || n.includes('les six')) return 'q-tous';
+  if (n.includes('voix off') || n.includes('radio')) return 'q-off';
+  const NOMS = [['q-adrien','adrien'], ['q-stephanie','stephanie'],
+                ['q-candice','candice'], ['q-mickael','mickael'],
+                ['q-bry','bry'], ['q-elie','elie']];
+  const vus = NOMS.filter(([, m]) => n.includes(m));
+  if (vus.length > 1) return 'q-tous';        /* un duo : ligne en blanc */
+  if (vus.length === 1) return vus[0][0];
+  return 'q-tous';
+}
+function couleurQui(q){ return COULEURS[classeQui(q)] || '#f2ede1'; }
 const PRENOMS = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
   mickael:'Mickaël', bry:'Bry', elie:'Élie' };
 const COULEURS_CLE = { adrien:'#ffc814', mickael:'#00ffcc', bry:'#ff7a1f',
@@ -511,7 +532,7 @@ function afficherLignes(zone, lignes){
   lignes.forEach(l => {
     const d = document.createElement('div');
     d.className = 'sim-ligne';
-    d.style.setProperty('--couleur-qui', COULEURS[l.qui] || '#ffc814');
+    d.style.setProperty('--couleur-qui', couleurQui(l.qui));
     const q = document.createElement('span');
     q.className = 'quile'; q.textContent = l.qui;
     d.appendChild(q);
@@ -765,19 +786,23 @@ const blocPhrases = BLOCS[4] && BLOCS[4].lignes.length >= 2 ? BLOCS[4] : BLOCS[1
 PREPARATIONS['phrases'] = () => {
   document.getElementById('p-num').textContent = blocPhrases.num;
   document.getElementById('p-titre').textContent = blocPhrases.titre;
-  const zone = document.getElementById('scenePhrases');
-  afficherLignes(zone, blocPhrases.lignes);
-  [...zone.children].forEach((d, i) => {
-    d.style.cursor = 'pointer';
-    d.addEventListener('click', () => {
-      /* on repart PILE sur la phrase touchée */
-      const l = blocPhrases.lignes[i];
-      jouerExtrait(zone, blocPhrases.lignes, null, l.debut - 0.3);
-      reussir('cPhrases', 'Pile dessus ! Touche, chante, retouche, rechante : '
-        + 'c’est comme ça qu’on travaille une phrase.');
-    });
-  });
+  afficherLignes(document.getElementById('scenePhrases'), blocPhrases.lignes);
 };
+/* le toucher est posé sur la ZONE, pas sur les phrases : comme les
+   phrases sont redessinées à chaque écoute, un toucher direct se
+   perdait après la première — et semblait sauter n'importe où */
+document.getElementById('scenePhrases').addEventListener('click', (ev) => {
+  const zone = document.getElementById('scenePhrases');
+  const d = ev.target.closest('.sim-ligne');
+  if (!d || !zone.contains(d)) return;
+  const i = [...zone.children].indexOf(d);
+  const l = blocPhrases.lignes[i];
+  if (!l) return;
+  /* on repart PILE sur la phrase touchée */
+  jouerExtrait(zone, blocPhrases.lignes, null, l.debut - 0.3);
+  reussir('cPhrases', 'Pile dessus ! Touche, chante, retouche, rechante : '
+    + 'c’est comme ça qu’on travaille une phrase.');
+});
 
 /* 7 · TON AIDE (seulement sur un lien personnel) */
 let rampeM = [];
