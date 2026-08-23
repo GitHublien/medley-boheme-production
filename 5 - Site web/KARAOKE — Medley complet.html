@@ -2965,26 +2965,22 @@ if (SUR_MOBILE){
 </script>
 <style>
 /* ═══ LE BOUTON VOIX / INSTRUMENTAL ═══
-   Fixe à l'écran, au-dessus de tout, il ne s'efface JAMAIS — même
-   quand la barre et le lecteur disparaissent pendant le chant.
-   Toujours au même endroit : en bas à droite. */
+   Il vit DANS le carré noir de la mise en scène, agrandi pour lui :
+   toujours à la même place, jamais au milieu du chemin, et toujours
+   accessible puisque le bandeau reste pendant le chant. */
 #btnBande{
-  position:fixed; right:12px;
-  bottom:calc(158px + env(safe-area-inset-bottom));
-  z-index:87; min-height:46px; padding:11px 16px;
+  pointer-events:auto; min-height:36px; padding:8px 18px; flex:none;
   border-radius:999px; cursor:pointer; font-family:inherit;
   font-size:13px; font-weight:700; letter-spacing:.4px; color:#f2ede1;
-  background:rgba(5,5,5,.78);
-  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.06);
   border:1px solid rgba(212,175,55,.55);
-  box-shadow:0 10px 34px rgba(0,0,0,.5);
   transition:transform .4s cubic-bezier(0.32,0.72,0,1), background .4s;
 }
-#btnBande:active{ transform:scale(.95); }
+#btnBande:active{ transform:scale(.95); background:rgba(255,255,255,.13); }
 #btnBande.instru{ border-color:rgba(157,255,53,.6); color:#d9ffb0; }
-@media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
-  #btnBande{ bottom:calc(96px + env(safe-area-inset-bottom)); }
-}
+/* replié, le bandeau ne garde que sa ligne d'état : le bouton attend
+   dessous qu'on le rouvre avec la flèche */
+#bandeau.replie #btnBande{ display:none; }
 
 /* ═══ LE MESSAGE DE MISE À JOUR ═══ */
 #toastMaj{
@@ -3014,7 +3010,7 @@ if (SUR_MOBILE){
   position:fixed; left:0; right:0; top:var(--h-barre, 0px); z-index:19;
   display:none; flex-direction:column; justify-content:center;
   align-items:center; gap:5px; text-align:center;
-  height:202px; padding:9px 15px 11px;
+  height:236px; padding:9px 15px 11px;
   transition:height .55s cubic-bezier(0.32,0.72,0,1),
              background .6s cubic-bezier(0.32,0.72,0,1),
              border-color .6s cubic-bezier(0.32,0.72,0,1);
@@ -3076,7 +3072,7 @@ body[data-pour] #bandeau{ display:flex; }
   50%{ filter:drop-shadow(0 0 .85em currentColor); opacity:.86; }
 }
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
-  #bandeau{ height:126px; }
+  #bandeau{ height:152px; }
   #bandeau .b-aller{ font-size:12px; min-height:26px; padding:4px 12px; }
   #bandeau .b-etat{ font-size:17px; }
   #bandeau .b-texte{ font-size:13.5px; line-height:1.32; }
@@ -3998,7 +3994,22 @@ body[data-pour] #bandeau{ display:flex; }
 
   const bb = document.createElement('button');
   bb.id = 'btnBande';
-  document.body.appendChild(bb);
+  /* sa place : dans le carré noir de la mise en scène. Sans lien
+     personnel (pas de bandeau), il rejoint la barre des commandes. */
+  function loger(){
+    const bandeauEl = document.getElementById('bandeau');
+    const dansBandeau = document.body.dataset.pour && bandeauEl;
+    if (dansBandeau && bb.parentNode !== bandeauEl) bandeauEl.appendChild(bb);
+    if (!dansBandeau){
+      const barreEl = document.querySelector('.barre');
+      if (barreEl && bb.parentNode !== barreEl){
+        bb.classList.add('btn-reg');
+        barreEl.insertBefore(bb, barreEl.firstChild);
+      }
+    }
+  }
+  loger();
+  setInterval(loger, 1200);     /* suit l'aide si on l'allume ou l'éteint */
 
   function peindre(){
     bb.textContent = modeBande === 'voix' ? '🎙 Voix témoins' : '🎼 Instrumental';
@@ -4024,20 +4035,35 @@ body[data-pour] #bandeau{ display:flex; }
     }, 16);
   }
 
-  function caler(){
+  /* ─── LE CALAGE, SANS JAMAIS SAUTER ───────────────────────────
+     Recaler d'un coup sec s'entend : la musique « saute ». Alors on
+     ne saute que quand c'est inévitable (un vrai décrochage, ou un
+     déplacement dans le medley). Pour les petites dérives, on joue
+     l'instrumentale à peine plus vite ou plus lentement (±1,5 %,
+     imperceptible) jusqu'à ce qu'elle soit revenue pile dessus. */
+  function caler(sec){
     try {
-      if (Math.abs(auI.currentTime - au.currentTime) > 0.08)
-        auI.currentTime = au.currentTime;
+      const d = auI.currentTime - au.currentTime;
+      if (sec || Math.abs(d) > 0.6){
+        auI.currentTime = au.currentTime;      /* le grand saut, rare */
+        auI.playbackRate = au.playbackRate;
+        return;
+      }
+      if (Math.abs(d) > 0.05)
+        auI.playbackRate = au.playbackRate * (d > 0 ? 0.985 : 1.015);
+      else
+        auI.playbackRate = au.playbackRate;
     } catch(e){}
   }
 
-  bb.addEventListener('click', () => {
+  bb.addEventListener('click', (e) => {
+    e.stopPropagation();
     modeBande = (modeBande === 'voix') ? 'instru' : 'voix';
-    try { localStorage.setItem('boheme-bande', modeBande); } catch(e){}
+    try { localStorage.setItem('boheme-bande', modeBande); } catch(e2){}
     peindre();
     if (modeBande === 'instru'){
-      caler();
-      if (!au.paused) auI.play().then(caler).catch(()=>{});
+      caler(true);
+      if (!au.paused) auI.play().then(() => caler(true)).catch(()=>{});
       croiser(true);
     } else {
       croiser(false);
@@ -4045,11 +4071,10 @@ body[data-pour] #bandeau{ display:flex; }
   });
 
   /* l'instrumentale suit le vrai lecteur comme son ombre */
-  au.addEventListener('play',  () => { if (modeBande === 'instru'){ caler(); auI.play().catch(()=>{}); } });
+  au.addEventListener('play',  () => { if (modeBande === 'instru'){ caler(true); auI.play().catch(()=>{}); } });
   au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
-  au.addEventListener('seeked', caler);
-  au.addEventListener('ratechange', () => { try { auI.playbackRate = au.playbackRate; } catch(e){} });
-  setInterval(() => { if (modeBande === 'instru' && !au.paused) caler(); }, 2000);
+  au.addEventListener('seeked', () => caler(true));
+  setInterval(() => { if (modeBande === 'instru' && !au.paused) caler(false); }, 800);
 
   /* au réveil de l'application, son dernier choix est déjà en place */
   if (modeBande === 'instru'){ au.volume = 0; auI.volume = 1; }
@@ -4067,7 +4092,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 20h43';
+const VERSION_APPLI = '23/08/2026 · 20h52';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
