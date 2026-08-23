@@ -2965,22 +2965,9 @@ if (SUR_MOBILE){
 </script>
 <style>
 /* ═══ LE BOUTON VOIX / INSTRUMENTAL ═══
-   Il vit DANS le carré noir de la mise en scène, agrandi pour lui :
-   toujours à la même place, jamais au milieu du chemin, et toujours
-   accessible puisque le bandeau reste pendant le chant. */
-#btnBande{
-  pointer-events:auto; min-height:36px; padding:8px 18px; flex:none;
-  border-radius:999px; cursor:pointer; font-family:inherit;
-  font-size:13px; font-weight:700; letter-spacing:.4px; color:#f2ede1;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(212,175,55,.55);
-  transition:transform .4s cubic-bezier(0.32,0.72,0,1), background .4s;
-}
-#btnBande:active{ transform:scale(.95); background:rgba(255,255,255,.13); }
-#btnBande.instru{ border-color:rgba(157,255,53,.6); color:#d9ffb0; }
-/* replié, le bandeau ne garde que sa ligne d'état : le bouton attend
-   dessous qu'on le rouvre avec la flèche */
-#bandeau.replie #btnBande{ display:none; }
+   À sa place : dans la barre, avec les autres commandes. */
+#btnBande.instru{ border-color:rgba(157,255,53,.6) !important;
+                  color:#d9ffb0 !important; }
 
 /* ═══ LE MESSAGE DE MISE À JOUR ═══ */
 #toastMaj{
@@ -3010,7 +2997,7 @@ if (SUR_MOBILE){
   position:fixed; left:0; right:0; top:var(--h-barre, 0px); z-index:19;
   display:none; flex-direction:column; justify-content:center;
   align-items:center; gap:5px; text-align:center;
-  height:236px; padding:9px 15px 11px;
+  height:202px; padding:9px 15px 11px;
   transition:height .55s cubic-bezier(0.32,0.72,0,1),
              background .6s cubic-bezier(0.32,0.72,0,1),
              border-color .6s cubic-bezier(0.32,0.72,0,1);
@@ -3072,7 +3059,7 @@ body[data-pour] #bandeau{ display:flex; }
   50%{ filter:drop-shadow(0 0 .85em currentColor); opacity:.86; }
 }
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
-  #bandeau{ height:152px; }
+  #bandeau{ height:126px; }
   #bandeau .b-aller{ font-size:12px; min-height:26px; padding:4px 12px; }
   #bandeau .b-etat{ font-size:17px; }
   #bandeau .b-texte{ font-size:13.5px; line-height:1.32; }
@@ -3973,16 +3960,14 @@ body[data-pour] #bandeau{ display:flex; }
 </script>
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   VOIX TÉMOINS / INSTRUMENTAL — sans la moindre coupure
+   VOIX TÉMOINS / INSTRUMENTAL — le schéma propre
 
-   Changer de fichier audio impose un temps de chargement : un
-   blanc. Ici, pas de blanc : la bande instrumentale joue EN MÊME
-   TEMPS que la bande de travail, calée sur elle à quelques
-   centièmes près, mais muette. Le bouton ne fait que croiser les
-   volumes en un quart de seconde. L'oreille ne perçoit qu'une
-   chose : les voix témoins qui s'éteignent ou se rallument.
-   Le karaoké, lui, reste piloté par la même horloge : les paroles
-   ne bronchent pas.
+   Deux bandes jouent en parallèle. RÈGLES ABSOLUES, apprises à la
+   dure : on ne touche JAMAIS à la vitesse de lecture (ça fait
+   baisser la justesse), et on ne recale JAMAIS la bande audible
+   (ça fait un saut qu'on entend). Seule la bande MUETTE se recale,
+   discrètement, toutes les demi-secondes : un saut muet n'existe
+   pas pour l'oreille. Le bouton ne fait que croiser les volumes.
    ═══════════════════════════════════════════════════════════════ */
 (function(){
   const auI = new Audio('media/bande-diffusee.mp3');
@@ -3992,24 +3977,15 @@ body[data-pour] #bandeau{ display:flex; }
   let modeBande = 'voix';
   try { if (localStorage.getItem('boheme-bande') === 'instru') modeBande = 'instru'; } catch(e){}
 
+  /* le bouton, dans la barre, avec les autres commandes */
   const bb = document.createElement('button');
   bb.id = 'btnBande';
-  /* sa place : dans le carré noir de la mise en scène. Sans lien
-     personnel (pas de bandeau), il rejoint la barre des commandes. */
-  function loger(){
-    const bandeauEl = document.getElementById('bandeau');
-    const dansBandeau = document.body.dataset.pour && bandeauEl;
-    if (dansBandeau && bb.parentNode !== bandeauEl) bandeauEl.appendChild(bb);
-    if (!dansBandeau){
-      const barreEl = document.querySelector('.barre');
-      if (barreEl && bb.parentNode !== barreEl){
-        bb.classList.add('btn-reg');
-        barreEl.insertBefore(bb, barreEl.firstChild);
-      }
-    }
-  }
-  loger();
-  setInterval(loger, 1200);     /* suit l'aide si on l'allume ou l'éteint */
+  bb.className = 'btn-reg';
+  (function poser(){
+    const barreEl = document.querySelector('.barre');
+    if (barreEl) barreEl.insertBefore(bb, barreEl.firstChild);
+    else setTimeout(poser, 300);
+  })();
 
   function peindre(){
     bb.textContent = modeBande === 'voix' ? '🎙 Voix témoins' : '🎼 Instrumental';
@@ -4028,55 +4004,62 @@ body[data-pour] #bandeau{ display:flex; }
       const p = Math.min(1, (performance.now() - debut) / DUREE);
       au.volume  = versInstru ? 1 - p : p;
       auI.volume = versInstru ? p : 1 - p;
-      if (p >= 1){
-        clearInterval(fondu);
-        if (!versInstru){ try { auI.pause(); } catch(e){} }
-      }
+      if (p >= 1) clearInterval(fondu);
     }, 16);
   }
 
-  /* ─── LE CALAGE, SANS JAMAIS SAUTER ───────────────────────────
-     Recaler d'un coup sec s'entend : la musique « saute ». Alors on
-     ne saute que quand c'est inévitable (un vrai décrochage, ou un
-     déplacement dans le medley). Pour les petites dérives, on joue
-     l'instrumentale à peine plus vite ou plus lentement (±1,5 %,
-     imperceptible) jusqu'à ce qu'elle soit revenue pile dessus. */
-  function caler(sec){
+  /* ─── LE SUIVEUR : seule la bande MUETTE se recale ────────────
+     Toutes les 500 ms, la bande qu'on n'entend pas se cale sur
+     celle qu'on entend. Un saut sur une bande muette est
+     inaudible ; la bande audible, elle, n'est JAMAIS retouchée. */
+  let sautInterne = false;
+  setInterval(() => {
     try {
-      const d = auI.currentTime - au.currentTime;
-      if (sec || Math.abs(d) > 0.6){
-        auI.currentTime = au.currentTime;      /* le grand saut, rare */
-        auI.playbackRate = au.playbackRate;
-        return;
+      if (au.paused) return;
+      if (modeBande === 'voix'){
+        /* on entend au ; auI (muette) suit — si elle joue */
+        if (!auI.paused && Math.abs(auI.currentTime - au.currentTime) > 0.12)
+          auI.currentTime = au.currentTime;
+      } else {
+        /* on entend auI ; au (muette, qui pilote les paroles) suit */
+        const d = au.currentTime - auI.currentTime;
+        if (Math.abs(d) > 0.12){
+          sautInterne = true;
+          au.currentTime = auI.currentTime;
+        }
       }
-      if (Math.abs(d) > 0.05)
-        auI.playbackRate = au.playbackRate * (d > 0 ? 0.985 : 1.015);
-      else
-        auI.playbackRate = au.playbackRate;
     } catch(e){}
-  }
+  }, 500);
+
+  /* les déplacements de l'utilisateur passent tous par au (le rail,
+     les Blocs, les phrases). On répercute sur l'instrumentale —
+     mais pas nos propres recalages internes, sinon on tourne en rond */
+  au.addEventListener('seeked', () => {
+    if (sautInterne){ sautInterne = false; return; }
+    try { auI.currentTime = au.currentTime; } catch(e){}
+  });
+  au.addEventListener('play', () => {
+    try { auI.currentTime = au.currentTime; } catch(e){}
+    auI.play().catch(()=>{});
+  });
+  au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
+  /* le réglage de vitesse de travail (ordinateur) vaut pour les deux
+     bandes — c'est un choix de l'utilisateur, pas un recalage */
+  au.addEventListener('ratechange', () => { try { auI.playbackRate = au.playbackRate; } catch(e){} });
 
   bb.addEventListener('click', (e) => {
     e.stopPropagation();
     modeBande = (modeBande === 'voix') ? 'instru' : 'voix';
     try { localStorage.setItem('boheme-bande', modeBande); } catch(e2){}
     peindre();
-    if (modeBande === 'instru'){
-      caler(true);
-      if (!au.paused) auI.play().then(() => caler(true)).catch(()=>{});
-      croiser(true);
-    } else {
-      croiser(false);
+    if (!au.paused && auI.paused){
+      try { auI.currentTime = au.currentTime; } catch(e3){}
+      auI.play().catch(()=>{});
     }
+    croiser(modeBande === 'instru');
   });
 
-  /* l'instrumentale suit le vrai lecteur comme son ombre */
-  au.addEventListener('play',  () => { if (modeBande === 'instru'){ caler(true); auI.play().catch(()=>{}); } });
-  au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
-  au.addEventListener('seeked', () => caler(true));
-  setInterval(() => { if (modeBande === 'instru' && !au.paused) caler(false); }, 800);
-
-  /* au réveil de l'application, son dernier choix est déjà en place */
+  /* au réveil, son dernier choix est déjà en place */
   if (modeBande === 'instru'){ au.volume = 0; auI.volume = 1; }
   peindre();
 })();
@@ -4092,7 +4075,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 20h52';
+const VERSION_APPLI = '23/08/2026 · 21h03';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
