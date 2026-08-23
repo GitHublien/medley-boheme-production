@@ -54,130 +54,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   77%    { transform:translateX(0)      rotate(0deg)    scale(1.02);filter:brightness(1.16) }
 }
 
-/* ─── « APPUIE ICI », posé SUR le logo sans le cacher ─────────── */
-#appuie{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);
-        z-index:11;pointer-events:none;opacity:0;
-        transition:opacity 1.4s ease, transform 1.4s cubic-bezier(0.32,0.72,0,1);
-        display:flex;flex-direction:column;align-items:center;gap:7px}
-#appuie.la{opacity:1;transform:translate(-50%,-50%) scale(1)}
-#appuie .rond{width:clamp(62px,13vmin,96px);height:clamp(62px,13vmin,96px);
-        border-radius:50%;border:1px solid rgba(255,214,120,.55);
-        background:radial-gradient(circle at 50% 42%,rgba(255,222,140,.16),
-                   rgba(0,0,0,.30) 68%);
-        backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
-        display:grid;place-items:center;font-size:clamp(22px,4.6vmin,32px);
-        animation:appuieOnde 2.6s cubic-bezier(0.32,0.72,0,1) infinite}
-@keyframes appuieOnde{
-  0%,100%{ box-shadow:0 0 0 0 rgba(255,214,120,.34) }
-  60%    { box-shadow:0 0 0 18px rgba(255,214,120,0) }
-}
-#appuie .dit{font-size:clamp(11.5px,1.7vw,15px);letter-spacing:.3em;font-weight:800;
-        text-transform:uppercase;color:#ffe49a;padding:7px 18px 7px calc(18px + .3em);
-        border-radius:999px;white-space:nowrap;
-        background:rgba(4,4,4,.66);
-        backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
-        border:1px solid rgba(255,214,120,.32);
-        box-shadow:0 10px 30px rgba(0,0,0,.55);
-        text-shadow:0 0 16px rgba(212,175,55,.55)}
-#passage{opacity:0;transition:opacity .25s;z-index:5;object-fit:cover}
-#passage.la{opacity:1}
-
-#poussieres{position:fixed;inset:0;width:100%;height:100%;
-            mix-blend-mode:screen;pointer-events:none;opacity:0;
-            transition:opacity 2s ease;z-index:4}
-#poussieres.la{opacity:1}
-
-/* ─── L'ÉCRAN D'ENTRÉE ─────────────────────────────────────────── */
-/* ═══════════════════════════════════════════════════════════════
-   LE MÉDAILLON EN VRAIE 3D
-
-   Le logo est une image plate. Pour lui donner du volume, on
-   l'empile : vingt copies séparées de quelques dixièmes de
-   millimètre en profondeur, les plus lointaines assombries. Le
-   navigateur les affiche dans son vrai moteur 3D (perspective,
-   rotation, profondeur), et l'œil ne voit plus un empilement mais
-   une pièce d'or épaisse. Aucune bibliothèque, aucun téléchargement
-   en plus : c'est le téléphone qui fait le travail, en douceur.
-   ═══════════════════════════════════════════════════════════════ */
-#entree{position:fixed;inset:0;z-index:40;background:#000;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;
-        gap:clamp(26px,4.6vh,50px);cursor:pointer;transition:opacity 1s ease;
-        perspective:1400px;perspective-origin:50% 44%}
-
-#scene3d{position:relative;transform-style:preserve-3d;will-change:transform;
-         transition:transform .9s cubic-bezier(0.32,0.72,0,1)}
-#medaille{position:relative;width:min(46vmin,330px);height:min(46vmin,330px);
-          transform-style:preserve-3d;will-change:transform}
-#medaille .tranche{position:absolute;inset:0;transform-style:preserve-3d;
-                   /* le logo est un disque : on le découpe net, sinon la
-                      lueur transparente du fichier s'additionne trente fois
-                      et fabrique un halo de cernes */
-                   clip-path:circle(49.4% at 50% 50%)}
-#medaille .tranche img{width:100%;height:100%;display:block}
-/* la face avant : c'est elle qui brille */
-#medaille .face{filter:drop-shadow(0 0 34px rgba(212,175,55,.34))}
-/* le reflet qui balaie l'or quand la pièce tourne */
-#brillance{position:absolute;inset:0;pointer-events:none;
-           clip-path:circle(49.4% at 50% 50%);   /* jamais hors de la pièce */
-           background:linear-gradient(115deg,transparent 40%,
-                     rgba(255,238,190,.18) 47%,rgba(255,250,225,.30) 50%,
-                     rgba(255,238,190,.16) 53%,transparent 60%);
-           background-size:240% 100%;background-position:50% 50%;
-           /* PAS de mix-blend-mode ici : il aplatirait toute la 3D
-              du médaillon (le navigateur regroupe alors les couches
-              et perd la profondeur). Un dégradé translucide suffit. */
-           opacity:.92}
-/* l'ombre portée au sol : elle ancre la pièce dans l'espace */
-#ombre{position:absolute;left:50%;top:calc(50% + min(24vmin,178px));
-       width:min(38vmin,280px);height:min(5.6vmin,44px);
-       transform:translateX(-50%) rotateX(78deg);
-       background:radial-gradient(ellipse at center,rgba(212,175,55,.24),transparent 68%);
-       filter:blur(9px);pointer-events:none}
-
-/* ─── LA PHRASE, EN RELIEF ELLE AUSSI ─────────────────────────── */
-#appel{position:relative;transform-style:preserve-3d;text-align:center;
-       will-change:transform;transition:transform .9s cubic-bezier(0.32,0.72,0,1)}
-#appel .couche{position:absolute;left:0;right:0;top:0;white-space:nowrap;
-               font-size:clamp(13px,1.85vw,19px);font-weight:800;
-               letter-spacing:.17em;text-transform:uppercase}
-#appel .couche.dessus{position:relative;
-       background:linear-gradient(178deg,#fff6d8 0%,#ffd86b 34%,#c9922c 64%,#8a5f13 100%);
-       -webkit-background-clip:text;background-clip:text;color:transparent;
-       filter:drop-shadow(0 0 16px rgba(255,200,20,.4))}
-#appel.bat{animation:appelBat 3.4s cubic-bezier(0.32,0.72,0,1) infinite}
-@keyframes appelBat{0%,100%{opacity:.78}50%{opacity:1}}
-
-/* sur un petit écran, la pièce garde sa place mais s'allège */
-@media (pointer:coarse) and (max-width:900px){
-  #entree{perspective:1000px}
-  #appel .couche{letter-spacing:.12em;white-space:normal;max-width:82vw}
-}
-#entree.parti{opacity:0;pointer-events:none}
-#entree img{width:min(30vmin,300px);height:auto;
-            filter:drop-shadow(0 0 40px rgba(212,175,55,.28));
-            animation:pulse 4.5s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:.82;transform:scale(1)}
-                 50%{opacity:1;transform:scale(1.035)}}
-#entree .mot{font-size:clamp(11px,1.5vw,14px);letter-spacing:.55em;font-weight:300;
-             color:rgba(226,196,132,.72);text-transform:uppercase;
-             text-shadow:0 0 24px rgba(212,175,55,.35);padding-left:.55em}
-#entree .trait{width:clamp(44px,8vw,72px);height:1px;
-               background:linear-gradient(90deg,transparent,rgba(212,175,55,.6),transparent)}
-#entree .note{position:absolute;bottom:5vh;font-size:10px;letter-spacing:.24em;
-              color:rgba(226,196,132,.26);text-transform:uppercase;text-align:center;
-              padding:0 6vw;line-height:1.9}
-
-/* ─── L'INVITATION, après le film ──────────────────────────────── */
-#invite{position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);
-        max-width:94vw;white-space:nowrap;text-align:center;
-        font-size:clamp(11px,1.5vw,15px);letter-spacing:.26em;font-weight:600;
-        color:rgba(255,214,120,.92);text-transform:uppercase;padding-left:.34em;
-        text-shadow:0 0 18px rgba(212,175,55,.55);
-        opacity:0;transition:opacity 1.8s ease;pointer-events:none;z-index:10;
-        animation:inviteBat 2.4s ease-in-out infinite}
-@keyframes inviteBat{0%,100%{opacity:.55}50%{opacity:1}}
-#invite:not(.la){animation:none}
-#invite.la{opacity:1}
+#invite{position:fixed;left:50%;bottom:7vh;transform:translateX(-50%);
+        z-index:11;pointer-events:none;text-align:center;
+        width:min(96vw,1020px);
+        opacity:0;transition:opacity 1.8s ease}
+#invite.la{opacity:1;animation:inviteBat 3.6s cubic-bezier(0.32,0.72,0,1) infinite}
+#invite .couche{position:absolute;left:0;right:0;top:0;
+        font-size:clamp(14px,2.1vw,21px);font-weight:800;line-height:1.34;
+        letter-spacing:.12em;text-transform:uppercase}
+#invite .couche.dessus{position:relative;
+        background:linear-gradient(178deg,#fff6d8 0%,#ffd86b 34%,#c9922c 64%,#8a5f13 100%);
+        -webkit-background-clip:text;background-clip:text;color:transparent;
+        filter:drop-shadow(0 0 15px rgba(255,200,20,.42))
+               drop-shadow(0 3px 10px rgba(0,0,0,.85))}
+@keyframes inviteBat{0%,100%{opacity:.8}50%{opacity:1}}
 
 /* ─── le curseur (ordinateur seulement) ────────────────────────── */
 #curseur{position:fixed;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;
@@ -280,8 +170,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <source src="media/porte/attente.mp3" type="audio/mpeg">
 </audio>
 
-<div id="appuie"><div class="rond">👆</div><div class="dit">appuie ici</div></div>
-<div id="invite">pour entrer dans le karaoké</div>
+<div id="invite"><div class="couche dessus">Clique maintenant sur le logo pour entrer dans le karaoké</div></div>
 
 <div class="btn" id="bPlein" title="plein écran">
   <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
@@ -359,18 +248,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   face.appendChild(img);
   med.insertBefore(face, brill);
 
-  /* ─ les couches de la phrase, pour le relief ─ */
-  const dessus = appel && appel.querySelector('.dessus');
-  if (dessus){
+  /* ─ le relief des phrases : des copies empilées derrière ─
+     Le même traitement pour l'appel du premier écran et pour la
+     phrase qui invite à toucher le logo après le film. */
+  function relief(bloc, profondeur){
+    const dessus = bloc && bloc.querySelector('.dessus');
+    if (!dessus) return;
     for (let i = 8; i >= 1; i--){
       const c = document.createElement('div');
       c.className = 'couche';
       c.textContent = dessus.textContent;
-      c.style.transform = 'translateZ(' + (-i * 1.5) + 'px)';
+      c.style.transform = 'translateZ(' + (-i * profondeur) + 'px)';
       c.style.color = 'rgba(' + (70 - i*6) + ',' + (48 - i*4) + ',8,1)';
-      appel.insertBefore(c, dessus);
+      bloc.insertBefore(c, dessus);
     }
   }
+  relief(appel, 1.5);
+  relief(document.getElementById('invite'), 1.1);
 
   /* ─ la respiration : elle bascule entre deux positions ─ */
   let base = 0, viseX = 0, viseY = 0, curX = 0, curY = 0, depart = null;
@@ -534,12 +428,7 @@ function poser(){
   photo.classList.add('la');
   halo.classList.add('la');
   pouss.classList.add('la');
-  setTimeout(() => {
-    if (parti) return;
-    invite.classList.add('la');
-    const ap = document.getElementById('appuie');
-    if (ap) ap.classList.add('la');
-  }, R.inviteApres*1000);
+  setTimeout(() => { if (!parti) invite.classList.add('la'); }, R.inviteApres*1000);
 
   /* la musique d'attente : le clic d'entrée a déjà autorisé le son,
      donc elle peut monter toute seule, doucement */
@@ -650,8 +539,6 @@ function partir(){
   }
   if (window.presence) window.presence.arreter();
   invite.classList.remove('la');
-  const ap = document.getElementById('appuie');
-  if (ap) ap.classList.remove('la');
   curseur.style.opacity = 0;
 
   passage.muted = film.muted;
