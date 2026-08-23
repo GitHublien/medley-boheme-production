@@ -100,38 +100,98 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   font-size:clamp(15px,4vw,19px); flex:1; }
 .ecran .bandeau .h{ color:var(--gris); font-size:12.5px;
   font-variant-numeric:tabular-nums; }
-.scene-sim{ padding:22px 16px 26px; min-height:170px; display:flex;
-  flex-direction:column; gap:14px; justify-content:center; position:relative; }
-.sim-ligne{ text-align:center; font-family:"Nunito","Jost",sans-serif;
-  font-weight:900; font-size:clamp(19px,5.2vw,28px); line-height:1.35;
-  color:#4b4638; transition:color .3s; }
-.sim-ligne .quile{ display:block; font-family:"Jost",sans-serif; font-weight:600;
-  font-size:11.5px; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--couleur-qui, var(--gris)); opacity:.85; margin-bottom:3px; }
-.sim-mot{ transition:color .18s, text-shadow .18s; }
-.sim-mot.ok{ color:var(--couleur-qui, var(--or-vif)); }
-.sim-ligne.chantee{ color:#6a6455; }
-#scenePhrases .sim-ligne{ cursor:pointer; }
+.scene-sim{ padding:16px 12px 20px; height:230px; overflow:hidden; position:relative; }
+.defile{ transition:transform .55s cubic-bezier(0.32,0.72,0,1); }
 
-/* les styles du karaoké, reproduits pour la démonstration */
-.ecran.st-neon .sim-mot.ok{ color:#7df9ff;
-  text-shadow:0 0 10px #00e5ff, 0 0 26px rgba(0,229,255,.55); }
-.ecran.st-3d .sim-mot.ok{ color:#ffd863;
-  text-shadow:1px 1px 0 #7a5c00, 2px 2px 0 #5c4500, 3px 3px 6px rgba(0,0,0,.7); }
-.ecran.st-cine .sim-ligne{ font-family:Georgia,"Times New Roman",serif;
-  font-weight:700; letter-spacing:.05em; }
-.ecran.st-cine .sim-mot.ok{ color:#f5e9c8; text-shadow:0 2px 18px rgba(245,233,200,.35); }
-.ecran.st-vague .sim-mot.ok{ color:#7fd8ff; display:inline-block;
-  animation:vague 1.1s ease-in-out infinite; }
-@keyframes vague{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
-.ecran.st-loin .scene-sim{ perspective:420px; }
-.ecran.st-loin .sim-ligne{ transform:rotateX(14deg); }
-.ecran.st-loin .sim-mot.ok{ color:#ffe9a8; text-shadow:0 0 14px rgba(255,233,168,.4); }
-.ecran.st-scene .scene-sim{ background:radial-gradient(300px 190px at 50% 46%,
-  rgba(255,244,200,.13), transparent 70%); }
-.ecran.st-scene .sim-mot.ok{ color:#fff3c4; text-shadow:0 0 16px rgba(255,243,196,.5); }
-.ecran.st-braise .sim-mot.ok{ color:#ff9c46;
-  text-shadow:0 0 9px rgba(255,90,20,.75), 0 -2px 18px rgba(255,140,40,.45); }
+/* ═══ LA RÉPLIQUE EXACTE DU RENDU DU KARAOKÉ ═══
+   Tout ce qui suit est COPIÉ du vrai karaoké (mêmes valeurs, mêmes
+   couleurs vives, mêmes halos, mêmes styles) — seul le préfixe
+   change : « body » devient « .ecran ». Rien d'inventé. */
+.qui{ font-size:12px; letter-spacing:2.6px; text-transform:uppercase;
+  font-weight:700; margin:1.1em 0 .4em; text-align:center; opacity:.8;
+  transition:color .35s, opacity .35s; }
+.qui.proche{ opacity:1; text-shadow:0 0 18px rgba(212,175,55,.35); }
+.qui.q-adrien{ color:#8d7526; } .qui.q-adrien.proche{ color:#d4af37; }
+.qui.q-stephanie{ color:#9c6a80; } .qui.q-stephanie.proche{ color:#f2a3c7; }
+.qui.q-candice{ color:#836a99; } .qui.q-candice.proche{ color:#c9a2ea; }
+.qui.q-mickael{ color:#478a7c; } .qui.q-mickael.proche{ color:#6fd0bb; }
+.qui.q-bry{ color:#9c6440; } .qui.q-bry.proche{ color:#f0955c; }
+.qui.q-elie{ color:#6d8c52; } .qui.q-elie.proche{ color:#a9d97f; }
+.qui.q-off{ color:#5d7290; } .qui.q-off.proche{ color:#8fb0d8; }
+.qui.q-pensee{ color:#7b93ad; font-style:italic; } .qui.q-pensee.proche{ color:#bcd6f2; }
+.qui.q-tous{ color:#b3ada0; } .qui.q-tous.proche{ color:#fff; }
+
+.ligne{ font-weight:800; line-height:1.18; letter-spacing:-.4px; text-align:center;
+  font-family:"Nunito","Arial Rounded MT Bold","Jost","Segoe UI",sans-serif;
+  font-size:clamp(20px,5vw,29px); margin:0 0 .26em; cursor:pointer;
+  text-shadow:0 3px 10px rgba(0,0,0,.55); isolation:isolate;
+  transition:opacity .45s ease, transform .45s ease;
+  opacity:.2; transform:scale(.985); }
+.ligne.active{ opacity:1; transform:scale(1); filter:saturate(1.25) brightness(1.12); }
+.ligne.passee{ opacity:.18; }
+.ligne.q-pensee{ font-style:italic; letter-spacing:-.2px; }
+.gmot{ display:inline-block; white-space:pre; }  /* syllabes insécables */
+.mot{ position:relative; display:inline-block; white-space:pre;
+  color:#b8ad94; transition:transform .14s ease;
+  -webkit-text-stroke:2.5px #000; paint-order:stroke fill;
+  text-shadow:0 0 4px #000, 0 0 9px rgba(0,0,0,.85); }
+.mot.enCours{ transform:translateY(-.06em) scale(1.06); }
+.mot .plein{ position:absolute; left:0; top:-.22em; bottom:-.3em; padding-top:.22em;
+  width:0; overflow:hidden; white-space:pre;
+  -webkit-text-stroke:2.5px #000; paint-order:stroke fill;
+  filter:drop-shadow(0 0 .06em currentColor) drop-shadow(0 0 .16em currentColor)
+         drop-shadow(0 0 .34em currentColor); }
+.ligne.active .mot .plein{
+  filter:drop-shadow(0 0 .06em currentColor) drop-shadow(0 0 .18em currentColor)
+         drop-shadow(0 0 .42em currentColor); }
+.ligne.active .mot, .ligne.active .mot .plein{ -webkit-text-stroke:3px #000; }
+.ligne.passee .mot .plein{ width:100% !important; opacity:.42; filter:none; }
+.ligne.passee .mot{ text-shadow:none; }
+/* les couleurs VIVES du concert — celles qu'on voit sur le téléphone */
+.q-adrien    .mot .plein{ color:#ffc814; }
+.q-stephanie .mot .plein{ color:#ff4fa8; }
+.q-candice   .mot .plein{ color:#b45cff; }
+.q-mickael   .mot .plein{ color:#00ffcc; }
+.q-bry       .mot .plein{ color:#ff7a1f; }
+.q-elie      .mot .plein{ color:#9dff35; }
+.q-off       .mot .plein{ color:#35b4ff; }
+.q-pensee    .mot .plein{ color:#85caff; }
+.q-tous      .mot .plein{ color:#ffffff; }
+
+/* les 8 styles — copiés du karaoké, à l'identique */
+.ecran.st-neon .ligne.active .mot .plein{ filter:drop-shadow(0 0 .22em currentColor)
+    drop-shadow(0 0 .55em currentColor); }
+.ecran.st-neon .ligne{ text-shadow:0 0 16px rgba(0,0,0,.9); }
+.ecran.st-3d .ligne{ transform:perspective(620px) rotateX(18deg);
+    transform-origin:50% 100%;
+    text-shadow:0 1px 0 #000, 0 2px 0 #050505, 0 3px 0 #0a0a0a,
+    0 4px 0 #0f0f0f, 0 7px 16px rgba(0,0,0,.75); }
+.ecran.st-3d .ligne.active{ transform:perspective(620px) rotateX(10deg) scale(1.05); }
+.ecran.st-cine .ligne{ font-family:Georgia, "Times New Roman", serif;
+    font-weight:700; letter-spacing:.4px; font-style:italic; }
+.ecran.st-vague .ligne.active .mot{
+    animation:vague 2.2s ease-in-out calc(var(--i, 0) * .13s) infinite; }
+@keyframes vague{ 0%,100%{ transform:translateY(0); }
+                  50%{ transform:translateY(-.14em); } }
+.ecran.st-loin .ligne{ transition:opacity 1.2s ease, transform 1.2s ease,
+    filter 1.2s ease; }
+.ecran.st-loin .ligne.passee{ transform:perspective(700px) translateZ(-340px)
+    translateY(-.6em); opacity:0; filter:blur(3px); }
+.ecran.st-loin .ligne:not(.active):not(.passee){ transform:scale(.94); }
+.ecran.st-scene .ligne{ text-transform:uppercase; letter-spacing:.05em; }
+.ecran.st-scene .ligne.active{ position:relative; }
+.ecran.st-scene .ligne.active::after{ content:''; position:absolute;
+    inset:-.45em -1.4em; z-index:-1; pointer-events:none; border-radius:50%;
+    background:radial-gradient(ellipse at 50% 55%, rgba(255,224,150,.16),
+               transparent 70%); }
+.ecran.st-braise .ligne.active .mot .plein{
+    animation:braise 1.6s ease-in-out infinite alternate; }
+@keyframes braise{
+    from{ filter:drop-shadow(0 0 .1em rgba(255,190,90,.65)); }
+    to{ filter:drop-shadow(0 0 .45em rgba(255,150,40,.95)); } }
+
+/* le choix se voit dans les menus, et il SUIT chaque changement */
+.menu-sim a.actif{ background:rgba(212,175,55,.18); color:var(--or); }
 
 /* ─── LES COMMANDES RÉPLIQUES (identiques au vrai karaoké) ─── */
 .pupitre{ display:flex; gap:10px; justify-content:center; align-items:center;
@@ -528,40 +588,80 @@ function sauterPuisJouer(t){
   else { extrait.addEventListener('loadedmetadata', y, { once:true }); extrait.load(); }
 }
 function afficherLignes(zone, lignes){
+  /* le MÊME dessin que le vrai karaoké : l'étiquette du chanteur,
+     puis la ligne, chaque mot portant son calque de couleur qui se
+     remplit pendant qu'il se chante */
   zone.innerHTML = '';
-  lignes.forEach(l => {
+  const defile = document.createElement('div');
+  defile.className = 'defile';
+  lignes.forEach((l, li) => {
+    const cq = classeQui(l.qui);
+    const q = document.createElement('div');
+    q.className = 'qui ' + cq; q.textContent = l.qui;
     const d = document.createElement('div');
-    d.className = 'sim-ligne';
-    d.style.setProperty('--couleur-qui', couleurQui(l.qui));
-    const q = document.createElement('span');
-    q.className = 'quile'; q.textContent = l.qui;
-    d.appendChild(q);
+    d.className = 'ligne ' + cq;
+    /* comme dans le vrai karaoké : les syllabes d'un même mot vivent
+       dans un groupe insécable (.gmot) — « tran»+«quille » ne peut
+       plus se couper en fin de ligne */
+    let gmot = null;
     l.mots.forEach((w, i) => {
-      const s = document.createElement('span');
-      s.className = 'sim-mot';
-      /* w.j = syllabe qui se recolle au mot d'avant (« tran»+«quille ») */
-      s.textContent = (i && !w.j ? ' ' : '') + w.m;
-      s.dataset.t = w.t; d.appendChild(s);
+      if (!w.j || !gmot){
+        gmot = document.createElement('span');
+        gmot.className = 'gmot';
+        d.appendChild(gmot);
+      }
+      const m = document.createElement('span');
+      m.className = 'mot';
+      m.style.setProperty('--i', i);
+      const txt = (i && !w.j ? ' ' : '') + w.m;
+      m.textContent = txt;
+      const p = document.createElement('span');
+      p.className = 'plein'; p.textContent = txt;
+      m.appendChild(p);
+      m.dataset.t = w.t; m.dataset.f = w.f;
+      gmot.appendChild(m);
     });
     d.dataset.debut = l.debut; d.dataset.fin = l.fin;
-    zone.appendChild(d);
+    if (li === 0) d.classList.add('active');   /* au repos, la première vit */
+    defile.appendChild(q); defile.appendChild(d);
   });
+  zone.appendChild(defile);
 }
-function jouerExtrait(zone, lignes, quandFini, depuis){
+function jouerExtrait(zone, lignes, quandFini, depuis, jusqua){
   arreterExtrait();
   if (!lignes.length) return;
   afficherLignes(zone, lignes);
   const debut = (depuis !== undefined) ? depuis : lignes[0].debut - 0.35;
-  finExtrait = lignes[lignes.length - 1].fin + 0.45;
+  finExtrait = (jusqua !== undefined) ? jusqua : lignes[lignes.length - 1].fin + 0.45;
   apresExtrait = quandFini || null;
   fonduAmbiance(0.04);                       /* l'ambiance s'efface devant la bande */
   sauterPuisJouer(debut);
   ticker = setInterval(() => {
     const t = extrait.currentTime;
-    zone.querySelectorAll('.sim-mot').forEach(s =>
-      s.classList.toggle('ok', parseFloat(s.dataset.t) <= t));
-    zone.querySelectorAll('.sim-ligne').forEach(d =>
-      d.classList.toggle('chantee', parseFloat(d.dataset.fin) < t));
+    /* chaque mot se REMPLIT de sa couleur pendant qu'il se chante,
+       exactement comme dans le vrai karaoké */
+    zone.querySelectorAll('.mot').forEach(m => {
+      const a = parseFloat(m.dataset.t), b = parseFloat(m.dataset.f);
+      const pc = t <= a ? 0 : (t >= b ? 100 : (t - a) / (b - a) * 100);
+      m.querySelector('.plein').style.width = pc + '%';
+      m.classList.toggle('enCours', t >= a && t < b);
+    });
+    /* la ligne qu'on chante est la ligne vivante ; les autres s'effacent */
+    zone.querySelectorAll('.ligne').forEach(d => {
+      const deb = parseFloat(d.dataset.debut), fin = parseFloat(d.dataset.fin);
+      const active = t >= deb - 0.25 && t <= fin + 0.35;
+      d.classList.toggle('active', active);
+      d.classList.toggle('passee', t > fin + 0.35);
+      const etiquette = d.previousElementSibling;
+      if (etiquette) etiquette.classList.toggle('proche', active);
+    });
+    /* et ÇA DÉFILE : la ligne vivante vient se placer au centre */
+    const act = zone.querySelector('.ligne.active');
+    const defile = zone.querySelector('.defile');
+    if (act && defile){
+      const y = act.offsetTop + act.offsetHeight / 2 - zone.clientHeight / 2;
+      defile.style.transform = 'translateY(' + (-Math.max(0, y)) + 'px)';
+    }
     if (t >= finExtrait) arreterExtrait(true);
   }, 60);
 }
@@ -573,8 +673,11 @@ function arreterExtrait(fini){
 }
 
 function reussir(idConsigne, texte){
+  /* le message SUIT chaque geste : on change de bloc, de style, de
+     phrase — l'écrit change avec, il ne reste jamais bloqué sur
+     le premier choix */
   const c = document.getElementById(idConsigne);
-  if (!c || c.classList.contains('reussi')) return;
+  if (!c) return;
   c.classList.add('reussi');
   c.querySelector('.rond').textContent = '✓';
   c.querySelector('span:last-child').innerHTML = texte;
@@ -703,6 +806,9 @@ BLOCS.forEach((b, i) => {
   a.innerHTML = '<span class="mn">' + b.num + '</span><span class="mt">' + b.titre
     + '</span><span class="mh">' + mmss(b.deb) + '</span>';
   a.addEventListener('click', () => {
+    /* le choix se marque dans le menu, et suit chaque changement */
+    [...menuSimB.children].forEach(x => x.classList.remove('actif'));
+    a.classList.add('actif');
     menuSimB.classList.remove('vu');
     const f = document.getElementById('ficheBloc');
     document.getElementById('fb-num').textContent = 'BLOC ' + b.num;
@@ -749,6 +855,9 @@ STYLES_SIM.forEach(([cl, nom, desc], i) => {
   const a = document.createElement('a');
   a.innerHTML = '<span class="mt">' + nom + '</span>';
   a.addEventListener('click', () => {
+    /* le choix se marque dans le menu, et suit chaque changement */
+    [...menuSimS.children].forEach(x => x.classList.remove('actif'));
+    a.classList.add('actif');
     menuSimS.classList.remove('vu');
     STYLES_SIM.forEach(([c]) => c && ecranStyle.classList.remove(c));
     if (cl) ecranStyle.classList.add(cl);
@@ -793,15 +902,19 @@ PREPARATIONS['phrases'] = () => {
    perdait après la première — et semblait sauter n'importe où */
 document.getElementById('scenePhrases').addEventListener('click', (ev) => {
   const zone = document.getElementById('scenePhrases');
-  const d = ev.target.closest('.sim-ligne');
+  const d = ev.target.closest('.ligne');
   if (!d || !zone.contains(d)) return;
-  const i = [...zone.children].indexOf(d);
+  const defile = zone.querySelector('.defile');
+  const i = defile ? [...defile.querySelectorAll('.ligne')].indexOf(d) : -1;
   const l = blocPhrases.lignes[i];
   if (!l) return;
-  /* on repart PILE sur la phrase touchée */
-  jouerExtrait(zone, blocPhrases.lignes, null, l.debut - 0.3);
-  reussir('cPhrases', 'Pile dessus ! Touche, chante, retouche, rechante : '
-    + 'c’est comme ça qu’on travaille une phrase.');
+  /* on repart PILE sur la phrase touchée, on l'écoute EN ENTIER,
+     et on s'arrête à sa fin — comme un vrai travail de répétition */
+  reussir('cPhrases', '🎧 Tu as touché : « ' + l.texte + ' » — écoute, elle défile…');
+  jouerExtrait(zone, blocPhrases.lignes,
+    () => reussir('cPhrases', 'Voilà : la phrase est finie, la musique s’arrête. '
+      + 'Retouche-la pour la refaire, ou touche-en une autre.'),
+    l.debut - 0.3, l.fin + 0.4);
 });
 
 /* 7 · TON AIDE (seulement sur un lien personnel) */
