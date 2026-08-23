@@ -3045,17 +3045,26 @@ if (SUR_MOBILE){
   backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
   border-bottom:1px solid rgba(212,175,55,.32);
   box-shadow:0 16px 46px rgba(0,0,0,.5);
-  pointer-events:auto; cursor:pointer; overflow:hidden;
+  pointer-events:none; overflow:hidden;
 }
+/* pendant le chant, la barre du haut s'efface : le bandeau monte
+   prendre sa place, pas de trou noir au-dessus de lui */
+#bandeau.barre-effacee{ top:0; }
 /* replié : il ne reste que la ligne de l'état, sur une seule ligne */
 #bandeau.replie{ height:46px; gap:0; }
 #bandeau.replie .b-texte,
 #bandeau.replie .b-aller{ display:none; }
 #bandeau.replie .b-etat{ font-size:15px; }
-/* la petite poignée qui dit qu'on peut le replier */
-#bandeau .b-poignee{ position:absolute; right:10px; top:6px; font-size:11px;
-  color:rgba(255,255,255,.42); letter-spacing:.1em; pointer-events:none;
-  transition:transform .5s cubic-bezier(0.32,0.72,0,1); }
+/* la flèche de repli : un VRAI bouton, le seul endroit qui replie.
+   Toucher le reste du bandeau ne fait rien du tout. */
+#bandeau .b-poignee{ position:absolute; right:6px; top:6px;
+  width:38px; height:34px; display:grid; place-items:center;
+  font-size:13px; color:rgba(255,255,255,.55);
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
+  border-radius:10px; cursor:pointer; pointer-events:auto;
+  font-family:inherit; padding:0;
+  transition:transform .5s cubic-bezier(0.32,0.72,0,1), background .4s; }
+#bandeau .b-poignee:active{ background:rgba(255,255,255,.14); }
 #bandeau.replie .b-poignee{ transform:rotate(180deg); }
 body[data-pour] #bandeau{ display:flex; }
 #bandeau .b-etat{
@@ -3125,7 +3134,7 @@ body[data-pour] #bandeau{ display:flex; }
 }
 </style>
 <div id="toastMaj"></div>
-<div id="bandeau"><div class="b-poignee">⌃</div><div class="b-etat"></div><div class="b-texte"></div><button class="b-aller"></button></div>
+<div id="bandeau"><button class="b-poignee" aria-label="replier ou déplier">⌃</button><div class="b-etat"></div><div class="b-texte"></div><button class="b-aller"></button></div>
 <div id="carton"><div class="c-titre"></div><div class="c-place"></div><div class="c-perso"></div></div>
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -3178,16 +3187,16 @@ body[data-pour] #bandeau{ display:flex; }
   setTimeout(mesurerBarre, 400);      /* après l'ajout des boutons */
   setTimeout(mesurerBarre, 1400);
 
-  /* ─── ET IL SE REPLIE D'UN TOUCHER ────────────────────────────
-     Un appui sur le bandeau le réduit à sa seule ligne d'état ;
-     un autre le rouvre. Le choix est retenu. */
-  try {
-    if (localStorage.getItem('boheme-bandeau-replie') === '1')
-      bandeau.classList.add('replie');
-  } catch(e){}
-  bandeau.addEventListener('click', () => {
-    const replie = bandeau.classList.toggle('replie');
-    try { localStorage.setItem('boheme-bandeau-replie', replie ? '1' : '0'); } catch(e){}
+  /* ─── LE REPLI : par la flèche, et RIEN d'autre ───────────────
+     Avant, un toucher n'importe où sur le bandeau le repliait, et
+     ce repli était retenu : il suffisait de l'effleurer une fois
+     pour perdre toutes les explications sans comprendre pourquoi.
+     Désormais : seule la petite flèche replie/déplie, et chaque
+     ouverture de l'application repart bandeau grand ouvert. */
+  try { localStorage.removeItem('boheme-bandeau-replie'); } catch(e){}
+  bandeau.querySelector('.b-poignee').addEventListener('click', (e) => {
+    e.stopPropagation();
+    bandeau.classList.toggle('replie');
   });
   const carton = document.getElementById('carton');
 
@@ -3999,7 +4008,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 19h45';
+const VERSION_APPLI = '23/08/2026 · 19h54';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -4203,15 +4212,18 @@ const VERSION_APPLI = '23/08/2026 · 19h45';
   const barreHaut = document.querySelector('.barre');
   const actif = () => getComputedStyle(lb).display !== 'none';
   let minuteurCache = null;
+  const bandeauHaut = document.getElementById('bandeau');
   function cacher(){
     if (au.paused || !actif()) return;
     lb.classList.add('cache');
     if (barreHaut) barreHaut.classList.add('cache');
+    if (bandeauHaut) bandeauHaut.classList.add('barre-effacee');
   }
   function montrer(){
     if (!actif()) return;
     lb.classList.remove('cache');
     if (barreHaut) barreHaut.classList.remove('cache');
+    if (bandeauHaut) bandeauHaut.classList.remove('barre-effacee');
     clearTimeout(minuteurCache);
     if (!au.paused) minuteurCache = setTimeout(cacher, 4000);
   }
