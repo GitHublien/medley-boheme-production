@@ -351,6 +351,9 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
   .prep-pied button:hover{ background:var(--or); color:var(--noir); }
   .aide{ position:fixed; bottom:16px; right:22px; font-size:11px; letter-spacing:1.6px;
          color:#6d675a; text-transform:uppercase; z-index:15; }
+  /* elle ne parle que de souris et de clavier : sur un téléphone
+     elle n'a aucun sens, et elle encombre le bas de l'écran */
+  @media (pointer: coarse){ .aide{ display:none !important; } }
   .reste{ margin-top:3em; padding-top:16px; border-top:1px solid rgba(212,175,55,.14);
           font-size:13px; color:#4d483f; line-height:1.9; }
   @media (max-width:680px){ .barre{ flex-wrap:wrap; gap:9px; } .ou{ width:100%; }
@@ -2992,7 +2995,7 @@ if (SUR_MOBILE){
   position:fixed; left:0; right:0; top:var(--h-barre, 0px); z-index:19;
   display:none; flex-direction:column; justify-content:center;
   align-items:center; gap:5px; text-align:center;
-  height:202px; padding:9px 15px 11px;
+  height:248px; padding:12px 16px 14px;
   transition:height .55s cubic-bezier(0.32,0.72,0,1),
              background .6s cubic-bezier(0.32,0.72,0,1),
              border-color .6s cubic-bezier(0.32,0.72,0,1);
@@ -3008,7 +3011,6 @@ if (SUR_MOBILE){
 /* replié : il ne reste que la ligne de l'état, sur une seule ligne */
 #bandeau.replie{ height:46px; gap:0; }
 #bandeau.replie .b-texte,
-#bandeau.replie .b-aller{ display:none; }
 #bandeau.replie .b-etat{ font-size:15px; }
 /* la flèche de repli : un VRAI bouton, le seul endroit qui replie.
    Toucher le reste du bandeau ne fait rien du tout. */
@@ -3024,29 +3026,29 @@ if (SUR_MOBILE){
 body[data-pour] #bandeau{ display:flex; }
 #bandeau .b-etat{
   font-weight:800; letter-spacing:.4px; line-height:1.2;
-  font-size:clamp(18.5px,2.6vw,28px); color:var(--c-perso,#ffc814);
+  font-size:clamp(21px,3vw,32px); color:var(--c-perso,#ffc814);
   filter:drop-shadow(0 0 .32em currentColor);
   transition:font-size .5s cubic-bezier(0.32,0.72,0,1), color .5s;
 }
 #bandeau .b-texte{
-  font-size:clamp(15px,1.95vw,20px); line-height:1.45;
+  font-size:clamp(17.5px,2.3vw,23px); line-height:1.48;
   color:#e4dece; max-width:940px;
 }
 /* le moment venu : la bande entière s'allume dans SA couleur */
-#bandeau .b-aller{
-  pointer-events:auto; visibility:hidden; font-family:inherit; cursor:pointer;
-  margin-top:1px; padding:6px 15px; min-height:30px; border-radius:999px;
-  font-size:13px; font-weight:700; letter-spacing:.2px; color:#fff;
-  border:1px solid var(--c-perso,#ffc814); background:rgba(255,255,255,.06);
-  transition:transform .4s cubic-bezier(0.32,0.72,0,1), background .4s; }
-#bandeau .b-aller.la{ visibility:visible; }
-#bandeau .b-aller:active{ transform:scale(.96); background:rgba(255,255,255,.13); }
+/* le bouton « aller à ton passage », dans la barre : il n'existe
+   que quand il y a vraiment un passage à rejoindre plus loin */
+.b-aller{ display:none !important; }
+.b-aller.la{ display:inline-flex !important; align-items:center;
+  border-color:var(--c-perso,#ffc814) !important;
+  color:var(--c-perso,#ffc814) !important;
+  background:rgba(255,255,255,.05) !important;
+  max-width:52vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #bandeau.alerte{
   background:color-mix(in srgb, var(--c-perso,#ffc814) 13%, rgba(3,3,3,.92));
   border-bottom-color:var(--c-perso,#ffc814);
 }
 #bandeau.alerte .b-etat{
-  font-size:clamp(24px,3.5vw,37px);
+  font-size:clamp(27px,4vw,42px);
   animation:battement 1.5s cubic-bezier(0.32,0.72,0,1) infinite;
 }
 @keyframes battement{
@@ -3055,7 +3057,6 @@ body[data-pour] #bandeau{ display:flex; }
 }
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
   #bandeau{ height:126px; }
-  #bandeau .b-aller{ font-size:12px; min-height:26px; padding:4px 12px; }
   #bandeau .b-etat{ font-size:17px; }
   #bandeau .b-texte{ font-size:13.5px; line-height:1.32; }
 }
@@ -3089,7 +3090,7 @@ body[data-pour] #bandeau{ display:flex; }
 }
 </style>
 <div id="toastMaj"></div>
-<div id="bandeau"><button class="b-poignee" aria-label="replier ou déplier">⌃</button><div class="b-etat"></div><div class="b-texte"></div><button class="b-aller"></button></div>
+<div id="bandeau"><button class="b-poignee" aria-label="replier ou déplier">⌃</button><div class="b-etat"></div><div class="b-texte"></div></div>
 <div id="carton"><div class="c-titre"></div><div class="c-place"></div><div class="c-perso"></div></div>
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -3116,7 +3117,15 @@ body[data-pour] #bandeau{ display:flex; }
   const bandeau = document.getElementById('bandeau');
   const bEtat = bandeau.querySelector('.b-etat');
   const bTexte = bandeau.querySelector('.b-texte');
-  const bAller = bandeau.querySelector('.b-aller');
+  /* le bouton « aller à ton passage » vit dans la BARRE, avec les
+     autres commandes : dans le carré noir il tombait sur le texte */
+  const bAller = document.createElement('button');
+  bAller.className = 'btn-reg b-aller';
+  (function poserAller(){
+    const barreEl = document.querySelector('.barre');
+    if (barreEl) barreEl.appendChild(bAller);
+    else setTimeout(poserAller, 300);
+  })();
   let ouAller = null;
   bAller.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -3444,8 +3453,7 @@ body[data-pour] #bandeau{ display:flex; }
     dernierEtat = cle;
     bandeau.style.setProperty('--c-perso', coul);
     bEtat.textContent = titre;
-    bTexte.textContent = texte
-      + (proposition ? ' Tu peux aussi glisser ton doigt sur la barre du bas.' : '');
+    bTexte.textContent = texte;
     bAller.textContent = proposition;
     bAller.classList.toggle('la', !!proposition);
     bandeau.classList.toggle('alerte', alerte);
@@ -4073,7 +4081,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '23/08/2026 · 22h08';
+const VERSION_APPLI = '23/08/2026 · 22h23';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -4476,6 +4484,11 @@ const VERSION_APPLI = '23/08/2026 · 22h08';
   #btnIntro{ order:7 !important; } #btnPresence{ order:8 !important; }
   #btnPlein{ order:9 !important; }
   #btnTuto{ min-width:0 !important; font-size:14px !important; }
+  /* dans le rail, le bouton « aller à ton passage » revient à la
+     ligne au lieu de déborder : la place est étroite */
+  .b-aller.la{ max-width:100% !important; white-space:normal !important;
+               line-height:1.25 !important; padding:7px 5px !important;
+               text-overflow:clip !important; order:0 !important; }
 
   /* ─── LA MISE EN SCÈNE : une bande fine, à droite du rail ────── */
   #bandeau{
@@ -4488,12 +4501,6 @@ const VERSION_APPLI = '23/08/2026 · 22h08';
     font-size:11.5px !important; line-height:1.3 !important;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
     overflow:hidden;
-  }
-  #bandeau .b-aller{
-    position:absolute; right:46px; top:50%; transform:translateY(-50%);
-    margin:0 !important; font-size:11px !important;
-    min-height:26px !important; padding:4px 11px !important;
-    max-width:34vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   }
   #bandeau .b-poignee{ right:5px; top:50%; transform:translateY(-50%);
     width:30px; height:30px; }
