@@ -71,7 +71,9 @@
           box-shadow:0 10px 30px -24px rgba(22,24,29,.35);
           transition:transform .25s, box-shadow .25s; }
   .carte:hover{ transform:translateY(-3px); box-shadow:0 18px 40px -24px rgba(22,24,29,.4); }
-  .carte .picto{ width:38px; height:38px; margin-bottom:14px; color:var(--accent); }
+  .carte{ overflow:hidden; }
+  .banniere{ width:calc(100% + 48px); margin:-24px -24px 16px; aspect-ratio:21/10;
+             object-fit:cover; display:block; }
   .carte h3{ font-size:16.5px; line-height:1.35; letter-spacing:-.1px; margin-bottom:6px;
              padding-right:86px; }
   .carte p{ font-size:14px; color:var(--gris); }
@@ -184,6 +186,34 @@
   footer b{ color:#f2efe9; display:block; margin-bottom:4px; }
   footer a{ color:#cfc9bd; }
 
+  /* --- simulateur lumiere --- */
+  .moments{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .moment{ border:1px solid #33364a; color:#cfc9bd; background:#15161c; border-radius:20px;
+           padding:7px 14px; font-size:13px; cursor:pointer; transition:all .2s; }
+  .moment:hover{ border-color:var(--or); color:var(--or); }
+  .moment.actif{ background:var(--or); color:#15161c; border-color:var(--or); }
+  #simu{ position:relative; border-radius:18px; overflow:hidden; background:#07070b;
+         aspect-ratio:16/7; border:1px solid #262833; margin-bottom:14px; }
+  #s-cyc{ position:absolute; left:3%; right:3%; top:0; height:58%; background:#0a0a10;
+          transition:background 1.4s; }
+  #s-sol{ position:absolute; left:0; right:0; bottom:0; height:44%;
+          background:linear-gradient(180deg,#0d0d12,#050508); }
+  .s-d{ position:absolute; opacity:0; transition:opacity 1s; pointer-events:none; }
+  .s-d .cone{ width:100%; height:100%; clip-path:polygon(44% 0,56% 0,100% 100%,0% 100%);
+        background:linear-gradient(180deg, var(--c) 0%, transparent 90%); opacity:.8; }
+  .s-d .tache{ position:absolute; bottom:-5%; left:4%; right:4%; height:16%;
+        background:radial-gradient(ellipse at center, var(--c), transparent 72%); }
+  #s-fog{ position:absolute; left:0; right:0; bottom:0; height:38%;
+          background:url("media/fiche/fumee.jpg") center 65%/cover;
+          mix-blend-mode:screen; opacity:0; transition:opacity 1.6s;
+          -webkit-mask-image:linear-gradient(180deg, transparent, #000 45%);
+          mask-image:linear-gradient(180deg, transparent, #000 45%); }
+  #s-face{ position:absolute; inset:0; background:#fff; opacity:0;
+           transition:opacity 1.2s, background 1.2s; }
+  #s-flash{ position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; }
+  #s-etat{ position:absolute; left:16px; bottom:10px; font-size:12.5px; color:#9a9daa;
+           letter-spacing:.4px; text-shadow:0 1px 4px #000; }
+
   @media print{
     nav, .indice, #btnplay, .bouton{ display:none; }
     .hero{ min-height:auto; background:#fff; color:#000; }
@@ -241,7 +271,7 @@
 
   <div class="cartes">
     <div class="carte apparait"><span class="badge b1">Important</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="1.5"/><path d="M2.5 18l4-3M21.5 18l-4-3"/></svg>
+      <img class="banniere" src="media/fiche/cartes/scene.jpg" alt="La salle et la scene vides, pretes" loading="lazy">
       <h3>La scène dégagée pendant notre passage</h3>
       <p>Le backline du groupe s'installe à l'entracte. Toute la mise en scène repose dessus.</p>
       <details><summary>le détail</summary><div>Les six chanteurs circulent d'un bout à l'autre du plateau
@@ -250,7 +280,7 @@
       C'est le point que j'aimerais voir confirmé en premier.</div></details></div>
 
     <div class="carte apparait"><span class="badge b1">Important</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9.5" y="2.5" width="5" height="9" rx="2.5"/><path d="M6 10.5a6 6 0 0 0 12 0M12 16.5v4M9 20.5h6"/></svg>
+      <img class="banniere" src="media/fiche/cartes/micros.jpg" alt="Micro Shure Beta 87A sur emetteur sans fil" loading="lazy">
       <h3>6 micros HF main, tous du même modèle</h3>
       <p>Six canaux ouverts en même temps : les six chantent ensemble sur plusieurs titres.</p>
       <details><summary>le détail</summary><div>Je penche pour le Shure Beta 87A, ou tout modèle équivalent
@@ -259,7 +289,7 @@
       Si vous disposez de mieux, je suivrai votre préconisation. Batteries ou piles neuves avant l'entrée.</div></details></div>
 
     <div class="carte apparait"><span class="badge b3">Souhaité</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="6.5" y="4.5" width="4" height="7" rx="2"/><path d="M4 10a4.5 4.5 0 0 0 9 0M8.5 14.5v3M18 6v6M15 9h6"/></svg>
+      <img class="banniere" src="media/fiche/cartes/secours.jpg" alt="Trois micros de secours en coulisse" loading="lazy">
       <h3>2 à 3 micros de secours en coulisse</h3>
       <p>Allumés et réglés. Le medley n'a pas une seconde de pause pour aller en chercher un.</p>
       <details><summary>le détail</summary><div>Même modèle que les six principaux. Si un micro lâchait,
@@ -267,7 +297,7 @@
       Six pieds en coulisse, un par chanteur, pour poser et retrouver son micro. Aucun pied sur le plateau.</div></details></div>
 
     <div class="carte apparait"><span class="badge b1">Important</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg>
+      <img class="banniere" src="media/fiche/cartes/fichier.jpg" alt="Console de regie, bouton de lecture" loading="lazy">
       <h3>Un seul fichier, lancé une seule fois</h3>
       <p>Aucune relance, aucun enchaînement à gérer : la bande couvre les 26 min 50.</p>
       <details><summary>le détail</summary><div>Avec écran : un MP4 image + son (H.264, 1920×1080, 25 i/s,
@@ -276,7 +306,7 @@
       Dites-moi le format et le support que votre régie préfère.</div></details></div>
 
     <div class="carte apparait"><span class="badge b1">Important</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3h5l3 13h-11z"/><ellipse cx="12" cy="19" rx="6.5" ry="2.5" opacity=".5"/></svg>
+      <img class="banniere" src="media/fiche/douche.jpg" alt="Douche de lumiere unique sur plateau nu" loading="lazy">
       <h3>Des douches sur des points fixes, complétées en face</h3>
       <p>Le cœur de la mise en scène : le spectacle alterne sans cesse solos, duos et ensembles.</p>
       <details><summary>le détail</summary><div>Sept positions numérotées P1 à P7 (voir le plateau plus bas),
@@ -285,24 +315,24 @@
       Des marques discrètes au sol repèrent les positions : cela fait partie du spectacle.</div></details></div>
 
     <div class="carte apparait"><span class="badge b2">Très souhaité</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 17c3-2.5 6-2.5 9 0s6 2.5 9 0M3 21c3-2.5 6-2.5 9 0s6 2.5 9 0M12 3v7M9 7l3 3 3-3"/></svg>
+      <img class="banniere" src="media/fiche/fumee.jpg" alt="Nappe de fumee lourde au sol" loading="lazy">
       <h3>De la fumée lourde, deux envois</h3>
-      <p>L'ouverture du spectacle, et la suspension du temps vers 23:00.</p>
+      <p>Pour l'instant j'en vois deux, l'ouverture et l'arrêt du temps, mais il pourra y en avoir trois ou quatre : ce n'est pas encore arrêté.</p>
       <details><summary>le détail</summary><div>Une nappe au sol dont les chanteurs émergent dans le noir :
       c'est l'entrée dans le spectacle. Une trace résiduelle sur le titre suivant ne me gêne pas, au
       contraire. Dites-moi quelle machine vous utilisez et la procédure auprès du chargé de sécurité :
       je fournirai fiche de sécurité du produit et notice sans délai.</div></details></div>
 
     <div class="carte apparait"><span class="badge b2">Très souhaité</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 4.5 6.5 8 6.5 11a6.5 6.5 0 0 1-13 0C5.5 11 8 7.5 12 3z"/><path d="M9.5 14a2.5 2.5 0 0 0 2.5 2.5"/></svg>
+      <img class="banniere" src="media/fiche/cartes/cyclo.jpg" alt="Cyclorama colore du violet a l'ambre" loading="lazy">
       <h3>De la couleur sur le cyclorama, une par univers</h3>
       <p>Le marqueur le plus lisible des ruptures entre les trois œuvres.</p>
       <details><summary>le détail</summary><div>Monopolis, la cathédrale, l'Égypte, Vérone : une couleur
-      franche et assumée par monde (voir la galerie lumière plus bas). Je suis ouvert à vos propositions
+      franche et assumée par monde (<a href="#lumiere" style="color:inherit; font-weight:600">voir la galerie lumière</a>). Je suis ouvert à vos propositions
       de teintes. L'idéal serait un cyclorama au lointain, la profondeur de jeu préservée devant.</div></details></div>
 
     <div class="carte apparait"><span class="badge b2">Très souhaité</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M12 16.5v3M8 19.5h8"/></svg>
+      <img class="banniere" src="media/fiche/cartes/ecran.jpg" alt="Surface de projection en fond de scene" loading="lazy">
       <h3>Un écran ou une surface de projection</h3>
       <p>Le spectacle n'a aucun décor : l'image en tiendrait lieu, changeant d'univers avec la musique.</p>
       <details><summary>le détail</summary><div>Deux réponses changent tout : l'image vient-elle de la salle
@@ -311,7 +341,7 @@
       Et si la projection n'est pas possible, je préfère de loin garder la profondeur de jeu.</div></details></div>
 
     <div class="carte apparait"><span class="badge b3">Souhaité</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+      <img class="banniere" src="media/fiche/cartes/poursuite.jpg" alt="Faisceau de poursuite dans la brume" loading="lazy">
       <h3>Une poursuite, cadrage médaillon</h3>
       <p>Pour suivre un soliste qui se déplace.</p>
       <details><summary>le détail</summary><div>Si la poursuite suppose un technicien supplémentaire ou un
@@ -319,7 +349,7 @@
       avec vos moyens existants.</div></details></div>
 
     <div class="carte apparait"><span class="badge b3">Souhaité</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l6-3v8l-6-3zM10 12l10-5v14l-10-5"/></svg>
+      <img class="banniere" src="media/fiche/cartes/retours.jpg" alt="Retours de scene sur le plateau" loading="lazy">
       <h3>Des retours hors des zones jouées au sol</h3>
       <p>Plusieurs passages se jouent à genoux, notamment Les Sans-papiers.</p>
       <details><summary>le détail</summary><div>Des retours de plateau me conviennent parfaitement ; si vous
@@ -327,12 +357,12 @@
       conduite tous les passages joués au sol, pour que les retours ne masquent personne.</div></details></div>
 
     <div class="carte apparait"><span class="badge b4">Confort</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 8h18M3 12h18M3 16h18" opacity=".45"/><path d="M5 20c4-1.5 10-1.5 14 0"/></svg>
+      <img class="banniere" src="media/fiche/cartes/hazer.jpg" alt="Brume legere rendant les faisceaux visibles" loading="lazy">
       <h3>Un hazer, brume légère en fond</h3>
       <p>Pour donner du corps aux faisceaux. Demande secondaire, sans obligation.</p></div>
 
     <div class="carte apparait"><span class="badge b4">À caler</span>
-      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>
+      <img class="banniere" src="media/fiche/cartes/horloge.jpg" alt="Horloge de coulisse" loading="lazy">
       <h3>Un temps de plateau, et si possible une répétition</h3>
       <p>Six chanteurs à placer, une conduite de 30 à 45 états : les horaires du jour J d'abord.</p>
       <details><summary>le détail</summary><div>Les six chanteurs n'auront jamais joué ce spectacle ensemble
@@ -470,6 +500,25 @@
   moi comment l'obtenir au Debussy. La conduite complète, tops écrits en repères audibles, suivra
   dans un document séparé (30 à 45 états).</p>
 
+  <p class="chapo apparait" style="margin-bottom:18px"><b style="color:#f2efe9">La conduite, en direct.</b>
+  Lancez un moment : la bande se place, et la scène ci-dessous montre l'intention lumière
+  à cet endroit. Les teintes sont une proposition, rien de plus : c'est vous qui saurez
+  ce qui rend le mieux au Debussy.</p>
+  <div class="moments apparait" id="moments"></div>
+  <div id="simu" class="apparait">
+    <div id="s-cyc"></div><div id="s-sol"></div>
+    <div class="s-d" id="s-d1" style="left:17%;top:16%;width:15%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div class="s-d" id="s-d2" style="left:42.5%;top:16%;width:15%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div class="s-d" id="s-d3" style="left:68%;top:16%;width:15%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div class="s-d" id="s-d4" style="left:23%;top:24%;width:11%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div class="s-d" id="s-d5" style="left:44.5%;top:24%;width:11%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div class="s-d" id="s-d6" style="left:66%;top:24%;width:11%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div class="s-d" id="s-d7" style="left:45.5%;top:30%;width:9%;bottom:14%"><div class="cone"></div><div class="tache"></div></div>
+    <div id="s-fog"></div><div id="s-face"></div><div id="s-flash"></div>
+    <div id="s-etat">Noir</div>
+  </div>
+  <p class="chapo apparait" style="font-size:14px; margin-bottom:40px">Et ci-dessous, les mêmes
+  intentions en images.</p>
   <div class="galerie">
     <figure class="oeuvre pleine apparait"><img src="media/fiche/fumee.jpg" alt="Nappe de fumée lourde sur un plateau sombre">
       <figcaption><b>L'ouverture — la nappe au sol</b><span>Noir, fumée lourde, une voix off. Les chanteurs émergent de la nappe. (0:00)</span></figcaption></figure>
@@ -487,12 +536,11 @@
 <!-- ═══════════ EFFETS & VIDÉO ═══════════ -->
 <section id="effets"><div class="dedans">
   <div class="num apparait">06 · Effets &amp; vidéo</div>
-  <h2 class="apparait">Deux envois de fumée, un écran si vous en disposez</h2>
+  <h2 class="apparait">De la fumée, un écran si vous en disposez</h2>
   <div class="cartes" style="margin-top:26px;">
     <div class="carte apparait">
       <h3>Fumée lourde</h3>
-      <p>Deux envois : l'ouverture (0:00) et l'arrêt du temps (23:00). Une trace résiduelle ne me gêne
-      pas, elle prolonge l'atmosphère.</p>
+      <p>Deux envois au moins : l'ouverture (0:00) et l'arrêt du temps (23:00). D'autres pourront s'ajouter selon ce que permet le produit. Une trace résiduelle ne me gêne pas, elle prolonge l'atmosphère.</p>
       <details><summary>le détail</summary><div>Quelle machine utilisez-vous, et quelle procédure auprès
       du chargé de sécurité ? Je fournirai tout document nécessaire. Je note la fosse d'orchestre et
       reste attentif à la ventilation. Un hazer léger en fond, si disponible, donnerait du corps aux
@@ -512,12 +560,8 @@
 <section id="extrait"><div class="dedans">
   <div class="num apparait">07 · La mise en scène, en vidéo</div>
   <h2 class="apparait">Un extrait de la conduite, pour voir plutôt que lire</h2>
-  <p class="chapo apparait">Voici la vidéo de travail des deux premiers titres : placements, entrées,
-  intentions lumière, en regard de la musique. Si ce format vous est utile, je fabrique les suivantes
-  bloc par bloc et je vous les envoie au fur et à mesure — dites-le-moi simplement.</p>
-  <div class="cadre-video apparait">
-    <video controls preload="metadata" src="media/mise-en-scene-technique.mp4"></video>
-  </div>
+  <p class="chapo apparait">Une vidéo de travail par bloc : placements, entrées, intentions lumière, en regard de la musique. Si ce format vous est utile, je fabrique la suite au fur et à mesure — dites-le-moi simplement.</p>
+  <div class="contrat apparait"><b>L'extrait vidéo est en cours de finition.</b> Je le mets en ligne ici même dans les prochains jours : cette page se met à jour toute seule, le lien ne change pas.</div>
 </div></section>
 
 <!-- ═══════════ JOUR J ═══════════ -->
@@ -545,9 +589,7 @@
   très bien : les numéros suffisent.</p>
   <div class="questions apparait">
     <div class="question">Le plateau est-il bien dégagé pendant la première partie, l'installation du groupe se faisant à l'entracte ?</div>
-    <div class="question">Pouvez-vous me transmettre le plan de scène et le plan de feu de base du Debussy ?</div>
-    <div class="question">Quel est le modèle de la console lumière, et une conduite peut-elle être préparée à l'avance ?</div>
-    <div class="question">Combien de douches sur des positions que nous définissons (P1 à P7), et peut-on les compléter d'une face à 45° ?</div>
+    <div class="question">Des douches sur des positions que nous définirions ensemble (P1 à P7), complétées d'une face à 45° : est-ce possible ?</div>
     <div class="question">Des marques discrètes au sol sont-elles possibles pour repérer ces positions ?</div>
     <div class="question">Une poursuite et son technicien sont-ils envisageables, sans surcoût ?</div>
     <div class="question">Six micros HF main du même modèle, plus 2 à 3 secours réglés en coulisse : est-ce disponible ?</div>
@@ -562,6 +604,7 @@
     <div class="question">Quel temps de plateau nous est réservé le jour J, et à quelle heure ? Une répétition complète est-elle envisageable ?</div>
     <div class="question">La veille : la salle serait-elle accessible ? Je pose la question sans y compter.</div>
     <div class="question">Si l'un de ces points suppose une dépense, je le retire : qu'auriez-vous à me proposer à la place, dans ce qui est déjà inclus ?</div>
+    <div class="question"><b>Et surtout : que me proposeriez-vous, vous ?</b> Ce document dit mes idées, mais c'est vous les professionnels de la lumière et du son. Si vous voyez des choses qui serviraient mieux ce spectacle, je suis tout ouïe.</div>
   </div>
   <a class="bouton" href="mailto:caidj90@hotmail.com?subject=Fiche%20technique%20%E2%80%94%20premi%C3%A8re%20partie%20du%204%20octobre&body=Bonjour%20Micka%C3%ABl%2C%0A%0AMes%20r%C3%A9ponses%2C%20par%20num%C3%A9ro%20%3A%0A%0A1.%20">Répondre par mail →</a>
 </div></section>
@@ -672,6 +715,7 @@
     }
     bande.play();
   }
+  window.allerBande = aller;
   btn.addEventListener('click', function(){
     if (bande.paused){
       if (bande.readyState === 0) bande.load();
@@ -722,6 +766,80 @@
   ['pointerup','pointercancel'].forEach(function(ev){
     zone.addEventListener(ev, function(){ mactif = false; zone.style.cursor = 'grab'; });
   });
+})();
+</script>
+<script>
+(function(){
+  'use strict';
+  var ETATS = [
+    [0,"Noir · fumée lourde · la voix off",{cyc:'#0a0a10',fog:.85}],
+    [30,"Adrien seul en douche · la bande entre dans le noir",{cyc:'#0d0d14',fog:.5,d:{2:'#fff8ea'}}],
+    [79,"« Un éclair dans le brouillard »",{cyc:'#141d33',fog:.5,d:{2:'#fff8ea'},flash:1}],
+    [81,"La bande révélée · contres froids",{cyc:'#131c31',fog:.45,face:['#9db4dd',.12],d:{1:'#c9d6ee',2:'#ffffff',3:'#c9d6ee'}}],
+    [96,"Le refrain humain · la lumière se réchauffe",{cyc:'#2a1f33',fog:.35,face:['#e8c9a0',.16],d:{1:'#f4dcae',2:'#fff4d8',3:'#f4dcae'}}],
+    [108,"Explosion · noir sec",{cyc:'#08080c',fog:.35,flash:1}],
+    [117,"Ziggy · une douche, rien d'autre",{cyc:'#0a0a10',fog:.15,d:{2:'#fff6e2'}}],
+    [213,"La chanson de Ziggy · deux zones séparées",{cyc:'#0c0c13',fog:.12,d:{2:'#fff2d9',4:'#cfe0ff'}}],
+    [316,"Radio Monopolis · plateau noir, on se place",{cyc:'#0a0a10',fog:.2}],
+    [366,"Le Blues · froide et verticale",{cyc:'#10131f',fog:.15,d:{1:'#dfe7f5',2:'#dfe7f5',3:'#dfe7f5',5:'#dfe7f5'}}],
+    [514,"Transition chantée · sorties",{cyc:'#0a0a10',fog:.15}],
+    [526,"Quatre solitudes · quatre teintes pâles",{cyc:'#0a0a10',fog:.1,d:{2:'#ffffff',4:'#9cc4ea',5:'#9fd6c4',6:'#bda8dd'}}],
+    [620,"Les cloches · l'or arrive",{cyc:'#241708',fog:.1,d:{2:'#f2d9a0'}}],
+    [627,"Le Temps des Cathédrales · pierre et vitrail",{cyc:'#b8862b',face:['#e8b95e',.14],fog:.1,d:{2:'#ffe9b8'}}],
+    [732,"La bataille · l'appel crié",{cyc:'#7a4d0e',face:['#ffffff',.28],fog:.12}],
+    [753,"Les Sans-papiers · à vue, plein feu",{cyc:'#6e6a60',face:['#ffffff',.5],fog:0}],
+    [839,"Bohémienne · elle seule en lumière",{cyc:'#2a1420',fog:.08,d:{2:'#ffe4c4'}}],
+    [961,"Belle · trois voix autour d'elle",{cyc:'#341022',fog:.08,d:{1:'#e8d2f0',2:'#fff0d8',3:'#e8d2f0'}}],
+    [1133,"Le Dilemme · l'Égypte",{cyc:'#9a7614',face:['#e8c96a',.15],fog:.08,d:{2:'#ffe9b0',5:'#ffe9b0'}}],
+    [1255,"Mon Frère",{cyc:'#6b5210',fog:.08,d:{4:'#ffedc4',6:'#ffedc4'}}],
+    [1380,"L'arrêt du temps · la nappe revient",{cyc:'#0d0d16',fog:.8}],
+    [1400,"Stone · Monopolis revient",{cyc:'#2a2342',fog:.4,d:{2:'#ffffff'}}],
+    [1440,"Aimer · le plateau entier s'ouvre",{cyc:'#8a2b2b',face:['#ffb27a',.24],fog:.2,d:{1:'#ffd9b0',2:'#ffffff',3:'#ffd9b0',4:'#ffd9b0',5:'#ffd9b0',6:'#ffd9b0'}}],
+    [1610,"Noir final",{cyc:'#08080c',fog:0}]
+  ];
+  var MOMENTS = [[0,"Ouverture"],[78,"L'éclair"],[117,"Ziggy"],[366,"Le Blues"],
+    [526,"Quatre solitudes"],[627,"Cathédrales"],[753,"Plein feu"],[839,"Bohémienne"],
+    [1380,"L'arrêt du temps"],[1440,"Le final"]];
+  var cyc = document.getElementById('s-cyc'), fog = document.getElementById('s-fog'),
+      face = document.getElementById('s-face'), flash = document.getElementById('s-flash'),
+      etat = document.getElementById('s-etat'), bande = document.getElementById('bande'),
+      conteneur = document.getElementById('moments');
+  var dernier = -1;
+  function indiceA(t){ var i = 0; for (var k = 0; k < ETATS.length; k++){ if (ETATS[k][0] <= t) i = k; } return i; }
+  function appliquer(i){
+    if (i === dernier) return;
+    var e = ETATS[i][2];
+    cyc.style.background = e.cyc || '#0a0a10';
+    fog.style.opacity = e.fog || 0;
+    if (e.face){ face.style.background = e.face[0]; face.style.opacity = e.face[1]; }
+    else { face.style.opacity = 0; }
+    for (var n = 1; n <= 7; n++){
+      var el = document.getElementById('s-d' + n);
+      var c = e.d && e.d[n];
+      if (c){ el.style.setProperty('--c', c); el.style.opacity = 1; }
+      else { el.style.opacity = 0; }
+    }
+    etat.textContent = ETATS[i][1];
+    if (e.flash && dernier !== -1){
+      flash.style.transition = 'none'; flash.style.opacity = .95;
+      setTimeout(function(){ flash.style.transition = 'opacity .6s'; flash.style.opacity = 0; }, 60);
+    }
+    dernier = i;
+  }
+  bande.addEventListener('timeupdate', function(){ appliquer(indiceA(bande.currentTime)); });
+  MOMENTS.forEach(function(m){
+    var b = document.createElement('button');
+    b.className = 'moment'; b.textContent = m[1];
+    b.addEventListener('click', function(){
+      window.allerBande(m[0] + 0.5);
+      appliquer(indiceA(m[0] + 0.5));
+      document.querySelectorAll('.moment').forEach(function(x){ x.classList.remove('actif'); });
+      b.classList.add('actif');
+      document.getElementById('simu').scrollIntoView({ block:'center', behavior:'smooth' });
+    });
+    conteneur.appendChild(b);
+  });
+  appliquer(0);
 })();
 </script>
 </body>
