@@ -186,6 +186,30 @@
   footer b{ color:#f2efe9; display:block; margin-bottom:4px; }
   footer a{ color:#cfc9bd; }
 
+  /* --- lumieres du lecteur --- */
+  #lum-frise{ position:relative; height:84px; border-radius:10px 10px 0 0; overflow:hidden;
+              background:#0b0c12; margin-bottom:2px; transition:background 1.4s; }
+  .lf-beam{ position:absolute; top:-12%; height:124%; width:90px;
+            clip-path:polygon(42% 0,58% 0,100% 100%,0% 100%);
+            background:linear-gradient(180deg, var(--cb,#fff) 0%, transparent 92%);
+            opacity:0; transition:opacity 1.2s, background 1.2s; filter:blur(1px);
+            transform-origin:50% 0; }
+  .lf-beam:nth-child(1){ left:12%; animation:lf-sway 7.5s ease-in-out infinite; }
+  .lf-beam:nth-child(2){ left:38%; animation:lf-sway 9s ease-in-out -2s infinite reverse; }
+  .lf-beam:nth-child(3){ left:62%; animation:lf-sway 8s ease-in-out -4s infinite; }
+  .lf-beam:nth-child(4){ left:84%; animation:lf-sway 10s ease-in-out -1s infinite reverse; }
+  @keyframes lf-sway{ 0%,100%{ transform:rotate(-9deg); } 50%{ transform:rotate(9deg); } }
+  .lecteur.au-repos .lf-beam{ animation-play-state:paused; }
+  #lum-etat{ position:absolute; right:12px; bottom:8px; font-size:11.5px; color:#8b8e9c;
+             letter-spacing:.4px; text-shadow:0 1px 4px #000; }
+  .bande-choix{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .bande-choix button{ border:1px solid #33364a; background:#15161c; color:#cfc9bd;
+        border-radius:20px; padding:8px 16px; font-size:13px; cursor:pointer;
+        transition:all .2s; font-family:inherit; }
+  .bande-choix button:hover{ border-color:var(--or); }
+  .bande-choix button.actif{ background:var(--or); color:#15161c; border-color:var(--or);
+        font-weight:600; }
+
   /* --- simulateur lumiere --- */
   .moments{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
   .moment{ border:1px solid #33364a; color:#cfc9bd; background:#15161c; border-radius:20px;
@@ -392,6 +416,11 @@
       <div class="l-titre"><b id="ltitre">Narration d'ouverture</b><span id="lqui">Voix off · plateau en pénombre, fumée lourde</span></div>
       <div class="l-temps"><span id="lta">0:00</span> / 26:50</div>
     </div>
+    <div id="lum-frise">
+      <div class="lf-beam"></div><div class="lf-beam"></div>
+      <div class="lf-beam"></div><div class="lf-beam"></div>
+      <div id="lum-etat"></div>
+    </div>
     <div id="frise"><div id="tete" style="left:0"></div><div id="bulle"></div></div>
     <div class="l-legende">
       <span><i style="background:#6b4a9e"></i>Monopolis · Starmania</span>
@@ -399,8 +428,18 @@
       <span><i style="background:#9a7614"></i>L'Égypte · Les Dix Commandements</span>
       <span><i style="background:#8a2b2b"></i>Vérone · Aimer</span>
     </div>
+    <div class="bande-choix">
+      <button id="bc-concert" class="actif">Bande du concert · telle qu'elle sera diffusée</button>
+      <button id="bc-temoins">Avec les voix témoins · pour vous repérer</button>
+    </div>
     <p class="l-note">Fumée lourde : à l'ouverture (0:00) et à l'arrêt du temps (23:00). Le flash
     « éclair dans le brouillard » : vers 1:20. Minutage définitif, vérifié à la seconde.</p>
+    <p class="l-note">Les lumières qui balaient ci-dessus suivent les intentions du spectacle,
+    et ce ne sont que des intentions : c'est vous, les professionnels de la lumière. Si vous
+    pensez qu'autre chose rendrait mieux, je suis preneur.</p>
+    <p class="l-note" style="color:#e8d9b0">Et je vous conseille vivement
+    <a href="#extrait" style="color:var(--or); font-weight:600">l'extrait vidéo</a> : il explique
+    beaucoup de choses. C'est le tout début du spectacle, que j'ai préparé pour vous.</p>
   </div>
 </div></div>
 
@@ -724,7 +763,23 @@
       bande.play();
     } else { bande.pause(); }
   });
-  bande.addEventListener('play', function(){ btn.innerHTML = '&#10074;&#10074;'; });
+  var lecteurEl = document.querySelector('.lecteur');
+  lecteurEl.classList.add('au-repos');
+  bande.addEventListener('play', function(){ btn.innerHTML = '&#10074;&#10074;'; lecteurEl.classList.remove('au-repos'); });
+  bande.addEventListener('pause', function(){ lecteurEl.classList.add('au-repos'); });
+  /* le choix des deux bandes : on garde la position et l'état de lecture */
+  var SOURCES = { concert: 'media/bande-diffusee.mp3', temoins: 'media/bande-voix-temoins.mp3' };
+  function choisir(quelle){
+    var pos = bande.currentTime, jouait = !bande.paused;
+    bande.src = SOURCES[quelle];
+    bande.load();
+    bande.addEventListener('loadedmetadata', function(){ bande.currentTime = pos; }, { once:true });
+    if (jouait) bande.play();
+    document.getElementById('bc-concert').classList.toggle('actif', quelle === 'concert');
+    document.getElementById('bc-temoins').classList.toggle('actif', quelle === 'temoins');
+  }
+  document.getElementById('bc-concert').addEventListener('click', function(){ choisir('concert'); });
+  document.getElementById('bc-temoins').addEventListener('click', function(){ choisir('temoins'); });
   bande.addEventListener('pause', function(){ btn.innerHTML = '&#9654;'; });
   bande.addEventListener('timeupdate', function(){ afficher(bande.currentTime); });
   frise.addEventListener('click', function(e){
@@ -822,6 +877,24 @@
       else { el.style.opacity = 0; }
     }
     etat.textContent = ETATS[i][1];
+    /* les faisceaux au-dessus de la frise suivent le meme etat */
+    var lf = document.querySelectorAll('#lum-frise .lf-beam');
+    var lfe = document.getElementById('lum-etat');
+    if (lf.length){
+      var couleurs = e.d ? Object.keys(e.d).map(function(k){ return e.d[k]; }) : [];
+      if (!couleurs.length && e.face) couleurs = [e.face[0]];
+      for (var b = 0; b < lf.length; b++){
+        if (couleurs.length){
+          lf[b].style.setProperty('--cb', couleurs[b % couleurs.length]);
+          lf[b].style.opacity = .5;
+        } else {
+          lf[b].style.setProperty('--cb', '#9aa3b8');
+          lf[b].style.opacity = .12;
+        }
+      }
+      document.getElementById('lum-frise').style.background = e.cyc || '#0b0c12';
+      if (lfe) lfe.textContent = ETATS[i][1];
+    }
     if (e.flash && dernier !== -1){
       flash.style.transition = 'none'; flash.style.opacity = .95;
       setTimeout(function(){ flash.style.transition = 'opacity .6s'; flash.style.opacity = 0; }, 60);
