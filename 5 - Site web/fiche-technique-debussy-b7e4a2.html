@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Fiche technique — Première partie · 4 octobre 2026 · Théâtre Debussy</title>
+<style>
+  :root{
+    --noir:#0d0e12; --encre:#16181d; --gris:#6b7280; --trait:#e7e5df;
+    --accent:#8a2b2b; --or:#c9a45c; --bleu:#2d5586; --fond:#fbfaf7;
+  }
+  *{ box-sizing:border-box; margin:0; }
+  html{ scroll-behavior:smooth; }
+  body{ background:var(--fond); color:var(--encre);
+        font:16px/1.7 "Segoe UI", -apple-system, system-ui, sans-serif;
+        -webkit-font-smoothing:antialiased; }
+  img,svg,video{ max-width:100%; display:block; }
+  a{ color:var(--bleu); }
+
+  /* ─── l'ouverture ─── */
+  .hero{ position:relative; min-height:92vh; display:flex; align-items:flex-end;
+         background:var(--noir); color:#f2efe9; overflow:hidden; }
+  .hero .fond{ position:absolute; inset:0; background:url("media/fiche/ouverture.jpg") center/cover no-repeat;
+               opacity:.8; }
+  .hero .voile{ position:absolute; inset:0;
+                background:linear-gradient(180deg, rgba(13,14,18,.25) 0%, rgba(13,14,18,.55) 55%, rgba(13,14,18,.94) 100%); }
+  .hero .dedans{ position:relative; width:100%; max-width:1080px; margin:0 auto;
+                 padding:0 28px 72px; }
+  .hero .eyebrow{ text-transform:uppercase; letter-spacing:4px; font-size:12px;
+                  color:var(--or); font-weight:700; margin-bottom:16px; }
+  .hero h1{ font-size:clamp(30px, 5vw, 54px); line-height:1.08; letter-spacing:-1px;
+            font-weight:750; text-wrap:balance; max-width:19ch; }
+  .hero .soush{ margin-top:18px; font-size:clamp(15px,2vw,18px); color:#cfc9bd; max-width:60ch; }
+  .chiffres{ display:flex; gap:14px; flex-wrap:wrap; margin-top:34px; }
+  .chiffres div{ border:1px solid rgba(242,239,233,.22); border-radius:12px;
+                 padding:10px 18px; backdrop-filter:blur(4px); background:rgba(13,14,18,.35); }
+  .chiffres b{ display:block; font-size:20px; letter-spacing:-.3px; }
+  .chiffres span{ font-size:11.5px; text-transform:uppercase; letter-spacing:1.6px; color:#a9a294; }
+  .indice{ position:absolute; left:50%; bottom:16px; transform:translateX(-50%);
+           color:#a9a294; font-size:22px; animation:desc 2.2s ease-in-out infinite; }
+  @keyframes desc{ 0%,100%{ transform:translate(-50%,0); opacity:.5; }
+                   50%{ transform:translate(-50%,8px); opacity:1; } }
+
+  /* ─── navigation ─── */
+  nav{ position:sticky; top:0; z-index:50; background:rgba(251,250,247,.92);
+       backdrop-filter:blur(10px); border-bottom:1px solid var(--trait); }
+  nav .dedans{ max-width:1080px; margin:0 auto; padding:0 20px; display:flex; gap:4px;
+               overflow-x:auto; scrollbar-width:none; }
+  nav a{ padding:14px 13px; font-size:13.5px; font-weight:600; color:var(--gris);
+         text-decoration:none; white-space:nowrap; border-bottom:2px solid transparent;
+         transition:color .2s, border-color .2s; }
+  nav a:hover, nav a.actif{ color:var(--accent); border-bottom-color:var(--accent); }
+
+  /* ─── structure ─── */
+  section{ padding:88px 0 8px; }
+  .dedans{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  .num{ font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+        color:var(--accent); margin-bottom:10px; }
+  h2{ font-size:clamp(24px,3.2vw,32px); letter-spacing:-.5px; line-height:1.15;
+      margin-bottom:14px; text-wrap:balance; }
+  .chapo{ color:var(--gris); font-size:17px; max-width:62ch; margin-bottom:36px; }
+  .apparait{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+  .apparait.vu{ opacity:1; transform:none; }
+
+  /* ─── cartes des besoins ─── */
+  .cartes{ display:grid; grid-template-columns:repeat(auto-fill, minmax(310px,1fr));
+           gap:18px; }
+  .carte{ background:#fff; border:1px solid var(--trait); border-radius:16px;
+          padding:24px 24px 18px; position:relative;
+          box-shadow:0 10px 30px -24px rgba(22,24,29,.35);
+          transition:transform .25s, box-shadow .25s; }
+  .carte:hover{ transform:translateY(-3px); box-shadow:0 18px 40px -24px rgba(22,24,29,.4); }
+  .carte .picto{ width:38px; height:38px; margin-bottom:14px; color:var(--accent); }
+  .carte h3{ font-size:16.5px; line-height:1.35; letter-spacing:-.1px; margin-bottom:6px;
+             padding-right:86px; }
+  .carte p{ font-size:14px; color:var(--gris); }
+  .badge{ position:absolute; top:20px; right:20px; font-size:10px; font-weight:700;
+          text-transform:uppercase; letter-spacing:1.1px; padding:4px 9px; border-radius:14px; }
+  .b1{ background:#f6e8e6; color:var(--accent); }
+  .b2{ background:#f5ecdd; color:#8a5c10; }
+  .b3{ background:#e8eff7; color:var(--bleu); }
+  .b4{ background:#efeeea; color:var(--gris); }
+  details{ margin-top:12px; }
+  summary{ cursor:pointer; font-size:13px; font-weight:600; color:var(--bleu);
+           list-style:none; }
+  summary::before{ content:'+ '; }
+  details[open] summary::before{ content:'\2212 '; }
+  details div{ font-size:13.5px; color:#4b5563; padding-top:8px; }
+  .contrat{ margin-top:34px; background:#fff; border:1px solid var(--trait); border-left:none;
+            border-radius:16px; padding:22px 26px; position:relative;
+            box-shadow:0 10px 30px -24px rgba(138,43,43,.4); }
+  .contrat::before{ content:''; position:absolute; left:0; top:16px; bottom:16px; width:3px;
+            border-radius:3px; background:linear-gradient(180deg,var(--accent),#c07a4e); }
+
+  /* ─── le lecteur du spectacle ─── */
+  .scene-sombre{ background:var(--noir); color:#f2efe9; padding:88px 0; margin-top:80px; }
+  .scene-sombre .num{ color:var(--or); }
+  .scene-sombre .chapo{ color:#a9a294; }
+  .lecteur{ background:#15161c; border:1px solid #262833; border-radius:18px; padding:26px; }
+  .l-haut{ display:flex; align-items:center; gap:18px; margin-bottom:18px; flex-wrap:wrap; }
+  #btnplay{ width:56px; height:56px; border-radius:50%; border:none; cursor:pointer;
+            background:var(--or); color:#15161c; font-size:20px; flex:none;
+            display:grid; place-items:center; transition:transform .15s; }
+  #btnplay:hover{ transform:scale(1.06); }
+  #btnplay:active{ transform:scale(.96); }
+  .l-titre b{ display:block; font-size:19px; letter-spacing:-.2px; }
+  .l-titre span{ font-size:13.5px; color:#a9a294; }
+  .l-temps{ margin-left:auto; font-variant-numeric:tabular-nums; font-size:14px; color:#a9a294; }
+  #frise{ position:relative; height:64px; border-radius:10px; overflow:hidden; cursor:pointer; }
+  #frise .seg{ position:absolute; top:0; bottom:0; }
+  #frise .tick{ position:absolute; top:0; bottom:0; width:1px; background:rgba(255,255,255,.35); }
+  #tete{ position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 8px rgba(255,255,255,.8); }
+  #bulle{ position:absolute; bottom:calc(100% + 8px); transform:translateX(-50%);
+          background:#fff; color:#15161c; font-size:12px; font-weight:600;
+          padding:4px 10px; border-radius:8px; white-space:nowrap; pointer-events:none;
+          opacity:0; transition:opacity .15s; }
+  .l-legende{ display:flex; gap:20px; flex-wrap:wrap; margin-top:14px; font-size:12.5px; color:#a9a294; }
+  .l-legende i{ display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+  .l-note{ margin-top:16px; font-size:13.5px; color:#a9a294; }
+
+  /* ─── galerie lumière ─── */
+  .galerie{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px; }
+  .oeuvre{ position:relative; border-radius:16px; overflow:hidden; background:#15161c; }
+  .oeuvre img{ width:100%; aspect-ratio:16/9; object-fit:cover; transition:transform .5s; }
+  .oeuvre:hover img{ transform:scale(1.03); }
+  .oeuvre figcaption{ position:absolute; inset:auto 0 0 0; padding:40px 20px 16px;
+        background:linear-gradient(180deg, transparent, rgba(13,14,18,.9));
+        color:#f2efe9; }
+  .oeuvre b{ display:block; font-size:15.5px; }
+  .oeuvre span{ font-size:12.5px; color:#cfc9bd; }
+  .pleine{ grid-column:1 / -1; }
+  .pleine img{ aspect-ratio:21/9; }
+
+  /* ─── plateau ─── */
+  .plan-cadre{ background:#fff; border:1px solid var(--trait); border-radius:18px;
+               padding:30px 30px 12px; box-shadow:0 10px 30px -24px rgba(22,24,29,.35); }
+  .pos circle.halo{ opacity:0; transition:opacity .3s; }
+  .pos:hover circle.halo{ opacity:1; }
+  .pos{ cursor:pointer; }
+  .legende-plan{ text-align:center; color:var(--gris); font-size:13px; font-style:italic;
+                 padding:12px 0 14px; }
+
+  /* ─── micro 360 ─── */
+  .duo{ display:grid; grid-template-columns:1.15fr .85fr; gap:34px; align-items:center; }
+  @media(max-width:820px){ .duo{ grid-template-columns:1fr; } }
+  #mic360{ position:relative; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none; }
+  #mic360 img{ pointer-events:none; }
+  #micbadge{ position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+             display:flex; gap:6px; align-items:center; font-size:11px; font-weight:600;
+             color:var(--gris); background:rgba(255,255,255,.9); border:1px solid var(--trait);
+             border-radius:20px; padding:4px 12px; white-space:nowrap; transition:opacity .5s; }
+
+  /* ─── vidéo ─── */
+  .cadre-video{ border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -30px rgba(13,14,18,.5); }
+
+  /* ─── jour J ─── */
+  .jour{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0; margin-top:8px; }
+  .etape{ position:relative; padding:18px 14px 0; text-align:center; }
+  .etape::before{ content:''; position:absolute; top:5px; left:0; right:0; height:2px; background:var(--trait); }
+  .etape:first-child::before{ left:50%; } .etape:last-child::before{ right:50%; }
+  .etape i{ position:absolute; top:0; left:50%; transform:translateX(-50%);
+            width:12px; height:12px; border-radius:50%; background:#fff;
+            border:3px solid var(--accent); }
+  .etape b{ display:block; font-size:14px; margin-bottom:2px; }
+  .etape span{ font-size:12px; color:var(--gris); }
+
+  /* ─── questions ─── */
+  .questions{ counter-reset:q; max-width:760px; }
+  .question{ display:flex; gap:16px; padding:15px 4px; border-bottom:1px solid var(--trait);
+             font-size:15.5px; align-items:baseline; }
+  .question::before{ counter-increment:q; content:counter(q, decimal-leading-zero);
+             font-size:12px; font-weight:700; color:var(--accent);
+             font-variant-numeric:tabular-nums; flex:none; }
+  .bouton{ display:inline-block; margin-top:30px; background:var(--accent); color:#fff;
+           text-decoration:none; font-weight:600; font-size:15px; border-radius:12px;
+           padding:13px 26px; transition:transform .15s, box-shadow .2s;
+           box-shadow:0 12px 30px -14px rgba(138,43,43,.6); }
+  .bouton:hover{ transform:translateY(-2px); }
+  .bouton:active{ transform:translateY(0); }
+
+  footer{ margin-top:90px; background:var(--noir); color:#a9a294; padding:48px 0; font-size:14px; }
+  footer .dedans{ display:flex; flex-wrap:wrap; gap:34px; justify-content:space-between; }
+  footer b{ color:#f2efe9; display:block; margin-bottom:4px; }
+  footer a{ color:#cfc9bd; }
+
+  @media print{
+    nav, .indice, #btnplay, .bouton{ display:none; }
+    .hero{ min-height:auto; background:#fff; color:#000; }
+    .hero .fond, .hero .voile{ display:none; }
+    .hero .eyebrow{ color:var(--accent); }
+    .hero .soush, .chiffres span{ color:#444; }
+    .chiffres div{ border-color:#ccc; }
+    .scene-sombre{ background:#fff; color:#000; }
+    details{ display:block; } details > *{ display:block; }
+    section{ padding:30px 0 0; }
+    .apparait{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ OUVERTURE ═══════════ -->
+<div class="hero">
+  <div class="fond"></div><div class="voile"></div>
+  <div class="dedans">
+    <div class="eyebrow">Fiche technique · première partie</div>
+    <h1>Medley Starmania, Notre-Dame de Paris, Les Dix Commandements</h1>
+    <p class="soush">Première partie de « Hommage à Balavoine » · Théâtre Claude Debussy,
+    Palais des Festivals, Cannes · dimanche 4 octobre 2026, 19 h · Bohème Production</p>
+    <div class="chiffres">
+      <div><b>26 min 50</b><span>durée exacte</span></div>
+      <div><b>6 chanteurs</b><span>micro main</span></div>
+      <div><b>Sur bande</b><span>un seul départ</span></div>
+      <div><b>Aucun</b><span>musicien · décor</span></div>
+    </div>
+  </div>
+  <div class="indice">↓</div>
+</div>
+
+<!-- ═══════════ NAVIGATION ═══════════ -->
+<nav><div class="dedans">
+  <a href="#essentiel">L'essentiel</a>
+  <a href="#ecoute">Écouter le spectacle</a>
+  <a href="#son">Son</a>
+  <a href="#plateau">Plateau</a>
+  <a href="#lumiere">Lumière</a>
+  <a href="#effets">Effets &amp; vidéo</a>
+  <a href="#extrait">Extrait vidéo</a>
+  <a href="#jourj">Le jour J</a>
+  <a href="#questions">Vos réponses</a>
+</div></nav>
+
+<!-- ═══════════ L'ESSENTIEL ═══════════ -->
+<section id="essentiel"><div class="dedans">
+  <div class="num apparait">01 · L'essentiel</div>
+  <h2 class="apparait">Tout ce dont j'ai besoin tient sur cet écran</h2>
+  <p class="chapo apparait">Le spectacle est monté, minuté à la seconde, enchaîné sans interruption.
+  Chaque carte dit ce que je souhaite et pourquoi ; le détail s'ouvre d'un clic.
+  Je suis chanteur, pas technicien : si vous voyez plus simple ou plus efficace, dites-le-moi.</p>
+
+  <div class="cartes">
+    <div class="carte apparait"><span class="badge b1">Important</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="1.5"/><path d="M2.5 18l4-3M21.5 18l-4-3"/></svg>
+      <h3>La scène dégagée pendant notre passage</h3>
+      <p>Le backline du groupe s'installe à l'entracte. Toute la mise en scène repose dessus.</p>
+      <details><summary>le détail</summary><div>Les six chanteurs circulent d'un bout à l'autre du plateau
+      du début à la fin, et chaque placement a été choisi en fonction de tous les autres. Si le matériel
+      devait rester en place, je m'adapterais, mais il me faudrait réécrire la mise en scène entière.
+      C'est le point que j'aimerais voir confirmé en premier.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b1">Important</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9.5" y="2.5" width="5" height="9" rx="2.5"/><path d="M6 10.5a6 6 0 0 0 12 0M12 16.5v4M9 20.5h6"/></svg>
+      <h3>6 micros HF main, tous du même modèle</h3>
+      <p>Six canaux ouverts en même temps : les six chantent ensemble sur plusieurs titres.</p>
+      <details><summary>le détail</summary><div>Je penche pour le Shure Beta 87A, ou tout modèle équivalent
+      ou supérieur de votre parc (KSM9, e965, KK 105…) : une capsule statique, plus détaillée sur les voix
+      lyriques. Des capsules différentes donneraient des timbres hétérogènes sur les ensembles.
+      Si vous disposez de mieux, je suivrai votre préconisation. Batteries ou piles neuves avant l'entrée.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b3">Souhaité</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="6.5" y="4.5" width="4" height="7" rx="2"/><path d="M4 10a4.5 4.5 0 0 0 9 0M8.5 14.5v3M18 6v6M15 9h6"/></svg>
+      <h3>2 à 3 micros de secours en coulisse</h3>
+      <p>Allumés et réglés. Le medley n'a pas une seconde de pause pour aller en chercher un.</p>
+      <details><summary>le détail</summary><div>Même modèle que les six principaux. Si un micro lâchait,
+      l'échange doit pouvoir se faire en quelques secondes pendant que la musique continue.
+      Six pieds en coulisse, un par chanteur, pour poser et retrouver son micro. Aucun pied sur le plateau.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b1">Important</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg>
+      <h3>Un seul fichier, lancé une seule fois</h3>
+      <p>Aucune relance, aucun enchaînement à gérer : la bande couvre les 26 min 50.</p>
+      <details><summary>le détail</summary><div>Avec écran : un MP4 image + son (H.264, 1920×1080, 25 i/s,
+      audio 48 kHz), la synchronisation est acquise par construction. Sans écran : un WAV 24 bits.
+      Livraison par SwissTransfer une semaine avant, et clé USB de secours le jour du spectacle.
+      Dites-moi le format et le support que votre régie préfère.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b1">Important</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3h5l3 13h-11z"/><ellipse cx="12" cy="19" rx="6.5" ry="2.5" opacity=".5"/></svg>
+      <h3>Des douches sur des points fixes, complétées en face</h3>
+      <p>Le cœur de la mise en scène : le spectacle alterne sans cesse solos, duos et ensembles.</p>
+      <details><summary>le détail</summary><div>Sept positions numérotées P1 à P7 (voir le plateau plus bas),
+      chacune avec sa douche réglée une fois pour toutes. La conduite dit alors « allumer P3 et P5 »,
+      jamais « éclairer un tel ». Une face à 45° complète les douches pour garder les visages lisibles.
+      Des marques discrètes au sol repèrent les positions : cela fait partie du spectacle.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b2">Très souhaité</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 17c3-2.5 6-2.5 9 0s6 2.5 9 0M3 21c3-2.5 6-2.5 9 0s6 2.5 9 0M12 3v7M9 7l3 3 3-3"/></svg>
+      <h3>De la fumée lourde, deux envois</h3>
+      <p>L'ouverture du spectacle, et la suspension du temps vers 23:00.</p>
+      <details><summary>le détail</summary><div>Une nappe au sol dont les chanteurs émergent dans le noir :
+      c'est l'entrée dans le spectacle. Une trace résiduelle sur le titre suivant ne me gêne pas, au
+      contraire. Dites-moi quelle machine vous utilisez et la procédure auprès du chargé de sécurité :
+      je fournirai fiche de sécurité du produit et notice sans délai.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b2">Très souhaité</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 4.5 6.5 8 6.5 11a6.5 6.5 0 0 1-13 0C5.5 11 8 7.5 12 3z"/><path d="M9.5 14a2.5 2.5 0 0 0 2.5 2.5"/></svg>
+      <h3>De la couleur sur le cyclorama, une par univers</h3>
+      <p>Le marqueur le plus lisible des ruptures entre les trois œuvres.</p>
+      <details><summary>le détail</summary><div>Monopolis, la cathédrale, l'Égypte, Vérone : une couleur
+      franche et assumée par monde (voir la galerie lumière plus bas). Je suis ouvert à vos propositions
+      de teintes. L'idéal serait un cyclorama au lointain, la profondeur de jeu préservée devant.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b2">Très souhaité</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M12 16.5v3M8 19.5h8"/></svg>
+      <h3>Un écran ou une surface de projection</h3>
+      <p>Le spectacle n'a aucun décor : l'image en tiendrait lieu, changeant d'univers avec la musique.</p>
+      <details><summary>le détail</summary><div>Deux réponses changent tout : l'image vient-elle de la salle
+      ou de derrière la toile (ombres portées) ? et quelle hauteur d'image reste visible depuis le balcon,
+      le cadre de scène étant modulable jusqu'à 7,50 m ? J'en fabrique les vidéos au bon format dès le départ.
+      Et si la projection n'est pas possible, je préfère de loin garder la profondeur de jeu.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b3">Souhaité</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+      <h3>Une poursuite, cadrage médaillon</h3>
+      <p>Pour suivre un soliste qui se déplace.</p>
+      <details><summary>le détail</summary><div>Si la poursuite suppose un technicien supplémentaire ou un
+      coût, elle est écartée sans regret : je serais simplement heureux de savoir par quoi la remplacer
+      avec vos moyens existants.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b3">Souhaité</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l6-3v8l-6-3zM10 12l10-5v14l-10-5"/></svg>
+      <h3>Des retours hors des zones jouées au sol</h3>
+      <p>Plusieurs passages se jouent à genoux, notamment Les Sans-papiers.</p>
+      <details><summary>le détail</summary><div>Des retours de plateau me conviennent parfaitement ; si vous
+      travaillez en oreillettes dans cette salle, je suivrai vos conseils. Je vous indiquerai dans la
+      conduite tous les passages joués au sol, pour que les retours ne masquent personne.</div></details></div>
+
+    <div class="carte apparait"><span class="badge b4">Confort</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 8h18M3 12h18M3 16h18" opacity=".45"/><path d="M5 20c4-1.5 10-1.5 14 0"/></svg>
+      <h3>Un hazer, brume légère en fond</h3>
+      <p>Pour donner du corps aux faisceaux. Demande secondaire, sans obligation.</p></div>
+
+    <div class="carte apparait"><span class="badge b4">À caler</span>
+      <svg class="picto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>
+      <h3>Un temps de plateau, et si possible une répétition</h3>
+      <p>Six chanteurs à placer, une conduite de 30 à 45 états : les horaires du jour J d'abord.</p>
+      <details><summary>le détail</summary><div>Les six chanteurs n'auront jamais joué ce spectacle ensemble
+      sur un plateau. L'enchaînement rêvé : réglages, balances, filage complet avec la bande, raccord des
+      tops, loges, spectacle. Tout ce qui peut être préparé en amont le sera, pour que la journée reste légère.</div></details></div>
+  </div>
+
+  <div class="contrat apparait">
+    <b>Aucune de ces demandes ne doit entraîner de dépense supplémentaire.</b>
+    Elles portent sur ce qui est déjà prévu au contrat et sur votre matériel. Si un point suppose
+    une location ou un supplément, je le retire, et la seule chose qui m'intéresse est de savoir
+    ce que vous proposeriez à la place, dans ce qui est déjà inclus.
+  </div>
+</div></section>
+
+<!-- ═══════════ ÉCOUTER LE SPECTACLE ═══════════ -->
+<div class="scene-sombre" id="ecoute"><div class="dedans">
+  <div class="num apparait">02 · Le spectacle</div>
+  <h2 class="apparait">Écoutez la bande, elle est la partition de la lumière</h2>
+  <p class="chapo apparait">C'est la bande réellement diffusée le 4 octobre. Cliquez n'importe où
+  sur la frise pour vous déplacer : chaque couleur est un univers, chaque trait un titre.
+  Les tops de la conduite se caleront sur ce que vous entendez ici.</p>
+
+  <div class="lecteur apparait">
+    <div class="l-haut">
+      <button id="btnplay" aria-label="Lecture">&#9654;</button>
+      <div class="l-titre"><b id="ltitre">Narration d'ouverture</b><span id="lqui">Voix off · plateau en pénombre, fumée lourde</span></div>
+      <div class="l-temps"><span id="lta">0:00</span> / 26:50</div>
+    </div>
+    <div id="frise"><div id="tete" style="left:0"></div><div id="bulle"></div></div>
+    <div class="l-legende">
+      <span><i style="background:#6b4a9e"></i>Monopolis · Starmania</span>
+      <span><i style="background:#a35a12"></i>La cathédrale · Notre-Dame de Paris</span>
+      <span><i style="background:#9a7614"></i>L'Égypte · Les Dix Commandements</span>
+      <span><i style="background:#8a2b2b"></i>Vérone · Aimer</span>
+    </div>
+    <p class="l-note">Fumée lourde : à l'ouverture (0:00) et à l'arrêt du temps (23:00). Le flash
+    « éclair dans le brouillard » : vers 1:20. Minutage définitif, vérifié à la seconde.</p>
+  </div>
+</div></div>
+
+<!-- ═══════════ SON ═══════════ -->
+<section id="son"><div class="dedans">
+  <div class="num apparait">03 · Son</div>
+  <h2 class="apparait">Six voix, six canaux, un seul départ</h2>
+  <p class="chapo apparait">La chaîne est simple : six HF main sur le plateau, deux à trois secours
+  prêts en coulisse, la bande lancée une fois en début de spectacle. Façade pour la salle,
+  retours placés hors des zones jouées au sol.</p>
+
+  <div class="duo">
+    <div class="apparait">
+      <h3 style="font-size:18px; margin-bottom:8px;">Le micro souhaité : Shure Beta 87A</h3>
+      <p style="color:var(--gris); font-size:15px; margin-bottom:12px;">Ou tout équivalent de votre parc.
+      Faites-le tourner : c'est l'émetteur HF avec la capsule Beta 87A.</p>
+      <p style="font-size:14.5px; margin-bottom:10px;"><b>Pourquoi le micro main plutôt que le serre-tête ?</b>
+      Ce medley tient de la comédie musicale et du concert : du jeu, des déplacements, des personnages.
+      Le serre-tête demande un réglage voix par voix et un temps de pose dont nous ne disposerons sans
+      doute pas. Le micro main est plus simple et plus sûr, et chaque chanteur dose lui-même son niveau
+      à la distance, ce qui compte avec six voix très différentes, de la voix lyrique à la voix pop.</p>
+      <p style="font-size:14.5px; color:var(--gris);">Cela dit, si vous êtes bien équipés en serre-têtes
+      et que vous les jugez préférables ici, dites-le-moi : je suivrai vos conseils.</p>
+    </div>
+    <div id="mic360" class="apparait">
+      <img id="micimg" src="media/fiche/spin/v05.webp" alt="Micro Shure Beta 87A, vue à 360 degrés, à faire pivoter" draggable="false">
+      <div id="micbadge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v5h-5"/></svg>360° · faites-le tourner</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══════════ PLATEAU ═══════════ -->
+<section id="plateau"><div class="dedans">
+  <div class="num apparait">04 · Plateau</div>
+  <h2 class="apparait">Sept points fixes, réglés une fois pour toutes</h2>
+  <p class="chapo apparait">Aucun décor, aucun accessoire : six chanteurs qui occupent tout l'espace.
+  Les positions sont numérotées, chacune reçoit sa douche, et la conduite ne dit plus « éclairer
+  un tel » mais « allumer P3 et P5 ». Survolez un point : sa douche s'allume.</p>
+
+  <div class="plan-cadre apparait">
+  <svg viewBox="0 0 760 600" role="img" style="max-width:640px; margin:0 auto; display:block"
+       aria-label="Plan du plateau vu de dessus, à l'échelle, sept positions numérotées">
+    <defs>
+      <marker id="pfl" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#6b7280"/></marker>
+      <marker id="pfld" markerWidth="7" markerHeight="7" refX="1" refY="3.5" orient="auto"><path d="M7,0 L0,3.5 L7,7 z" fill="#6b7280"/></marker>
+      <radialGradient id="halo"><stop offset="0" stop-color="#c9a45c" stop-opacity=".55"/><stop offset="1" stop-color="#c9a45c" stop-opacity="0"/></radialGradient>
+    </defs>
+    <g stroke="#efede8" stroke-width="1">
+      <line x1="168" y1="60" x2="168" y2="500"/><line x1="256" y1="60" x2="256" y2="500"/>
+      <line x1="344" y1="60" x2="344" y2="500"/><line x1="432" y1="60" x2="432" y2="500"/>
+      <line x1="520" y1="60" x2="520" y2="500"/><line x1="608" y1="60" x2="608" y2="500"/>
+      <line x1="80" y1="412" x2="696" y2="412"/><line x1="80" y1="324" x2="696" y2="324"/>
+      <line x1="80" y1="236" x2="696" y2="236"/><line x1="80" y1="148" x2="696" y2="148"/>
+    </g>
+    <rect x="80" y="60" width="616" height="440" fill="none" stroke="#d8d5cd" stroke-width="1.5"/>
+    <line x1="388" y1="60" x2="388" y2="500" stroke="#d8d5cd" stroke-width="1" stroke-dasharray="5 5"/>
+    <line x1="80" y1="60" x2="696" y2="60" stroke="#9aa0a6" stroke-width="4"/>
+    <text x="388" y="46" text-anchor="middle" style="font-size:12px; letter-spacing:2.2px; fill:#6b7280">LOINTAIN · CYCLORAMA</text>
+    <line x1="80" y1="26" x2="696" y2="26" stroke="#6b7280" stroke-width="1" marker-start="url(#pfld)" marker-end="url(#pfl)"/>
+    <rect x="345" y="16" width="86" height="20" fill="#fff"/>
+    <text x="388" y="31" text-anchor="middle" style="font-size:12.5px; fill:#6b7280">14,00 m</text>
+    <text x="60" y="280" text-anchor="middle" style="font-size:12px; letter-spacing:2.2px; fill:#6b7280" transform="rotate(-90 60 280)">JARDIN</text>
+    <text x="716" y="280" text-anchor="middle" style="font-size:12px; letter-spacing:2.2px; fill:#6b7280" transform="rotate(90 716 280)">COUR</text>
+    <line x1="34" y1="500" x2="34" y2="140" stroke="#6b7280" stroke-width="1"/>
+    <g stroke="#6b7280" stroke-width="1"><line x1="29" y1="500" x2="39" y2="500"/><line x1="29" y1="412" x2="39" y2="412"/><line x1="29" y1="280" x2="39" y2="280"/><line x1="29" y1="148" x2="39" y2="148"/></g>
+    <g style="font-size:11.5px; fill:#6b7280"><text x="12" y="504">0</text><text x="6" y="416">2 m</text><text x="6" y="284">5 m</text><text x="6" y="152">8 m</text></g>
+    <text x="34" y="128" text-anchor="middle" style="font-size:10px; fill:#9aa0a6">profondeur</text>
+    <line x1="80" y1="500" x2="696" y2="500" stroke="#16181d" stroke-width="2.5"/>
+    <text x="388" y="519" text-anchor="middle" style="font-size:11.5px; fill:#6b7280">nez de scène</text>
+    <text x="388" y="552" text-anchor="middle" style="font-size:12.5px; letter-spacing:3.5px; fill:#8a2b2b; font-weight:600">PUBLIC</text>
+    <text x="388" y="574" text-anchor="middle" style="font-size:11px; fill:#9aa0a6">fosse d'orchestre 47 m²</text>
+    <g style="font-size:11px; fill:#6b7280" text-anchor="middle">
+      <text x="322" y="268">3,00 m</text><text x="454" y="268">3,00 m</text>
+      <text x="311" y="400">3,50 m</text><text x="465" y="400">3,50 m</text>
+    </g>
+    <!-- positions interactives -->
+    <g class="pos"><circle class="halo" cx="388" cy="148" r="52" fill="url(#halo)"/><circle cx="388" cy="148" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="388" y="153" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P7</text></g>
+    <g class="pos"><circle class="halo" cx="256" cy="280" r="52" fill="url(#halo)"/><circle cx="256" cy="280" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="256" y="285" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P4</text></g>
+    <g class="pos"><circle class="halo" cx="388" cy="280" r="52" fill="url(#halo)"/><circle cx="388" cy="280" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="388" y="285" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P5</text></g>
+    <g class="pos"><circle class="halo" cx="520" cy="280" r="52" fill="url(#halo)"/><circle cx="520" cy="280" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="520" y="285" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P6</text></g>
+    <g class="pos"><circle class="halo" cx="234" cy="412" r="52" fill="url(#halo)"/><circle cx="234" cy="412" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="234" y="417" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P1</text></g>
+    <g class="pos"><circle class="halo" cx="388" cy="412" r="52" fill="url(#halo)"/><circle cx="388" cy="412" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="388" y="417" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P2</text></g>
+    <g class="pos"><circle class="halo" cx="542" cy="412" r="52" fill="url(#halo)"/><circle cx="542" cy="412" r="21" fill="#fff" stroke="#8a2b2b" stroke-width="2"/><text x="542" y="417" text-anchor="middle" style="font-size:14px; font-weight:700; fill:#8a2b2b">P3</text></g>
+  </svg>
+  <p class="legende-plan">À l'échelle sur les 14 m d'ouverture d'exploitation · les 10 premiers mètres
+  représentés, sur 13,70 m de profondeur totale · répartition indicative, à ajuster ensemble.
+  Le plan de placement titre par titre suivra avec la conduite.</p>
+  </div>
+</div></section>
+
+<!-- ═══════════ LUMIÈRE ═══════════ -->
+<div class="scene-sombre" id="lumiere"><div class="dedans">
+  <div class="num apparait">05 · Lumière</div>
+  <h2 class="apparait">Ce que je cherche, en cinq images</h2>
+  <p class="chapo apparait">Plutôt qu'un long texte, voici les ambiances du spectacle. C'est ici que
+  votre expérience me sera la plus précieuse : ces images disent l'intention, vous savez mieux que
+  moi comment l'obtenir au Debussy. La conduite complète, tops écrits en repères audibles, suivra
+  dans un document séparé (30 à 45 états).</p>
+
+  <div class="galerie">
+    <figure class="oeuvre pleine apparait"><img src="media/fiche/fumee.jpg" alt="Nappe de fumée lourde sur un plateau sombre">
+      <figcaption><b>L'ouverture — la nappe au sol</b><span>Noir, fumée lourde, une voix off. Les chanteurs émergent de la nappe. (0:00)</span></figcaption></figure>
+    <figure class="oeuvre apparait"><img src="media/fiche/flash.jpg" alt="Flash blanc révélant cinq silhouettes">
+      <figcaption><b>« Un éclair dans le brouillard »</b><span>Flash blanc : on découvre cinq silhouettes. Quand on arrive en ville (1:20)</span></figcaption></figure>
+    <figure class="oeuvre apparait"><img src="media/fiche/douche.jpg" alt="Douche de lumière unique sur plateau nu">
+      <figcaption><b>La douche serrée</b><span>Une chanteuse seule au monde. Ziggy (1:57), et la signature du spectacle.</span></figcaption></figure>
+    <figure class="oeuvre apparait"><img src="media/fiche/puits.jpg" alt="Quatre faisceaux de teintes différentes">
+      <figcaption><b>Quatre solitudes côte à côte</b><span>Quatre puits à peine teintés, du noir entre eux. Les uns contre les autres (8:46)</span></figcaption></figure>
+    <figure class="oeuvre apparait"><img src="media/fiche/vitrail.jpg" alt="Lumière dorée de vitrail sur le plateau">
+      <figcaption><b>La pierre et le vitrail</b><span>Or et ambre, le Moyen Âge. Le Temps des Cathédrales (10:27)</span></figcaption></figure>
+  </div>
+</div></div>
+
+<!-- ═══════════ EFFETS & VIDÉO ═══════════ -->
+<section id="effets"><div class="dedans">
+  <div class="num apparait">06 · Effets &amp; vidéo</div>
+  <h2 class="apparait">Deux envois de fumée, un écran si vous en disposez</h2>
+  <div class="cartes" style="margin-top:26px;">
+    <div class="carte apparait">
+      <h3>Fumée lourde</h3>
+      <p>Deux envois : l'ouverture (0:00) et l'arrêt du temps (23:00). Une trace résiduelle ne me gêne
+      pas, elle prolonge l'atmosphère.</p>
+      <details><summary>le détail</summary><div>Quelle machine utilisez-vous, et quelle procédure auprès
+      du chargé de sécurité ? Je fournirai tout document nécessaire. Je note la fosse d'orchestre et
+      reste attentif à la ventilation. Un hazer léger en fond, si disponible, donnerait du corps aux
+      faisceaux : demande secondaire.</div></details></div>
+    <div class="carte apparait">
+      <h3>La vidéo projetée</h3>
+      <p>Si un écran ou le cyclorama est disponible, l'image tient lieu de décor et change d'univers
+      avec la musique. Sinon, la lumière fera le décor, et je livre un simple WAV.</p>
+      <details><summary>le détail</summary><div>Trois questions guident mon travail : dimensions et source
+      vidéo ? projection depuis la salle ou par l'arrière ? hauteur d'image réellement visible depuis le
+      balcon ? Une même surface ne pouvant être à la fois ciel de couleur et écran, je prévois d'alterner :
+      certains titres en couleur pure, d'autres en image.</div></details></div>
+  </div>
+</div></section>
+
+<!-- ═══════════ EXTRAIT VIDÉO ═══════════ -->
+<section id="extrait"><div class="dedans">
+  <div class="num apparait">07 · La mise en scène, en vidéo</div>
+  <h2 class="apparait">Un extrait de la conduite, pour voir plutôt que lire</h2>
+  <p class="chapo apparait">Voici la vidéo de travail des deux premiers titres : placements, entrées,
+  intentions lumière, en regard de la musique. Si ce format vous est utile, je fabrique les suivantes
+  bloc par bloc et je vous les envoie au fur et à mesure — dites-le-moi simplement.</p>
+  <div class="cadre-video apparait">
+    <video controls preload="metadata" src="media/mise-en-scene-technique.mp4"></video>
+  </div>
+</div></section>
+
+<!-- ═══════════ JOUR J ═══════════ -->
+<section id="jourj"><div class="dedans">
+  <div class="num apparait">08 · Le jour J</div>
+  <h2 class="apparait">L'enchaînement souhaité, léger pour vos équipes</h2>
+  <p class="chapo apparait">Les horaires restent à définir avec vous : c'est l'information dont j'ai
+  besoin en premier. Tout ce qui peut être préparé en amont le sera.</p>
+  <div class="jour apparait">
+    <div class="etape"><i></i><b>Arrivée</b><span>l'équipe technique et moi</span></div>
+    <div class="etape"><i></i><b>Réglages</b><span>douches P1 à P7, couleurs</span></div>
+    <div class="etape"><i></i><b>Balances</b><span>les six micros, les six voix</span></div>
+    <div class="etape"><i></i><b>Filage</b><span>le medley en entier, avec la bande</span></div>
+    <div class="etape"><i></i><b>Raccord</b><span>on cale les tops de la conduite</span></div>
+    <div class="etape"><i></i><b>Loges</b><span>six personnes</span></div>
+    <div class="etape"><i></i><b>Spectacle</b><span>26 min 50, en continu</span></div>
+  </div>
+</div></section>
+
+<!-- ═══════════ QUESTIONS ═══════════ -->
+<section id="questions"><div class="dedans">
+  <div class="num apparait">09 · Vos réponses</div>
+  <h2 class="apparait">Dix-huit questions, à prendre d'un seul coup</h2>
+  <p class="chapo apparait">Tout ce dont j'ai besoin de votre part tient ici. Un mail en vrac me va
+  très bien : les numéros suffisent.</p>
+  <div class="questions apparait">
+    <div class="question">Le plateau est-il bien dégagé pendant la première partie, l'installation du groupe se faisant à l'entracte ?</div>
+    <div class="question">Pouvez-vous me transmettre le plan de scène et le plan de feu de base du Debussy ?</div>
+    <div class="question">Quel est le modèle de la console lumière, et une conduite peut-elle être préparée à l'avance ?</div>
+    <div class="question">Combien de douches sur des positions que nous définissons (P1 à P7), et peut-on les compléter d'une face à 45° ?</div>
+    <div class="question">Des marques discrètes au sol sont-elles possibles pour repérer ces positions ?</div>
+    <div class="question">Une poursuite et son technicien sont-ils envisageables, sans surcoût ?</div>
+    <div class="question">Six micros HF main du même modèle, plus 2 à 3 secours réglés en coulisse : est-ce disponible ?</div>
+    <div class="question">Six pieds de micro en coulisse, un par chanteur, aucun sur le plateau ?</div>
+    <div class="question">Travaillez-vous plutôt en retours de plateau ou en oreillettes dans cette salle ?</div>
+    <div class="question">Quel format de fichier préférez-vous pour la bande, et sur quel support le lisez-vous ?</div>
+    <div class="question">Souhaitez-vous recevoir le fichier à une date précise ?</div>
+    <div class="question">Un écran ou une surface de projection est-il disponible ? Quelles dimensions, quelle source ?</div>
+    <div class="question">L'image viendrait-elle de la salle ou de derrière la toile, et quelle hauteur reste visible depuis le balcon ?</div>
+    <div class="question">Le cyclorama est-il utilisable et colorable, placé au lointain pour garder la profondeur devant ?</div>
+    <div class="question">Fumée lourde : quelle machine, et quelle procédure auprès du chargé de sécurité ? Un hazer est-il disponible ?</div>
+    <div class="question">Quel temps de plateau nous est réservé le jour J, et à quelle heure ? Une répétition complète est-elle envisageable ?</div>
+    <div class="question">La veille : la salle serait-elle accessible ? Je pose la question sans y compter.</div>
+    <div class="question">Si l'un de ces points suppose une dépense, je le retire : qu'auriez-vous à me proposer à la place, dans ce qui est déjà inclus ?</div>
+  </div>
+  <a class="bouton" href="mailto:caidj90@hotmail.com?subject=Fiche%20technique%20%E2%80%94%20premi%C3%A8re%20partie%20du%204%20octobre&body=Bonjour%20Micka%C3%ABl%2C%0A%0AMes%20r%C3%A9ponses%2C%20par%20num%C3%A9ro%20%3A%0A%0A1.%20">Répondre par mail →</a>
+</div></section>
+
+<footer><div class="dedans">
+  <div><b>Mickaël Guedj</b>Chanteur · direction artistique de la première partie<br>
+  Conception, montage et mise en scène — votre interlocuteur pour tout ce document.<br>
+  06 63 42 13 26 · <a href="mailto:caidj90@hotmail.com">caidj90@hotmail.com</a></div>
+  <div><b>Production</b>Patrick Élie Féré · Bohème Production<br>
+  Également chanteur de la première partie.<br>
+  06 08 72 71 26 · <a href="mailto:bohemeproduction.president@gmail.com">bohemeproduction.president@gmail.com</a></div>
+  <div><b>Ce document</b>Version du 27 août 2026.<br>Ce lien montre toujours la<br>dernière version à jour.</div>
+</div></footer>
+
+<audio id="bande" preload="none" src="media/bande-diffusee.mp3"></audio>
+
+<script>
+(function(){
+  'use strict';
+  /* ─── apparitions au défilement ─── */
+  var obs = new IntersectionObserver(function(entrees){
+    entrees.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('vu'); obs.unobserve(e.target); } });
+  }, { threshold:.12 });
+  document.querySelectorAll('.apparait').forEach(function(el){ obs.observe(el); });
+
+  /* ─── navigation active ─── */
+  var liens = document.querySelectorAll('nav a');
+  var cibles = Array.prototype.map.call(liens, function(a){ return document.querySelector(a.getAttribute('href')); });
+  var obsNav = new IntersectionObserver(function(entrees){
+    entrees.forEach(function(e){
+      if (e.isIntersecting){
+        liens.forEach(function(a){ a.classList.toggle('actif', a.getAttribute('href') === '#' + e.target.id); });
+      }
+    });
+  }, { rootMargin:'-40% 0px -55% 0px' });
+  cibles.forEach(function(c){ if (c) obsNav.observe(c); });
+
+  /* ─── le lecteur du spectacle ─── */
+  var DUREE = 1610;
+  var UNIVERS = [[0,627,'#6b4a9e'],[627,1133,'#a35a12'],[1133,1400,'#9a7614'],[1400,1440,'#6b4a9e'],[1440,1610,'#8a2b2b']];
+  var TITRES = [
+    [0,"Narration d'ouverture","Voix off · plateau en pénombre, fumée lourde"],
+    [30,"Quand on arrive en ville","Adrien, puis chœur"],
+    [108,"Explosion · flash radio","bascule"],
+    [117,"Ziggy","Stéphanie, seule en douche"],
+    [213,"La chanson de Ziggy","Adrien et Stéphanie"],
+    [316,"Radio Monopolis, le duplex","bascule · plateau noir"],
+    [366,"Le Blues du Businessman","Adrien, Mickaël, Bry · les voix féminines en réponse"],
+    [514,"Retour d'antenne, transition chantée","bascule"],
+    [526,"Les uns contre les autres","Stéphanie, avec Mickaël, Candice, Adrien"],
+    [620,"Cloches, narration","bascule"],
+    [627,"Le Temps des Cathédrales","Mickaël, réponses chantées de l'ensemble"],
+    [732,"Bataille, appel crié","bascule"],
+    [753,"Les Sans-papiers","Bry, les cinq autres au sol"],
+    [839,"Bohémienne","Candice"],
+    [961,"Belle","Élie, Mickaël, Bry"],
+    [1133,"Le Dilemme","Candice et Élie"],
+    [1255,"Mon Frère","Mickaël et Bry"],
+    [1380,"L'arrêt du temps","bascule · fumée lourde"],
+    [1400,"Stone","Stéphanie"],
+    [1440,"Aimer","Candice et Mickaël, puis les six"]
+  ];
+  var frise = document.getElementById('frise'),
+      tete = document.getElementById('tete'),
+      bulle = document.getElementById('bulle'),
+      bande = document.getElementById('bande'),
+      btn = document.getElementById('btnplay'),
+      ltitre = document.getElementById('ltitre'),
+      lqui = document.getElementById('lqui'),
+      lta = document.getElementById('lta');
+
+  UNIVERS.forEach(function(u){
+    var d = document.createElement('div');
+    d.className = 'seg';
+    d.style.left = (u[0]/DUREE*100) + '%';
+    d.style.width = ((u[1]-u[0])/DUREE*100) + '%';
+    d.style.background = u[2];
+    frise.insertBefore(d, tete);
+  });
+  TITRES.forEach(function(t){
+    if (t[0] === 0) return;
+    var d = document.createElement('div');
+    d.className = 'tick';
+    d.style.left = (t[0]/DUREE*100) + '%';
+    frise.insertBefore(d, tete);
+  });
+
+  function mmss(s){ s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ':' + ('0' + (s%60)).slice(-2); }
+  function titreA(s){
+    var t = TITRES[0];
+    for (var i = 0; i < TITRES.length; i++){ if (TITRES[i][0] <= s) t = TITRES[i]; }
+    return t;
+  }
+  function afficher(s){
+    tete.style.left = (s/DUREE*100) + '%';
+    lta.textContent = mmss(s);
+    var t = titreA(s);
+    ltitre.textContent = t[1];
+    lqui.textContent = t[2];
+  }
+  function aller(s){
+    afficher(s);
+    if (bande.readyState === 0){
+      bande.load();
+      bande.addEventListener('loadedmetadata', function(){ bande.currentTime = s; }, { once:true });
+    } else {
+      bande.currentTime = s;
+    }
+    bande.play();
+  }
+  btn.addEventListener('click', function(){
+    if (bande.paused){
+      if (bande.readyState === 0) bande.load();
+      bande.play();
+    } else { bande.pause(); }
+  });
+  bande.addEventListener('play', function(){ btn.innerHTML = '&#10074;&#10074;'; });
+  bande.addEventListener('pause', function(){ btn.innerHTML = '&#9654;'; });
+  bande.addEventListener('timeupdate', function(){ afficher(bande.currentTime); });
+  frise.addEventListener('click', function(e){
+    var r = frise.getBoundingClientRect();
+    aller((e.clientX - r.left) / r.width * DUREE);
+  });
+  frise.addEventListener('mousemove', function(e){
+    var r = frise.getBoundingClientRect();
+    var x = e.clientX - r.left;
+    var t = titreA(x / r.width * DUREE);
+    bulle.textContent = mmss(x / r.width * DUREE) + ' · ' + t[1];
+    bulle.style.left = x + 'px';
+    bulle.style.opacity = '1';
+  });
+  frise.addEventListener('mouseleave', function(){ bulle.style.opacity = '0'; });
+
+  /* ─── le micro 360 ─── */
+  var N = 16, DOSSIER = 'media/fiche/spin/';
+  var vues = [];
+  for (var i = 1; i <= N; i++){
+    var src = DOSSIER + 'v' + ('0' + i).slice(-2) + '.webp';
+    vues.push(src);
+    var im = new Image(); im.src = src;
+  }
+  var zone = document.getElementById('mic360'),
+      mimg = document.getElementById('micimg'),
+      mbadge = document.getElementById('micbadge'),
+      midx = 4, mactif = false, mx0 = 0, mi0 = 4, mdeja = false;
+  function vue(i){ midx = ((i % N) + N) % N; mimg.src = vues[midx]; }
+  zone.addEventListener('pointerdown', function(e){
+    mactif = true; mx0 = e.clientX; mi0 = midx;
+    zone.style.cursor = 'grabbing';
+    zone.setPointerCapture(e.pointerId);
+    if (!mdeja){ mdeja = true; mbadge.style.opacity = '0'; }
+    e.preventDefault();
+  });
+  zone.addEventListener('pointermove', function(e){
+    if (!mactif) return;
+    vue(mi0 + Math.round((e.clientX - mx0) / 16));
+  });
+  ['pointerup','pointercancel'].forEach(function(ev){
+    zone.addEventListener(ev, function(){ mactif = false; zone.style.cursor = 'grab'; });
+  });
+})();
+</script>
+</body>
+</html>
