@@ -202,6 +202,16 @@
   footer b{ color:#f2efe9; display:block; margin-bottom:4px; }
   footer a{ color:#cfc9bd; }
 
+  .sous-titre{ font-size:20px; font-weight:600; margin:44px 0 10px; color:var(--encre); }
+  .six{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; max-width:640px;
+        margin:0 auto 40px; }
+  .six figure{ margin:0; }
+  .six img{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
+            border-radius:6px; border:1px solid var(--trait); }
+  .six figcaption{ text-align:center; margin-top:8px; font-size:14.5px; font-weight:600;
+                   color:var(--encre); }
+  @media (max-width:520px){ .six{ grid-template-columns:repeat(2, 1fr); gap:14px; } }
+
   #frise-nature{ position:relative; height:12px; border-radius:6px; overflow:hidden;
                  background:#0b0c12; margin-top:14px; display:flex; }
   #frise-nature .nat{ height:100%; }
@@ -534,6 +544,19 @@
   <p class="chapo apparait">Aucun décor, aucun accessoire : six chanteurs qui occupent tout l'espace.
   Les positions sont numérotées, chacune reçoit sa douche, et la conduite ne dit plus « éclairer
   un tel » mais « allumer P3 et P5 ». Survolez un point : sa douche s'allume.</p>
+
+  <h3 class="sous-titre apparait">Les six, pour savoir qui est qui</h3>
+  <p class="apparait" style="color:var(--gris); font-size:15px; max-width:62ch; margin-bottom:22px;">
+  Leurs prénoms reviennent dans le déroulé minuté et dans la conduite. Les voici, pour que vous
+  puissiez mettre un visage sur chacun.</p>
+  <div class="six apparait">
+    <figure><img src="media/fiche/chanteurs/bry.jpg" loading="lazy" alt="Bry"><figcaption>Bry</figcaption></figure>
+    <figure><img src="media/fiche/chanteurs/candice.jpg" loading="lazy" alt="Candice"><figcaption>Candice</figcaption></figure>
+    <figure><img src="media/fiche/chanteurs/mickael.jpg" loading="lazy" alt="Mickaël"><figcaption>Mickaël</figcaption></figure>
+    <figure><img src="media/fiche/chanteurs/adrien.jpg" loading="lazy" alt="Adrien"><figcaption>Adrien</figcaption></figure>
+    <figure><img src="media/fiche/chanteurs/stephanie.jpg" loading="lazy" alt="Stéphanie"><figcaption>Stéphanie</figcaption></figure>
+    <figure><img src="media/fiche/chanteurs/elie.jpg" loading="lazy" alt="Élie"><figcaption>Élie</figcaption></figure>
+  </div>
 
   <div class="plan-cadre apparait">
   <svg viewBox="0 0 760 600" role="img" style="max-width:640px; margin:0 auto; display:block"
