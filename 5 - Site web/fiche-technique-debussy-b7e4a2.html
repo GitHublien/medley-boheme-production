@@ -161,6 +161,11 @@
 
   /* ─── vidéo ─── */
   .cadre-video{ border-radius:18px; overflow:hidden; box-shadow:0 24px 60px -30px rgba(13,14,18,.5); }
+  #tournez{ position:absolute; inset:0; display:none; flex-direction:column; gap:8px;
+            align-items:center; justify-content:center; text-align:center; color:#f2efe9;
+            background:rgba(13,14,18,.86); padding:24px; pointer-events:none; }
+  #tournez b{ font-size:16px; } #tournez span{ font-size:13px; color:#a9a294; }
+  #tournez.visible{ display:flex; }
 
   /* ─── jour J ─── */
   .jour{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0; margin-top:8px; }
@@ -606,8 +611,18 @@
   <div class="num apparait">07 · La mise en scène, en vidéo</div>
   <h2 class="apparait">Un extrait de la conduite, pour voir plutôt que lire</h2>
   <p class="chapo apparait">Une vidéo de travail par bloc : placements, entrées, intentions lumière, en regard de la musique. Si ce format vous est utile, je fabrique la suite au fur et à mesure — dites-le-moi simplement.</p>
-  <div class="cadre-video apparait">
-    <video controls preload="metadata" src="media/fiche/extrait-conduite.mp4"></video>
+  <div class="cadre-video apparait" style="position:relative">
+    <video id="videoconduite" controls playsinline preload="metadata"
+           src="media/fiche/extrait-conduite.mp4"></video>
+    <div id="tournez">
+      <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="7" width="17" height="10" rx="2"/>
+        <path d="M8 3.5a7 7 0 0 1 8 0M8 20.5a7 7 0 0 0 8 0"/>
+      </svg>
+      <b>Tournez votre téléphone</b>
+      <span>la vidéo est bien plus lisible à l'horizontale</span>
+    </div>
   </div>
 </div></section>
 
@@ -829,6 +844,42 @@
   ['pointerup','pointercancel'].forEach(function(ev){
     zone.addEventListener(ev, function(){ mactif = false; zone.style.cursor = 'grab'; });
   });
+
+  /* ─── la vidéo : jamais en même temps que la bande, et plein écran ─── */
+  var video = document.getElementById('videoconduite'),
+      tournez = document.getElementById('tournez');
+  function surTelephone(){ return window.matchMedia('(pointer: coarse)').matches; }
+  function estPortrait(){ return window.matchMedia('(orientation: portrait)').matches; }
+  function majTournez(){
+    if (!tournez) return;
+    tournez.classList.toggle('visible', !video.paused && surTelephone() && estPortrait());
+  }
+  if (video){
+    video.addEventListener('play', function(){
+      bande.pause();                                   // la musique se tait
+      if (surTelephone()){
+        if (screen.orientation && screen.orientation.lock){
+          try { screen.orientation.lock('landscape').catch(function(){}); } catch(e){}
+        }
+      }
+      var pf = video.requestFullscreen || video.webkitRequestFullscreen
+            || video.webkitEnterFullscreen || video.msRequestFullscreen;
+      if (pf){ try { var r = pf.call(video); if (r && r.catch) r.catch(function(){}); } catch(e){} }
+      majTournez();
+    });
+    ['pause','ended'].forEach(function(ev){
+      video.addEventListener(ev, function(){
+        majTournez();
+        if (ev === 'ended' && document.fullscreenElement && document.exitFullscreen){
+          document.exitFullscreen().catch(function(){});
+        }
+      });
+    });
+    window.addEventListener('orientationchange', function(){ setTimeout(majTournez, 350); });
+    window.addEventListener('resize', majTournez);
+    /* et réciproquement : lancer la bande arrête la vidéo */
+    bande.addEventListener('play', function(){ if (!video.paused) video.pause(); });
+  }
 })();
 </script>
 <script>
