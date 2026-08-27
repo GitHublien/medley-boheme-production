@@ -202,6 +202,17 @@
   footer b{ color:#f2efe9; display:block; margin-bottom:4px; }
   footer a{ color:#cfc9bd; }
 
+  #frise-nature{ position:relative; height:12px; border-radius:6px; overflow:hidden;
+                 background:#0b0c12; margin-top:14px; display:flex; }
+  #frise-nature .nat{ height:100%; }
+  .bouton-2{ background:transparent; border:1px solid var(--or); color:var(--or);
+             margin-right:12px; }
+  .bouton-2:hover{ background:var(--or); color:#15161c; }
+  .merci{ margin-top:70px; text-align:center; max-width:60ch; margin-left:auto;
+          margin-right:auto; font-size:17px; line-height:1.7; color:var(--gris); }
+  .merci b{ display:block; font-size:22px; color:var(--encre); margin-bottom:14px; }
+  .merci span{ display:block; margin-top:18px; font-weight:600; color:var(--accent); }
+
   /* --- lumieres du lecteur --- */
   #lum-frise{ position:relative; height:84px; border-radius:10px 10px 0 0; overflow:hidden;
               background:#0b0c12; margin-bottom:2px; transition:background 1.4s; }
@@ -276,7 +287,7 @@
   <div class="dedans">
     <div class="eyebrow">Fiche technique · première partie</div>
     <h1>Medley Starmania, Notre-Dame de Paris, Les Dix Commandements</h1>
-    <p class="soush">Première partie de « Hommage à Balavoine » · Théâtre Claude Debussy,
+    <p class="soush">Première partie du spectacle « Hommage à Balavoine » · Théâtre Claude Debussy,
     Palais des Festivals, Cannes · dimanche 4 octobre 2026, 19 h · Bohème Production</p>
     <div class="chiffres">
       <div><b>26 min 50</b><span>durée exacte</span></div>
@@ -342,7 +353,7 @@
       <p>Aucune relance, aucun enchaînement à gérer : la bande couvre les 26 min 50.</p>
       <details><summary>le détail</summary><div>Avec écran : un MP4 image + son (H.264, 1920×1080, 25 i/s,
       audio 48 kHz), la synchronisation est acquise par construction. Sans écran : un WAV 24 bits.
-      Livraison par SwissTransfer une semaine avant, et clé USB de secours le jour du spectacle.
+      Fichier définitif envoyé une semaine avant, et clé USB de secours apportée le jour même.
       Dites-moi le format et le support que votre régie préfère.</div></details></div>
 
     <div class="carte apparait"><span class="badge b1">Important</span>
@@ -378,7 +389,7 @@
       <details><summary>le détail</summary><div>Deux réponses changent tout : l'image vient-elle de la salle
       ou de derrière la toile (ombres portées) ? et quelle hauteur d'image reste visible depuis le balcon,
       le cadre de scène étant modulable jusqu'à 7,50 m ? J'en fabrique les vidéos au bon format dès le départ.
-      Et si la projection n'est pas possible, je préfère de loin garder la profondeur de jeu.</div></details></div>
+      Le spectacle ne comporte aucun décor : l'image en tiendrait lieu. Si elle n'était pas réalisable dans cette salle, dites-le-moi, et nous chercherons ensemble ce qui la remplacerait le mieux.</div></details></div>
 
     <div class="carte apparait"><span class="badge b1">Important</span>
       <img class="banniere" src="media/fiche/cartes/poursuite.jpg" alt="Faisceau de poursuite dans la brume" loading="lazy">
@@ -462,6 +473,17 @@
       <span><i style="background:#9a7614"></i>L'Égypte · Les Dix Commandements</span>
       <span><i style="background:#8a2b2b"></i>Vérone · Aimer</span>
     </div>
+    <div id="frise-nature" title="La nature de chaque séquence"></div>
+    <div class="l-legende">
+      <span><i style="background:#f4f1ea"></i>Les titres chantés</span>
+      <span><i style="background:#3f6fa8"></i>Les narrations parlées et les bascules</span>
+      <span><i style="background:#c8a25a"></i>Les bruitages et les effets</span>
+      <span><i style="background:#7d5fa8"></i>La fin et les saluts</span>
+    </div>
+    <p class="l-note">Le fond de chaque ligne dit la nature de la séquence : bleu pour les
+    narrations parlées, sable pour les bruitages et les effets, violet pour la fin et les saluts,
+    blanc pour les titres chantés.</p>
+
     <div class="bande-choix">
       <button id="bc-concert" class="actif">Bande du concert · telle qu'elle sera diffusée</button>
       <button id="bc-temoins">Avec les voix témoins · pour vous repérer</button>
@@ -617,7 +639,7 @@
       <details><summary>le détail</summary><div>Quelle machine utilisez-vous, et quelle procédure auprès
       du chargé de sécurité ? Je fournirai tout document nécessaire. Un point que je voudrais
       confirmer avec vous : la fosse. Le groupe de la seconde partie jouant sur le plateau, je la
-      suppose fermée le 4 octobre. Si elle restait ouverte, la nappe y tomberait et l'effet
+      suppose fermée le 4 octobre : ses 47 m² seraient alors couverts. Si elle restait ouverte, la nappe y tomberait et l'effet
       disparaîtrait. Je reste également attentif à la ventilation. Un hazer léger en fond, si disponible, donnerait du corps aux
       faisceaux : demande secondaire.</div></details></div>
     <div class="carte apparait">
@@ -633,11 +655,12 @@
   <figure class="fig-projection apparait">
     <img src="media/fiche/monopolis-faisceaux.jpg" loading="lazy"
          alt="Plateau vu de face : la ville de Monopolis projetee au lointain, et des faisceaux colores descendant du grill dans une nappe de fumee lourde, chacun creusant sa flaque de couleur au sol">
-    <figcaption>Trois demandes en une seule image. L'image reste au lointain et toute la profondeur
-    de jeu demeure libre devant elle : mes positions les plus reculées sont à 8 m du nez de scène.
-    La nappe de fumée lourde reste basse. Et les faisceaux descendent du grill, chacun creusant sa
-    flaque de couleur dans la nappe : c'est le principe des douches sur points fixes.
-    Ici Monopolis, la ville de Starmania : une intention d'ambiance, pas un contenu arrêté.</figcaption>
+    <figcaption><b>Voilà à quoi cela pourrait ressembler.</b> Par exemple sur Le Blues du
+    Businessman : Monopolis, des faisceaux dans la brume et de la couleur au lointain. L'image
+    reste au fond et toute la profondeur de jeu demeure libre devant elle, mes positions les plus
+    reculées étant à 8 m du nez de scène ; la nappe de fumée lourde reste basse, et chaque faisceau
+    y creuse sa flaque de couleur, comme le feraient les douches sur points fixes.
+    Ce ne sont que des idées de teintes, et c'est vous les professionnels de la lumière.</figcaption>
   </figure>
 </div></section>
 
@@ -667,13 +690,14 @@
   <h2 class="apparait">L'enchaînement souhaité, léger pour vos équipes</h2>
   <p class="chapo apparait">Les horaires restent à définir avec vous : c'est l'information dont j'ai
   besoin en premier. Les durées ci-dessous sont indicatives, données pour vous aider à caler la journée : elles ne sont pas une demande. Tout ce qui peut être préparé en amont le sera.</p>
+  <div class="contrat apparait" style="margin-bottom:26px"><b>L'ouverture du lieu.</b> La production m'indique que le lieu ouvre dès 8 h ; pouvez-vous me le confirmer ? Je m'accorderai ensuite avec les cinq autres chanteurs sur notre heure d'arrivée, et je vous la communiquerai.</div>
   <div class="jour apparait">
     <div class="etape"><i></i><b>Arrivée</b><span>l'équipe technique et moi</span></div>
     <div class="etape"><i></i><b>Réglages</b><span>douches P1 à P7, couleurs · ~1 h</span></div>
     <div class="etape"><i></i><b>Balances</b><span>les six micros, les six voix · ~45 min</span></div>
     <div class="etape"><i></i><b>Filage</b><span>le medley en entier, avec la bande · ~30 min</span></div>
     <div class="etape"><i></i><b>Raccord</b><span>on cale les tops de la conduite · ~30 min</span></div>
-    <div class="etape"><i></i><b>Loges</b><span>six personnes · habillage et voix avant l'entrée</span></div>
+    <div class="etape"><i></i><b>Loges</b><span>six personnes · habillage et voix avant l'entrée · à partir de quelle heure nous seraient-elles accessibles ?</span></div>
     <div class="etape"><i></i><b>Spectacle</b><span>26 min 50, en continu</span></div>
   </div>
 </div></section>
@@ -705,13 +729,19 @@
     <div class="question">Si l'un de ces points suppose une dépense, je le retire : qu'auriez-vous à me proposer à la place, dans ce qui est déjà inclus ?</div>
     <div class="question"><b>Et surtout : que me proposeriez-vous, vous ?</b> Ce document dit mes idées, mais c'est vous les professionnels de la lumière et du son. Si vous voyez des choses qui serviraient mieux ce spectacle, je suis tout ouïe.</div>
   </div>
+  <a class="bouton bouton-2" href="media/fiche/fiche-technique-4-octobre-2026.pdf" download>Télécharger la fiche technique (PDF) ↓</a>
   <a class="bouton" href="mailto:caidj90@hotmail.com?subject=Fiche%20technique%20%E2%80%94%20premi%C3%A8re%20partie%20du%204%20octobre&body=Bonjour%20Micka%C3%ABl%2C%0A%0AMes%20r%C3%A9ponses%2C%20par%20num%C3%A9ro%20%3A%0A%0A1.%20">Répondre par mail →</a>
 </div></section>
 
 <!-- ═══════════ POUR FINIR ═══════════ -->
 <section id="pourfinir"><div class="dedans">
-  <img class="page-finale apparait" src="media/fiche/page-finale.png" loading="lazy"
-       alt="Pour finir. Merci. Ce document dit tout ce que je sais de ce spectacle, et rien de ce que vous, vous en ferez. Vingt-six minutes et cinquante secondes, six chanteurs, aucun decor : tout le reste tiendra dans votre lumiere. Je n'arrive avec aucune exigence ; ce qui est ecrit ici, ce sont des intentions. Si vous voyez plus simple, plus juste ou plus beau, je vous suivrai volontiers. Et si l'un de ces points demandait la moindre depense, je le retire sans discussion. Le 4 octobre, a 19 heures, six voix entreront dans le noir de votre plateau : ce qu'elles y trouveront, c'est vous qui l'aurez fait. A tres bientot, Mickael Guedj.">
+  <div class="merci apparait">
+    <b>Merci de m'avoir lu jusqu'ici.</b>
+    Ce document dit tout ce que je sais de ce spectacle, et rien de ce que vous, vous en ferez.
+    Vingt-six minutes et cinquante secondes, six chanteurs, aucun décor : tout le reste tiendra
+    dans votre lumière. À très bientôt.
+    <span>Mickaël Guedj</span>
+  </div>
 </div></section>
 
 <footer><div class="dedans">
@@ -780,6 +810,26 @@
       ltitre = document.getElementById('ltitre'),
       lqui = document.getElementById('lqui'),
       lta = document.getElementById('lta');
+
+  /* la nature de chaque sequence : c'est ce qu'elle EST, pas l'univers d'ou elle vient */
+  var NATURE = [
+    [0,30,'n'], [30,108,'c'], [108,117,'e'], [117,316,'c'], [316,366,'n'],
+    [366,514,'c'], [514,526,'n'], [526,620,'c'], [620,627,'n'], [627,732,'c'],
+    [732,753,'e'], [753,1380,'c'], [1380,1400,'e'], [1400,1596,'c'], [1596,1610,'f']
+  ];
+  var TEINTE = { c:'#f4f1ea', n:'#3f6fa8', e:'#c8a25a', f:'#7d5fa8' };
+  var NOM = { c:'titre chanté', n:'narration ou bascule', e:'bruitage ou effet', f:'la fin' };
+  var fnat = document.getElementById('frise-nature');
+  if (fnat){
+    NATURE.forEach(function(n){
+      var d = document.createElement('div');
+      d.className = 'nat';
+      d.style.width = ((n[1]-n[0])/DUREE*100) + '%';
+      d.style.background = TEINTE[n[2]];
+      d.title = NOM[n[2]];
+      fnat.appendChild(d);
+    });
+  }
 
   UNIVERS.forEach(function(u){
     var d = document.createElement('div');
