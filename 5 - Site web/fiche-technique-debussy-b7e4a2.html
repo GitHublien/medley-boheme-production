@@ -203,14 +203,31 @@
   footer a{ color:#cfc9bd; }
 
   .sous-titre{ font-size:20px; font-weight:600; margin:44px 0 10px; color:var(--encre); }
-  .six{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; max-width:640px;
-        margin:0 auto 40px; }
-  .six figure{ margin:0; }
-  .six img{ width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
-            border-radius:6px; border:1px solid var(--trait); }
-  .six figcaption{ text-align:center; margin-top:8px; font-size:14.5px; font-weight:600;
-                   color:var(--encre); }
-  @media (max-width:520px){ .six{ grid-template-columns:repeat(2, 1fr); gap:14px; } }
+
+  /* ─── les six chanteurs ─── */
+  .six-bloc{ background:var(--noir); border-radius:22px; padding:44px 38px 40px;
+             margin:46px auto 46px; max-width:820px; text-align:center;
+             box-shadow:0 24px 60px -32px rgba(20,20,30,.55); }
+  .six-titre{ color:#f2efe9; font-size:22px; font-weight:600; margin:0 0 8px; }
+  .six-titre::after{ content:''; display:block; width:52px; height:2px; margin:12px auto 0;
+                     background:var(--or); border-radius:2px; }
+  .six-chapo{ color:#a9a294; font-size:15px; max-width:52ch; margin:14px auto 30px; }
+  .six{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  .six figure{ margin:0; position:relative; border-radius:14px; overflow:hidden;
+               aspect-ratio:4/5; box-shadow:0 10px 26px -14px rgba(0,0,0,.65); }
+  .six img{ width:100%; height:100%; object-fit:cover; display:block;
+            transition:transform .5s ease; }
+  .six figure:hover img{ transform:scale(1.055); }
+  .six figcaption{ position:absolute; inset:auto 0 0 0; padding:34px 10px 12px;
+                   background:linear-gradient(180deg, transparent, rgba(8,9,14,.86));
+                   color:#f6f3ec; font-size:15.5px; font-weight:600; letter-spacing:.4px;
+                   text-align:center; }
+  .six figcaption i{ display:block; width:26px; height:2px; margin:0 auto 7px;
+                     background:var(--or); border-radius:2px; opacity:.85; }
+  @media (max-width:640px){
+    .six-bloc{ padding:30px 18px 26px; }
+    .six{ grid-template-columns:repeat(2, 1fr); gap:14px; }
+  }
 
   #frise-nature{ position:relative; height:12px; border-radius:6px; overflow:hidden;
                  background:#0b0c12; margin-top:14px; display:flex; }
@@ -392,14 +409,16 @@
       franche et assumée par monde (<a href="#lumiere" style="color:inherit; font-weight:600">voir la galerie lumière</a>). Je suis ouvert à vos propositions
       de teintes. L'idéal serait un cyclorama au lointain, la profondeur de jeu préservée devant.</div></details></div>
 
-    <div class="carte apparait"><span class="badge b2">Très souhaité</span>
+    <div class="carte apparait"><span class="badge b1">Important</span>
       <img class="banniere" src="media/fiche/cartes/ecran.jpg" alt="Surface de projection en fond de scene" loading="lazy">
       <h3>Un écran ou une surface de projection</h3>
-      <p>Le spectacle n'a aucun décor : l'image en tiendrait lieu, changeant d'univers avec la musique.</p>
-      <details><summary>le détail</summary><div>Deux réponses changent tout : l'image vient-elle de la salle
-      ou de derrière la toile (ombres portées) ? et quelle hauteur d'image reste visible depuis le balcon,
-      le cadre de scène étant modulable jusqu'à 7,50 m ? J'en fabrique les vidéos au bon format dès le départ.
-      Le spectacle ne comporte aucun décor : l'image en tiendrait lieu. Si elle n'était pas réalisable dans cette salle, dites-le-moi, et nous chercherons ensemble ce qui la remplacerait le mieux.</div></details></div>
+      <p>Le spectacle n'a aucun décor : l'image en tiendrait lieu, changeant d'univers avec la musique.
+      C'est important pour moi, et si c'est possible, ce serait vraiment formidable.</p>
+      <details><summary>le détail</summary><div>Si l'écran est là, je fabrique les vidéos au bon format
+      dès le départ, et deux réponses changent tout : l'image vient-elle de la salle ou de derrière la
+      toile (ombres portées) ? et quelle hauteur d'image reste visible depuis le balcon, le cadre de
+      scène étant modulable jusqu'à 7,50 m ? Et si ce n'était pas réalisable dans cette salle,
+      dites-le-moi simplement : nous nous adapterons, et le décor se fera autrement.</div></details></div>
 
     <div class="carte apparait"><span class="badge b1">Important</span>
       <img class="banniere" src="media/fiche/cartes/poursuite.jpg" alt="Faisceau de poursuite dans la brume" loading="lazy">
@@ -545,17 +564,18 @@
   Les positions sont numérotées, chacune reçoit sa douche, et la conduite ne dit plus « éclairer
   un tel » mais « allumer P3 et P5 ». Survolez un point : sa douche s'allume.</p>
 
-  <h3 class="sous-titre apparait">Les six, pour savoir qui est qui</h3>
-  <p class="apparait" style="color:var(--gris); font-size:15px; max-width:62ch; margin-bottom:22px;">
-  Leurs prénoms reviennent dans le déroulé minuté et dans la conduite. Les voici, pour que vous
-  puissiez mettre un visage sur chacun.</p>
-  <div class="six apparait">
-    <figure><img src="media/fiche/chanteurs/bry.jpg" loading="lazy" alt="Bry"><figcaption>Bry</figcaption></figure>
-    <figure><img src="media/fiche/chanteurs/candice.jpg" loading="lazy" alt="Candice"><figcaption>Candice</figcaption></figure>
-    <figure><img src="media/fiche/chanteurs/mickael.jpg" loading="lazy" alt="Mickaël"><figcaption>Mickaël</figcaption></figure>
-    <figure><img src="media/fiche/chanteurs/adrien.jpg" loading="lazy" alt="Adrien"><figcaption>Adrien</figcaption></figure>
-    <figure><img src="media/fiche/chanteurs/stephanie.jpg" loading="lazy" alt="Stéphanie"><figcaption>Stéphanie</figcaption></figure>
-    <figure><img src="media/fiche/chanteurs/elie.jpg" loading="lazy" alt="Élie"><figcaption>Élie</figcaption></figure>
+  <div class="six-bloc apparait">
+    <h3 class="six-titre">Les six, pour savoir qui est qui</h3>
+    <p class="six-chapo">Leurs prénoms reviennent dans le déroulé minuté et dans la conduite.
+    Les voici, pour que vous puissiez mettre un visage sur chacun.</p>
+    <div class="six">
+      <figure><img src="media/fiche/chanteurs/bry.jpg" loading="lazy" alt="Bry"><figcaption><i></i>Bry</figcaption></figure>
+      <figure><img src="media/fiche/chanteurs/candice.jpg" loading="lazy" alt="Candice"><figcaption><i></i>Candice</figcaption></figure>
+      <figure><img src="media/fiche/chanteurs/mickael.jpg" loading="lazy" alt="Mickaël"><figcaption><i></i>Mickaël</figcaption></figure>
+      <figure><img src="media/fiche/chanteurs/adrien.jpg" loading="lazy" alt="Adrien"><figcaption><i></i>Adrien</figcaption></figure>
+      <figure><img src="media/fiche/chanteurs/stephanie.jpg" loading="lazy" alt="Stéphanie"><figcaption><i></i>Stéphanie</figcaption></figure>
+      <figure><img src="media/fiche/chanteurs/elie.jpg" loading="lazy" alt="Élie"><figcaption><i></i>Élie</figcaption></figure>
+    </div>
   </div>
 
   <div class="plan-cadre apparait">
@@ -1088,6 +1108,143 @@
     conteneur.appendChild(b);
   });
   appliquer(0);
+})();
+</script>
+
+<!-- ═══════════ LE CARNET DE NOTES ═══════════ -->
+<style>
+  #carnet-btn{ position:fixed; right:22px; bottom:22px; z-index:60;
+    background:var(--accent); color:#fff; border:none; cursor:pointer;
+    border-radius:50px; padding:14px 22px; font-size:15px; font-weight:600;
+    font-family:inherit; display:flex; align-items:center; gap:9px;
+    box-shadow:0 12px 30px -10px rgba(138,43,43,.55);
+    transition:transform .15s, box-shadow .2s; }
+  #carnet-btn:hover{ transform:translateY(-2px);
+    box-shadow:0 16px 36px -10px rgba(138,43,43,.6); }
+  #carnet-btn.note-la{ background:#3b6b50; }
+  #carnet{ position:fixed; right:22px; bottom:86px; z-index:61; width:min(420px, calc(100vw - 44px));
+    background:#fff; border-radius:18px; border:1px solid var(--trait);
+    box-shadow:0 30px 70px -20px rgba(20,20,30,.45); display:none; overflow:hidden; }
+  #carnet.ouvert{ display:block; }
+  #carnet header{ background:var(--noir); color:#f2efe9; padding:16px 20px; }
+  #carnet header b{ font-size:16px; display:block; }
+  #carnet header span{ font-size:12.5px; color:#a9a294; }
+  #carnet textarea{ width:100%; border:none; outline:none; resize:vertical;
+    min-height:180px; padding:16px 20px; font-family:inherit; font-size:15px;
+    line-height:1.6; color:var(--encre);
+    background:repeating-linear-gradient(180deg, transparent, transparent 25px, #eceef2 25px, #eceef2 26px);
+    background-attachment:local; }
+  #carnet .c-barre{ display:flex; gap:8px; padding:12px 14px; border-top:1px solid var(--trait);
+    flex-wrap:wrap; align-items:center; }
+  #carnet .c-barre button, #carnet .c-barre a{ border:1px solid var(--trait); background:#faf9f7;
+    color:var(--encre); border-radius:9px; padding:8px 13px; font-size:13.5px; cursor:pointer;
+    font-family:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+    transition:background .15s; }
+  #carnet .c-barre button:hover, #carnet .c-barre a:hover{ background:#f0eeea; }
+  #carnet #c-micro.ecoute{ background:var(--accent); color:#fff; border-color:var(--accent);
+    animation:c-pulse 1.2s infinite; }
+  @keyframes c-pulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(138,43,43,.35); }
+    50%{ box-shadow:0 0 0 9px rgba(138,43,43,0); } }
+  #c-etat{ font-size:12px; color:var(--gris); margin-left:auto; }
+  @media print{ #carnet-btn, #carnet{ display:none !important; } }
+</style>
+
+<button id="carnet-btn" aria-label="Ouvrir le carnet de notes">✎ <span>Vos notes</span></button>
+<div id="carnet" role="dialog" aria-label="Carnet de notes">
+  <header><b>Votre carnet de notes</b>
+    <span>Il reste sur cet appareil, dans ce navigateur. Rien n'est envoyé sans vous.</span></header>
+  <textarea id="c-texte" placeholder="Écrivez ici, ou dictez au micro : réponses, contraintes, idées… Tout est gardé automatiquement."></textarea>
+  <div class="c-barre">
+    <button id="c-micro" type="button" title="Dicter à la voix">🎙 Dicter</button>
+    <a id="c-mail" href="#" title="Envoyer ces notes par mail">✉ Envoyer à Mickaël</a>
+    <button id="c-vider" type="button" title="Tout effacer">🗑</button>
+    <span id="c-etat"></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var CLE = 'notes-fiche-debussy';
+  var btn = document.getElementById('carnet-btn'),
+      panneau = document.getElementById('carnet'),
+      zone = document.getElementById('c-texte'),
+      micro = document.getElementById('c-micro'),
+      mail = document.getElementById('c-mail'),
+      vider = document.getElementById('c-vider'),
+      etat = document.getElementById('c-etat');
+
+  /* ─── mémoire locale ─── */
+  try { zone.value = localStorage.getItem(CLE) || ''; } catch(e){}
+  function marqueur(){
+    var plein = zone.value.trim().length > 0;
+    btn.classList.toggle('note-la', plein);
+    btn.querySelector('span').textContent = plein ? 'Vos notes ●' : 'Vos notes';
+  }
+  var minuterie;
+  zone.addEventListener('input', function(){
+    clearTimeout(minuterie);
+    minuterie = setTimeout(function(){
+      try { localStorage.setItem(CLE, zone.value); } catch(e){}
+      etat.textContent = 'enregistré';
+      setTimeout(function(){ etat.textContent = ''; }, 1600);
+      marqueur();
+    }, 400);
+  });
+  marqueur();
+
+  btn.addEventListener('click', function(){
+    panneau.classList.toggle('ouvert');
+    if (panneau.classList.contains('ouvert')) zone.focus();
+  });
+
+  /* ─── l'envoi par mail ─── */
+  mail.addEventListener('click', function(){
+    mail.href = 'mailto:caidj90@hotmail.com'
+      + '?subject=' + encodeURIComponent('Fiche technique — mes notes')
+      + '&body=' + encodeURIComponent('Bonjour Mickaël,\n\n' + zone.value + '\n\n');
+  });
+
+  /* ─── tout effacer, avec confirmation ─── */
+  vider.addEventListener('click', function(){
+    if (!zone.value.trim()) return;
+    if (confirm('Effacer toutes les notes ?')){
+      zone.value = '';
+      try { localStorage.removeItem(CLE); } catch(e){}
+      marqueur();
+    }
+  });
+
+  /* ─── la dictée vocale ─── */
+  var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Reco){ micro.style.display = 'none'; }
+  else {
+    var r = new Reco(), enCours = false, socle = '';
+    r.lang = 'fr-FR'; r.continuous = true; r.interimResults = true;
+    micro.addEventListener('click', function(){
+      if (enCours){ r.stop(); return; }
+      socle = zone.value ? zone.value.replace(/\s+$/, '') + ' ' : '';
+      try { r.start(); } catch(e){}
+    });
+    r.onstart = function(){ enCours = true; micro.classList.add('ecoute');
+      micro.textContent = '🎙 J’écoute…'; };
+    r.onend = function(){ enCours = false; micro.classList.remove('ecoute');
+      micro.textContent = '🎙 Dicter';
+      try { localStorage.setItem(CLE, zone.value); } catch(e){}
+      marqueur(); };
+    r.onerror = function(ev){
+      if (ev.error === 'not-allowed'){ etat.textContent = 'micro refusé par le navigateur'; }
+      r.onend();
+    };
+    r.onresult = function(ev){
+      var sur = '', en = '';
+      for (var i = 0; i < ev.results.length; i++){
+        if (ev.results[i].isFinal) sur += ev.results[i][0].transcript;
+        else en += ev.results[i][0].transcript;
+      }
+      zone.value = socle + sur + en;
+      zone.scrollTop = zone.scrollHeight;
+    };
+  }
 })();
 </script>
 </body>
