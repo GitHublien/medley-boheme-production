@@ -292,8 +292,16 @@
   #s-etat{ position:absolute; left:16px; bottom:10px; font-size:12.5px; color:#9a9daa;
            letter-spacing:.4px; text-shadow:0 1px 4px #000; }
 
+  .pdf-hero{ display:inline-flex; flex-direction:column; gap:3px; margin-top:26px;
+    padding:14px 22px; border:1px solid rgba(201,164,92,.55); border-radius:14px;
+    background:rgba(201,164,92,.10); text-decoration:none; color:#f2efe9;
+    transition:background .2s, transform .15s; }
+  .pdf-hero:hover{ background:rgba(201,164,92,.2); transform:translateY(-2px); }
+  .pdf-hero b{ font-size:15.5px; color:var(--or); }
+  .pdf-hero span{ font-size:13px; color:#cfc9bd; }
+
   @media print{
-    nav, .indice, #btnplay, .bouton{ display:none; }
+    nav, .indice, #btnplay, .bouton, .pdf-hero{ display:none; }
     .hero{ min-height:auto; background:#fff; color:#000; }
     .hero .fond, .hero .voile{ display:none; }
     .hero .eyebrow{ color:var(--accent); }
@@ -322,6 +330,10 @@
       <div><b>Sur bande</b><span>un seul départ</span></div>
       <div><b>Aucun</b><span>musicien · décor</span></div>
     </div>
+    <a class="pdf-hero" href="media/fiche/fiche-technique-4-octobre-2026.pdf" download>
+      <b>📄 Ce document existe en PDF</b>
+      <span>20 pages, prêt à imprimer — téléchargez-le dès maintenant, ou lisez la suite ici</span>
+    </a>
   </div>
   <div class="indice">↓</div>
 </div>
