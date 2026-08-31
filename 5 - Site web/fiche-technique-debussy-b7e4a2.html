@@ -58,6 +58,43 @@
          transition:color .2s, border-color .2s; }
   nav a:hover, nav a.actif{ color:var(--accent); border-bottom-color:var(--accent); }
 
+  /* le bouton « toutes les sections » et son panneau : téléphone seulement */
+  #nav-tout, #sommaire{ display:none; }
+
+  @media (max-width:700px){
+    nav{ position:sticky; }
+    nav .dedans{ padding-right:58px; }
+    /* le voile dégradé dit « la barre continue vers la droite » */
+    nav::after{ content:''; position:absolute; right:54px; top:0; bottom:1px; width:36px;
+      pointer-events:none;
+      background:linear-gradient(90deg, rgba(251,250,247,0), rgba(251,250,247,.96)); }
+    #nav-tout{ display:block; position:absolute; right:0; top:0; bottom:0; width:54px;
+      border:none; border-left:1px solid var(--trait); background:rgba(251,250,247,.98);
+      color:var(--accent); font-size:20px; line-height:1; cursor:pointer; font-family:inherit; }
+
+    #sommaire{ position:fixed; inset:0; z-index:70; overflow:auto;
+      background:rgba(13,14,18,.94);
+      -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+      padding:20px 16px calc(24px + env(safe-area-inset-bottom)); }
+    body.sommaire-ouvert #sommaire{ display:block; }
+    body.sommaire-ouvert{ overflow:hidden; }
+    .som-haut{ display:flex; align-items:center; justify-content:space-between;
+      color:#f2efe9; margin-bottom:16px; }
+    .som-haut b{ font-size:17px; letter-spacing:-.2px; }
+    #som-fermer{ width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+      background:rgba(242,239,233,.14); color:#f2efe9; font-size:17px; font-family:inherit; }
+    .som-grille{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .som-grille a{ display:block; padding:15px 13px; border-radius:14px; text-decoration:none;
+      background:rgba(242,239,233,.07); border:1px solid rgba(242,239,233,.16);
+      color:#f2efe9; font-size:15px; font-weight:600; line-height:1.25; }
+    .som-grille a .n{ display:block; font-size:11px; font-weight:700; letter-spacing:.5px;
+      color:var(--or); margin-bottom:5px; }
+    .som-grille a.actif{ border-color:var(--or); background:rgba(201,164,92,.16); }
+    #plein-ecran{ display:block; width:100%; margin-top:14px; padding:15px;
+      border-radius:14px; border:1px solid rgba(242,239,233,.22);
+      background:transparent; color:#cfc9bd; font-family:inherit; font-size:15px; cursor:pointer; }
+  }
+
   /* ─── structure ─── */
   section{ padding:88px 0 8px; }
   .dedans{ max-width:1080px; margin:0 auto; padding:0 28px; }
@@ -349,7 +386,15 @@
   <a href="#extrait">Extrait vidéo</a>
   <a href="#jourj">Le jour J</a>
   <a href="#questions">Vos réponses</a>
-</div></nav>
+</div>
+<button id="nav-tout" type="button" aria-label="Voir toutes les sections">☰</button>
+</nav>
+<div id="sommaire" role="dialog" aria-label="Toutes les sections">
+  <div class="som-haut"><b>Les neuf sections</b>
+    <button id="som-fermer" type="button" aria-label="Fermer">✕</button></div>
+  <div class="som-grille"></div>
+  <button id="plein-ecran" type="button">⛶ Passer en plein écran</button>
+</div>
 
 <!-- ═══════════ L'ESSENTIEL ═══════════ -->
 <section id="essentiel"><div class="dedans">
@@ -833,6 +878,66 @@
   }, { rootMargin:'-40% 0px -55% 0px' });
   cibles.forEach(function(c){ if (c) obsNav.observe(c); });
 
+  /* ─── le panneau « toutes les sections », sur téléphone ─── */
+  (function(){
+    var bouton = document.getElementById('nav-tout'),
+        panneau = document.getElementById('sommaire'),
+        grille = panneau.querySelector('.som-grille'),
+        fermer = document.getElementById('som-fermer'),
+        plein = document.getElementById('plein-ecran');
+
+    /* la liste se fabrique à partir du menu : une seule vérité, pas de doublon */
+    Array.prototype.forEach.call(liens, function(a){
+      var section = document.querySelector(a.getAttribute('href'));
+      var num = section && section.querySelector('.num');
+      var chiffre = num ? (num.textContent.trim().match(/^(\d+)/) || [])[1] : null;
+      var lien = document.createElement('a');
+      lien.href = a.getAttribute('href');
+      lien.innerHTML = (chiffre ? '<span class="n">' + chiffre + '</span>' : '')
+                     + a.textContent.trim();
+      grille.appendChild(lien);
+    });
+
+    function marquerActif(){
+      var courant = null;
+      Array.prototype.forEach.call(liens, function(a){
+        var c = document.querySelector(a.getAttribute('href'));
+        if (c && c.getBoundingClientRect().top <= 140) courant = a.getAttribute('href');
+      });
+      grille.querySelectorAll('a').forEach(function(x){
+        x.classList.toggle('actif', x.getAttribute('href') === courant);
+      });
+    }
+    function ouvrir(){ marquerActif(); document.body.classList.add('sommaire-ouvert'); }
+    function refermer(){ document.body.classList.remove('sommaire-ouvert'); }
+
+    bouton.addEventListener('click', ouvrir);
+    fermer.addEventListener('click', refermer);
+    panneau.addEventListener('click', function(e){ if (e.target === panneau) refermer(); });
+    grille.addEventListener('click', function(e){ if (e.target.closest('a')) refermer(); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') refermer();
+    });
+
+    /* ─── le plein écran ─── */
+    function etatPlein(){
+      var dedans = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      plein.textContent = dedans ? '⛶ Quitter le plein écran' : '⛶ Passer en plein écran';
+    }
+    plein.addEventListener('click', function(){
+      var r = document.documentElement;
+      if (document.fullscreenElement || document.webkitFullscreenElement){
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } else {
+        var demande = r.requestFullscreen || r.webkitRequestFullscreen;
+        if (demande) demande.call(r);
+      }
+      setTimeout(function(){ etatPlein(); refermer(); }, 120);
+    });
+    document.addEventListener('fullscreenchange', etatPlein);
+    etatPlein();
+  })();
+
   /* ─── le lecteur du spectacle ─── */
   var DUREE = 1610;
   var UNIVERS = [[0,627,'#6b4a9e'],[627,1133,'#a35a12'],[1133,1400,'#9a7614'],[1400,1440,'#6b4a9e'],[1440,1610,'#8a2b2b']];
@@ -1159,18 +1264,146 @@
   @keyframes c-pulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(138,43,43,.35); }
     50%{ box-shadow:0 0 0 9px rgba(138,43,43,0); } }
   #c-etat{ font-size:12px; color:var(--gris); margin-left:auto; }
-  @media print{ #carnet-btn, #carnet{ display:none !important; } }
+  @media print{ #carnet-btn, #carnet, #c-voile{ display:none !important; } }
+
+  /* ─── la croix de fermeture (téléphone seulement) ─── */
+  #c-fermer{ display:none; position:absolute; top:10px; right:10px;
+    width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(242,239,233,.14); color:#f2efe9; font-size:17px; line-height:1;
+    font-family:inherit; }
+  #c-fermer:active{ background:rgba(242,239,233,.28); }
+  #c-voile{ display:none; }
+  #c-ou, #c-aide, #c-aide-btn, #c-plus{ display:none; }
+  #c-vider .lib{ display:none; }   /* sur ordinateur, la corbeille reste une icône seule */
+
+  /* ═══════════ LE CARNET SUR TÉLÉPHONE ═══════════
+     Rien de tout ceci ne s'applique au-dessus de 700 px :
+     l'affichage sur ordinateur reste strictement identique. */
+  @media (max-width:700px){
+    /* le bouton d'appel : plus discret, et il s'efface quand le carnet est ouvert */
+    #carnet-btn{ right:14px; bottom:14px; padding:13px 18px; font-size:14.5px; }
+    body.carnet-ouvert #carnet-btn{ display:none; }
+
+    /* un voile sombre : le carnet se détache de la page au lieu de flotter dessus */
+    #c-voile{ position:fixed; inset:0; z-index:59; background:rgba(13,14,18,.55);
+      -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+    body.carnet-ouvert #c-voile{ display:block; }
+
+    /* le carnet devient un tiroir qui monte du bas, sur toute la largeur */
+    #carnet{ left:0; right:0; width:100%;
+      border-radius:20px 20px 0 0; border-bottom:none;
+      /* Le tiroir est simplement collé en bas : les navigateurs y placent
+         le bas de la page juste au-dessus du clavier, sans qu'on calcule rien.
+         --vue est la hauteur réellement visible, mesurée en direct :
+         elle empêche le carnet d'être plus haut que la place disponible. */
+      bottom:0;
+      /* hauteur = toute la place visible, clavier ou pas.
+         Le carnet ne saute donc plus quand le clavier s'ouvre ou se ferme. */
+      height:calc(var(--vue, 92dvh) - 8px); }
+    #carnet.ouvert{ display:flex; flex-direction:column; }
+    #carnet header{ position:relative; padding:18px 58px 16px 20px; flex:none;
+      transition:padding .2s ease; }
+    /* dès qu'on écrit, l'en-tête s'efface pour laisser la place au texte */
+    #carnet.ecrit header{ padding:11px 104px 11px 20px; }
+    #carnet.ecrit header b{ font-size:14.5px; }
+    #carnet.ecrit header span{ display:none; }
+    /* la section où l'on note, annoncée avant d'écrire */
+    #c-ou{ display:block; font-style:normal; font-size:13px; font-weight:600;
+      color:var(--or); margin-top:7px; }
+    #c-ou:empty{ display:none; }
+    #c-aide{ display:block; font-style:normal; font-size:12.5px; line-height:1.45;
+      color:#a9a294; margin-top:8px; }
+    #carnet.ecrit #c-aide{ display:none; }
+    /* …sauf si on l'a rappelé par le « ? » : il reprend la main sur le repli */
+    #carnet.ecrit.aide-ouverte #c-aide{ display:block; }
+    #carnet.ecrit #c-fermer{ top:6px; width:34px; height:34px; }
+
+    /* le « ? » : toujours présent, il redonne le mode d'emploi à tout moment */
+    #c-aide-btn{ display:block; position:absolute; top:10px; right:56px;
+      width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+      background:rgba(242,239,233,.14); color:#f2efe9; font-size:17px;
+      font-family:inherit; line-height:1; }
+    #c-aide-btn:active{ background:rgba(242,239,233,.28); }
+    #carnet.aide-ouverte #c-aide-btn{ background:var(--or); color:#15161c; }
+    #carnet.ecrit #c-aide-btn{ top:6px; right:48px; width:34px; height:34px; }
+    #carnet header::before{ content:''; position:absolute; top:7px; left:50%;
+      transform:translateX(-50%); width:42px; height:4px; border-radius:4px;
+      background:rgba(242,239,233,.3); }
+    #c-fermer{ display:block; }
+
+    /* En-tête cloué en haut, boutons cloués en bas,
+       et SEUL le texte défile entre les deux. */
+    #carnet textarea{ flex:1 1 auto; min-height:90px; max-height:none;
+      padding:18px 20px; font-size:16px; overflow-y:auto;
+      resize:none; }   /* pas de poignée : elle pourrait pousser les boutons hors de l'écran */
+
+    /* ═══ les actions quittent le bas de l'écran ═══
+       Le clavier occupe toujours le bas : on ne met donc plus rien dessous.
+       Elles deviennent un menu déroulant, ancré sous l'en-tête. */
+    #c-plus{ display:block; position:absolute; top:10px; right:102px;
+      width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+      background:rgba(242,239,233,.14); color:#f2efe9; font-size:19px;
+      font-family:inherit; line-height:1; }
+    #c-plus:active{ background:rgba(242,239,233,.28); }
+    #carnet.menu-ouvert #c-plus{ background:var(--or); color:#15161c; }
+    #carnet.ecrit #c-plus{ top:6px; right:90px; width:34px; height:34px; }
+
+    /* le menu se glisse ENTRE l'en-tête et le texte : aucune superposition,
+       aucun ancrage à calculer, et le clavier ne peut pas l'atteindre */
+    #carnet header{ order:0; }
+    #carnet .c-barre{ order:1; display:none; flex:none; border-top:none;
+      border-bottom:1px solid var(--trait); background:#fff;
+      flex-direction:column; align-items:stretch; gap:0; padding:4px 0; }
+    #carnet textarea{ order:2; }
+    #carnet.menu-ouvert .c-barre{ display:flex; }
+
+    /* de vraies lignes de menu : une icône, un mot, toute la largeur */
+    #carnet .c-barre button, #carnet .c-barre a{
+      display:flex; align-items:center; gap:14px;
+      width:100%; padding:13px 18px; font-size:15.5px; font-weight:500;
+      border:none; border-radius:0; background:none; color:var(--encre); }
+    #carnet .c-barre > *+*{ border-top:1px solid #f0eeea; }
+    #carnet .c-barre button:active, #carnet .c-barre a:active{ background:#f4f2ee; }
+    #carnet .c-barre .ico{ flex:none; width:36px; height:36px; border-radius:50%;
+      background:#f3f1ec; display:grid; place-items:center; font-size:17px; }
+    #carnet #c-vider{ color:var(--accent); }
+    #carnet #c-vider .ico{ background:#f8ecea; }
+    #carnet #c-vider .lib{ display:inline; }
+    #carnet #c-mail .ico{ background:#e9f0f8; }
+    /* sur téléphone, le micro du clavier fait déjà le travail, et mieux :
+       il ponctue, et il existe sur tous les appareils, Android comme iPhone */
+    #carnet #c-micro{ display:none; }
+    /* …sauf si la personne demande expressément celui du site */
+    #carnet.micro-site #c-micro{ display:inline-flex; flex:1 1 auto; justify-content:center; }
+    #carnet #c-mail{ flex:1 1 auto; justify-content:center; }
+    #c-micro-opt{ display:block; margin-top:9px; padding:0; border:none; background:none;
+      color:#cfc9bd; font-family:inherit; font-size:12.5px; text-decoration:underline;
+      text-underline-offset:3px; cursor:pointer; }
+    #carnet #c-vider{ flex:none; }
+    #c-etat{ flex-basis:100%; margin:2px 0 0; text-align:center; }
+  }
 </style>
 
 <button id="carnet-btn" aria-label="Ouvrir le carnet de notes">✎ <span>Vos notes</span></button>
+<div id="c-voile"></div>
 <div id="carnet" role="dialog" aria-label="Carnet de notes">
   <header><b>Votre carnet de notes</b>
-    <span>Il reste sur cet appareil, dans ce navigateur. Rien n'est envoyé sans vous.</span></header>
+    <span>Il reste sur cet appareil, dans ce navigateur. Rien n'est envoyé sans vous.</span>
+    <em id="c-ou"></em>
+    <i id="c-aide">La section que vous lisez s'inscrit toute seule. Effacez cette ligne
+      si votre remarque vaut pour l'ensemble.
+      <button id="c-micro-opt" type="button">Utiliser le micro du site</button></i>
+    <button id="c-plus" type="button" aria-label="Actions">⋯</button>
+    <button id="c-aide-btn" type="button" aria-label="Mode d'emploi">?</button>
+    <button id="c-fermer" type="button" aria-label="Fermer le carnet">✕</button></header>
   <textarea id="c-texte" placeholder="Écrivez ici, ou dictez au micro : réponses, contraintes, idées… Tout est gardé automatiquement."></textarea>
   <div class="c-barre">
-    <button id="c-micro" type="button" title="Dicter à la voix">🎙 Dicter</button>
-    <a id="c-mail" href="#" title="Envoyer ces notes par mail">✉ Envoyer à Mickaël</a>
-    <button id="c-vider" type="button" title="Tout effacer">🗑</button>
+    <button id="c-micro" type="button" title="Dicter à la voix"><span
+      class="ico">🎙</span><span class="lib">Dicter</span></button>
+    <a id="c-mail" href="#" title="Envoyer ces notes par mail"><span
+      class="ico">✉</span><span class="lib">Envoyer à Mickaël</span></a>
+    <button id="c-vider" type="button" title="Tout effacer"><span
+      class="ico">🗑</span><span class="lib">Tout effacer</span></button>
     <span id="c-etat"></span>
   </div>
 </div>
@@ -1205,16 +1438,159 @@
   });
   marqueur();
 
+  /* ─── ouvrir et fermer ─── */
+  var voile = document.getElementById('c-voile'),
+      fermer = document.getElementById('c-fermer');
+
+  /* ─── où en est la lecture ? on mesure, on ne devine pas ───
+     (le soulignement du menu se décale quand l'écran est peu haut,
+      par exemple téléphone couché : on calcule donc nous-mêmes) */
+  function sectionCourante(){
+    var liensNav = document.querySelectorAll('nav a');
+    var choisi = null;
+    for (var i = 0; i < liensNav.length; i++){
+      var cible = document.querySelector(liensNav[i].getAttribute('href'));
+      if (!cible) continue;
+      if (cible.getBoundingClientRect().top <= 140) choisi = liensNav[i];
+    }
+    if (!choisi) return '';
+    var section = document.querySelector(choisi.getAttribute('href'));
+    var num = section && section.querySelector('.num');
+    var chiffre = num && num.textContent.trim().match(/^(\d+)/);
+    var titre = choisi.textContent.trim();
+    return chiffre ? (chiffre[1] + ' · ' + titre) : titre;
+  }
+
+  /* ─── à l'ouverture, le carnet écrit lui-même de quoi on parle ─── */
+  function etiqueter(){
+    var repere = sectionCourante();
+    if (!repere) return;
+    var texte = zone.value.replace(/\s+$/, '');
+    var lignes = texte.split('\n');
+    if (lignes[lignes.length - 1].indexOf(repere) === 0) return;
+    zone.value = (texte ? texte + '\n\n' : '') + repere + ' — ';
+    try { localStorage.setItem(CLE, zone.value); } catch(e){}
+    marqueur();
+  }
+
+  var ou = document.getElementById('c-ou');
+
+  /* ─── sur téléphone : le micro du clavier par défaut, celui du site sur demande ─── */
+  var CLE_MICRO = 'notes-fiche-micro-site';
+  var optMicro = document.getElementById('c-micro-opt');
+  if (optMicro){
+    try {
+      if (localStorage.getItem(CLE_MICRO) === '1') panneau.classList.add('micro-site');
+    } catch(e){}
+    optMicro.addEventListener('click', function(){
+      var actif = panneau.classList.toggle('micro-site');
+      try { localStorage.setItem(CLE_MICRO, actif ? '1' : '0'); } catch(e){}
+      optMicro.textContent = actif ? 'Revenir au micro de mon clavier'
+                                   : 'Je préfère le micro du site';
+    });
+    if (panneau.classList.contains('micro-site')){
+      optMicro.textContent = 'Revenir au micro de mon clavier';
+    }
+  }
+
+  /* le menu des actions, en haut : le clavier n'y touche jamais */
+  var plus = document.getElementById('c-plus');
+  if (plus){
+    plus.addEventListener('click', function(){
+      panneau.classList.toggle('menu-ouvert');
+    });
+    /* choisir une action referme le menu */
+    [mail, vider].forEach(function(b){
+      if (b) b.addEventListener('click', function(){
+        panneau.classList.remove('menu-ouvert');
+      });
+    });
+  }
+
+  /* le « ? » rappelle le mode d'emploi, même quand le carnet est plein */
+  var aideBtn = document.getElementById('c-aide-btn');
+  if (aideBtn){
+    aideBtn.addEventListener('click', function(){
+      panneau.classList.toggle('aide-ouverte');
+    });
+  }
+
+  /* la phrase du champ vide, adaptée au téléphone */
+  if (window.matchMedia && window.matchMedia('(max-width:700px)').matches){
+    zone.placeholder = 'Écrivez ici, ou dictez avec le micro de votre clavier. '
+                     + 'Tout est gardé automatiquement.';
+  }
+
+  function ouvrir(){
+    panneau.classList.add('ouvert');
+    document.body.classList.add('carnet-ouvert');
+    var repere = sectionCourante();
+    if (ou) ou.textContent = repere ? ('Vous notez la section ' + repere) : '';
+    etiqueter();
+    zone.focus();
+    try { zone.setSelectionRange(zone.value.length, zone.value.length); } catch(e){}
+    zone.scrollTop = zone.scrollHeight;
+    compacter();
+  }
+
+  /* ─── l'en-tête se replie dès qu'il y a du texte ─── */
+  function compacter(){
+    panneau.classList.toggle('ecrit', zone.value.trim().length > 0);
+  }
+  zone.addEventListener('input', compacter);
+  function refermer(){
+    panneau.classList.remove('ouvert');
+    document.body.classList.remove('carnet-ouvert');
+    /* si on a ouvert sans rien écrire, l'étiquette de section ne reste pas seule */
+    zone.value = zone.value.replace(/\n{0,2}\d+\s·\s[^\n]*—\s*$/, '');
+    try { localStorage.setItem(CLE, zone.value); } catch(e){}
+    marqueur();
+    compacter();
+  }
+
+  /* ─── le clavier du téléphone : on mesure la place qu'il prend ─── */
+  var vv = window.visualViewport;
+  function mesurerClavier(){
+    if (!vv) return;
+    var cache = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    var racine = document.documentElement.style;
+    racine.setProperty('--clavier', Math.round(cache) + 'px');
+    racine.setProperty('--vue', Math.round(vv.height) + 'px');
+    /* au-delà de 120 px masqués, c'est un clavier, pas une barre de navigateur */
+    document.body.classList.toggle('clavier', cache > 120);
+  }
+  /* le clavier s'ouvre en glissant : on remesure pendant toute son animation */
+  function suivreClavier(){
+    [0, 120, 260, 420, 650].forEach(function(t){ setTimeout(mesurerClavier, t); });
+  }
+  if (vv){
+    vv.addEventListener('resize', mesurerClavier);
+    vv.addEventListener('scroll', mesurerClavier);
+    window.addEventListener('orientationchange', suivreClavier);
+    zone.addEventListener('focus', suivreClavier);
+    zone.addEventListener('blur', suivreClavier);
+    mesurerClavier();
+  }
+
   btn.addEventListener('click', function(){
-    panneau.classList.toggle('ouvert');
-    if (panneau.classList.contains('ouvert')) zone.focus();
+    if (panneau.classList.contains('ouvert')) refermer(); else ouvrir();
+  });
+  if (fermer) fermer.addEventListener('click', refermer);
+  if (voile)  voile.addEventListener('click', refermer);
+  document.addEventListener('keydown', function(ev){
+    if (ev.key === 'Escape' && panneau.classList.contains('ouvert')) refermer();
   });
 
   /* ─── l'envoi par mail ─── */
-  mail.addEventListener('click', function(){
-    mail.href = 'mailto:caidj90@hotmail.com'
+  mail.addEventListener('click', function(ev){
+    ev.preventDefault();
+    var texte = zone.value.trim();
+    if (!texte){ etat.textContent = 'le carnet est vide'; return; }
+    var url = 'mailto:caidj90@hotmail.com'
       + '?subject=' + encodeURIComponent('Fiche technique — mes notes')
-      + '&body=' + encodeURIComponent('Bonjour Mickaël,\n\n' + zone.value + '\n\n');
+      + '&body=' + encodeURIComponent('Bonjour Mickaël,\n\n' + texte + '\n\n');
+    mail.href = url;
+    window.location.href = url;
   });
 
   /* ─── tout effacer, avec confirmation ─── */
@@ -1231,30 +1607,66 @@
   var Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!Reco){ micro.style.display = 'none'; }
   else {
-    var r = new Reco(), enCours = false, socle = '';
+    var r = new Reco(), voulu = false, socle = '', acquis = '';
     r.lang = 'fr-FR'; r.continuous = true; r.interimResults = true;
+
+    /* deux morceaux de phrase ne se soudent jamais : « fonctionnealors » ne peut plus arriver */
+    function colle(a, b){
+      if (!a) return b;
+      if (!b) return a;
+      return /\s$/.test(a) ? a + b : a + ' ' + b;
+    }
+    /* le texte déjà présent devient le socle ; ce qui vient ensuite s'ajoute, sans jamais le refaire */
+    function repartirDe(){ socle = zone.value.replace(/[ \t]+$/, ''); acquis = ''; }
+
     micro.addEventListener('click', function(){
-      if (enCours){ r.stop(); return; }
-      socle = zone.value ? zone.value.replace(/\s+$/, '') + ' ' : '';
-      try { r.start(); } catch(e){}
+      if (voulu){ voulu = false; r.stop(); return; }
+      voulu = true; repartirDe();
+      try { r.start(); } catch(e){ voulu = false; }
     });
-    r.onstart = function(){ enCours = true; micro.classList.add('ecoute');
-      micro.textContent = '🎙 J’écoute…'; };
-    r.onend = function(){ enCours = false; micro.classList.remove('ecoute');
-      micro.textContent = '🎙 Dicter';
+
+    r.onstart = function(){ micro.classList.add('ecoute'); micro.textContent = '🎙 J’écoute…'; };
+
+    r.onend = function(){
       try { localStorage.setItem(CLE, zone.value); } catch(e){}
-      marqueur(); };
-    r.onerror = function(ev){
-      if (ev.error === 'not-allowed'){ etat.textContent = 'micro refusé par le navigateur'; }
-      r.onend();
-    };
-    r.onresult = function(ev){
-      var sur = '', en = '';
-      for (var i = 0; i < ev.results.length; i++){
-        if (ev.results[i].isFinal) sur += ev.results[i][0].transcript;
-        else en += ev.results[i][0].transcript;
+      marqueur(); compacter();
+      /* le téléphone coupe l'écoute après chaque silence : on repart du texte en place */
+      if (voulu){
+        repartirDe();
+        try { r.start(); return; } catch(e){ voulu = false; }
       }
-      zone.value = socle + sur + en;
+      micro.classList.remove('ecoute');
+      micro.textContent = '🎙 Dicter';
+    };
+
+    r.onerror = function(ev){
+      if (ev.error === 'not-allowed'){
+        etat.textContent = 'micro refusé par le navigateur';
+        voulu = false;
+      }
+    };
+
+    r.onresult = function(ev){
+      var provisoire = '';
+      /* on ne relit QUE les nouveautés (resultIndex), jamais tout l'historique */
+      for (var i = ev.resultIndex; i < ev.results.length; i++){
+        var mots = ev.results[i][0].transcript.trim();
+        if (!mots) continue;
+        if (ev.results[i].isFinal){
+          /* Deux moteurs, deux façons de parler :
+             - l'ordinateur envoie les phrases l'une APRÈS l'autre → on ajoute
+             - le téléphone renvoie la MÊME phrase rallongée à chaque mot → on remplace
+             On reconnaît le second cas quand la nouvelle version commence
+             par ce qu'on avait déjà. */
+          var a = acquis.toLowerCase(), b = mots.toLowerCase();
+          if (!acquis)             acquis = mots;
+          else if (b.indexOf(a) === 0) acquis = mots;        // version rallongée
+          else if (a.indexOf(b) === 0) { /* rien de neuf */ }
+          else                     acquis = colle(acquis, mots);
+        }
+        else provisoire = mots;   /* l'aperçu en cours remplace, il ne s'ajoute jamais */
+      }
+      zone.value = colle(colle(socle, acquis), provisoire);
       zone.scrollTop = zone.scrollHeight;
     };
   }
