@@ -2803,13 +2803,13 @@ window.PRESENCE = Object.assign({}, AVEC);
    fait en local, sur l ordinateur ; la version en ligne, elle, est
    pour les six. Alors : si la page est servie par github.io, les
    boutons d atelier disparaissent. En local, tout reste. */
-/* Sur PORTABLE, il n'y a pas de présence : son bouton ne sert à
-   rien. À sa place : le choix du STYLE (Néon, 3D, Cinéma, Vague…),
-   qui est ludique et que chacun peut se régler. Les Réglages, eux,
-   restent l'atelier : jamais en ligne. */
+/* Le choix du STYLE (Néon, 3D, Cinéma, Vague…) reste disponible pour
+   tout le monde, sur téléphone comme sur ordinateur : il est ludique et
+   chacun se le règle. Seuls les Réglages sont l'atelier de Mickaël :
+   jamais en ligne, présents uniquement sur sa version locale. */
 const SUR_MOBILE = matchMedia('(max-width: 820px)').matches;
 if (/github\.io$/i.test(location.hostname)){
-  for (const id of (SUR_MOBILE ? ['btnReg'] : ['btnReg','btnStyle'])){
+  for (const id of ['btnReg']){
     const b = document.getElementById(id);
     if (b) b.style.display = 'none';
   }
@@ -4094,7 +4094,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '27/08/2026 · 11h33';
+const VERSION_APPLI = '31/08/2026 · 12h53';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
