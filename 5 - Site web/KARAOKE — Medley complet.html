@@ -2281,8 +2281,7 @@ if (RESTE.length){
 
 const STYLES = [['', 'Classique'], ['st-neon', 'Néon'], ['st-3d', '3D'],
                 ['st-cine', 'Cinéma'], ['st-vague', 'Vague'], ['st-loin', 'Horizon'],
-                ['st-scene', 'Projecteur'], ['st-braise', 'Braise'],
-                ['st-boule', 'Boule']];
+                ['st-scene', 'Projecteur'], ['st-braise', 'Braise']];
 let stIdx = 1;        /* Néon : toutes les phrases restent lisibles et touchables */
 try {
   const v = localStorage.getItem('karaoke-style');
@@ -2292,8 +2291,6 @@ if (stIdx < 0 || stIdx >= STYLES.length) stIdx = 1;   /* jamais hors liste : on 
 function appliquerStyle(){
   STYLES.forEach(([c]) => { if (c) document.body.classList.remove(c); });
   if (STYLES[stIdx][0]) document.body.classList.add(STYLES[stIdx][0]);
-  /* la Boule, c'est le Neon plus une petite boule qui saute de mot en mot */
-  if (STYLES[stIdx][0] === 'st-boule') document.body.classList.add('st-neon');
   document.getElementById('btnStyle').textContent = 'Style';
 }
 appliquerStyle();
@@ -4351,7 +4348,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '03/09/2026 · 15h40';
+const VERSION_APPLI = '03/09/2026 · 15h55';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -4844,103 +4841,6 @@ const VERSION_APPLI = '03/09/2026 · 15h40';
   #carton{ left:var(--rail) !important; }
 }
 </style>
-
-<style>
-/* ═══ LA BOULE (habillage « Boule ») ══════════════════════════════
-   Une seule petite boule, dans la couleur du chanteur, posee au-dessus
-   du mot qu'on chante. Quand le mot suivant arrive, elle saute dessus.
-   Elle est posee par-dessus les paroles, hors du flux : elle ne prend
-   aucune place et ne deplace rien. Aucun temps, aucun reglage touche. */
-body.st-boule #L{ position:relative; }
-#boule{
-  display:none; position:absolute; left:0; top:0; z-index:5;
-  width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%;
-  background:#ffc814; pointer-events:none;
-  box-shadow:0 0 .35em currentColor, 0 0 .9em currentColor;
-  will-change:transform, left, top;
-}
-body.st-boule #boule.la{ display:block; }
-</style>
-
-<script>
-/* ═══ LA BOULE : ou elle se pose, quand elle saute ═════════════════
-   Tout se deduit de l'instant de la bande : la boule repose sur le
-   dernier mot commence ; 220 ms avant le mot suivant, elle decolle
-   et retombe pile sur lui a son instant de debut. Deterministe, donc
-   un saut dans la bande (clic, molette) la remet au bon endroit.
-   Boucle a part : elle lit l'etat de l'affichage, ne le modifie pas. */
-(function(){
-  if (typeof LIGNES === 'undefined' || typeof au === 'undefined') return;
-  const L = document.getElementById('L');
-  if (!L) return;
-  const boule = document.createElement('div');
-  boule.id = 'boule';
-  L.appendChild(boule);
-  const VOL = 0.22;                      /* duree du saut, en secondes */
-
-  function motsDe(x){
-    if (!x._pl || x._pl.length !== x.d.mots.length) x._pl = x.el.querySelectorAll('.plein');
-    return x._pl;
-  }
-  function centre(x, k){
-    const pl = motsDe(x)[k];
-    if (!pl) return null;
-    const mot = pl.parentNode;
-    const r = mot.getBoundingClientRect(), b = L.getBoundingClientRect();
-    return { x: r.left - b.left + r.width / 2, y: r.top - b.top,
-             h: r.height, couleur: getComputedStyle(pl).color };
-  }
-
-  let derniere = null;
-  function boucle(){
-    if (!document.body.classList.contains('st-boule')){
-      if (boule.classList.contains('la')) boule.classList.remove('la');
-      requestAnimationFrame(boucle); return;
-    }
-    const t = au.currentTime;
-    /* la ligne active, et dans cette ligne le mot en cours et le suivant */
-    let x = null;
-    for (const z of LIGNES) if (z._etat === 1 && !z.supp && z.d.mots && z.d.mots.length){ x = z; break; }
-    if (!x){ boule.classList.remove('la'); derniere = null; requestAnimationFrame(boucle); return; }
-    const m = x.d.mots, n = m.length;
-    let cur = -1;
-    for (let k = 0; k < n; k++) if (t >= m[k].t) cur = k;
-    let cible = null, depart = null, avancement = 0;
-    if (cur < 0){
-      /* avant le premier mot : elle attend dessus, ou arrive en volant */
-      cible = centre(x, 0);
-      if (m[0].t - t < VOL && derniere){ depart = derniere; avancement = 1 - (m[0].t - t) / VOL; }
-    } else if (cur + 1 < n && m[cur + 1].t - t < VOL){
-      depart = centre(x, cur); cible = centre(x, cur + 1);
-      avancement = 1 - (m[cur + 1].t - t) / VOL;
-    } else {
-      cible = centre(x, cur);
-    }
-    if (!cible){ requestAnimationFrame(boucle); return; }
-    const taille = Math.max(9, Math.round(cible.h * 0.26));
-    let px = cible.x, py = cible.y - taille * 0.9;
-    if (depart && avancement > 0 && avancement < 1){
-      const a = Math.min(Math.max(avancement, 0), 1);
-      px = depart.x + (cible.x - depart.x) * a;
-      const yDep = depart.y - taille * 0.9;
-      /* une cloche : elle monte, puis retombe sur le mot */
-      py = yDep + (py - yDep) * a - Math.sin(a * Math.PI) * cible.h * 0.75;
-    }
-    boule.style.width = boule.style.height = taille + 'px';
-    boule.style.margin = (-taille / 2) + 'px 0 0 ' + (-taille / 2) + 'px';
-    boule.style.left = px + 'px';
-    boule.style.top = py + 'px';
-    if (boule._c !== cible.couleur){
-      boule.style.background = cible.couleur; boule.style.color = cible.couleur;
-      boule._c = cible.couleur;
-    }
-    if (!boule.classList.contains('la')) boule.classList.add('la');
-    derniere = cible;
-    requestAnimationFrame(boucle);
-  }
-  boucle();
-})();
-</script>
 
 <script>
 /* ═══ LA PLACE DES ETIQUETTES EST RESERVEE ═══════════════════════
