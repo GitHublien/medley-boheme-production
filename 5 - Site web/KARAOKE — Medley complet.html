@@ -2281,8 +2281,7 @@ if (RESTE.length){
 
 const STYLES = [['', 'Classique'], ['st-neon', 'Néon'], ['st-3d', '3D'],
                 ['st-cine', 'Cinéma'], ['st-vague', 'Vague'], ['st-loin', 'Horizon'],
-                ['st-scene', 'Projecteur'], ['st-braise', 'Braise'],
-                ['st-souffle', 'Souffle']];
+                ['st-scene', 'Projecteur'], ['st-braise', 'Braise']];
 let stIdx = 1;        /* Néon : toutes les phrases restent lisibles et touchables */
 try {
   const v = localStorage.getItem('karaoke-style');
@@ -2292,8 +2291,6 @@ if (stIdx < 0 || stIdx >= STYLES.length) stIdx = 1;   /* jamais hors liste : on 
 function appliquerStyle(){
   STYLES.forEach(([c]) => { if (c) document.body.classList.remove(c); });
   if (STYLES[stIdx][0]) document.body.classList.add(STYLES[stIdx][0]);
-  /* le Souffle, c'est le Neon plus la couleur qui passe et le mot qui gonfle */
-  if (STYLES[stIdx][0] === 'st-souffle') document.body.classList.add('st-neon');
   document.getElementById('btnStyle').textContent = 'Style';
 }
 appliquerStyle();
@@ -4351,7 +4348,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '03/09/2026 · 15h00';
+const VERSION_APPLI = '03/09/2026 · 15h20';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -4844,80 +4841,6 @@ const VERSION_APPLI = '03/09/2026 · 15h00';
   #carton{ left:var(--rail) !important; }
 }
 </style>
-
-<style>
-/* ═══ LE SOUFFLE (habillage « Souffle ») ═══════════════════════════
-   Demande de Mickael, 3 septembre : « des couleurs qui passent », et
-   sur les longues notes « ca gonfle un petit peu ». Tout se passe DANS
-   les lettres. Aucune place prise, rien ne bouge : seuls la couleur et
-   un leger grossissement (transform) changent, et un transform ne
-   deplace jamais rien autour. Aucun temps, aucun reglage n'est touche. */
-
-/* la couleur qui passe : un reflet clair traverse la partie chantee
-   du mot en cours, de gauche a droite, en boucle. La couleur du
-   chanteur reste la base : le reflet ne fait que passer dessus. */
-@keyframes passe-couleur{
-  0%  { background-position:120% 0; }
-  100%{ background-position:-20% 0; }
-}
-body.st-souffle .ligne.active .mot.enCours .plein,
-body.st-souffle .ligne.active .mot.tenue .plein{
-  background-image:linear-gradient(100deg,
-      currentColor 0%, currentColor 38%,
-      #fff 50%,
-      currentColor 62%, currentColor 100%);
-  background-size:220% 100%;
-  background-repeat:no-repeat;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:passe-couleur 1.9s linear infinite;
-}
-/* le contour noir reste dessine derriere, comme partout ailleurs */
-body.st-souffle .ligne.active .mot.enCours .plein,
-body.st-souffle .ligne.active .mot.tenue .plein{ -webkit-text-stroke:3px #000; paint-order:stroke fill; }
-
-/* le mot qui gonfle sur une note longue (plus de 0,9 s) : respiration
-   douce, en transform uniquement, donc sans rien pousser autour */
-@keyframes gonfle{
-  0%, 100%{ transform:translateY(-.06em) scale(1.06); }
-  50%     { transform:translateY(-.09em) scale(1.11); }
-}
-body.st-souffle .ligne.active .mot.tenue{ animation:gonfle 1.5s ease-in-out infinite; }
-</style>
-
-<script>
-/* ═══ LE SOUFFLE : poser « tenue » sur le mot long en cours ═══════
-   Une petite boucle a part, qui LIT l'etat pose par l'affichage
-   existant (x._etat, x._pl) et ne le modifie jamais. Si elle
-   s'arretait, le karaoke continuerait exactement comme avant. */
-(function(){
-  if (typeof LIGNES === 'undefined' || typeof au === 'undefined') return;
-  function boucle(){
-    if (document.body.classList.contains('st-souffle')){
-      const t = au.currentTime;
-      for (const x of LIGNES){
-        if (x.supp || x._etat !== 1 || !x._pl) continue;
-        const m = x.d.mots, n = m.length;
-        /* le mot "porte" : le dernier commence, tant que le suivant n'a pas
-           commence. Sa note dure jusqu'au mot suivant (ou la fin de phrase). */
-        let cur = -1;
-        for (let k = 0; k < n; k++) if (t >= m[k].t) cur = k;
-        let tenue = false;
-        if (cur >= 0){
-          const finNote = (cur + 1 < n) ? m[cur + 1].t : Math.max(m[cur].f, x.d.fin);
-          tenue = (finNote - m[cur].t) > 0.9 && t < finNote;
-        }
-        if (x._tenue >= 0 && x._tenue !== cur && x._pl[x._tenue])
-          x._pl[x._tenue].parentNode.classList.remove('tenue');
-        if (cur >= 0 && x._pl[cur]) x._pl[cur].parentNode.classList.toggle('tenue', tenue);
-        x._tenue = cur;
-      }
-    }
-    requestAnimationFrame(boucle);
-  }
-  boucle();
-})();
-</script>
 
 <script>
 /* ═══ LA PLACE DES ETIQUETTES EST RESERVEE ═══════════════════════
