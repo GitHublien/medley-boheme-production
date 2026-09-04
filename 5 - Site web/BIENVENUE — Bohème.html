@@ -141,9 +141,18 @@
   <p>Si quelque chose te paraît faux, dis-le. C'est exactement à ça que sert cette
      version d'essai.</p>
 
-  <button class="entrer" id="entrer">Entrer dans le karaoké</button>
-  <p class="apres">Tu peux revenir sur cette page à tout moment : bouton <b>?</b>, puis
-     « la version d'essai ».</p>
+  <h2>Installe-la sur ton téléphone</h2>
+
+  <p>Juste après, on te proposera d'<b>installer l'application</b>. Accepte : elle se
+     posera comme une vraie application, avec son logo sur ton écran d'accueil. Tu
+     l'ouvriras d'un doigt, en plein écran, sans barre de navigateur, et sans avoir à
+     retrouver le lien. C'est fortement conseillé, l'application est faite pour ça.</p>
+
+  <p class="legende">Les mises à jour arrivent ensuite toutes seules : un bouton
+     <b>Mise à jour</b> apparaît en haut du karaoké dès qu'une nouvelle version existe.</p>
+
+  <button class="entrer" id="entrer">Continuer</button>
+  <p class="apres">Le logo de Bohème t'attend. Un clic dessus, et tu es dans le karaoké.</p>
 
   <footer>Bohème Production · Direction artistique Mickaël Guedj &amp; Richard Ritelman</footer>
 </div>
@@ -175,7 +184,8 @@ document.getElementById('entrer').addEventListener('click', () => {
   const q2 = new URLSearchParams(location.search);
   q2.delete('premiere');          /* la remise a zero est deja faite : sinon, boucle */
   const suite = q2.toString();
-  location.href = 'KARAOKE — Medley complet.html' + (suite ? '?' + suite : '');
+  /* on va vers la PORTE : le logo, sa musique, et le clic qui fait entrer */
+  location.href = 'PORTE — Bohème.html' + (suite ? '?' + suite : '');
 });
 </script>
 </body>

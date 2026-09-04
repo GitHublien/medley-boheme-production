@@ -104,10 +104,16 @@ const GENS = [
   { id:'elie',      nom:'Élie',      c:'#a9d97f' }
 ];
 const PORTE = 'PORTE — Bohème.html';
+const BIENVENUE = 'BIENVENUE — Bohème.html';
 
 function aller(id){
-  try { localStorage.setItem('boheme-pour', id); } catch(e){}
-  location.href = PORTE + '?pour=' + id;
+  let lue = false;
+  try {
+    localStorage.setItem('boheme-pour', id);
+    lue = localStorage.getItem('boheme-bienvenue') === '1';
+  } catch(e){}
+  /* la premiere fois on explique, ensuite on va droit a la porte */
+  location.href = (lue ? PORTE : BIENVENUE) + '?pour=' + id;
 }
 
 /* les six prénoms, chacun dans sa couleur */

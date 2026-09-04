@@ -434,11 +434,8 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
     return;
   }
   if (q.get('revoir') === '1') return;
-  try {
-    if (localStorage.getItem('boheme-intro-vue') === '1'){
-      location.replace('KARAOKE — Medley complet.html' + location.search);
-    }
-  } catch(e){}
+  /* La porte ne se saute plus : le logo et sa musique sont l'entree du spectacle,
+     et Mickael les veut a chaque ouverture. Un seul clic, et on est dans le karaoke. */
 })();
 
 /* ─── VERSION D'ESSAI, 4 septembre 2026 ───────────────────────────
@@ -695,8 +692,8 @@ function allerAuKaraoke(){
     localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
     lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
-  /* la première fois, on passe par la page qui explique la version d'essai */
-  const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
+  /* les explications ont deja ete lues avant d'arriver ici : on entre */
+  const ou = R.destination;
   /* le ?pour=… du lien personnel suit jusqu'au bout ; en revanche premiere=1
      a fait son travail (tout est remis a zero) et ne doit plus voyager, sinon
      le karaoke efface « intro vue » et nous renvoie ici : une boucle sans fin */
