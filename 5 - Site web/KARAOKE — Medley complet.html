@@ -4539,6 +4539,18 @@ body[data-pour] #bandeau{ display:flex; }
   const ancre = document.getElementById('btnBlocs') || document.getElementById('btnIntro');
   if (ancre && ancre.parentNode) ancre.parentNode.insertBefore(bt, ancre.nextSibling);
 
+  /* ─── REVENIR AUX EXPLICATIONS ────────────────────────────────
+     La page d'accueil de la version d'essai : ce qu'elle contient, ce qui
+     arrive ensuite, et la vidéo d'exemple. On doit pouvoir y retourner. */
+  const bi = document.createElement('button');
+  bi.className = 'btn-reg'; bi.id = 'btnInfos'; bi.textContent = '\u2139';
+  bi.title = 'les explications et la vidéo';
+  bi.style.cssText = bt.style.cssText;
+  bi.addEventListener('click', () => {
+    location.href = 'BIENVENUE — Bohème.html' + location.search;
+  });
+  if (bt.parentNode) bt.parentNode.insertBefore(bi, bt.nextSibling);
+
   /* (le clic hors de la boîte ne ferme PLUS la visite : c'était lui
      qui éjectait l'aide dès qu'on touchait un bouton. Pour sortir,
      il y a « Passer la visite » — et le filet de veille ci-dessous.) */
@@ -4670,7 +4682,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '04/09/2026 · 17h34';
+const VERSION_APPLI = '04/09/2026 · 17h49';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;

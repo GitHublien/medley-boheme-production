@@ -63,6 +63,29 @@
 
   footer{ margin-top:44px; padding-top:20px; border-top:1px solid rgba(212,175,55,.2);
           color:var(--gris); font-size:13px; text-align:center }
+
+  /* ─── LE TÉLÉPHONE COUCHÉ ──────────────────────────────────────
+     En paysage, l'écran est large et bas : une seule colonne obligeait à
+     faire défiler près de sept écrans, et la vidéo occupait toute la hauteur.
+     On passe donc le corps sur deux colonnes, et la vidéo reprend sa taille. */
+  @media (orientation:landscape) and (max-height:560px){
+    .page{ max-width:100%; padding:14px 26px 34px }
+    .logo{ width:58px; margin:0 auto 8px }
+    h1{ font-size:25px }
+    .sous{ font-size:13px }
+    .beta{ margin:10px auto 16px; padding:4px 14px; font-size:11.5px }
+    h2{ margin:0 0 7px; font-size:13.5px }
+    p{ margin:.55em 0; font-size:14.5px }
+    .corps{ column-count:2; column-gap:32px }
+    .corps > *{ break-inside:avoid }
+    .corps h2{ margin-top:14px }
+    .corps > h2:first-child{ margin-top:0 }
+    .carte{ padding:12px 14px; margin:10px 0 }
+    li{ margin:.3em 0; font-size:14px }
+    video{ max-width:420px; margin-left:auto; margin-right:auto }
+    .entrer{ max-width:420px; margin:22px auto 6px; padding:16px }
+    footer{ margin-top:24px }
+  }
 </style>
 </head>
 <body>
@@ -79,6 +102,7 @@
      attendre. Tout ce qui est dedans est vrai et à jour ; il en manque simplement une
      partie, et elle arrivera au fur et à mesure.</p>
 
+  <div class="corps">
   <h2>Ce que tu as dès maintenant</h2>
 
   <div class="carte mienne">
@@ -157,6 +181,8 @@
      détour. Si tu réponds non, ce n'est pas grave : le bouton <b>?</b>, en haut, la
      rouvre quand tu veux.</p>
 
+  </div><!-- fin du corps -->
+
   <button class="entrer" id="entrer">Entrer dans le karaoké</button>
   <p class="apres">Tu retrouveras le logo de Bohème à chaque ouverture : c'est par lui
      qu'on entre.</p>
@@ -188,10 +214,11 @@ if (COUL[qui]){
 /* on retient que la page a été lue : la porte n'y renverra plus */
 document.getElementById('entrer').addEventListener('click', () => {
   try {
+    /* la salle d'entraînement n'est proposée qu'à la toute première lecture :
+       si l'on revient sur cette page plus tard, la question ne se repose pas */
+    if (localStorage.getItem('boheme-bienvenue') !== '1')
+      localStorage.removeItem('boheme-tuto');
     localStorage.setItem('boheme-bienvenue', '1');
-    /* et le karaoké proposera la salle d'entraînement juste après : cette page
-       ne se lit qu'une fois, donc la proposition arrive une fois elle aussi */
-    localStorage.removeItem('boheme-tuto');
   } catch(e){}
   const q2 = new URLSearchParams(location.search);
   q2.delete('premiere');          /* la remise a zero est deja faite : sinon, boucle */
