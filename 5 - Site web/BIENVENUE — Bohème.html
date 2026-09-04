@@ -149,6 +149,14 @@
   <p class="legende">Quand le travail sera terminé, tu recevras un autre lien : celui-là
      posera une vraie application sur ton téléphone, avec son logo sur l'écran d'accueil.</p>
 
+  <h2>Juste après : la salle d'entraînement</h2>
+
+  <p>En entrant, le karaoké te posera une question : <b>veux-tu passer par la salle
+     d'entraînement ?</b> C'est une copie du karaoké où tu essaies chaque commande sans
+     rien risquer, en cinq minutes. Réponds <b>oui</b> la première fois, ça vaut le
+     détour. Si tu réponds non, ce n'est pas grave : le bouton <b>?</b>, en haut, la
+     rouvre quand tu veux.</p>
+
   <button class="entrer" id="entrer">Entrer dans le karaoké</button>
   <p class="apres">Tu retrouveras le logo de Bohème à chaque ouverture : c'est par lui
      qu'on entre.</p>
@@ -179,7 +187,12 @@ if (COUL[qui]){
 
 /* on retient que la page a été lue : la porte n'y renverra plus */
 document.getElementById('entrer').addEventListener('click', () => {
-  try { localStorage.setItem('boheme-bienvenue', '1'); } catch(e){}
+  try {
+    localStorage.setItem('boheme-bienvenue', '1');
+    /* et le karaoké proposera la salle d'entraînement juste après : cette page
+       ne se lit qu'une fois, donc la proposition arrive une fois elle aussi */
+    localStorage.removeItem('boheme-tuto');
+  } catch(e){}
   const q2 = new URLSearchParams(location.search);
   q2.delete('premiere');          /* la remise a zero est deja faite : sinon, boucle */
   const suite = q2.toString();
