@@ -298,7 +298,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
     <div class="couche dessus">Clique maintenant sur le logo pour continuer</div>
   </div>
 
-  <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
+  <div class="note">le son fait partie de l'entrée<br>installez-vous confortablement</div>
 </div>
 
 <script>
@@ -866,7 +866,10 @@ setTimeout(() => {
     const visible = el => el && getComputedStyle(el).display !== 'none'
                        && parseFloat(getComputedStyle(el).opacity) > 0.05;
     const filmJoue = (() => { try { return !film.paused && film.currentTime > 0.2; } catch(x){ return false; } })();
-    if (!visible(e) && !visible(ins) && !visible(pay) && !filmJoue && !parti){
+    /* le LOGO POSE est un ecran bien vivant : sans ce test, le filet croyait l'ecran
+       mort et remettait l'entree par-dessus le logo (version d'essai, 4 sept 2026) */
+    const logoLa = (() => { try { return photo.classList.contains('la'); } catch(x){ return false; } })();
+    if (!visible(e) && !visible(ins) && !visible(pay) && !filmJoue && !logoLa && !parti){
       e.style.display = 'flex';
       e.classList.remove('parti');
       demarre = false;
