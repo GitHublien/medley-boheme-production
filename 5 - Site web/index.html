@@ -112,8 +112,8 @@ function aller(id){
     localStorage.setItem('boheme-pour', id);
     lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
-  /* la premiere fois on explique, ensuite on va droit a la porte */
-  location.href = (lue ? PORTE : BIENVENUE) + '?pour=' + id;
+  /* on passe toujours par le logo ; c'est lui qui mene a l'aide la premiere fois */
+  location.href = PORTE + '?pour=' + id;
 }
 
 /* les six prénoms, chacun dans sa couleur */

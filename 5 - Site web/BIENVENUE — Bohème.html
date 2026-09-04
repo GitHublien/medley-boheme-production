@@ -141,18 +141,17 @@
   <p>Si quelque chose te paraît faux, dis-le. C'est exactement à ça que sert cette
      version d'essai.</p>
 
-  <h2>Installe-la sur ton téléphone</h2>
+  <h2>Rien à installer pour l'instant</h2>
 
-  <p>Juste après, on te proposera d'<b>installer l'application</b>. Accepte : elle se
-     posera comme une vraie application, avec son logo sur ton écran d'accueil. Tu
-     l'ouvriras d'un doigt, en plein écran, sans barre de navigateur, et sans avoir à
-     retrouver le lien. C'est fortement conseillé, l'application est faite pour ça.</p>
+  <p>Cette version d'essai s'ouvre <b>par le lien</b>, comme une page web ordinaire. Il n'y
+     a rien à installer. Garde simplement le lien dans tes favoris, ou envoie-le-toi.</p>
 
-  <p class="legende">Les mises à jour arrivent ensuite toutes seules : un bouton
-     <b>Mise à jour</b> apparaît en haut du karaoké dès qu'une nouvelle version existe.</p>
+  <p class="legende">Quand le travail sera terminé, tu recevras un autre lien : celui-là
+     posera une vraie application sur ton téléphone, avec son logo sur l'écran d'accueil.</p>
 
-  <button class="entrer" id="entrer">Continuer</button>
-  <p class="apres">Le logo de Bohème t'attend. Un clic dessus, et tu es dans le karaoké.</p>
+  <button class="entrer" id="entrer">Entrer dans le karaoké</button>
+  <p class="apres">Tu retrouveras le logo de Bohème à chaque ouverture : c'est par lui
+     qu'on entre.</p>
 
   <footer>Bohème Production · Direction artistique Mickaël Guedj &amp; Richard Ritelman</footer>
 </div>
@@ -184,8 +183,7 @@ document.getElementById('entrer').addEventListener('click', () => {
   const q2 = new URLSearchParams(location.search);
   q2.delete('premiere');          /* la remise a zero est deja faite : sinon, boucle */
   const suite = q2.toString();
-  /* on va vers la PORTE : le logo, sa musique, et le clic qui fait entrer */
-  location.href = 'PORTE — Bohème.html' + (suite ? '?' + suite : '');
+  location.href = 'KARAOKE — Medley complet.html' + (suite ? '?' + suite : '');
 });
 </script>
 </body>

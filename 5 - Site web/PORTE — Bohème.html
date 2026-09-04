@@ -527,6 +527,26 @@ function entrer(){
   curseur.classList.add('actif');
 }
 entree.addEventListener('click', entrer);
+
+/* ─── VERSION D'ESSAI : on entre sans ecran d'entree ────────────────────────────
+   Mickael veut LE LOGO, celui d'apres le film, a sa taille, avec sa musique — et
+   rien avant. On saute donc le medaillon : la page s'ouvre, le logo se pose, la
+   musique monte, et un clic dessus mene a l'aide.
+
+   Le son : les navigateurs ne le lancent pas sans un geste. Le clic sur le prenom,
+   page precedente, suffit souvent ; sinon le premier contact avec l'ecran s'en
+   charge, et personne ne s'en apercoit. */
+(function(){
+  entree.style.display = 'none';
+  demarre = true; relais = true;
+  setTimeout(poser, 120);
+  const rattraper = () => {
+    const am = $('ambiance');
+    if (am && am.paused) am.play().catch(()=>{});
+  };
+  ['pointerdown','touchstart','pointermove','keydown'].forEach(
+    ev => addEventListener(ev, rattraper, { once:true, passive:true }));
+})();
 addEventListener('keydown', e => {
   if (!demarre && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); entrer(); }
 });
@@ -692,8 +712,8 @@ function allerAuKaraoke(){
     localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
     lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
-  /* les explications ont deja ete lues avant d'arriver ici : on entre */
-  const ou = R.destination;
+  /* le logo mene a l'aide ; une fois lue, il mene droit au karaoke */
+  const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
   /* le ?pour=… du lien personnel suit jusqu'au bout ; en revanche premiere=1
      a fait son travail (tout est remis a zero) et ne doit plus voyager, sinon
      le karaoke efface « intro vue » et nous renvoie ici : une boucle sans fin */
@@ -724,7 +744,11 @@ window.PRESENCE = {
   zIndex   : 0
 };
 </script>
+<!-- VERSION D'ESSAI : le visage de la « presence » est un visage de synthese fait
+     pour une seule personne. Tant qu'il n'y en a pas un par chanteur, il ne se montre
+     a personne. Retirer ce commentaire pour le remettre.
 <script src="presence.js"></script>
+-->
 <script>
 if ('serviceWorker' in navigator){
   try { navigator.serviceWorker.register('sw.js'); } catch(e){}
@@ -745,7 +769,10 @@ if ('serviceWorker' in navigator){
   const par = new URLSearchParams(location.search);
   const essai  = par.get('premiere') === '1';
   const revoir = par.get('revoir') === '1';
-  if (enApp || !tactile || !ecran || essai || revoir) return;
+  /* VERSION D'ESSAI : on ne demande a personne d'installer l'application. Un autre
+     lien viendra quand le travail sera fini. Remettre `false &&` pour le reactiver. */
+  const SANS_INSTALLATION = true;
+  if (SANS_INSTALLATION || enApp || !tactile || !ecran || essai || revoir) return;
   ecran.style.display = 'flex';
 
   /* ─── L'ISSUE DE SECOURS ──────────────────────────────────────
