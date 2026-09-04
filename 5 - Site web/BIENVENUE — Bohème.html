@@ -172,7 +172,10 @@ if (COUL[qui]){
 /* on retient que la page a été lue : la porte n'y renverra plus */
 document.getElementById('entrer').addEventListener('click', () => {
   try { localStorage.setItem('boheme-bienvenue', '1'); } catch(e){}
-  location.href = 'KARAOKE — Medley complet.html' + location.search;
+  const q2 = new URLSearchParams(location.search);
+  q2.delete('premiere');          /* la remise a zero est deja faite : sinon, boucle */
+  const suite = q2.toString();
+  location.href = 'KARAOKE — Medley complet.html' + (suite ? '?' + suite : '');
 });
 </script>
 </body>

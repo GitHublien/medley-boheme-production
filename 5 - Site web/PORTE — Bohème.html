@@ -697,8 +697,13 @@ function allerAuKaraoke(){
   } catch(e){}
   /* la première fois, on passe par la page qui explique la version d'essai */
   const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
-  /* le ?pour=… du lien personnel suit jusqu'au bout */
-  location.href = ou + location.search;
+  /* le ?pour=… du lien personnel suit jusqu'au bout ; en revanche premiere=1
+     a fait son travail (tout est remis a zero) et ne doit plus voyager, sinon
+     le karaoke efface « intro vue » et nous renvoie ici : une boucle sans fin */
+  const q2 = new URLSearchParams(location.search);
+  q2.delete('premiere');
+  const suite = q2.toString();
+  location.href = ou + (suite ? '?' + suite : '');
 }
 addEventListener('click', e => { if (demarre) partir(); });
 addEventListener('keydown', e => {
