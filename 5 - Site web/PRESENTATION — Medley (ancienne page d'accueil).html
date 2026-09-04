@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medley Bohème Production — Palais des Festivals Cannes — 4 Octobre 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="controls-bar visible">
+        <div class="theme-selector">
+            <span>Thème</span>
+            <div class="theme-dot" data-theme="classique" title="Or Classique"></div>
+            <div class="theme-dot active" data-theme="sombre" title="Sombre"></div>
+            <div class="theme-dot" data-theme="ivoire" title="Ivoire"></div>
+            <div class="theme-dot" data-theme="nuit" title="Nuit"></div>
+        </div>
+        <div class="control-buttons">
+            <button class="ctrl-btn" id="editBtn" onclick="toggleEditMode()">✎ Éditer</button>
+            <button class="ctrl-btn" onclick="resetAll()">↺ Réinitialiser</button>
+            <button class="ctrl-btn" onclick="saveData()">Sauvegarder</button>
+            <button class="ctrl-btn" onclick="toggleFullscreen()">⛶ Plein écran</button>
+        </div>
+    </div>
+
+    <div class="audio-player">
+        <button class="play-btn" id="playBtn" onclick="togglePlay()">
+            <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pauseIcon" style="display:none" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <div class="audio-info">
+            <div class="audio-title">Bohème Production</div>
+            <div>Ambiance musicale</div>
+        </div>
+        <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="0.5" onchange="setVolume(this.value)">
+    </div>
+
+    <button class="help-btn" onclick="showHelp()">?</button>
+
+    <audio id="bgMusic" loop>
+        <source src="musique.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <div class="document">
+            <div class="corner-flourish tl"></div>
+            <div class="corner-flourish tr"></div>
+            <div class="corner-flourish bl"></div>
+            <div class="corner-flourish br"></div>
+
+            <header class="header">
+                <div class="logo-container">
+                    <img src="logo.png" alt="Bohème Production">
+                </div>
+                <h1 class="main-title">Medley d'Ouverture</h1>
+                <p class="subtitle">Un voyage musical exceptionnel</p>
+                <div class="event-details">
+                    <div class="event-item">
+                        <div class="event-label">Date</div>
+                        <div class="event-value">4 Octobre 2026</div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-label">Lieu</div>
+                        <div class="event-value">Palais des Festivals</div>
+                    </div>
+                    <div class="event-item">
+                        <div class="event-label">Ville</div>
+                        <div class="event-value">Cannes</div>
+                    </div>
+                </div>
+                <div class="duration-tag">Durée estimée : ≈ 25 minutes</div>
+            </header>
+
+            <div class="gold-line"></div>
+
+            <div class="draft-notice">
+                <p><strong>Document de travail</strong> — Les attributions artistiques présentées ci-dessous sont des <strong>propositions préliminaires</strong> susceptibles d'être modifiées. L'ordre des titres et la distribution des interprètes restent à confirmer.</p>
+            </div>
+
+            <div class="presentation-block">
+                <div class="presentation-label">Présentation</div>
+                <div class="presentation-name" contenteditable="false" id="presenterName">Pascal Terrien</div>
+                <div class="presentation-role">Directeur Artistique</div>
+            </div>
+
+            <div class="gold-line thin"></div>
+
+            <h2 class="section-title">Artistes</h2>
+
+            <div class="artists-pool" id="artistsPool">
+                <div class="artist-tag" data-artist="manon" draggable="true">Manon Bava</div>
+                <div class="artist-tag" data-artist="stephanie" draggable="true">Stéphanie Guedj</div>
+                <div class="artist-tag" data-artist="mickael" draggable="true">Mickaël Guedj</div>
+                <div class="artist-tag" data-artist="alexis" draggable="true">Alexis Hoffmann</div>
+                <div class="artist-tag" data-artist="elie" draggable="true">Patrick Elie Féré</div>
+            </div>
+
+            <h2 class="section-title">Programme</h2>
+
+            <div class="setlist" id="setlist"></div>
+
+            <div class="gold-line thin"></div>
+
+            <h2 class="section-title">Suggestions</h2>
+
+            <div class="suggestions-section">
+                <div class="suggestion-card">
+                    <div class="suggestion-title">Ziggy</div>
+                    <div class="suggestion-credits">Starmania (1978) — Michel Berger (musique), Luc Plamondon (paroles)</div>
+                    <div class="suggestion-original">Interprète original : Daniel Balavoine</div>
+                    <div class="suggestion-note">Chanson emblématique de Starmania, à considérer pour le medley</div>
+                </div>
+            </div>
+
+            <div class="gold-line thin"></div>
+
+            <div class="balavoine-section">
+                <h3 class="balavoine-title">Balavoine Symphonique</h3>
+                <p class="balavoine-artist">Patrice Carmona</p>
+                <p class="balavoine-desc">Accompagné de son orchestre symphonique<br>Hommage à Daniel Balavoine</p>
+            </div>
+
+            <footer class="footer">
+                <p><strong>Production</strong> : Bohème Production — Patrick Elie Féré, Producteur</p>
+                <p><strong>Direction Artistique</strong> : Mickaël Guedj & Pascal Terrien</p>
+                <div class="gold-line thin" style="margin: 25px auto; max-width: 200px;"></div>
+                <p>
+                    <a href="https://www.bohemeproduction.com/" target="_blank">www.bohemeproduction.com</a>
+                    &nbsp;·&nbsp;
+                    <a href="tel:0608727126">06 08 72 71 26</a>
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3>Ajouter un artiste</h3>
+            <div class="modal-artists" id="modalArtists"></div>
+            <button class="modal-close" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="helpOverlay">
+        <div class="modal help-modal">
+            <h3>Mode d'emploi</h3>
+            
+            <div class="help-section">
+                <h4>🎨 Changer le thème</h4>
+                <p>En haut à gauche, cliquez sur l'un des 4 cercles colorés pour changer l'apparence.</p>
+            </div>
+
+            <div class="help-section">
+                <h4>✏️ Mode Édition</h4>
+                <p>Cliquez sur <span class="help-key">✎ Éditer</span> en haut à droite pour activer le mode édition.</p>
+            </div>
+
+            <div class="help-section">
+                <h4>📝 Modifier les titres</h4>
+                <p>En mode édition, cliquez directement sur un titre de chanson pour le modifier.</p>
+            </div>
+
+            <div class="help-section">
+                <h4>👥 Gérer les artistes</h4>
+                <p><strong>Ajouter</strong> : Cliquez sur <span class="help-key">+ Ajouter</span> dans une chanson.<br>
+                <strong>Supprimer</strong> : Cliquez sur le <span class="help-key">×</span> à côté du nom.<br>
+                <strong>Déplacer</strong> : Glissez-déposez un artiste vers une chanson.</p>
+            </div>
+
+            <div class="help-section">
+                <h4>🔀 Réorganiser les chansons</h4>
+                <p>Utilisez les flèches <span class="help-key">↑</span> et <span class="help-key">↓</span> à droite de chaque chanson.</p>
+            </div>
+
+            <div class="help-section">
+                <h4>💾 Sauvegarder</h4>
+                <p>Cliquez sur <span class="help-key">Sauvegarder</span> pour enregistrer vos modifications localement.</p>
+            </div>
+
+            <div class="help-section">
+                <h4>🎵 Lecteur audio</h4>
+                <p>En bas à droite, utilisez le lecteur pour écouter la musique d'ambiance.</p>
+            </div>
+
+            <button class="modal-close" onclick="closeHelp()" style="margin-top: 20px;">Compris !</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

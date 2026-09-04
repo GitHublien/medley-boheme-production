@@ -1,194 +1,142 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medley Bohème Production — Palais des Festivals Cannes — 4 Octobre 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Medley Starmania — choisis ton prénom</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b0c">
+<style>
+  :root{ --or:#d4af37; --or-pale:#e8d9a0; --noir:#0b0b0c; --gris:#8f8674 }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+  html,body{ margin:0; min-height:100%; background:var(--noir); color:#e9e3d5;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif; line-height:1.6 }
+  body{ background-image:
+      radial-gradient(1100px 620px at 50% -12%, rgba(212,175,55,.13), transparent 62%),
+      radial-gradient(760px 480px at 50% 118%, rgba(212,175,55,.07), transparent 60%);
+    background-attachment:fixed }
+
+  .page{ max-width:560px; margin:0 auto; padding:34px 20px 64px }
+  .logo{ display:block; width:min(30vmin,132px); margin:8px auto 20px; opacity:.94 }
+
+  h1{ font-size:clamp(25px,6.6vw,34px); margin:0 0 6px; text-align:center;
+      color:var(--or-pale); letter-spacing:-.5px; line-height:1.18 }
+  .lieu{ text-align:center; color:var(--gris); font-size:14.5px; margin-bottom:4px }
+  .beta{ display:block; width:fit-content; margin:16px auto 30px;
+    border:1px solid rgba(212,175,55,.42); border-radius:999px; padding:6px 17px;
+    font-size:12.5px; letter-spacing:2.4px; text-transform:uppercase; color:var(--or) }
+
+  .intro{ text-align:center; font-size:16px; margin:0 0 6px }
+  .intro b{ color:var(--or-pale) }
+  .sous{ text-align:center; color:var(--gris); font-size:14px; margin:0 0 28px }
+
+  .invite{ text-align:center; font-size:13px; letter-spacing:2.6px; text-transform:uppercase;
+    color:var(--or); font-weight:700; margin:0 0 14px }
+
+  .noms{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  @media (max-width:380px){ .noms{ grid-template-columns:1fr } }
+
+  .nom{ display:block; text-decoration:none; text-align:center;
+    padding:20px 12px; border-radius:16px; font-size:20px; font-weight:800;
+    letter-spacing:.3px; color:#0a0908; background:var(--c);
+    border:none; cursor:pointer; font-family:inherit;
+    box-shadow:0 8px 22px rgba(0,0,0,.45); transition:transform .12s ease, filter .12s ease }
+  .nom:hover{ filter:brightness(1.08) }
+  .nom:active{ transform:translateY(2px) }
+  .nom small{ display:block; font-size:11.5px; font-weight:600; letter-spacing:1.8px;
+    text-transform:uppercase; opacity:.62; margin-top:3px }
+
+  .reprise{ border:1px solid rgba(212,175,55,.38); background:rgba(212,175,55,.07);
+    border-radius:16px; padding:15px 17px; margin:0 0 26px; text-align:center }
+  .reprise .qui{ font-size:17px; font-weight:800; color:var(--c2) }
+  .reprise button{ display:block; width:100%; margin-top:11px; padding:14px;
+    border:none; border-radius:12px; background:var(--c2); color:#0a0908;
+    font-size:16px; font-weight:800; font-family:inherit; cursor:pointer }
+  .reprise .autre{ display:block; margin-top:10px; color:var(--gris); font-size:13.5px;
+    background:none; border:none; text-decoration:underline; cursor:pointer;
+    font-family:inherit; width:100% }
+
+  .note{ color:var(--gris); font-size:13.5px; text-align:center; margin-top:26px;
+    line-height:1.7 }
+  footer{ margin-top:34px; padding-top:18px; border-top:1px solid rgba(212,175,55,.18);
+    color:var(--gris); font-size:12.5px; text-align:center }
+</style>
 </head>
 <body>
-    <div class="controls-bar visible">
-        <div class="theme-selector">
-            <span>Thème</span>
-            <div class="theme-dot" data-theme="classique" title="Or Classique"></div>
-            <div class="theme-dot active" data-theme="sombre" title="Sombre"></div>
-            <div class="theme-dot" data-theme="ivoire" title="Ivoire"></div>
-            <div class="theme-dot" data-theme="nuit" title="Nuit"></div>
-        </div>
-        <div class="control-buttons">
-            <button class="ctrl-btn" id="editBtn" onclick="toggleEditMode()">✎ Éditer</button>
-            <button class="ctrl-btn" onclick="resetAll()">↺ Réinitialiser</button>
-            <button class="ctrl-btn" onclick="saveData()">Sauvegarder</button>
-            <button class="ctrl-btn" onclick="toggleFullscreen()">⛶ Plein écran</button>
-        </div>
-    </div>
+<div class="page">
 
-    <div class="audio-player">
-        <button class="play-btn" id="playBtn" onclick="togglePlay()">
-            <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            <svg id="pauseIcon" style="display:none" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
-        <div class="audio-info">
-            <div class="audio-title">Bohème Production</div>
-            <div>Ambiance musicale</div>
-        </div>
-        <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="0.5" onchange="setVolume(this.value)">
-    </div>
+  <img class="logo" src="media/porte/logo-plein.png" alt="Bohème Production">
 
-    <button class="help-btn" onclick="showHelp()">?</button>
+  <h1>Medley Starmania</h1>
+  <div class="lieu">Théâtre Claude Debussy, Palais des Festivals, Cannes</div>
+  <div class="lieu">dimanche 4 octobre 2026</div>
+  <span class="beta">version d'essai</span>
 
-    <audio id="bgMusic" loop>
-        <source src="musique.mp3" type="audio/mpeg">
-    </audio>
+  <div id="reprise" class="reprise" style="display:none">
+    <div>Tu es <span class="qui" id="repriseNom"></span></div>
+    <button id="repriseOk">Continuer</button>
+    <button class="autre" id="repriseAutre">Ce n'est pas moi, changer de prénom</button>
+  </div>
 
-    <div class="container">
-        <div class="document">
-            <div class="corner-flourish tl"></div>
-            <div class="corner-flourish tr"></div>
-            <div class="corner-flourish bl"></div>
-            <div class="corner-flourish br"></div>
+  <div id="choix">
+    <p class="intro">Chacun a <b>sa propre version</b> de l'application.</p>
+    <p class="sous">Tes parties s'allument dans ta couleur, et une bande te dit,
+       seconde par seconde, ce que tu fais sur scène : où tu es, quand tu entres,
+       de quel côté tu sors.</p>
 
-            <header class="header">
-                <div class="logo-container">
-                    <img src="logo.png" alt="Bohème Production">
-                </div>
-                <h1 class="main-title">Medley d'Ouverture</h1>
-                <p class="subtitle">Un voyage musical exceptionnel</p>
-                <div class="event-details">
-                    <div class="event-item">
-                        <div class="event-label">Date</div>
-                        <div class="event-value">4 Octobre 2026</div>
-                    </div>
-                    <div class="event-item">
-                        <div class="event-label">Lieu</div>
-                        <div class="event-value">Palais des Festivals</div>
-                    </div>
-                    <div class="event-item">
-                        <div class="event-label">Ville</div>
-                        <div class="event-value">Cannes</div>
-                    </div>
-                </div>
-                <div class="duration-tag">Durée estimée : ≈ 25 minutes</div>
-            </header>
+    <p class="invite">Choisis ton prénom</p>
+    <div class="noms" id="noms"></div>
 
-            <div class="gold-line"></div>
+    <p class="note">L'application se souvient de toi : tu ne repasseras plus par cette
+       page. Si tu te trompes, reviens ici et choisis à nouveau.</p>
+  </div>
 
-            <div class="draft-notice">
-                <p><strong>Document de travail</strong> — Les attributions artistiques présentées ci-dessous sont des <strong>propositions préliminaires</strong> susceptibles d'être modifiées. L'ordre des titres et la distribution des interprètes restent à confirmer.</p>
-            </div>
+  <footer>Bohème Production · Direction artistique Mickaël Guedj &amp; Richard Ritelman</footer>
+</div>
 
-            <div class="presentation-block">
-                <div class="presentation-label">Présentation</div>
-                <div class="presentation-name" contenteditable="false" id="presenterName">Pascal Terrien</div>
-                <div class="presentation-role">Directeur Artistique</div>
-            </div>
+<script>
+const GENS = [
+  { id:'adrien',    nom:'Adrien',    c:'#d4af37' },
+  { id:'stephanie', nom:'Stéphanie', c:'#f2a3c7' },
+  { id:'candice',   nom:'Candice',   c:'#c9a2ea' },
+  { id:'mickael',   nom:'Mickaël',   c:'#6fd0bb' },
+  { id:'bry',       nom:'Bry',       c:'#f0955c' },
+  { id:'elie',      nom:'Élie',      c:'#a9d97f' }
+];
+const PORTE = 'PORTE — Bohème.html';
 
-            <div class="gold-line thin"></div>
+function aller(id){
+  try { localStorage.setItem('boheme-pour', id); } catch(e){}
+  location.href = PORTE + '?pour=' + id;
+}
 
-            <h2 class="section-title">Artistes</h2>
+/* les six prénoms, chacun dans sa couleur */
+const zone = document.getElementById('noms');
+for (const g of GENS){
+  const b = document.createElement('button');
+  b.className = 'nom';
+  b.style.setProperty('--c', g.c);
+  b.innerHTML = g.nom + '<small>mes parties</small>';
+  b.addEventListener('click', () => aller(g.id));
+  zone.appendChild(b);
+}
 
-            <div class="artists-pool" id="artistsPool">
-                <div class="artist-tag" data-artist="manon" draggable="true">Manon Bava</div>
-                <div class="artist-tag" data-artist="stephanie" draggable="true">Stéphanie Guedj</div>
-                <div class="artist-tag" data-artist="mickael" draggable="true">Mickaël Guedj</div>
-                <div class="artist-tag" data-artist="alexis" draggable="true">Alexis Hoffmann</div>
-                <div class="artist-tag" data-artist="elie" draggable="true">Patrick Elie Féré</div>
-            </div>
-
-            <h2 class="section-title">Programme</h2>
-
-            <div class="setlist" id="setlist"></div>
-
-            <div class="gold-line thin"></div>
-
-            <h2 class="section-title">Suggestions</h2>
-
-            <div class="suggestions-section">
-                <div class="suggestion-card">
-                    <div class="suggestion-title">Ziggy</div>
-                    <div class="suggestion-credits">Starmania (1978) — Michel Berger (musique), Luc Plamondon (paroles)</div>
-                    <div class="suggestion-original">Interprète original : Daniel Balavoine</div>
-                    <div class="suggestion-note">Chanson emblématique de Starmania, à considérer pour le medley</div>
-                </div>
-            </div>
-
-            <div class="gold-line thin"></div>
-
-            <div class="balavoine-section">
-                <h3 class="balavoine-title">Balavoine Symphonique</h3>
-                <p class="balavoine-artist">Patrice Carmona</p>
-                <p class="balavoine-desc">Accompagné de son orchestre symphonique<br>Hommage à Daniel Balavoine</p>
-            </div>
-
-            <footer class="footer">
-                <p><strong>Production</strong> : Bohème Production — Patrick Elie Féré, Producteur</p>
-                <p><strong>Direction Artistique</strong> : Mickaël Guedj & Pascal Terrien</p>
-                <div class="gold-line thin" style="margin: 25px auto; max-width: 200px;"></div>
-                <p>
-                    <a href="https://www.bohemeproduction.com/" target="_blank">www.bohemeproduction.com</a>
-                    &nbsp;·&nbsp;
-                    <a href="tel:0608727126">06 08 72 71 26</a>
-                </p>
-            </footer>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h3>Ajouter un artiste</h3>
-            <div class="modal-artists" id="modalArtists"></div>
-            <button class="modal-close" onclick="closeModal()">Fermer</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="helpOverlay">
-        <div class="modal help-modal">
-            <h3>Mode d'emploi</h3>
-            
-            <div class="help-section">
-                <h4>🎨 Changer le thème</h4>
-                <p>En haut à gauche, cliquez sur l'un des 4 cercles colorés pour changer l'apparence.</p>
-            </div>
-
-            <div class="help-section">
-                <h4>✏️ Mode Édition</h4>
-                <p>Cliquez sur <span class="help-key">✎ Éditer</span> en haut à droite pour activer le mode édition.</p>
-            </div>
-
-            <div class="help-section">
-                <h4>📝 Modifier les titres</h4>
-                <p>En mode édition, cliquez directement sur un titre de chanson pour le modifier.</p>
-            </div>
-
-            <div class="help-section">
-                <h4>👥 Gérer les artistes</h4>
-                <p><strong>Ajouter</strong> : Cliquez sur <span class="help-key">+ Ajouter</span> dans une chanson.<br>
-                <strong>Supprimer</strong> : Cliquez sur le <span class="help-key">×</span> à côté du nom.<br>
-                <strong>Déplacer</strong> : Glissez-déposez un artiste vers une chanson.</p>
-            </div>
-
-            <div class="help-section">
-                <h4>🔀 Réorganiser les chansons</h4>
-                <p>Utilisez les flèches <span class="help-key">↑</span> et <span class="help-key">↓</span> à droite de chaque chanson.</p>
-            </div>
-
-            <div class="help-section">
-                <h4>💾 Sauvegarder</h4>
-                <p>Cliquez sur <span class="help-key">Sauvegarder</span> pour enregistrer vos modifications localement.</p>
-            </div>
-
-            <div class="help-section">
-                <h4>🎵 Lecteur audio</h4>
-                <p>En bas à droite, utilisez le lecteur pour écouter la musique d'ambiance.</p>
-            </div>
-
-            <button class="modal-close" onclick="closeHelp()" style="margin-top: 20px;">Compris !</button>
-        </div>
-    </div>
-
-    <div class="notification" id="notification"></div>
-
-    <script src="app.js"></script>
+/* déjà venu : on lui propose de continuer sans rechoisir */
+let deja = '';
+try { deja = (localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
+const moi = GENS.find(g => g.id === deja);
+if (moi){
+  const r = document.getElementById('reprise');
+  r.style.setProperty('--c2', moi.c);
+  document.getElementById('repriseNom').textContent = moi.nom;
+  r.style.display = 'block';
+  document.getElementById('choix').style.display = 'none';
+  document.getElementById('repriseOk').addEventListener('click', () => aller(moi.id));
+  document.getElementById('repriseAutre').addEventListener('click', () => {
+    r.style.display = 'none';
+    document.getElementById('choix').style.display = 'block';
+  });
+}
+</script>
 </body>
 </html>
