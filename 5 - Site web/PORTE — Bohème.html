@@ -441,6 +441,20 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
   } catch(e){}
 })();
 
+/* ─── VERSION D'ESSAI, 4 septembre 2026 ───────────────────────────
+   Le film d'introduction a été fait pour une seule personne. Tant qu'il n'y en a
+   pas une par chanteur, on ne l'impose à personne d'autre : les cinq autres
+   arrivent sur le logo, cliquent, et sont dans le karaoké. */
+const COUL_QUI = { adrien:'#d4af37', stephanie:'#f2a3c7', candice:'#c9a2ea',
+                   mickael:'#6fd0bb', bry:'#f0955c', elie:'#a9d97f' };
+let QUI = '';
+try {
+  const qq = new URLSearchParams(location.search).get('pour');
+  QUI = (qq || localStorage.getItem('boheme-pour') || '').toLowerCase();
+} catch(e){}
+const AVEC_FILM = (QUI === 'elie');
+if (COUL_QUI[QUI]) document.documentElement.style.setProperty('--sa-couleur', COUL_QUI[QUI]);
+
 const R = {
   destination     : 'KARAOKE — Medley complet.html',
 
@@ -501,7 +515,12 @@ function entrer(){
     film.muted = false;
     film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
   };
-  if (window.exigerPaysage){ window.exigerPaysage(lancer); }
+  if (!AVEC_FILM){
+    /* pas de film : le logo se pose tout de suite, et l'invitation apparaît */
+    relais = true;
+    setTimeout(poser, 260);
+  }
+  else if (window.exigerPaysage){ window.exigerPaysage(lancer); }
   else lancer();
   if (false){ }
   entree.classList.add('parti');
@@ -670,12 +689,16 @@ function partir(){
    tout seul en lisant ce petit mot laissé dans la mémoire du
    navigateur */
 function allerAuKaraoke(){
+  let lue = false;
   try {
     sessionStorage.setItem('boheme-plein-ecran', '1');
     localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
+    lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
-  /* le ?pour=elie du lien personnel suit jusqu'au karaoké */
-  location.href = R.destination + location.search;
+  /* la première fois, on passe par la page qui explique la version d'essai */
+  const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
+  /* le ?pour=… du lien personnel suit jusqu'au bout */
+  location.href = ou + location.search;
 }
 addEventListener('click', e => { if (demarre) partir(); });
 addEventListener('keydown', e => {

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bienvenue — Medley Starmania</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0b0c">
+<style>
+  :root{
+    --or:#d4af37; --or-pale:#e8d9a0; --noir:#0b0b0c; --gris:#8f8674;
+    --moi:#d4af37;                       /* remplacée par la couleur de la personne */
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; background:var(--noir); color:#e9e3d5;
+       font-family:"Segoe UI",system-ui,-apple-system,sans-serif; line-height:1.62;}
+  .page{max-width:760px; margin:0 auto; padding:26px 20px 70px}
+
+  .logo{ display:block; width:min(26vmin,120px); margin:6px auto 22px; opacity:.92 }
+
+  h1{ font-size:clamp(26px,7vw,40px); margin:0 0 4px; text-align:center;
+      color:var(--moi); letter-spacing:-.6px; line-height:1.15 }
+  .sous{ text-align:center; color:var(--gris); font-size:15px; margin-bottom:8px }
+  .beta{ display:block; width:fit-content; margin:16px auto 30px;
+         border:1px solid rgba(212,175,55,.45); border-radius:999px;
+         padding:7px 18px; font-size:13px; letter-spacing:2.2px;
+         text-transform:uppercase; color:var(--or) }
+
+  h2{ font-size:15px; letter-spacing:2.6px; text-transform:uppercase; color:var(--or);
+      margin:38px 0 10px; font-weight:700 }
+  p{ margin:.7em 0 }
+  b{ color:var(--or-pale) }
+  .moi{ color:var(--moi); font-weight:700 }
+
+  .carte{ border:1px solid rgba(255,255,255,.1); border-radius:14px;
+          background:rgba(255,255,255,.035); padding:16px 18px; margin:14px 0 }
+  .carte.mienne{ border-color:color-mix(in srgb, var(--moi) 45%, transparent);
+                 background:color-mix(in srgb, var(--moi) 7%, transparent) }
+
+  ul{ margin:.5em 0; padding-left:1.15em }
+  li{ margin:.42em 0 }
+
+  video{ width:100%; border-radius:14px; display:block; margin:12px 0 4px;
+         background:#000; border:1px solid rgba(212,175,55,.22) }
+  .legende{ font-size:13.5px; color:var(--gris); margin:2px 0 0 }
+
+  a.lien{ color:var(--or); text-decoration:none; border-bottom:1px solid rgba(212,175,55,.4) }
+  a.lien:hover{ color:var(--or-pale) }
+
+  .entrer{ display:block; width:100%; margin:34px 0 8px; padding:19px 24px;
+           border:none; border-radius:16px; cursor:pointer;
+           background:var(--moi); color:#0a0908;
+           font-size:18px; font-weight:800; letter-spacing:.4px;
+           font-family:inherit; box-shadow:0 10px 30px rgba(0,0,0,.5) }
+  .entrer:active{ transform:translateY(1px) }
+  .apres{ text-align:center; color:var(--gris); font-size:13px }
+
+  .plateau{ display:flex; gap:10px; margin:12px 0 }
+  .plateau div{ flex:1; border:1px solid rgba(255,255,255,.12); border-radius:12px;
+                padding:11px 12px; font-size:14px; text-align:center }
+  .plateau b{ display:block; color:var(--or); letter-spacing:1.6px; font-size:12px;
+              text-transform:uppercase; margin-bottom:3px }
+
+  footer{ margin-top:44px; padding-top:20px; border-top:1px solid rgba(212,175,55,.2);
+          color:var(--gris); font-size:13px; text-align:center }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <img class="logo" src="media/porte/logo-plein.png" alt="Bohème Production">
+
+  <h1 id="titre">Bienvenue</h1>
+  <div class="sous">Medley Starmania · Théâtre Claude Debussy, Cannes · dimanche 4 octobre 2026</div>
+  <span class="beta">version d'essai</span>
+
+  <p>Voici l'application du medley. Elle n'est <b>pas terminée</b> : elle t'est envoyée
+     maintenant pour que tu puisses <b>commencer à travailler tout de suite</b>, sans
+     attendre. Tout ce qui est dedans est vrai et à jour ; il en manque simplement une
+     partie, et elle arrivera au fur et à mesure.</p>
+
+  <h2>Ce que tu as dès maintenant</h2>
+
+  <div class="carte mienne">
+    <ul>
+      <li><b>Le medley, de l'ouverture à <i>Belle</i></b>, soit les dix-huit premières
+          minutes. Les paroles se remplissent au fil de la musique.</li>
+      <li><b>Ta couleur et ton nom.</b> L'application sait que c'est <span class="moi" id="nom2">toi</span> :
+          tes phrases s'allument dans ta couleur, et tu es prévenu avant chacune de tes entrées.</li>
+      <li><b>Deux bandes</b> : avec les voix témoins, pour apprendre, ou l'instrumental seul,
+          pour chanter. Le bouton bascule de l'une à l'autre sans arrêter la musique.</li>
+      <li><b>La salle d'entraînement</b>, le bouton <b>?</b> en haut : elle explique
+          l'application en onze pages, à lire une fois.</li>
+    </ul>
+  </div>
+
+  <h2>Le bandeau : ta mise en scène, seconde par seconde</h2>
+
+  <p>C'est la partie la plus utile, et elle est neuve. Sous les boutons, une bande
+     te dit <b>en permanence ce que tu fais à cet instant précis</b> : où tu es sur le
+     plateau, quand tu entres, de quel côté tu sors, ce que tu joues, ce que tu regardes.
+     Elle est écrite pour toi seul, elle n'est pas la même pour les autres.</p>
+
+  <div class="plateau">
+    <div><b>Jardin</b>à gauche du public</div>
+    <div><b>Cour</b>à droite du public</div>
+  </div>
+  <p class="legende">Moyen mnémotechnique : J-C, comme Jésus-Christ, dans l'ordre de lecture.
+     Une règle vaut pour tout le medley : <b>chacun rentre du côté par lequel il est sorti</b>.</p>
+
+  <h2>Ce qui arrive ensuite</h2>
+
+  <div class="carte">
+    <ul>
+      <li><b>La fin du medley</b> : Le Dilemme, Mon Frère, Stone et Aimer. Le menu des
+          blocs s'arrête aujourd'hui à <i>Belle</i>, et le dira honnêtement.</li>
+      <li><b>Un document de mise en scène</b>, à lire et à garder. Il existe déjà, mais il
+          n'est pas assez avancé pour être envoyé : certaines choses vont encore changer.</li>
+      <li><b>Des vidéos, bloc par bloc</b>, faites pour les chanteurs : vous y verrez vos
+          placements, vos entrées et vos sorties en regard de la musique.</li>
+      <li><b>Une ouverture personnelle</b> à chacun, à la place de l'écran d'entrée actuel.</li>
+    </ul>
+  </div>
+
+  <h2>À quoi ressembleront ces vidéos</h2>
+
+  <p>Celle-ci est <b>la version technique</b>, celle qui part aux éclairagistes du Palais :
+     placements, entrées, intentions de lumière, en regard de la musique. C'est un extrait,
+     le début du spectacle seulement.</p>
+
+  <video controls playsinline preload="metadata" src="media/fiche/extrait-conduite.mp4"></video>
+  <p class="legende">Vous en aurez <b>une autre, faite pour vous</b>, bloc par bloc, où l'on
+     suivra vos déplacements plutôt que les projecteurs.</p>
+
+  <h2>Une chose à savoir</h2>
+
+  <p>Tout ce qui est écrit dans l'application est <b>un état du travail, pas une décision
+     définitive</b>. La mise en scène se construit, et certains passages bougeront encore.
+     Ce qui ne bougera pas : les textes, les découpes, et vos parties.</p>
+
+  <p>Si quelque chose te paraît faux, dis-le. C'est exactement à ça que sert cette
+     version d'essai.</p>
+
+  <button class="entrer" id="entrer">Entrer dans le karaoké</button>
+  <p class="apres">Tu peux revenir sur cette page à tout moment : bouton <b>?</b>, puis
+     « la version d'essai ».</p>
+
+  <footer>Bohème Production · Direction artistique Mickaël Guedj &amp; Richard Ritelman</footer>
+</div>
+
+<script>
+/* La couleur et le prénom de la personne : ceux de son lien, sinon ceux
+   que le téléphone a retenus la première fois. */
+const COUL = { adrien:'#d4af37', stephanie:'#f2a3c7', candice:'#c9a2ea',
+               mickael:'#6fd0bb', bry:'#f0955c', elie:'#a9d97f' };
+const NOM  = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
+               mickael:'Mickaël', bry:'Bry', elie:'Élie' };
+
+const q = new URLSearchParams(location.search);
+let qui = (q.get('pour') || '').toLowerCase();
+try {
+  if (COUL[qui]) localStorage.setItem('boheme-pour', qui);
+  else qui = (localStorage.getItem('boheme-pour') || '').toLowerCase();
+} catch(e){}
+
+if (COUL[qui]){
+  document.documentElement.style.setProperty('--moi', COUL[qui]);
+  document.getElementById('titre').textContent = 'Bienvenue, ' + NOM[qui];
+  document.getElementById('nom2').textContent = NOM[qui];
+}
+
+/* on retient que la page a été lue : la porte n'y renverra plus */
+document.getElementById('entrer').addEventListener('click', () => {
+  try { localStorage.setItem('boheme-bienvenue', '1'); } catch(e){}
+  location.href = 'KARAOKE — Medley complet.html' + location.search;
+});
+</script>
+</body>
+</html>
