@@ -298,7 +298,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
     <div class="couche dessus">Clique maintenant sur le logo pour continuer</div>
   </div>
 
-  <div class="note">le son fait partie de l'entrée<br>installez-vous confortablement</div>
+  <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
 </div>
 
 <script>
@@ -434,23 +434,12 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
     return;
   }
   if (q.get('revoir') === '1') return;
-  /* La porte ne se saute plus : le logo et sa musique sont l'entree du spectacle,
-     et Mickael les veut a chaque ouverture. Un seul clic, et on est dans le karaoke. */
+  try {
+    if (localStorage.getItem('boheme-intro-vue') === '1'){
+      location.replace('KARAOKE — Medley complet.html' + location.search);
+    }
+  } catch(e){}
 })();
-
-/* ─── VERSION D'ESSAI, 4 septembre 2026 ───────────────────────────
-   Le film d'introduction a été fait pour une seule personne. Tant qu'il n'y en a
-   pas une par chanteur, on ne l'impose à personne d'autre : les cinq autres
-   arrivent sur le logo, cliquent, et sont dans le karaoké. */
-const COUL_QUI = { adrien:'#d4af37', stephanie:'#f2a3c7', candice:'#c9a2ea',
-                   mickael:'#6fd0bb', bry:'#f0955c', elie:'#a9d97f' };
-let QUI = '';
-try {
-  const qq = new URLSearchParams(location.search).get('pour');
-  QUI = (qq || localStorage.getItem('boheme-pour') || '').toLowerCase();
-} catch(e){}
-const AVEC_FILM = (QUI === 'elie');
-if (COUL_QUI[QUI]) document.documentElement.style.setProperty('--sa-couleur', COUL_QUI[QUI]);
 
 const R = {
   destination     : 'KARAOKE — Medley complet.html',
@@ -512,12 +501,7 @@ function entrer(){
     film.muted = false;
     film.play().catch(() => { film.muted = true; film.play().catch(()=>{}); });
   };
-  if (!AVEC_FILM){
-    /* pas de film : le logo se pose tout de suite, et l'invitation apparaît */
-    relais = true;
-    setTimeout(poser, 260);
-  }
-  else if (window.exigerPaysage){ window.exigerPaysage(lancer); }
+  if (window.exigerPaysage){ window.exigerPaysage(lancer); }
   else lancer();
   if (false){ }
   entree.classList.add('parti');
@@ -527,26 +511,6 @@ function entrer(){
   curseur.classList.add('actif');
 }
 entree.addEventListener('click', entrer);
-
-/* ─── VERSION D'ESSAI : on entre sans ecran d'entree ────────────────────────────
-   Mickael veut LE LOGO, celui d'apres le film, a sa taille, avec sa musique — et
-   rien avant. On saute donc le medaillon : la page s'ouvre, le logo se pose, la
-   musique monte, et un clic dessus mene a l'aide.
-
-   Le son : les navigateurs ne le lancent pas sans un geste. Le clic sur le prenom,
-   page precedente, suffit souvent ; sinon le premier contact avec l'ecran s'en
-   charge, et personne ne s'en apercoit. */
-(function(){
-  entree.style.display = 'none';
-  demarre = true; relais = true;
-  setTimeout(poser, 120);
-  const rattraper = () => {
-    const am = $('ambiance');
-    if (am && am.paused) am.play().catch(()=>{});
-  };
-  ['pointerdown','touchstart','pointermove','keydown'].forEach(
-    ev => addEventListener(ev, rattraper, { once:true, passive:true }));
-})();
 addEventListener('keydown', e => {
   if (!demarre && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); entrer(); }
 });
@@ -706,21 +670,12 @@ function partir(){
    tout seul en lisant ce petit mot laissé dans la mémoire du
    navigateur */
 function allerAuKaraoke(){
-  let lue = false;
   try {
     sessionStorage.setItem('boheme-plein-ecran', '1');
     localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
-    lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
-  /* le logo mene a l'aide ; une fois lue, il mene droit au karaoke */
-  const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
-  /* le ?pour=… du lien personnel suit jusqu'au bout ; en revanche premiere=1
-     a fait son travail (tout est remis a zero) et ne doit plus voyager, sinon
-     le karaoke efface « intro vue » et nous renvoie ici : une boucle sans fin */
-  const q2 = new URLSearchParams(location.search);
-  q2.delete('premiere');
-  const suite = q2.toString();
-  location.href = ou + (suite ? '?' + suite : '');
+  /* le ?pour=elie du lien personnel suit jusqu'au karaoké */
+  location.href = R.destination + location.search;
 }
 addEventListener('click', e => { if (demarre) partir(); });
 addEventListener('keydown', e => {
@@ -744,11 +699,7 @@ window.PRESENCE = {
   zIndex   : 0
 };
 </script>
-<!-- VERSION D'ESSAI : le visage de la « presence » est un visage de synthese fait
-     pour une seule personne. Tant qu'il n'y en a pas un par chanteur, il ne se montre
-     a personne. Retirer ce commentaire pour le remettre.
 <script src="presence.js"></script>
--->
 <script>
 if ('serviceWorker' in navigator){
   try { navigator.serviceWorker.register('sw.js'); } catch(e){}
@@ -769,10 +720,7 @@ if ('serviceWorker' in navigator){
   const par = new URLSearchParams(location.search);
   const essai  = par.get('premiere') === '1';
   const revoir = par.get('revoir') === '1';
-  /* VERSION D'ESSAI : on ne demande a personne d'installer l'application. Un autre
-     lien viendra quand le travail sera fini. Remettre `false &&` pour le reactiver. */
-  const SANS_INSTALLATION = true;
-  if (SANS_INSTALLATION || enApp || !tactile || !ecran || essai || revoir) return;
+  if (enApp || !tactile || !ecran || essai || revoir) return;
   ecran.style.display = 'flex';
 
   /* ─── L'ISSUE DE SECOURS ──────────────────────────────────────
@@ -866,10 +814,7 @@ setTimeout(() => {
     const visible = el => el && getComputedStyle(el).display !== 'none'
                        && parseFloat(getComputedStyle(el).opacity) > 0.05;
     const filmJoue = (() => { try { return !film.paused && film.currentTime > 0.2; } catch(x){ return false; } })();
-    /* le LOGO POSE est un ecran bien vivant : sans ce test, le filet croyait l'ecran
-       mort et remettait l'entree par-dessus le logo (version d'essai, 4 sept 2026) */
-    const logoLa = (() => { try { return photo.classList.contains('la'); } catch(x){ return false; } })();
-    if (!visible(e) && !visible(ins) && !visible(pay) && !filmJoue && !logoLa && !parti){
+    if (!visible(e) && !visible(ins) && !visible(pay) && !filmJoue && !parti){
       e.style.display = 'flex';
       e.classList.remove('parti');
       demarre = false;
