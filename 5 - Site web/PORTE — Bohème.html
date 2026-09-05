@@ -670,12 +670,21 @@ function partir(){
    tout seul en lisant ce petit mot laissé dans la mémoire du
    navigateur */
 function allerAuKaraoke(){
+  let lue = false;
   try {
     sessionStorage.setItem('boheme-plein-ecran', '1');
     localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
+    lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
-  /* le ?pour=elie du lien personnel suit jusqu'au karaoké */
-  location.href = R.destination + location.search;
+  /* la premiere fois, le logo mene aux explications (la video, ce que contient
+     l'application, ce qui arrive) ; ensuite il mene droit au karaoke */
+  const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
+  /* le ?pour=… du lien personnel suit jusqu'au bout ; premiere=1 a fait son
+     travail ici et ne doit plus voyager, sinon le karaoke renvoie a la porte */
+  const q2 = new URLSearchParams(location.search);
+  q2.delete('premiere');
+  const suite = q2.toString();
+  location.href = ou + (suite ? '?' + suite : '');
 }
 addEventListener('click', e => { if (demarre) partir(); });
 addEventListener('keydown', e => {
