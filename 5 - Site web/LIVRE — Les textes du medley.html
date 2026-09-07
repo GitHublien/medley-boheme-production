@@ -1404,7 +1404,34 @@ function dessiner(){
    0,25 s au départ (pour ne pas entendre la fin du morceau précédent), et l'arrêt net. */
 const FERME = 0.7, OUVRE = 0.25;
 let gain = 1, tDepart = 0;
-function appliquerVolumes(){ au.volume = vVoix * gain; auI.volume = vInstru * gain; }
+/* ═══ UN SEUL FICHIER À QUATRE CANAUX (voix témoin 0-1, instrumental 2-3), comme deux pistes
+   dans Reaper : même décodeur, même horloge, la bascule est un mute. Si le navigateur ne lit
+   pas ce format, on garde les deux MP3 (méthode d'avant). ═══ */
+const QUATRE = !!((window.AudioContext || window.webkitAudioContext) && au.canPlayType('audio/webm; codecs="opus"'));
+if (QUATRE) au.src = 'media/bande-4canaux.webm';
+let ctxA = null, gainsT = null, gainsI = null;
+function brancher(){
+  if (ctxA || !QUATRE) return;
+  ctxA = new (window.AudioContext || window.webkitAudioContext)();
+  const src = ctxA.createMediaElementSource(au), split = ctxA.createChannelSplitter(4), fusion = ctxA.createChannelMerger(2);
+  gainsT = [ctxA.createGain(), ctxA.createGain()]; gainsI = [ctxA.createGain(), ctxA.createGain()];
+  src.connect(split);
+  split.connect(gainsT[0], 0); split.connect(gainsT[1], 1); split.connect(gainsI[0], 2); split.connect(gainsI[1], 3);
+  gainsT[0].connect(fusion, 0, 0); gainsT[1].connect(fusion, 0, 1); gainsI[0].connect(fusion, 0, 0); gainsI[1].connect(fusion, 0, 1);
+  fusion.connect(ctxA.destination);
+  appliquerVolumes();
+}
+au.addEventListener('play', () => { try { brancher(); if (ctxA && ctxA.state !== 'running') ctxA.resume(); } catch(e){} });
+function appliquerVolumes(){
+  if (QUATRE){
+    if (!gainsT) return;
+    const t = ctxA.currentTime;
+    gainsT.forEach(g => { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(vVoix * gain, t + 0.02); });
+    gainsI.forEach(g => { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(vInstru * gain, t + 0.02); });
+    return;
+  }
+  au.volume = vVoix * gain; auI.volume = vInstru * gain;
+}
 setInterval(() => {
   if (actif < 0 || au.paused) return;
   const b = D[actif], t = au.currentTime;
@@ -1460,7 +1487,8 @@ document.getElementById('btnHaut').onclick = () => scrollTo({top:0, behavior:'sm
    Les deux bandes jouent EN MÊME TEMPS, l'une muette. Le bouton ne fait que croiser
    les volumes en un quart de seconde : on ne change jamais de fichier, donc rien ne
    saute. Seule la bande muette se recale discrètement sur celle qu'on entend. */
-const auI = new Audio('media/bande-diffusee.mp3'); auI.preload = 'auto'; auI.volume = 0;
+const auI = QUATRE ? null : new Audio('media/bande-diffusee.mp3');
+if (auI){ auI.preload = 'auto'; auI.volume = 0; }
 let modeBande = 'voix';
 try { if (localStorage.getItem('livre-bande') === 'instru') modeBande = 'instru'; } catch(e){}
 let vVoix = 1, vInstru = 0;          // les volumes de la bascule ; le gain des fondus s'y multiplie
@@ -1476,6 +1504,7 @@ function croiser(versInstru){
 }
 /* ═══ RETIRÉ le 7 sept à la demande de Mickaël : on revient au suiveur d'origine du karaoké ═══ */
 let sautInterne = false;
+if (!QUATRE){   /* la méthode d'avant, seulement si le fichier à quatre canaux n'est pas lisible */
 setInterval(() => {
   try {
     if (au.paused) return;
@@ -1486,6 +1515,7 @@ setInterval(() => {
 au.addEventListener('seeked', () => { if (sautInterne){ sautInterne = false; return; } try { auI.currentTime = au.currentTime; } catch(e){} });
 au.addEventListener('play',  () => { try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); });
 au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
+}
 
 function peindreBande(){
   document.querySelectorAll('[data-bande]').forEach(x => x.classList.toggle('actif', (x.dataset.bande === 'instru') === (modeBande === 'instru')));
@@ -1496,7 +1526,8 @@ document.querySelectorAll('[data-bande]').forEach(b => b.onclick = () => {
   modeBande = vers;
   try { localStorage.setItem('livre-bande', modeBande); } catch(e){}
   peindreBande();
-  if (!au.paused && auI.paused){ try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); }
+  if (!QUATRE && !au.paused && auI.paused){ try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); }
+  if (QUATRE){ try { brancher(); if (ctxA && ctxA.state !== 'running') ctxA.resume(); } catch(e){} }
   croiser(modeBande === 'instru');
 });
 if (modeBande === 'instru'){ vVoix = 0; vInstru = 1; }
