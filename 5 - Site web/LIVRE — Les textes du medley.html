@@ -1486,7 +1486,9 @@ const attendre = (el, ev, cond) => new Promise(res => {
 });
 let vouluAu = null, vouluAuI = null; const mesures = [];
 function poserVitesse(el, v){ if (el === au) vouluAu = v; else vouluAuI = v; try { el.playbackRate = v; } catch(e){} }
-async function synchroniser(){
+let essais = 0;
+async function synchroniser(nouvelEssai){
+  if (nouvelEssai === undefined) essais = 0;
   if (enSynchro){ refaire = true; return; }
   enSynchro = true;
   try {
@@ -1499,6 +1501,12 @@ async function synchroniser(){
     await Promise.all([attendre(au, 'canplay', () => au.readyState >= 3), attendre(auI, 'canplay', () => auI.readyState >= 3)]);
     if (jouait){ const p1 = au.play(), p2 = auI.play(); await Promise.all([p1.catch(()=>{}), p2.catch(()=>{})]); }
     derniereSynchro = performance.now();
+    /* vérification 400 ms plus tard : écart > 40 ms → le départ a raté, on recommence (2 fois max) */
+    if (jouait && essais < 2){
+      await new Promise(r => setTimeout(r, 400));
+      if (!au.paused && Math.abs(au.currentTime - auI.currentTime) > 0.04){ essais++; enSynchro = false; return synchroniser(essais); }
+    }
+    essais = 0;
   } catch(e){}
   enSynchro = false;
   if (refaire){ refaire = false; synchroniser(); }
@@ -1515,7 +1523,8 @@ setInterval(() => {
     const moy = (mesures[0] + mesures[1]) / 2;
     const muette = (modeBande === 'voix') ? auI : au, audible = (modeBande === 'voix') ? au : auI;
     const sens = (muette === auI) ? 1 : -1;
-    const v = Math.abs(moy) < 0.003 ? 1 : 1 + Math.max(-0.06, Math.min(0.06, sens * moy * 1.5));
+    const plafond = Math.abs(moy) > 0.06 ? 0.15 : 0.06;
+    const v = Math.abs(moy) < 0.003 ? 1 : 1 + Math.max(-plafond, Math.min(plafond, sens * moy * 1.5));
     if (Math.abs(muette.playbackRate - v) > 0.0005) poserVitesse(muette, v);
     if (Math.abs(audible.playbackRate - 1) > 0.0005) poserVitesse(audible, 1);
   } catch(e){}
@@ -1529,8 +1538,10 @@ document.querySelectorAll('[data-bande]').forEach(b => b.onclick = () => {
   modeBande = vers;
   try { localStorage.setItem('livre-bande', modeBande); } catch(e){}
   peindreBande();
-  if (!au.paused && (auI.paused || Math.abs(auI.currentTime - au.currentTime) > 0.25)) synchroniser();
-  croiser(modeBande === 'instru');
+  (async () => {
+    if (!au.paused && (auI.paused || Math.abs(auI.currentTime - au.currentTime) > 0.015)) await synchroniser();
+    croiser(modeBande === 'instru');
+  })();
 });
 if (modeBande === 'instru'){ vVoix = 0; vInstru = 1; }
 appliquerVolumes(); peindreBande();
