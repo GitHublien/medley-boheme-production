@@ -60,7 +60,7 @@
     img.onload = () => {
       el.appendChild(img); requestAnimationFrame(() => img.classList.add('la'));
       /* l'affiche porte déjà son titre gravé : le texte de secours s'efface */
-      const carte = el.closest('.monde, .ouverture'); if (carte) carte.classList.add('a-image');
+      const carte = el.closest('.monde, .ouverture, .tuile, .enTete'); if (carte) carte.classList.add('a-image');
     };
     img.onerror = () => {};       /* pas d'image : le fond dessiné reste */
     img.alt = ''; img.src = src;
