@@ -8,7 +8,10 @@
 (function(){
   if (window.__retourBoheme) return; window.__retourBoheme = true;
   const ici = decodeURIComponent(location.pathname.split('/').pop() || '');
-  if (/^ACCUEIL|^MISE EN|^DOCUMENTS|^VID|^CALENDRIER|^NOUVEAUT|^INSTALLER|^site\.html$/i.test(ici)) return;
+  /* le hall a sa navigation ; le karaoké a déjà son bouton « Le site » dans la barre,
+     et un bouton flottant y masquerait les commandes de lecture */
+  if (/^ACCUEIL|^MISE EN|^DOCUMENTS|^VID|^CALENDRIER|^NOUVEAUT|^INSTALLER|^site\.html$|^KARAOKE/i.test(ici)) return;
+  if (document.getElementById('btnSite')) return;
   const pour = new URLSearchParams(location.search).get('pour');
   const a = document.createElement('a');
   a.id = 'retourSite';
