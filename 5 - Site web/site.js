@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 22h15';
+const VERSION_SITE = '07/09/2026 · 22h25';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -53,7 +53,11 @@ const VERSION_SITE = '07/09/2026 · 22h15';
   /* ── les pictogrammes en or remplacent les petits signes des boutons ──── */
   const ICONES = { '→':'fleche', '↗':'fleche', '¶':'livre', '⟳':'maj', '✓':'coche', '✔':'coche', '✦':'etoile',
                    '⇩':'telecharger', '▶':'lecture', '♪':'note', '⌂':'maison', '◎':'scene', '◌':'nouveau' };
+  /* les pages écrivent déjà leur pictogramme ; on ne traite que les boutons créés
+     à la volée, sinon le signe s'afficherait une fraction de seconde avant d'être
+     remplacé — c'est ce clignotement que Mickaël voyait au retour à l'accueil */
   document.querySelectorAll('.btn > b').forEach(b => {
+    if (b.querySelector('.ico')) return;
     const n = ICONES[b.textContent.trim()];
     if (n){ const i = document.createElement('span'); i.className = 'ico ico-' + n; b.textContent = ''; b.appendChild(i); }
   });
