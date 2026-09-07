@@ -54,8 +54,10 @@
   });
 
   /* ── les images : quand elles existent, elles arrivent en fondu ────── */
+  const debout = matchMedia('(max-width: 700px) and (orientation: portrait)').matches;
   document.querySelectorAll('[data-img]').forEach(el => {
-    const src = el.getAttribute('data-img');
+    /* sur téléphone debout, la version verticale de l'affiche si elle existe */
+    const src = (debout && el.getAttribute('data-img-portrait')) || el.getAttribute('data-img');
     const img = new Image();
     img.onload = () => {
       el.appendChild(img); requestAnimationFrame(() => img.classList.add('la'));

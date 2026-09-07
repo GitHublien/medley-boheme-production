@@ -140,15 +140,26 @@ section{ padding:clamp(3.2rem,8vw,7.5rem) 0; }
 .monde .img::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,5,5,.1), rgba(5,5,5,.9)); }
 .monde .an{ font-family:var(--disp); font-size:clamp(2.4rem,4vw,3.6rem); color:var(--or2); line-height:1; }
 .monde .titres{ color:var(--gris); font-size:.9rem; margin-top:.4rem; }
-/* quand l'image porte déjà son titre gravé, on n'écrit pas par-dessus */
+/* ─── QUAND L'IMAGE PORTE SON TITRE GRAVÉ ───
+   L'image parle seule dans son cadre, et le texte de la page passe DESSOUS, jamais par-dessus. */
+.tuile .sous{ color:var(--gris); font-size:.95rem; padding:.85rem .4rem 0; max-width:44ch; }
+.tuile.a-image h3, .tuile.a-image .num{ display:none; }
+.tuile.a-image .coeur{ aspect-ratio:4/3; min-height:0; padding:0; }
+.tuile.a-image .img::after{ background:linear-gradient(180deg, rgba(5,5,5,0) 60%, rgba(5,5,5,.35) 100%); }
+.tuile.a-image .img img{ opacity:1; }
+.monde .titres{ padding:.85rem .4rem 0; }
 .monde.a-image .an, .monde.a-image h3{ display:none; }
-.monde.a-image .coeur{ aspect-ratio:3/4; min-height:0; }
-.ouverture.a-image .etiq{ display:none; }
-.tuile.a-image h3{ display:none; }
-.tuile.a-image .coeur{ aspect-ratio:4/3; min-height:0; justify-content:flex-start; }
-.tuile.a-image p{ margin-top:auto; }
-.tuile.a-image .img::after{ background:linear-gradient(180deg, rgba(5,5,5,0) 45%, rgba(5,5,5,.88) 100%); }
+.monde.a-image .coeur{ aspect-ratio:3/4; min-height:0; padding:0; }
+.monde.a-image .img::after{ background:none; }
+.monde.a-image .img img{ opacity:1; }
+/* l'ouverture : l'AFFICHE ENTIÈRE, rien par-dessus, et le texte respire dessous */
+.ouverture.a-image{ min-height:0; padding:calc(var(--nav) + 1.4rem) 0 0; display:block; }
+.ouverture.a-image h1, .ouverture.a-image .etiq, .ouverture.a-image .lieu, .ouverture.a-image .descend, .ouverture.a-image .brume, .ouverture.a-image .poussiere{ display:none; }
+.ouverture.a-image .fond{ position:relative; inset:auto; aspect-ratio:16/9; max-height:78dvh; margin:0 auto; }
+.ouverture.a-image .fond img, .ouverture.a-image .fond video{ opacity:1; object-fit:contain; }
+.ouverture.a-image .texte{ background:none; padding:clamp(1.4rem,3vw,2.4rem) 0 clamp(2rem,5vw,4rem); gap:1.1rem; }
 .enTete.a-image .etiq{ display:none; }
+.enTete.a-image h1{ font-size:clamp(1.9rem,4vw,3.2rem); }
 .monde.monopolis .img{ background:radial-gradient(60% 50% at 70% 30%, rgba(143,176,216,.25), transparent), radial-gradient(50% 40% at 20% 80%, rgba(212,175,55,.2), transparent), #0a0d14; }
 .monde.notredame .img{ background:radial-gradient(60% 60% at 50% 20%, rgba(241,210,122,.28), transparent), #120f0a; }
 .monde.egypte .img{ background:linear-gradient(180deg, #2a1f3d 0%, #7a4a1a 55%, #0c0806 100%); }
