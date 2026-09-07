@@ -305,3 +305,13 @@ footer .liens a:hover{ color:var(--or2); }
   .voile a{ padding:.42rem 0; font-size:1.25rem; }
   .voile a small{ font-size:.66rem; }
 }
+
+/* LE MENU DU BAS, PLUS GRAND (7 sept) — il est sous le pouce, il doit se voir */
+@media (max-width:700px) and (orientation:portrait){
+  .bas{ padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom)) !important; }
+  .bas a{ font-size:.72rem !important; padding:.6rem .2rem !important; gap:.25rem !important; }
+  .bas a .ico{ width:1.85em !important; height:1.85em !important; }
+  .bas a span:not(.ico){ font-size:1.5rem !important; }
+}
+/* le retour au site porte le même dessin que dans le karaoké */
+.ico-maison{ background-image:url(site-images/icones-karaoke/retour.png) !important; }

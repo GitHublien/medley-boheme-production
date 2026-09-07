@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 21h49';
+const VERSION_SITE = '07/09/2026 · 22h15';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -66,10 +66,16 @@ const VERSION_SITE = '07/09/2026 · 21h49';
   });
 
   /* ── les images : quand elles existent, elles arrivent en fondu ────── */
-  const debout = matchMedia('(max-width: 700px) and (orientation: portrait)').matches;
-  document.querySelectorAll('[data-img]').forEach(el => {
-    /* sur téléphone debout, la version verticale de l'affiche si elle existe */
-    const src = (debout && el.getAttribute('data-img-portrait')) || el.getAttribute('data-img');
+  /* L'IMAGE SUIT LA ROTATION (7 sept) : l'affiche verticale sur téléphone debout,
+     l'horizontale dès qu'on couche le téléphone. Avant, elle était choisie une seule
+     fois à l'ouverture : en tournant, on gardait la mauvaise, toute petite au milieu. */
+  const debout = () => matchMedia('(max-width: 820px) and (orientation: portrait)').matches;
+  function bonneImage(el){
+    const p = el.getAttribute('data-img-portrait');
+    return (p && debout()) ? p : el.getAttribute('data-img');
+  }
+  const aImages = [...document.querySelectorAll('[data-img]')];
+  aImages.forEach(el => {
     const img = new Image();
     img.onload = () => {
       el.appendChild(img); requestAnimationFrame(() => img.classList.add('la'));
@@ -77,8 +83,20 @@ const VERSION_SITE = '07/09/2026 · 21h49';
       const carte = el.closest('.monde, .ouverture, .tuile, .enTete'); if (carte) carte.classList.add('a-image');
     };
     img.onerror = () => {};       /* pas d'image : le fond dessiné reste */
-    img.alt = ''; img.src = src;
+    img.alt = ''; img.src = bonneImage(el);
+    el._img = img;
   });
+  function suivreRotation(){
+    aImages.forEach(el => {
+      if (!el._img || !el.getAttribute('data-img-portrait')) return;
+      const veut = bonneImage(el);
+      const a = document.createElement('a'); a.href = veut;     /* pour comparer des adresses complètes */
+      if (el._img.src === a.href) return;
+      el._img.src = veut;
+    });
+  }
+  addEventListener('resize', suivreRotation, { passive: true });
+  addEventListener('orientationchange', () => setTimeout(suivreRotation, 80), { passive: true });
   document.querySelectorAll('[data-video]').forEach(el => {
     const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
     v.src = el.getAttribute('data-video');

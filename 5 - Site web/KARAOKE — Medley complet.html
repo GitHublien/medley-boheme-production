@@ -2058,8 +2058,9 @@ function choisir(i, sansSaut, garderGroupe){
       const cible = Math.max(0, el.offsetTop - scene.clientHeight * 0.35);
       // loin : on saute tout de suite (un glissement doux sur des milliers de pixels
       // prend deux secondes et s'interrompt au moindre geste) ; près : en douceur
-      const loin = Math.abs(cible - scene.scrollTop) > scene.clientHeight * 1.5;
-      scene.scrollTo({top: cible, behavior: loin ? 'auto' : 'smooth'});
+      /* 7 sept : on saute TOUJOURS. Un glissement, même court, donne l'impression
+         que l'application « cherche » la ligne au lieu d'y aller. */
+      scene.scrollTo({top: cible, behavior: 'auto'});
     }
   }
   majPanneau(); majFrise();
@@ -5498,7 +5499,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 21h50';
+const VERSION_APPLI = '07/09/2026 · 22h14';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5815,7 +5816,7 @@ const VERSION_APPLI = '07/09/2026 · 21h50';
   box-shadow:inset 0 1px 1px rgba(255,255,255,.08), 0 12px 40px rgba(0,0,0,.5);
   color:#ffd678;font-size:12px;font-weight:600;letter-spacing:.22em;
   text-transform:uppercase;white-space:nowrap;
-  transition:transform .7s cubic-bezier(0.32,0.72,0,1);">mode paysage</div>
+  transition:transform .7s cubic-bezier(0.32,0.72,0,1);display:none !important;"></div>
 <script>
 /* ═══ LE PAYSAGE EST UN MODE, PAS UNE FAUTE ═══
    On tourne le téléphone, la musique CONTINUE — jamais coupée, même
@@ -6433,16 +6434,67 @@ const VERSION_APPLI = '07/09/2026 · 21h50';
     if (!d) return;
     b.dataset.explique = '1';
     /* le premier appui explique d'abord, puis laisse faire */
-    b.addEventListener('click', () => { if (!vu(est)){ noter(est); montrer(b, d[0], d[1], 5200); } }, true);
-    /* l'appui long redonne l'explication, à tout moment */
+    b.addEventListener('click', e => {
+      if (b.dataset.longEnCours === '1'){    /* c'était un appui long : on n'allume rien */
+        e.preventDefault(); e.stopImmediatePropagation();
+        b.dataset.longEnCours = '0';
+        return;
+      }
+      if (!vu(est)){ noter(est); montrer(b, d[0], d[1], 5200); }
+    }, true);
+    /* l'appui long redonne l'explication, à tout moment, SANS déclencher le bouton */
     let t = null;
-    b.addEventListener('touchstart', () => { t = setTimeout(() => montrer(b, d[0], d[1]), 480); }, { passive: true });
+    b.addEventListener('touchstart', () => {
+      b.dataset.longEnCours = '0';
+      t = setTimeout(() => { b.dataset.longEnCours = '1'; montrer(b, d[0], d[1], 6000); }, 460);
+    }, { passive: true });
     ['touchend', 'touchmove', 'touchcancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(t), { passive: true }));
+    /* à la souris aussi, pour l'ordinateur */
+    b.addEventListener('contextmenu', e => { e.preventDefault(); montrer(b, d[0], d[1], 6000); });
   }
 
   function passer(){ document.querySelectorAll('.barre .btn-reg, .tiroir .btn-reg, .barre .b-aller').forEach(equiper); }
   passer();
   new MutationObserver(passer).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+/* ═══ LA ROTATION NE CHERCHE PLUS (7 septembre 2026) ═══
+   En tournant le téléphone, la page changeait de forme et le suivi automatique
+   rattrapait la ligne en cours en glissant : on voyait défiler tout le texte
+   pendant deux secondes. Ici, dès que l'écran change de forme, on se replace
+   D'UN COUP sur la ligne en cours, puis le suivi normal reprend. */
+(function(){
+  const scene = document.getElementById('scene');
+  if (!scene) return;
+
+  function placerDUnCoup(){
+    /* la ligne qui chante, sinon celle qu'on regarde */
+    const el = document.querySelector('#L .ligne.active, #L .ligne.choisie, #L .ligne.en-cours')
+            || document.querySelector('#L .ligne.passee:last-of-type');
+    if (!el || el.offsetParent === null) return;
+    const cible = Math.max(0, el.offsetTop - scene.clientHeight * 0.35);
+    const avant = scene.style.scrollBehavior;
+    scene.style.scrollBehavior = 'auto';          /* aucun glissement, jamais */
+    scene.scrollTop = cible;
+    requestAnimationFrame(() => { scene.style.scrollBehavior = avant || ''; });
+  }
+  window.placerDUnCoup = placerDUnCoup;
+
+  let forme = innerWidth + 'x' + innerHeight;
+  function siLaFormeChange(){
+    const f = innerWidth + 'x' + innerHeight;
+    if (f === forme) return;
+    forme = f;
+    /* on laisse la mise en page se refaire, puis on saute sur la bonne ligne */
+    requestAnimationFrame(() => { placerDUnCoup(); setTimeout(placerDUnCoup, 130); setTimeout(placerDUnCoup, 400); });
+  }
+  addEventListener('resize', siLaFormeChange, { passive: true });
+  addEventListener('orientationchange', () => setTimeout(siLaFormeChange, 60), { passive: true });
+  if (screen.orientation && screen.orientation.addEventListener)
+    screen.orientation.addEventListener('change', () => setTimeout(siLaFormeChange, 60));
 })();
 </script>
 
