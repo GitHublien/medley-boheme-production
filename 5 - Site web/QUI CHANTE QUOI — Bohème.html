@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bohème — qui chante quoi</title>
+<meta name="theme-color" content="#050505">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .repartition{ display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:.7rem; margin-bottom:2.5rem; }
+  .qui{ padding:.9rem 1rem; border-radius:16px; background:rgba(255,255,255,.035);
+        border:1px solid color-mix(in srgb, var(--c) 45%, transparent); display:grid; gap:.15rem; }
+  .qui .n{ font-family:var(--disp); font-size:1.35rem; color:var(--c); }
+  .qui .l{ font-size:.8rem; color:var(--gris2); letter-spacing:.08em; text-transform:uppercase; }
+  .bloc{ padding:1rem 0 1.1rem; border-bottom:1px solid rgba(255,255,255,.07); }
+  .bloc .tete{ display:flex; align-items:baseline; gap:.9rem; margin-bottom:.6rem; flex-wrap:wrap; }
+  .bloc .num{ font-family:var(--disp); font-size:1.15rem; color:var(--or); min-width:1.6em; }
+  .bloc h3{ margin:0; font-size:clamp(1.1rem,3.4vw,1.5rem); flex:1; }
+  .bloc .dur{ color:var(--gris2); font-size:.9rem; font-variant-numeric:tabular-nums; }
+  .voix{ display:flex; flex-wrap:wrap; gap:.45rem; padding-left:calc(1.6em + .9rem); }
+  .v{ display:inline-flex; align-items:center; gap:.4rem; padding:.32rem .7rem; border-radius:999px;
+      background:color-mix(in srgb, var(--c) 12%, transparent);
+      border:1px solid color-mix(in srgb, var(--c) 40%, transparent); font-size:.86rem; }
+  .v b{ color:var(--c); font-weight:600; }
+  .v i{ font-style:normal; color:var(--gris2); font-size:.78em; }
+  @media (max-width:700px){ .voix{ padding-left:0; } }
+</style>
+</head>
+<body>
+<header class="enTete">
+  <div class="fond" data-img="site-images/07-textes.jpg"></div><div class="brume"></div>
+  <div class="page texte">
+    <h1 class="rev d1">Qui chante <span class="it">quoi.</span></h1>
+    <p class="lead rev d2">Les vingt blocs, dans l'ordre, et pour chacun qui prend la parole. Chaque nom porte sa couleur, la même que dans le karaoké et dans le livre.</p>
+  </div>
+</header>
+
+<section class="page">
+  <div class="tete rev"><h2>Sur tout le medley</h2>
+  <p class="lead">Le nombre de lignes chantées par chacun, chœurs et duos compris.</p></div>
+  <div class="repartition rev"><div class="qui" style="--c:#ffc814"><span class="n">Adrien</span><span class="l">58 lignes</span></div><div class="qui" style="--c:#ff4fa8"><span class="n">Stéphanie</span><span class="l">66 lignes</span></div><div class="qui" style="--c:#b45cff"><span class="n">Candice</span><span class="l">55 lignes</span></div><div class="qui" style="--c:#00ffcc"><span class="n">Mickaël</span><span class="l">75 lignes</span></div><div class="qui" style="--c:#ff7a1f"><span class="n">Bry</span><span class="l">49 lignes</span></div><div class="qui" style="--c:#9dff35"><span class="n">Élie</span><span class="l">11 lignes</span></div></div>
+
+  <div class="tete rev"><h2>Bloc par bloc</h2></div>
+  <article class="bloc rev"><div class="tete"><span class="num">01</span><h3>Narration d'ouverture</h3><span class="dur">0:30</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off</b><i>6</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">02</span><h3>Quand on arrive en ville</h3><span class="dur">1:18</span></div><div class="voix"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>13</i></span><span class="v" style="--c:#ffc814"><b>Chœurs avec Adrien</b><i>7</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">03</span><h3>Explosion, flash radio</h3><span class="dur">0:22</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off</b><i>3</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">04</span><h3>Ziggy</h3><span class="dur">1:22</span></div><div class="voix"><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>18</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">05</span><h3>La chanson de Ziggy</h3><span class="dur">1:43</span></div><div class="voix"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>11</i></span><span class="v" style="--c:#ffc814"><b>Adrien et Stéphanie</b><i>7</i></span><span class="v" style="--c:#ff4fa8"><b>Pensée de Stéphanie</b><i>5</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>3</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3><span class="dur">0:50</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Radio Monopolis — Stéphane</b><i>8</i></span><span class="v" style="--c:#8fb0d8"><b>Radio Monopolis — Christine</b><i>5</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">07</span><h3>Le Blues du Businessman</h3><span class="dur">2:28</span></div><div class="voix"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>5</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>5</i></span><span class="v" style="--c:#ffc814"><b>Adrien</b><i>5</i></span><span class="v" style="--c:#d4af37"><b>Les 4 hommes</b><i>5</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie et Candice</b><i>4</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>3</i></span><span class="v" style="--c:#ffc814"><b>Mickaël, Bry et Adrien</b><i>1</i></span><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>1</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">08</span><h3>Retour d'antenne</h3><span class="dur">0:12</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Radio Monopolis — Christine</b><i>3</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">09</span><h3>Les uns contre les autres</h3><span class="dur">1:34</span></div><div class="voix"><span class="v" style="--c:#ffc814"><b>Stéphanie, Mickaël, Candice et Adrien</b><i>10</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>4</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>4</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">10</span><h3>Cloches, narration</h3><span class="dur">0:07</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>3</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">11</span><h3>Le Temps des Cathédrales</h3><span class="dur">1:45</span></div><div class="voix"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>15</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>8</i></span><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>6</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">12</span><h3>Bataille, appel crié</h3><span class="dur">0:15</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>1</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">13</span><h3>Les Sans-papiers</h3><span class="dur">1:32</span></div><div class="voix"><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>25</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>6</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">14</span><h3>Bohémienne</h3><span class="dur">2:01</span></div><div class="voix"><span class="v" style="--c:#b45cff"><b>Candice</b><i>11</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>4</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">15</span><h3>Belle</h3><span class="dur">2:35</span></div><div class="voix"><span class="v" style="--c:#9dff35"><b>Élie</b><i>7</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>6</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>5</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël et Bry</b><i>4</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — la bande</b><i>1</i></span><span class="v" style="--c:#00ffcc"><b>Élie, Mickaël et Bry</b><i>1</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">16</span><h3>Le Dilemme</h3><span class="dur">2:20</span></div><div class="voix"><span class="v" style="--c:#b45cff"><b>Candice</b><i>24</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël et Bry</b><i>9</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — la narratrice</b><i>5</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>4</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>1</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>1</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">17</span><h3>Mon Frère</h3><span class="dur">2:05</span></div><div class="voix"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>12</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>12</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël et Bry</b><i>3</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">18</span><h3>L'arrêt du temps</h3><span class="dur">0:20</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off — la machine</b><i>4</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">19</span><h3>Stone</h3><span class="dur">0:37</span></div><div class="voix"><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>9</i></span></div></article>
+  <article class="bloc rev"><div class="tete"><span class="num">20</span><h3>Aimer</h3><span class="dur">2:52</span></div><div class="voix"><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>16</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>6</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>5</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>4</i></span><span class="v" style="--c:#ffc814"><b>Stéphanie et Adrien</b><i>4</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>2</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>1</i></span><span class="v" style="--c:#ff4fa8"><b>Tous les six — Stéphanie et Candice dessus</b><i>1</i></span></div></article>
+</section>
+
+<section class="page">
+  <div class="vide rev">
+    <h3>À quoi ça sert</h3>
+    <p>À savoir d'un coup d'œil où tu chantes, avec qui, et ce que font les autres pendant ce temps. Dans le karaoké, la liste des blocs porte les mêmes indications, et ton aide personnelle allume tes lignes dans ta couleur.</p>
+  </div>
+</section>
+
+<script src="site.js"></script>
+</body>
+</html>

@@ -5,12 +5,13 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 22h42';
+const VERSION_SITE = '07/09/2026 · 22h57';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
     { f:'KARAOKE — Medley complet.html', t:'Karaoké',        g:'♪', i:'note', s:'la salle de travail' },
     { f:'LIVRE — Les textes du medley.html', t:'Textes',     g:'¶', i:'livre', s:'le livre, avec la musique' },
+    { f:'QUI CHANTE QUOI — Bohème.html', t:'Qui chante quoi', g:'♪', i:'note', s:'bloc par bloc, qui prend la parole' },
     { f:'MISE EN SCÈNE — Bohème.html',  t:'Mise en scène',  g:'◎', i:'scene', s:'qui est où, quand' },
     { f:'DOCUMENTS — Bohème.html',      t:'Documents',      g:'≡', i:'document', s:'à télécharger' },
     { f:'VIDÉOS — Bohème.html',         t:'Vidéos',         g:'▶', i:'lecture', s:'à regarder' },
@@ -133,7 +134,7 @@ const VERSION_SITE = '07/09/2026 · 22h42';
   /* ── LA MISE À JOUR, comme dans le karaoké : un petit mot qui répond ──
      Elle vérifie à l'ouverture, sans déranger, et dit toujours où on en est.
      Les nouveautés du jour allument une pastille sur les pages concernées. */
-  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'DOCUMENTS — Bohème.html'];   /* ce qui a changé aujourd'hui */
+  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html'];   /* ce qui a changé aujourd'hui */
   const mot = document.createElement('div'); mot.className = 'mot';
   document.body.appendChild(mot);
   let motMinuteur = null;
