@@ -5511,7 +5511,9 @@ body[data-pour] #bandeau{ display:flex; }
   bi.title = 'les explications et la vidéo';
   bi.style.cssText = bt.style.cssText;
   bi.addEventListener('click', () => {
-    location.href = 'BIENVENUE — Bohème.html' + location.search;
+    /* on rouvre la carte d'accueil ici même ; la page complète reste à un bouton */
+    if (window.montrerBienvenue) window.montrerBienvenue();
+    else location.href = 'BIENVENUE — Bohème.html' + location.search;
   });
   if (bt.parentNode) bt.parentNode.insertBefore(bi, bt.nextSibling);
 
@@ -5523,10 +5525,13 @@ body[data-pour] #bandeau{ display:flex; }
         && !boite.classList.contains('la')) finir();
   });
 
-  /* première visite : on propose, sans imposer */
-  let deja = null;
-  try { deja = localStorage.getItem('boheme-tuto'); } catch(e){}
-  if (deja !== '1') setTimeout(proposer, 1400);
+  /* la visite guidée est appelable depuis la carte de bienvenue */
+  window.proposerVisite = proposer;
+  /* première visite : on propose, sans imposer — mais seulement si la carte de
+     bienvenue est déjà passée, sinon les deux se marcheraient dessus */
+  let deja = null, bienvenueVue = null;
+  try { deja = localStorage.getItem('boheme-tuto'); bienvenueVue = localStorage.getItem('boheme-bienvenue-vue'); } catch(e){}
+  if (deja !== '1' && bienvenueVue === '1') setTimeout(proposer, 1400);
 })();
 </script>
 <script>
@@ -5708,7 +5713,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 22h41';
+const VERSION_APPLI = '07/09/2026 · 22h43';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -6589,4 +6594,106 @@ const VERSION_APPLI = '07/09/2026 · 22h41';
   #lbPlay{ background:rgba(212,175,55,.16) !important; border-color:rgba(212,175,55,.75) !important; }
 }
 </style>
+
+<style>
+/* ═══ LA CARTE DE BIENVENUE, LA PREMIÈRE FOIS (7 septembre 2026) ═══ */
+#bienvenueCarte{
+  position:fixed; inset:0; z-index:120; display:none;
+  align-items:center; justify-content:center; padding:clamp(1rem,5vw,2rem);
+  background:rgba(3,3,3,.94); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+}
+#bienvenueCarte.la{ display:flex; }
+#bienvenueCarte .dedans{
+  max-width:min(560px, 94vw); max-height:88dvh; overflow-y:auto;
+  background:rgba(12,11,10,.98); border:1px solid rgba(212,175,55,.42);
+  border-radius:22px; padding:clamp(1.3rem,4.5vw,2rem);
+  box-shadow:0 30px 80px rgba(0,0,0,.75); text-align:left;
+}
+#bienvenueCarte h2{
+  margin:0 0 .2rem; font-size:clamp(1.35rem,5.6vw,1.85rem); font-weight:800;
+  color:#ffc814; letter-spacing:.4px; line-height:1.15;
+}
+#bienvenueCarte .sous{ margin:0 0 1.1rem; color:#b9b2a0; font-size:clamp(.92rem,3.6vw,1rem); }
+#bienvenueCarte ul{ margin:0 0 1.2rem; padding:0; list-style:none; display:grid; gap:.8rem; }
+#bienvenueCarte li{
+  display:grid; grid-template-columns:34px 1fr; gap:.75rem; align-items:start;
+  color:#e8e2d2; font-size:clamp(.9rem,3.6vw,1rem); line-height:1.5;
+}
+#bienvenueCarte li i{
+  width:30px; height:30px; background:center/contain no-repeat; display:block;
+  filter:drop-shadow(0 0 5px rgba(212,175,55,.4));
+}
+#bienvenueCarte li b{ color:#ffc814; font-weight:700; }
+#bienvenueCarte .astuce{
+  margin:0 0 1.2rem; padding:.85rem 1rem; border-radius:14px;
+  background:rgba(157,255,53,.09); border:1px solid rgba(157,255,53,.3);
+  color:#dff5c2; font-size:clamp(.88rem,3.5vw,.98rem); line-height:1.55;
+}
+#bienvenueCarte .astuce b{ color:#9dff35; }
+#bienvenueCarte .gestes{ display:grid; gap:.6rem; }
+#bienvenueCarte button{
+  width:100%; padding:.95rem 1.2rem; border-radius:999px; cursor:pointer;
+  font-size:clamp(1rem,4.2vw,1.1rem); font-weight:700; letter-spacing:.3px;
+  border:1px solid rgba(212,175,55,.8); background:rgba(212,175,55,.18); color:#ffc814;
+}
+#bienvenueCarte button.doux{
+  font-weight:400; font-size:clamp(.9rem,3.6vw,1rem);
+  border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.04); color:#b9b2a0;
+}
+</style>
+
+<div id="bienvenueCarte"><div class="dedans">
+  <h2>Bienvenue dans le karaoké</h2>
+  <p class="sous">Vingt-six minutes cinquante, les vingt blocs, tes paroles en gros. Voilà ce que tu as sous la main.</p>
+  <ul>
+    <li><i style="background-image:url(site-images/icones-karaoke/etoile2.png)"></i>
+        <span><b>L'étoile, ton aide.</b> Allumée, elle est <b style="color:#9dff35">verte</b> : tes lignes s'allument dans ta couleur et un mot te dit où tu es. Éteinte, c'est le karaoké normal.</span></li>
+    <li><i style="background-image:url(site-images/icones-karaoke/passage2.png)"></i>
+        <span><b>La double flèche</b> t'emmène directement là où <b>tu</b> chantes. Elle n'apparaît que si l'étoile est allumée, et seulement quand ton passage est loin.</span></li>
+    <li><i style="background-image:url(site-images/icones-karaoke/micro.png)"></i>
+        <span><b>Le micro</b> : tu entends les voix témoins. Touche-le, il devient un <b>piano</b> et tu as la bande seule, comme au concert.</span></li>
+    <li><i style="background-image:url(site-images/icones-karaoke/blocs.png)"></i>
+        <span><b>La liste</b> ouvre les vingt blocs. Touche un titre, la musique y va tout de suite.</span></li>
+    <li><i style="background-image:url(site-images/icones-karaoke/retour2.png)"></i>
+        <span><b>La maison</b> te ramène au site : les textes, la mise en scène, les documents, les vidéos.</span></li>
+  </ul>
+  <p class="astuce"><b>Une chose à retenir :</b> si un dessin ne te dit rien, <b>garde le doigt appuyé dessus</b> une seconde. Une explication apparaît, sans rien déclencher. Et la visite guidée complète reste à ta disposition : le <b>point d'interrogation</b>, dans les autres commandes.</p>
+  <div class="gestes">
+    <button id="bvEntrer">Entrer dans le karaoké</button>
+    <button class="doux" id="bvTout">Voir les explications en entier</button>
+  </div>
+</div></div>
+
+<script>
+/* ═══ LA PREMIÈRE FOIS, ON EXPLIQUE AVANT D'ENTRER (7 septembre 2026) ═══
+   La carte s'ouvre une seule fois, à la toute première visite (ou après une remise à
+   zéro). Ensuite, le guide se propose. On peut toujours revenir aux deux : le « i »
+   pour les explications, le « ? » pour la visite guidée. */
+(function(){
+  const carte = document.getElementById('bienvenueCarte');
+  if (!carte) return;
+  const CLE = 'boheme-bienvenue-vue';
+  let deja = null;
+  try { deja = localStorage.getItem(CLE); } catch(e){}
+  const params = new URLSearchParams(location.search);
+  const forcee = params.get('bienvenue') === '1';
+  if (deja === '1' && !forcee) return;
+
+  function fermer(){
+    carte.classList.remove('la');
+    try { localStorage.setItem(CLE, '1'); } catch(e){}
+    /* juste après, la visite guidée se propose */
+    setTimeout(() => { try { window.proposerVisite && window.proposerVisite(); } catch(e){} }, 700);
+  }
+  document.getElementById('bvEntrer').addEventListener('click', fermer);
+  document.getElementById('bvTout').addEventListener('click', () => {
+    try { localStorage.setItem(CLE, '1'); } catch(e){}
+    location.href = 'BIENVENUE — Bohème.html' + location.search;
+  });
+  /* on la montre dès que la page est prête, avant tout le reste */
+  setTimeout(() => carte.classList.add('la'), 500);
+  window.montrerBienvenue = () => carte.classList.add('la');
+})();
+</script>
+
 </body>

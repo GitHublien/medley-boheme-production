@@ -315,3 +315,25 @@ footer .liens a:hover{ color:var(--or2); }
 }
 /* le retour au site porte le même dessin que dans le karaoké */
 .ico-maison{ background-image:url(site-images/icones-karaoke/retour.png) !important; }
+
+/* ═══ AU DÉFILEMENT, LES BOUTONS NE SONT PLUS MANGÉS (7 sept) ═══
+   Le texte d'ouverture avançait moins vite que la page (effet de profondeur) : il
+   restait donc en place pendant que la section suivante montait par-dessus, et les
+   boutons « Ouvrir le karaoké », « Mise à jour », « J'ai tout reçu » disparaissaient
+   dessous. Sur téléphone, le texte défile maintenant avec la page, tout simplement. */
+@media (max-width:820px){
+  .ouverture .texte{ transform:none !important; }
+  .ouverture{ padding-bottom:clamp(3rem,9vw,5rem); }
+}
+/* LE MENU (les trois traits), plus grand en portrait — il était plus petit que les autres */
+@media (max-width:700px) and (orientation:portrait){
+  .nav .burger{ width:52px !important; height:52px !important; border-color:rgba(212,175,55,.45) !important;
+                background:rgba(212,175,55,.10) !important; }
+  .nav .burger i{ width:22px !important; height:2px !important; background:var(--or2) !important; }
+  .nav .burger i:first-child{ transform:translateY(-5px) !important; }
+  .nav .burger i:last-child{ transform:translateY(5px) !important; }
+  body.menu .nav .burger i:first-child{ transform:rotate(45deg) !important; }
+  body.menu .nav .burger i:last-child{ transform:rotate(-45deg) !important; }
+  /* et celui de la barre du bas aussi */
+  .bas a.menuBas span:not(.ico){ font-size:1.9rem !important; }
+}

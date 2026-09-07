@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 22h25';
+const VERSION_SITE = '07/09/2026 · 22h42';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -115,9 +115,12 @@ const VERSION_SITE = '07/09/2026 · 22h25';
   /* ── l'ouverture : deux calques en parallaxe, par transform seulement ── */
   const fond = document.querySelector('.ouverture .fond, .enTete .fond');
   const texte = document.querySelector('.ouverture .texte');
+  /* la profondeur ne s'applique plus au texte sur téléphone : il défilait moins vite
+     que la page et se faisait recouvrir par la section suivante (7 sept) */
+  const petitEcran = matchMedia('(max-width: 820px)').matches;
   if (fond && !matchMedia('(prefers-reduced-motion: reduce)').matches){
     let y = 0, demande = false;
-    const peindre = () => { demande = false; fond.style.transform = 'translate3d(0,' + (y * .22) + 'px,0)'; if (texte) texte.style.transform = 'translate3d(0,' + (y * .08) + 'px,0)'; };
+    const peindre = () => { demande = false; fond.style.transform = 'translate3d(0,' + (y * .22) + 'px,0)'; if (texte && !petitEcran) texte.style.transform = 'translate3d(0,' + (y * .08) + 'px,0)'; };
     addEventListener('scroll', () => { y = Math.min(scrollY, innerHeight * 1.2); if (!demande){ demande = true; requestAnimationFrame(peindre); } }, { passive: true });
   }
 
