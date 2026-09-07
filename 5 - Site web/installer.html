@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Installer Bohème</title>
+<meta name="theme-color" content="#050505">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══ LE LIEN D'INSTALLATION DIRECT (7 septembre 2026) ═══════════════════════
+   Un seul lien à envoyer : …/installer.html. La page regarde D'OÙ on l'ouvre et
+   ne montre QUE le bon geste :
+     · dans le navigateur de WhatsApp (ou Messenger, Instagram…) : il ne sait pas
+       installer → on explique comment ouvrir dans Chrome ou Safari, rien d'autre ;
+     · Android dans Chrome : UN gros bouton, l'installation part toute seule ;
+     · iPhone dans Safari : le bouton Partager, puis « Sur l'écran d'accueil »,
+       avec une flèche qui montre où c'est ;
+     · déjà dans l'application : on passe directement au hall.
+   Aucune page ne doit ressembler à un mur noir : il y a toujours une sortie. */
+:root{ --or:#d4af37; --or2:#f1d27a; --encre:#f2ede1; --gris:#bcb4a2; --fond:#050505; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--fond); color:var(--encre); font-family:'Outfit',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+body{ min-height:100dvh; display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding:calc(2.2rem + env(safe-area-inset-top)) 1.4rem calc(2.4rem + env(safe-area-inset-bottom)); gap:1.1rem; }
+.logo{ width:min(34vw,150px); margin-top:.6rem; filter:drop-shadow(0 0 30px rgba(212,175,55,.35)); }
+h1{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; font-size:clamp(1.9rem,7.5vw,2.8rem); line-height:1.08; margin:.2rem 0 0; }
+h1 .it{ font-style:italic; color:var(--or2); }
+p{ margin:0; max-width:34rem; line-height:1.55; color:var(--gris); font-size:clamp(1rem,4vw,1.12rem); }
+p b{ color:var(--encre); font-weight:600; }
+.ecran{ display:none; flex-direction:column; align-items:center; gap:1rem; width:100%; max-width:36rem; }
+.ecran.la{ display:flex; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:.7rem; padding:1.05rem 1.9rem; border-radius:999px;
+  background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; font-weight:600; font-size:clamp(1.05rem,4.6vw,1.25rem);
+  letter-spacing:.02em; text-decoration:none; border:0; cursor:pointer; box-shadow:0 14px 40px rgba(212,175,55,.28), inset 0 1px 0 rgba(255,255,255,.55);
+  width:100%; max-width:24rem; transition:transform .35s cubic-bezier(.32,.72,0,1), box-shadow .35s; }
+.btn:active{ transform:scale(.97); }
+.btn.doux{ background:rgba(212,175,55,.12); color:var(--or2); border:1px solid rgba(212,175,55,.55); box-shadow:none; font-weight:400; }
+.btn .ico{ width:1.2em; height:1.2em; background:center/contain no-repeat; filter:brightness(.22); }
+.btn.doux .ico{ filter:none; }
+.pas{ display:grid; gap:.8rem; width:100%; text-align:left; }
+.pas div{ display:grid; grid-template-columns:2.3rem 1fr; gap:.8rem; align-items:start; padding:.95rem 1rem; border-radius:1.1rem;
+  background:rgba(255,255,255,.035); border:1px solid rgba(212,175,55,.22); }
+.pas b.n{ display:grid; place-items:center; width:2.3rem; height:2.3rem; border-radius:50%; background:rgba(212,175,55,.16); color:var(--or2);
+  font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:600; }
+.pas span{ line-height:1.45; }
+.pas span b{ color:var(--or2); }
+kbd{ display:inline-block; padding:.05em .5em; border-radius:.5em; border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.1); color:var(--or2); font:inherit; font-weight:600; }
+.fleche{ position:fixed; z-index:5; font-size:2.6rem; color:var(--or2); animation:pointe 1.4s ease-in-out infinite; text-shadow:0 0 18px rgba(212,175,55,.8); pointer-events:none; }
+.fleche.bas{ left:50%; bottom:calc(10px + env(safe-area-inset-bottom)); --tx:-50%; }
+.fleche.hautDroite{ right:14px; top:calc(6px + env(safe-area-inset-top)); }
+@keyframes pointe{ 0%,100%{ transform:translate(var(--tx,0), 0) } 50%{ transform:translate(var(--tx,0), 10px) } }
+.lien{ display:flex; gap:.5rem; width:100%; max-width:24rem; }
+.lien input{ flex:1; min-width:0; padding:.8rem 1rem; border-radius:999px; border:1px solid rgba(212,175,55,.35); background:rgba(255,255,255,.04); color:var(--encre); font:inherit; font-size:.9rem; }
+.petit{ font-size:.9rem; opacity:.75; }
+a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-underline-offset:.2em; margin-top:.4rem; }
+.ok{ font-size:clamp(1.4rem,6vw,2rem); color:#9dff35; font-family:'Cormorant Garamond',serif; font-weight:600; }
+</style>
+</head>
+<body>
+<img class="logo" src="site-assets/logo-512.png" alt="">
+
+<!-- déjà dans l'application -->
+<div class="ecran" id="e-app">
+  <h1>Tu es déjà <span class="it">dans l'application.</span></h1>
+  <p>Rien à installer : Bohème est sur ton écran d'accueil. Entre.</p>
+  <a class="btn" href="ACCUEIL — Bohème.html">Entrer <span class="ico" style="background-image:url(site-images/icones/fleche.png)"></span></a>
+</div>
+
+<!-- dans le navigateur de WhatsApp, Messenger, Instagram… -->
+<div class="ecran" id="e-dedans">
+  <h1>Un dernier geste, <span class="it">et c'est chez toi.</span></h1>
+  <p>Tu as ouvert le lien <b>dans WhatsApp</b>, et le navigateur de WhatsApp ne sait pas installer d'application. Il faut l'ouvrir dans <b id="navNom">Chrome</b>. C'est simple :</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Appuie sur les <b id="troisPoints">trois points ⋮</b>, <b id="ouCa">en haut à droite</b>.</span></div>
+    <div><b class="n">2</b><span>Choisis <b id="ouvrirDans">« Ouvrir dans Chrome »</b>, ou « Ouvrir dans le navigateur ».</span></div>
+    <div><b class="n">3</b><span>Cette page se rouvre, et le <b>gros bouton d'installation</b> t'attend.</span></div>
+  </div>
+  <p class="petit">Si tu ne trouves pas, copie le lien et colle-le dans <span id="navNom2">Chrome</span> :</p>
+  <div class="lien"><input id="champLien" readonly><button class="btn doux" id="copier" style="width:auto;padding:.8rem 1.1rem">Copier</button></div>
+  <i class="fleche hautDroite">⤴</i>
+</div>
+
+<!-- Android dans Chrome : un seul bouton -->
+<div class="ecran" id="e-android">
+  <h1>Une icône sur ton écran, <span class="it">et c'est chez toi.</span></h1>
+  <p>Un appui, ton téléphone te demande de confirmer, et <b>Bohème</b> est sur ton écran d'accueil, avec le logo doré. Plus jamais besoin du lien.</p>
+  <button class="btn" id="grosBouton">Installer Bohème <span class="ico" style="background-image:url(site-images/icones/telecharger.png)"></span></button>
+  <p class="petit" id="attente">Je prépare l'installation…</p>
+  <a class="discret" href="ACCUEIL — Bohème.html">Continuer sans installer, pour l'instant</a>
+</div>
+
+<!-- Android sans proposition automatique : le chemin manuel -->
+<div class="ecran" id="e-manuel">
+  <h1>Trois gestes, <span class="it">et c'est chez toi.</span></h1>
+  <p>Ton téléphone ne me laisse pas lancer l'installation tout seul. Voici le chemin :</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Appuie sur les <b>trois points ⋮</b>, en haut à droite de Chrome.</span></div>
+    <div><b class="n">2</b><span>Choisis <b>« Installer l'application »</b>, ou « Ajouter à l'écran d'accueil ».</span></div>
+    <div><b class="n">3</b><span>Confirme. L'icône <b>Bohème</b> apparaît sur ton écran.</span></div>
+  </div>
+  <a class="discret" href="ACCUEIL — Bohème.html">Continuer sans installer, pour l'instant</a>
+  <i class="fleche hautDroite">⤴</i>
+</div>
+
+<!-- iPhone dans Safari -->
+<div class="ecran" id="e-iphone">
+  <h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1>
+  <p>Sur iPhone, c'est Safari qui installe. Regarde en bas de l'écran :</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Appuie sur <b>Partager</b>, le carré avec une flèche vers le haut, en bas au milieu de l'écran.</span></div>
+    <div><b class="n">2</b><span>Fais défiler la liste et choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</span></div>
+  </div>
+  <p class="petit">L'icône Bohème apparaît sur ton écran, avec le logo doré. C'est par là que tu entreras.</p>
+  <a class="discret" href="ACCUEIL — Bohème.html">Continuer sans installer, pour l'instant</a>
+  <i class="fleche bas">⤵</i>
+</div>
+
+<!-- iPhone mais pas dans Safari -->
+<div class="ecran" id="e-iphone-autre">
+  <h1>Il faut <span class="it">Safari.</span></h1>
+  <p>Sur iPhone, seul <b>Safari</b> sait installer une application. Tu es dans un autre navigateur.</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Copie le lien ci-dessous.</span></div>
+    <div><b class="n">2</b><span>Ouvre <b>Safari</b>, colle-le dans la barre d'adresse, et reviens ici.</span></div>
+  </div>
+  <div class="lien"><input id="champLien2" readonly><button class="btn doux" id="copier2" style="width:auto;padding:.8rem 1.1rem">Copier</button></div>
+</div>
+
+<!-- ordinateur -->
+<div class="ecran" id="e-ordi">
+  <h1>Sur l'ordinateur, <span class="it">tout marche dans le navigateur.</span></h1>
+  <p>Ce lien est fait pour le téléphone. Sur ordinateur, ouvre simplement le site. Et si tu veux l'icône : dans Chrome ou Edge, clique sur le petit bouton <b>« Installer »</b> à droite de la barre d'adresse.</p>
+  <a class="btn" href="ACCUEIL — Bohème.html">Ouvrir le site <span class="ico" style="background-image:url(site-images/icones/fleche.png)"></span></a>
+  <button class="btn doux" id="grosBoutonOrdi" style="display:none">Installer l'application</button>
+</div>
+
+<!-- c'est fait -->
+<div class="ecran" id="e-fait">
+  <div class="ok">C'est installé !</div>
+  <p><b>Bohème</b> est sur ton écran d'accueil, avec le logo doré. Ferme cette page et entre par l'icône : c'est par là que tout se passe, désormais.</p>
+  <a class="btn doux" href="ACCUEIL — Bohème.html">Ou entrer tout de suite</a>
+</div>
+
+<script>
+(function(){
+  const par = new URLSearchParams(location.search);
+  const pour = par.get('pour');
+  /* le prénom voyage avec le lien, et on le garde pour l'application installée */
+  try { if (pour) localStorage.setItem('boheme-pour', pour); } catch(e){}
+  const suite = pour ? '?pour=' + encodeURIComponent(pour) : '';
+  document.querySelectorAll('a[href$=".html"]').forEach(a => a.setAttribute('href', a.getAttribute('href') + suite));
+
+  const ua = navigator.userAgent || '';
+  const enApp = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  const iOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/i.test(ua);
+  const tactile = matchMedia('(pointer: coarse)').matches;
+  /* les navigateurs « dedans » : WhatsApp, Messenger, Facebook, Instagram, Line, Gmail, Snapchat… */
+  const dedans = /WhatsApp|FBAN|FBAV|FB_IAB|Messenger|Instagram|Line\/|Snapchat|GSA\/|Twitter|MicroMessenger|; wv\)/i.test(ua);
+  const safari = iOS && /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua) && !dedans;
+
+  const montrer = id => { document.querySelectorAll('.ecran').forEach(e => e.classList.remove('la')); document.getElementById(id).classList.add('la'); };
+  const lienPropre = location.origin + location.pathname + suite;
+  document.querySelectorAll('#champLien, #champLien2').forEach(i => i.value = lienPropre);
+  const copier = (btn, champ) => btn && btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(champ.value); btn.textContent = 'Copié ✓'; }
+    catch(e){ champ.select(); document.execCommand('copy'); btn.textContent = 'Copié ✓'; }
+  });
+  copier(document.getElementById('copier'), document.getElementById('champLien'));
+  copier(document.getElementById('copier2'), document.getElementById('champLien2'));
+
+  let promesse = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promesse = e;
+    const a = document.getElementById('attente'); if (a) a.textContent = 'Prêt. Appuie sur le bouton.';
+    const o = document.getElementById('grosBoutonOrdi'); if (o) o.style.display = 'inline-flex';
+  });
+  window.addEventListener('appinstalled', () => montrer('e-fait'));
+
+  if (enApp){ montrer('e-app'); return; }
+  if (dedans){
+    if (iOS){ document.getElementById('navNom').textContent = 'Safari'; document.getElementById('navNom2').textContent = 'Safari';
+      document.getElementById('troisPoints').textContent = 'trois points ⋯'; document.getElementById('ouCa').textContent = 'en bas ou en haut à droite';
+      document.getElementById('ouvrirDans').textContent = '« Ouvrir dans Safari »'; }
+    montrer('e-dedans'); return;
+  }
+  if (iOS){ montrer(safari ? 'e-iphone' : 'e-iphone-autre'); return; }
+  if (android || tactile){
+    montrer('e-android');
+    /* si Chrome n'a rien proposé au bout de 4 s, on montre le chemin manuel, sans mur */
+    setTimeout(() => { if (!promesse && document.getElementById('e-android').classList.contains('la')) montrer('e-manuel'); }, 4000);
+    document.getElementById('grosBouton').addEventListener('click', async () => {
+      if (!promesse){ montrer('e-manuel'); return; }
+      promesse.prompt(); const c = await promesse.userChoice; promesse = null;
+      if (c && c.outcome === 'accepted') montrer('e-fait');
+    });
+    return;
+  }
+  montrer('e-ordi');
+  const o = document.getElementById('grosBoutonOrdi');
+  o.addEventListener('click', async () => { if (!promesse) return; promesse.prompt(); const c = await promesse.userChoice; promesse = null; if (c && c.outcome === 'accepted') montrer('e-fait'); });
+})();
+</script>
+</body>
+</html>

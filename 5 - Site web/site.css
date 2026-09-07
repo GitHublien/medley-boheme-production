@@ -265,3 +265,34 @@ footer .liens a:hover{ color:var(--or2); }
   .six{ grid-template-columns:repeat(6,1fr); gap:.5rem; } .six .nom{ font-size:1rem; }
   .mondes{ grid-template-columns:repeat(3,1fr); } .monde .coeur{ min-height:220px; }
 }
+
+/* ═══ LES PICTOGRAMMES EN OR (7 sept) ════════════════════════════════════════
+   Douze pictogrammes en or massif, générés d'un coup, découpés, le noir rendu
+   transparent. Ils sont affichés en unités « em » : ils suivent la taille du
+   texte, donc ils restent nets et à la bonne taille sur téléphone. */
+.ico{ display:inline-block; width:1.15em; height:1.15em; vertical-align:-.22em; flex:none;
+  background:center/contain no-repeat; filter:drop-shadow(0 0 5px rgba(212,175,55,.35)); }
+.ico-maison{ background-image:url(site-images/icones/maison.png) }
+.ico-note{ background-image:url(site-images/icones/note.png) }
+.ico-livre{ background-image:url(site-images/icones/livre.png) }
+.ico-scene{ background-image:url(site-images/icones/scene.png) }
+.ico-document{ background-image:url(site-images/icones/document.png) }
+.ico-lecture{ background-image:url(site-images/icones/lecture.png) }
+.ico-etoile{ background-image:url(site-images/icones/etoile.png) }
+.ico-nouveau{ background-image:url(site-images/icones/nouveau.png) }
+.ico-telecharger{ background-image:url(site-images/icones/telecharger.png) }
+.ico-fleche{ background-image:url(site-images/icones/fleche.png) }
+.ico-coche{ background-image:url(site-images/icones/coche.png) }
+.ico-maj{ background-image:url(site-images/icones/maj.png) }
+.btn b .ico{ width:1.2rem; height:1.2rem; vertical-align:0; filter:brightness(.22); }   /* dans la pastille dorée : l'or se fondrait, on l'assombrit */
+.btn.doux b .ico{ filter:drop-shadow(0 0 5px rgba(212,175,55,.35)); }
+.bas a .ico{ width:1.55em; height:1.55em; margin-bottom:.15rem; display:block; margin-inline:auto; vertical-align:0; }
+.bas a.ici .ico{ filter:drop-shadow(0 0 9px rgba(212,175,55,.75)); }
+.voile nav a .ico{ width:1.4em; height:1.4em; margin-right:.6rem; vertical-align:-.3em; }
+.nav .marque .ico{ width:1.4em; height:1.4em; }
+
+/* téléphone debout : l'affiche VERTICALE remplit la largeur, pas une bande étroite dans une boîte 16:9 */
+@media (max-width:700px) and (orientation:portrait){
+  .ouverture.a-image .fond{ aspect-ratio:768/1376; max-height:none; width:100%; }
+  .ouverture.a-image{ padding-top:calc(var(--nav) + .6rem); }
+}

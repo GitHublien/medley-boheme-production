@@ -5,20 +5,22 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 17h30';
+const VERSION_SITE = '07/09/2026 · 20h33';
 (function(){
   const PAGES = [
-    { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', s:'le hall' },
-    { f:'KARAOKE — Medley complet.html', t:'Karaoké',        g:'♪', s:'la salle de travail' },
-    { f:'LIVRE — Les textes du medley.html', t:'Textes',     g:'¶', s:'le livre, avec la musique' },
-    { f:'MISE EN SCÈNE — Bohème.html',  t:'Mise en scène',  g:'◎', s:'qui est où, quand' },
-    { f:'DOCUMENTS — Bohème.html',      t:'Documents',      g:'≡', s:'à télécharger' },
-    { f:'VIDÉOS — Bohème.html',         t:'Vidéos',         g:'▶', s:'à regarder' },
-    { f:'CALENDRIER — Bohème.html',     t:'Calendrier',     g:'✦', s:'le rendez-vous' },
-    { f:'NOUVEAUTÉS — Bohème.html',     t:'Nouveautés',     g:'◌', s:'ce qui a changé' },
-    { f:'INSTALLER — Bohème.html',      t:'Installer',      g:'⇩', s:'l\'application sur ton téléphone' },
+    { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
+    { f:'KARAOKE — Medley complet.html', t:'Karaoké',        g:'♪', i:'note', s:'la salle de travail' },
+    { f:'LIVRE — Les textes du medley.html', t:'Textes',     g:'¶', i:'livre', s:'le livre, avec la musique' },
+    { f:'MISE EN SCÈNE — Bohème.html',  t:'Mise en scène',  g:'◎', i:'scene', s:'qui est où, quand' },
+    { f:'DOCUMENTS — Bohème.html',      t:'Documents',      g:'≡', i:'document', s:'à télécharger' },
+    { f:'VIDÉOS — Bohème.html',         t:'Vidéos',         g:'▶', i:'lecture', s:'à regarder' },
+    { f:'CALENDRIER — Bohème.html',     t:'Calendrier',     g:'✦', i:'etoile', s:'le rendez-vous' },
+    { f:'NOUVEAUTÉS — Bohème.html',     t:'Nouveautés',     g:'◌', i:'nouveau', s:'ce qui a changé' },
+    { f:'installer.html',               t:'Installer',      g:'⇩', i:'telecharger', s:'l\'application sur ton téléphone' },
   ];
-  const pour = new URLSearchParams(location.search).get('pour');
+  /* le prénom : dans le lien, sinon celui qu'on a gardé (application installée) */
+  let pour = new URLSearchParams(location.search).get('pour');
+  try { if (pour) localStorage.setItem('boheme-pour', pour); else pour = localStorage.getItem('boheme-pour') || null; } catch(e){}
   const suite = pour ? '?pour=' + encodeURIComponent(pour) : '';
   const ici = decodeURIComponent(location.pathname.split('/').pop() || '');
   const lien = p => encodeURI(p.f) + suite;
@@ -29,9 +31,9 @@ const VERSION_SITE = '07/09/2026 · 17h30';
     + PAGES.slice(0, 7).map(p => '<a class="l' + (p.f === ici ? ' ici' : '') + '" href="' + lien(p) + '">' + p.t + '</a>').join('')
     + '<button class="burger" aria-label="Menu"><i></i><i></i></button>';
   const voile = document.createElement('div'); voile.className = 'voile';
-  voile.innerHTML = '<nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
+  voile.innerHTML = '<nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
   const bas = document.createElement('div'); bas.className = 'bas';
-  bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span>' + p.g + '</span>' + p.t + '</a>').join('')
+  bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
     + '<a class="menuBas" href="#"><span>≡</span>Menu</a>';
   document.body.prepend(nav, voile, bas);
   const basculer = () => document.body.classList.toggle('menu');
@@ -46,6 +48,15 @@ const VERSION_SITE = '07/09/2026 · 17h30';
     + '<div class="liens">' + PAGES.map(p => '<a href="' + lien(p) + '">' + p.t + '</a>').join('') + '</div>'
     + '<p>Bohème Production · Medley Starmania, Notre-Dame de Paris, Les Dix Commandements, Aimer · Palais des Festivals, Cannes, 4 octobre 2026</p></div>';
   document.body.appendChild(pied);
+
+
+  /* ── les pictogrammes en or remplacent les petits signes des boutons ──── */
+  const ICONES = { '→':'fleche', '↗':'fleche', '¶':'livre', '⟳':'maj', '✓':'coche', '✔':'coche', '✦':'etoile',
+                   '⇩':'telecharger', '▶':'lecture', '♪':'note', '⌂':'maison', '◎':'scene', '◌':'nouveau' };
+  document.querySelectorAll('.btn > b').forEach(b => {
+    const n = ICONES[b.textContent.trim()];
+    if (n){ const i = document.createElement('span'); i.className = 'ico ico-' + n; b.textContent = ''; b.appendChild(i); }
+  });
 
   /* ── les liens internes gardent le prénom ──────────────────────────── */
   if (suite) document.querySelectorAll('a[href]').forEach(a => {
