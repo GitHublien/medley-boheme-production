@@ -5417,7 +5417,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 12h30';
+const VERSION_APPLI = '07/09/2026 · 12h59';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5988,6 +5988,9 @@ const VERSION_APPLI = '07/09/2026 · 12h30';
 </script>
 
 <script>
+
+</script>
+<script>
 /* ═══ LA MUSIQUE SUR L'APPAREIL (7 septembre 2026) ═══ */
 (function(){
   if (!('caches' in window)) return;
@@ -6039,7 +6042,31 @@ const VERSION_APPLI = '07/09/2026 · 12h30';
       setTimeout(peindre, 3000); enCours = false; return;
     }
     enCours = false; await peindre();
+    recharger();
   }
+  /* pendant le téléchargement, le lecteur peut passer en erreur réseau (il n'a plus de
+     bande passante) — et un lecteur en erreur ne saute plus jamais. Une fois la musique
+     gardée, on recharge les deux lecteurs à la même position : ils lisent désormais
+     depuis l'appareil. */
+  function recharger(){
+    try {
+      const au = document.getElementById('au'); if (!au) return;
+      const t = au.currentTime, jouait = !au.paused;
+      au.load(); au.currentTime = t;
+      const auI2 = (typeof auI !== 'undefined') ? auI : null;
+      if (auI2){ auI2.load(); auI2.currentTime = t; }
+      if (jouait) au.play().catch(() => {});
+    } catch(e){}
+  }
+  /* et si le lecteur tombe en erreur alors que la musique est gardée : on le relance une fois */
+  (function(){
+    const au = document.getElementById('au'); if (!au) return;
+    let deja = false;
+    au.addEventListener('error', async () => {
+      if (deja) return;
+      if (await gardees() === BANDES.length){ deja = true; setTimeout(recharger, 300); }
+    });
+  })();
   async function retirer(){
     try { const c = await caches.open(CACHE); for (const u of BANDES) await c.delete(u); } catch(e){}
     await peindre();
