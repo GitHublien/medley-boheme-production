@@ -5498,7 +5498,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 21h03';
+const VERSION_APPLI = '07/09/2026 · 21h32';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5807,8 +5807,8 @@ const VERSION_APPLI = '07/09/2026 · 21h03';
   });
 })();
 </script>
-<div id="toastOrient" style="position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));
-  z-index:96;transform:translateX(-50%) translateY(-160%);
+<div id="toastOrient" style="position:fixed;left:50%;top:calc(96px + env(safe-area-inset-top));
+  z-index:18;transform:translateX(-50%) translateY(-160%);
   padding:10px 22px;border-radius:999px;pointer-events:none;
   background:rgba(5,5,5,.72);backdrop-filter:blur(18px);
   border:1px solid rgba(255,255,255,.10);
@@ -6105,4 +6105,219 @@ const VERSION_APPLI = '07/09/2026 · 21h03';
 })();
 </script>
 <script src="retour.js"></script>
+
+<!-- ═══ LA BARRE SUR TÉLÉPHONE (7 septembre 2026) ═══
+     Une rangée de pastilles rondes avec les pictogrammes en or, et un tiroir
+     pour tout ce qui ne sert pas tous les jours. Les paroles reprennent la place. -->
+<style>
+
+@media (pointer: coarse) and (max-width: 1100px){
+  /* UNE SEULE RANGÉE DE PASTILLES */
+  .barre{
+    display:flex !important; flex-wrap:nowrap !important; justify-content:center !important;
+    gap:8px !important; padding:calc(7px + env(safe-area-inset-top)) 8px 8px !important;
+    background:linear-gradient(180deg, rgba(0,0,0,.97) 86%, transparent) !important;
+  }
+  .barre .btn-reg{
+    width:46px !important; height:46px !important; min-height:0 !important;
+    padding:0 !important; border-radius:50% !important; font-size:0 !important;
+    display:grid !important; place-items:center !important; flex:none !important;
+    border:1px solid rgba(212,175,55,.5) !important; background:rgba(212,175,55,.07) !important;
+    letter-spacing:0 !important; text-align:center !important;
+  }
+  .barre .btn-reg .mot{ display:none !important; }
+  #btnAide.on, .barre .btn-reg.on{ background:rgba(157,255,53,.16) !important; border-color:rgba(157,255,53,.55) !important; }
+  #btnBande.instru{ background:rgba(143,176,216,.18) !important; border-color:rgba(143,176,216,.6) !important; }
+
+  /* LE TIROIR */
+  .tiroir{
+    position:fixed; left:8px; right:8px; top:calc(62px + env(safe-area-inset-top)); z-index:19;
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(96px, 1fr)); gap:7px;
+    padding:11px; border-radius:18px;
+    background:rgba(10,9,8,.98); border:1px solid rgba(212,175,55,.3);
+    box-shadow:0 22px 60px rgba(0,0,0,.7); backdrop-filter:blur(18px);
+    opacity:0; transform:translateY(-12px) scale(.98); pointer-events:none;
+    transition:opacity .34s cubic-bezier(.32,.72,0,1), transform .34s cubic-bezier(.32,.72,0,1);
+  }
+  body.tiroirOuvert .tiroir{ opacity:1; transform:none; pointer-events:auto; }
+  .tiroir .btn-reg{
+    width:auto !important; height:auto !important; border-radius:14px !important;
+    font-size:10.5px !important; letter-spacing:.9px !important;
+    padding:11px 6px !important; display:grid !important; gap:5px !important;
+    place-items:center !important; text-align:center !important; line-height:1.25 !important;
+  }
+  .tiroir .btn-reg .mot{ display:block !important; font-size:10.5px; color:#e8e2d2; }
+
+  /* la pastille « mode paysage » passe SOUS la barre : elle ne couvre plus rien */
+  #toastOrient{ top:calc(96px + env(safe-area-inset-top)) !important; z-index:18 !important; }
+}
+
+/* TÉLÉPHONE DEBOUT */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: portrait){
+  .barre{ gap:9px !important; }
+  .barre .btn-reg{ width:48px !important; height:48px !important; }
+  .b-aller.la{ width:auto !important; border-radius:999px !important; font-size:10px !important;
+               padding:0 14px !important; height:48px !important; letter-spacing:.9px !important;
+               display:inline-flex !important; align-items:center !important; gap:7px !important;
+               white-space:nowrap !important; max-width:44vw !important; overflow:hidden !important; }
+}
+
+/* TÉLÉPHONE COUCHÉ : le rail à gauche, en pastilles */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
+  :root{ --rail: 64px; }
+  .barre{
+    display:flex !important; flex-direction:column !important; flex-wrap:nowrap !important;
+    width:var(--rail) !important; left:0 !important; right:auto !important;
+    top:0 !important; bottom:0 !important; height:100% !important;
+    justify-content:flex-start !important; align-items:center !important;
+    gap:7px !important; padding:calc(8px + env(safe-area-inset-top)) 0 8px !important;
+    background:linear-gradient(90deg, rgba(6,5,4,.97) 80%, transparent) !important;
+    border-right:1px solid rgba(212,175,55,.18);
+  }
+  .barre .btn-reg{ width:44px !important; height:44px !important; }
+  .b-aller.la{ width:44px !important; height:44px !important; border-radius:50% !important;
+               padding:0 !important; font-size:0 !important; display:grid !important;
+               place-items:center !important; max-width:none !important; }
+  .tiroir{ left:calc(var(--rail) + 8px) !important; right:8px !important; top:8px !important;
+           grid-template-columns:repeat(auto-fit, minmax(92px, 1fr)) !important; }
+  #toastOrient{ top:10px !important; left:calc(var(--rail) + 50%) !important; }
+  #bandeau{ left:var(--rail) !important; }
+  .scene{ margin-left:var(--rail) !important; }
+  #lecteurBas{ left:var(--rail) !important; }
+  #tuto{ left:calc(var(--rail) + 10px) !important; }
+  #carton{ left:var(--rail) !important; }
+  #toastMaj{ left:calc(var(--rail) + 50%) !important; }
+}
+</style>
+
+<script>
+/* Chaque bouton reçoit son pictogramme en or ; les gestes de tous les jours restent
+   dehors, le reste descend dans le tiroir. Sur ordinateur, rien ne bouge. */
+(function(){
+  if (!(matchMedia('(pointer: coarse)').matches && innerWidth <= 1100)) return;
+
+  const PICTO = { btnSite:'retour', btnBande:'micro', btnBlocs:'blocs', btnStyle:'style',
+                  btnAide:'aide', btnTuto:'question', btnInfos:'info', btnMaj:'maj',
+                  btnIntro:'film', btnPlein:'plein', btnPresence:'aide' };
+  const DEHORS = ['btnSite', 'btnBande', 'btnBlocs', 'btnAide'];
+  const NOMS = { btnSite:'Retour au site', btnBande:'Voix témoins', btnBlocs:'Blocs',
+                 btnStyle:'Style', btnAide:'Ton aide', btnTuto:'Le guide', btnInfos:'Infos',
+                 btnMaj:'Mise à jour', btnIntro:"Revoir l'intro", btnPlein:'Plein écran',
+                 btnPresence:'Présence' };
+
+  function habiller(b, nom){
+    /* le pictogramme vient du CSS : ici on ne touche PAS au contenu du bouton,
+       on lui donne seulement son nom pour la lecture d'écran et l'infobulle */
+    if (b.dataset.habille) return;
+    b.dataset.habille = '1';
+    const mot = NOMS[b.id] || (b.textContent || '').trim();
+    b.title = mot; b.setAttribute('aria-label', mot);
+  }
+
+  const barre = document.querySelector('.barre');
+  if (!barre) return;
+  const tiroir = document.createElement('div'); tiroir.className = 'tiroir';
+  const plus = document.createElement('button'); plus.className = 'btn-reg'; plus.id = 'btnPlus';
+  plus.title = 'les autres commandes'; plus.setAttribute('aria-label', 'les autres commandes');
+  plus.dataset.habille = '1';
+  plus.addEventListener('click', e => { e.stopPropagation(); document.body.classList.toggle('tiroirOuvert'); });
+  document.addEventListener('click', e => {
+    if (!document.body.classList.contains('tiroirOuvert')) return;
+    if (!tiroir.contains(e.target) && e.target !== plus) document.body.classList.remove('tiroirOuvert');
+  });
+
+  let enCours = false;
+  function ranger(){
+    if (enCours) return; enCours = true;
+    [...barre.querySelectorAll('.btn-reg')].forEach(b => {
+      if (b.id === 'btnPlus' || b.id === 'btnReg') return;
+      if (b.classList.contains('b-aller')){ habiller(b, 'passage'); return; }
+      const n = PICTO[b.id]; if (!n) return;
+      habiller(b, n);
+      if (!DEHORS.includes(b.id)){
+        tiroir.appendChild(b);
+        if (!b.querySelector('.mot')){
+          const m = document.createElement('span'); m.className = 'mot';
+          m.textContent = NOMS[b.id] || ''; b.textContent = ''; b.appendChild(m);
+        }
+        b.addEventListener('click', () => setTimeout(() => document.body.classList.remove('tiroirOuvert'), 120), { once: true });
+      }
+    });
+    if (!barre.contains(plus)) barre.appendChild(plus);
+    if (!document.body.contains(tiroir)) document.body.appendChild(tiroir);
+    enCours = false;
+  }
+  ranger();
+  new MutationObserver(ranger).observe(barre, { childList: true });
+
+  /* Voix témoins ⇄ Instrumental : le CSS change le pictogramme tout seul (#btnBande.instru).
+     Ici on ne remet à jour que le mot du tiroir. */
+  new MutationObserver(() => {
+    const b = document.getElementById('btnBande'); if (!b) return;
+    const m = b.querySelector('.mot');
+    if (m) m.textContent = b.classList.contains('instru') ? 'Instrumental' : 'Voix témoins';
+  }).observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
+})();
+</script>
+
+
+
+<style>
+/* ═══ LES PICTOGRAMMES, EN CSS PUR (7 septembre 2026) ═══
+   Le karaoké réécrit le texte de certains boutons : si le pictogramme était posé en
+   JavaScript, le mot revenait par-dessus. Ici c'est le CSS qui le dessine, donc il reste. */
+@media (pointer: coarse) and (max-width: 1100px){
+  .barre .btn-reg, .tiroir .btn-reg{ position:relative; }
+  /* dans la barre : le mot disparaît, le pictogramme prend sa place */
+  .barre .btn-reg{ font-size:0 !important; color:transparent !important; overflow:visible !important; text-indent:0 !important; }
+  /* d'anciennes règles nommaient ces boutons un par un et leur rendaient une taille de
+     texte : on les neutralise avec la même force, sinon le mot repasse par-dessus le
+     pictogramme quand le karaoké réécrit le bouton (Voix témoins ⇄ Instrumental). */
+  .barre #btnMaj, .barre #btnStyle, .barre #btnPlein, .barre #btnBlocs, .barre #btnTuto,
+  .barre #btnAide, .barre #btnIntro, .barre #btnBande, .barre #btnPresence, .barre #btnSite,
+  .barre #btnInfos, .barre #btnPlus, .barre .b-aller{
+    font-size:0 !important; color:transparent !important; letter-spacing:0 !important;
+    line-height:0 !important; white-space:nowrap !important; overflow:visible !important;
+  }
+  .barre .btn-reg > *{ display:none !important; }
+  /* le pictogramme est posé au centre exact de la pastille, quoi que contienne le bouton */
+  .barre .btn-reg::before{
+    content:'' !important; position:absolute !important; inset:0 !important; margin:auto !important;
+    width:24px !important; height:24px !important;
+    background-position:center !important; background-size:contain !important;
+    background-repeat:no-repeat !important; filter:drop-shadow(0 0 5px rgba(212,175,55,.4));
+    opacity:1 !important; visibility:visible !important;
+  }
+  /* les trois points du tiroir, dessinés : aucun caractère ne peut manquer à l'appel */
+  #btnPlus::before{ content:'' !important; width:5px !important; height:5px !important;
+    border-radius:50% !important; background:var(--or) !important; background-image:none !important;
+    box-shadow:-9px 0 0 var(--or), 9px 0 0 var(--or) !important; filter:none !important; }
+  #btnSite::before{ background-image:url(site-images/icones-karaoke/retour.png); }
+  #btnBande::before{ background-image:url(site-images/icones-karaoke/micro.png); }
+  #btnBlocs::before{ background-image:url(site-images/icones-karaoke/blocs.png); }
+  #btnStyle::before{ background-image:url(site-images/icones-karaoke/style.png); }
+  #btnAide::before{ background-image:url(site-images/icones-karaoke/aide.png); }
+  #btnTuto::before{ background-image:url(site-images/icones-karaoke/question.png); }
+  #btnInfos::before{ background-image:url(site-images/icones-karaoke/info.png); }
+  #btnMaj::before{ background-image:url(site-images/icones-karaoke/maj.png); }
+  #btnIntro::before{ background-image:url(site-images/icones-karaoke/film.png); }
+  #btnPlein::before{ background-image:url(site-images/icones-karaoke/plein.png); }
+  #btnPresence::before{ background-image:url(site-images/icones-karaoke/aide.png); }
+  /* Instrumental : le micro devient un piano */
+  #btnBande.instru::before{ background-image:url(site-images/icones-karaoke/piano.png) !important; }
+  /* « aller à ton passage » : sa flèche, jamais son texte */
+  .barre .b-aller.la::before{ background-image:url(site-images/icones-karaoke/passage.png); }
+  .barre .b-aller.la{ width:46px !important; height:46px !important; border-radius:50% !important;
+    padding:0 !important; display:grid !important; place-items:center !important;
+    max-width:none !important; white-space:nowrap !important; }
+
+  /* dans le tiroir : le pictogramme en haut, le nom en dessous */
+  .tiroir .btn-reg{ font-size:10.5px !important; color:#e8e2d2 !important; overflow:visible !important; }
+  .tiroir .btn-reg > *{ display:block !important; }
+  .tiroir .btn-reg::before{
+    content:''; display:block; width:22px; height:22px; margin:0 auto .35rem;
+    background:center/contain no-repeat; filter:drop-shadow(0 0 5px rgba(212,175,55,.4));
+  }
+}
+</style>
 </body>
