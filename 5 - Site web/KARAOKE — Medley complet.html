@@ -5417,7 +5417,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 13h14';
+const VERSION_APPLI = '07/09/2026 · 13h18';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5441,6 +5441,7 @@ const VERSION_APPLI = '07/09/2026 · 13h14';
     location.replace(location.pathname + '?' + q.toString());
   }
 
+  window.dire = dire;   /* le petit mot, joignable par les autres scripts (musique sur l'appareil) */
   window.chercherMaj = async function(){
     dire('⟳ Je cherche s\'il y a du nouveau…', 0);
     try {
@@ -5994,6 +5995,9 @@ const VERSION_APPLI = '07/09/2026 · 13h14';
 
 </script>
 <script>
+
+</script>
+<script>
 /* ═══ LA MUSIQUE SUR L'APPAREIL (7 septembre 2026) ═══ */
 (function(){
   if (!('caches' in window)) return;
@@ -6081,6 +6085,20 @@ const VERSION_APPLI = '07/09/2026 · 13h14';
     else garder();
   });
   peindre();
+  window.garderMusique = garder;
+  /* l'invitation : sur téléphone ou tablette, tant que la musique n'est pas gardée, un mot à
+     l'ouverture, avec le bouton dedans. Pas plus d'une fois par ouverture. */
+  setTimeout(async () => {
+    try {
+      if (!matchMedia('(pointer: coarse)').matches) return;
+      if (await gardees() === BANDES.length) return;
+      if (typeof dire !== 'function') return;
+      dire('♫ <b>Pour que l\'appli soit rapide</b>, garde la musique sur ton téléphone : une fois, en Wi-Fi (2 × 64 Mo). '
+         + 'Ensuite, chaque saut est instantané, même sans réseau.<br>'
+         + '<button onclick="window.garderMusique(); this.disabled = true; this.textContent = \'⬇ Ça se télécharge… regarde le bouton Musique dans la barre\';" '
+         + 'style="margin-top:8px;font:inherit;font-size:.95em;padding:8px 14px;border-radius:999px;border:1px solid #9dff35;background:rgba(157,255,53,.14);color:#9dff35;cursor:pointer">⬇ Garder la musique maintenant</button>', 20000);
+    } catch(e){}
+  }, 9000);
 })();
 /* ═══ fin musique sur l'appareil ═══ */
 </script>
