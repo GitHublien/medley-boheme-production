@@ -1,0 +1,1536 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le livre des textes — Medley Bohème</title>
+<style>
+  :root{ --fond:#0d0b0a; --or:#d4af37; --encre:#f2ede1; --gris:#8a8272; --bleu:#8fb0d8;
+         --adrien:#d4af37; --stephanie:#f2a3c7; --candice:#c9a2ea; --mickael:#6fd0bb; --bry:#f0955c; --elie:#a9d97f;
+         --off:#8fb0d8; --pensee:#bcd6f2; --tous:#f2ede1; --taille:2.35rem; }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; scroll-padding-top:120px; }
+  body{ margin:0; background:var(--fond); color:var(--encre); font-family:Garamond,"EB Garamond",Georgia,serif; }
+  a{ color:inherit; text-decoration:none; }
+  /* la barre du haut */
+  .barre{ position:fixed; top:0; left:0; right:0; z-index:20; display:flex; align-items:center; gap:10px; padding:10px 16px;
+          background:rgba(13,11,10,.94); border-bottom:1px solid rgba(212,175,55,.25); backdrop-filter:blur(8px); }
+  .barre .titre{ font-family:"Palatino Linotype",Palatino,Georgia,serif; color:var(--or); letter-spacing:3px; text-transform:uppercase; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .barre .courant{ color:var(--gris); font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:40vw; }
+  .btn{ font:inherit; font-size:15px; color:var(--or); background:transparent; border:1px solid rgba(212,175,55,.5); border-radius:999px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
+  .btn:hover{ background:rgba(212,175,55,.12); }
+  .btn.actif{ background:rgba(212,175,55,.22); }
+  .bande{ display:flex; gap:4px; }
+  /* la couverture et le sommaire */
+  .couverture{ min-height:60vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:140px 20px 40px; }
+  .couverture h1{ font-family:"Palatino Linotype",Palatino,Georgia,serif; color:var(--or); font-size:clamp(2.4rem,7vw,4.6rem); letter-spacing:8px; margin:0; font-weight:700; }
+  .couverture .sous{ color:var(--gris); font-style:italic; font-size:1.2rem; margin:12px 0 30px; }
+  .couverture .quoi{ font-size:2rem; }
+  .couverture .ou{ color:var(--gris); font-size:1rem; letter-spacing:3px; text-transform:uppercase; margin-top:40px; border-top:1px solid rgba(212,175,55,.35); padding-top:16px; }
+  .sommaire{ max-width:760px; margin:0 auto 60px; padding:0 20px; }
+  .sommaire h2, .voix h2{ font-family:"Palatino Linotype",Palatino,Georgia,serif; color:var(--or); font-size:2rem; border-bottom:1px solid rgba(212,175,55,.35); padding-bottom:8px; }
+  .sommaire a{ display:flex; align-items:baseline; gap:14px; padding:9px 10px; border-radius:8px; font-size:1.45rem; }
+  .sommaire a:hover{ background:rgba(212,175,55,.1); }
+  .sommaire a .n{ color:var(--or); font-size:1rem; width:32px; opacity:.8; }
+  .sommaire a .t{ flex:1; }
+  .sommaire a .h{ color:var(--gris); font-size:1rem; }
+  .sommaire a.narr{ color:var(--bleu); } .sommaire a.narr .n{ color:var(--bleu); }
+  .voix{ max-width:760px; margin:0 auto 60px; padding:0 20px; }
+  .voix p{ font-size:1.6rem; margin:6px 0; font-weight:700; }
+  .voix small{ color:var(--gris); font-weight:400; font-size:1.05rem; margin-left:12px; font-style:italic; }
+  /* les blocs */
+  .bloc{ max-width:900px; margin:0 auto; padding:30px 20px 60px; border-top:1px solid rgba(212,175,55,.2); }
+  .entete{ display:flex; align-items:baseline; gap:16px; }
+  .entete .num{ color:var(--or); letter-spacing:4px; font-size:1.1rem; }
+  .entete h2{ font-family:"Palatino Linotype",Palatino,Georgia,serif; font-size:clamp(2rem,5vw,3rem); margin:0; }
+  .place{ color:var(--gris); font-style:italic; font-size:1.05rem; margin:6px 0 14px; }
+  .place b{ color:var(--or); font-style:normal; font-size:.85rem; letter-spacing:2px; text-transform:uppercase; margin-right:8px; }
+  /* le lecteur façon Reaper */
+  .lecteur{ position:sticky; top:58px; z-index:10; display:grid; grid-template-columns:auto 1fr auto; grid-template-rows:auto auto; gap:8px 12px; align-items:center;
+            background:rgba(20,18,16,.97); border:1px solid rgba(212,175,55,.35); border-radius:14px; padding:12px 14px; margin:8px 0 22px; box-shadow:0 10px 30px rgba(0,0,0,.5); }
+  .lecteur .lire{ grid-row:1/3; width:64px; height:64px; border-radius:50%; border:2px solid var(--or); background:rgba(212,175,55,.12); color:var(--or); font-size:26px; cursor:pointer; }
+  .lecteur .lire:hover{ background:rgba(212,175,55,.25); }
+  .lecteur.joue .lire .ico::before{ content:"❚❚"; font-size:20px; } .lecteur.joue .lire .ico{ font-size:0; }
+  .regle{ position:relative; height:44px; cursor:pointer; touch-action:none; user-select:none; }
+  .regle .fond{ position:absolute; left:0; right:0; top:14px; height:16px; background:#2a2622; border-radius:8px; }
+  .regle .joue{ position:absolute; left:0; top:14px; height:16px; width:0; background:linear-gradient(90deg,#8a6d1c,var(--or)); border-radius:8px; }
+  .regle .tete{ position:absolute; top:4px; width:4px; height:36px; margin-left:-2px; background:#fff; border-radius:2px; box-shadow:0 0 10px rgba(255,255,255,.7); left:0; }
+  .regle .graduations{ position:absolute; left:0; right:0; top:32px; height:10px; }
+  .regle .graduations i{ position:absolute; top:0; width:1px; height:6px; background:rgba(255,255,255,.28); }
+  .regle .graduations i.dix{ height:10px; background:rgba(255,255,255,.5); }
+  .temps{ color:var(--gris); font-size:1.05rem; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .temps .ecoule{ color:var(--encre); font-size:1.3rem; }
+  .temps .sep{ margin:0 6px; }
+  .outils{ grid-column:2/4; display:flex; gap:8px; }
+  .outils button{ font:inherit; font-size:14px; color:var(--encre); background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:6px 14px; cursor:pointer; }
+  .outils button:hover{ background:rgba(255,255,255,.14); }
+  .outils button.actif{ color:var(--or); border-color:var(--or); background:rgba(212,175,55,.15); }
+  /* le choix de la bande, en jaune pour qu'on le voie : voix témoin ou instrumental */
+  .outils .bande{ margin-left:auto; display:flex; gap:0; border:1px solid rgba(255,214,90,.55); border-radius:999px; overflow:hidden; }
+  .outils .bande button{ border:0; border-radius:0; background:rgba(255,214,90,.06); color:#ffd65a; font-weight:700; padding:6px 14px; }
+  .outils .bande button.actif{ background:#ffd65a; color:#1a1408; box-shadow:0 0 14px rgba(255,214,90,.45); }
+  /* les voix et les lignes */
+  .groupe{ margin:26px 0 0; }
+  .groupe.g-off{ background:rgba(143,176,216,.08); border-left:4px solid var(--off); border-radius:0 12px 12px 0; padding:12px 18px 14px; }
+  .sous{ color:var(--bleu); text-transform:uppercase; letter-spacing:3px; font-size:1rem; font-weight:700; margin-bottom:6px; }
+  .qui{ font-family:"Palatino Linotype",Palatino,Georgia,serif; text-transform:uppercase; letter-spacing:3px; font-size:1.05rem; font-weight:700; margin-bottom:6px; color:var(--gris); }
+  .qui .noms{ margin-left:14px; letter-spacing:2px; font-size:.95rem; }
+  .qui .noms b{ font-weight:700; }
+  .qui .q-off{ color:var(--off); } .qui .q-pensee{ color:var(--pensee); font-style:italic; }
+  /* chaque phrase sur UNE SEULE ligne : la taille se règle pour tenir dans la largeur (script) */
+  .ligne{ font-size:var(--taille); line-height:1.25; margin:0 0 6px; font-weight:700; text-shadow:0 0 1px rgba(0,0,0,.8); transition:transform .15s, opacity .15s; white-space:nowrap; overflow:hidden; }
+  .g-off .ligne{ font-style:italic; font-weight:600; font-size:calc(var(--taille) * .82); }
+  .g-pensee .ligne{ font-style:italic; font-size:calc(var(--taille) * .9); }
+  .c-adrien{ color:var(--adrien); } .c-stephanie{ color:var(--stephanie); } .c-candice{ color:var(--candice); }
+  .c-mickael{ color:var(--mickael); } .c-bry{ color:var(--bry); } .c-elie{ color:var(--elie); }
+  .c-off{ color:var(--off); } .c-pensee{ color:var(--pensee); } .c-tous{ color:var(--tous); }
+  .bloc.joue .ligne{ opacity:.55; }
+  .bloc.joue .ligne.en-cours{ opacity:1; transform:translateX(10px); text-shadow:0 0 18px currentColor; }
+  .bloc.joue .ligne.passee{ opacity:.8; }
+  /* la navigation basse */
+  .nav{ display:flex; justify-content:space-between; gap:10px; max-width:900px; margin:20px auto 0; padding:0 20px; }
+  .haut{ position:fixed; right:18px; bottom:18px; z-index:20; width:52px; height:52px; border-radius:50%; border:1px solid rgba(212,175,55,.5); background:rgba(13,11,10,.9); color:var(--or); font-size:22px; cursor:pointer; }
+  .fin{ max-width:760px; margin:60px auto 0; padding:30px 20px 140px; border-top:1px solid rgba(212,175,55,.35); }
+  .fin .mf-titre{ color:var(--or); text-transform:uppercase; letter-spacing:4px; font-size:1rem; margin-bottom:14px; }
+  .fin p{ font-size:1.5rem; line-height:1.45; margin:0 0 14px; color:#e6dfcf; }
+  .fin .mf-sign{ color:var(--or); text-align:right; font-style:italic; font-size:1.3rem; }
+  @media (max-width:700px){
+    :root{ --taille:1.75rem; }
+    .barre{ flex-wrap:wrap; gap:6px; padding:8px 10px; }
+    .barre .titre{ display:none; } .barre .courant{ max-width:none; flex:1 1 100%; order:-1; text-align:center; font-size:13px; }
+    .btn{ font-size:14px; padding:7px 11px; flex:1; text-align:center; }
+    .bande{ flex:1; }
+    html{ scroll-padding-top:96px; }
+    .lecteur{ top:88px; grid-template-columns:auto 1fr; padding:10px; }
+    .lecteur .lire{ width:54px; height:54px; }
+    .temps{ grid-column:2; } .outils{ grid-column:1/3; flex-wrap:wrap; }
+    .outils .bande{ flex:1 1 100%; margin-left:0; } .outils .bande button{ flex:1; }
+    .bloc{ padding:22px 12px 40px; }
+    .bloc.joue .ligne.en-cours{ transform:none; }
+  }
+</style>
+</head>
+<body>
+<div class="barre">
+  <span class="titre">Medley Bohème · le livre des textes</span>
+  <span class="courant" id="courant"></span>
+  <a class="btn" href="#sommaire">Sommaire</a>
+  <button class="btn" id="prec" title="Bloc précédent">◀</button>
+  <button class="btn" id="suiv" title="Bloc suivant">▶</button>
+</div>
+<audio id="au" preload="metadata" src="media/bande-voix-temoins.mp3"></audio>
+
+<div class="couverture" id="haut">
+  <h1>Medley Bohème</h1>
+  <div class="sous">Starmania · Notre-Dame de Paris · Les Dix Commandements · Aimer</div>
+  <div class="quoi">Les textes, du premier mot au dernier,<br>avec les voix qui les portent</div>
+  <div class="ou">Palais des Festivals · Cannes · 4 octobre 2026</div>
+</div>
+
+<div class="voix">
+  <h2>Les voix</h2>
+  <p class="c-adrien">Adrien</p><p class="c-stephanie">Stéphanie</p><p class="c-candice">Candice</p>
+  <p class="c-mickael">Mickaël</p><p class="c-bry">Bry</p><p class="c-elie">Élie</p>
+  <p class="c-tous">Tous les six, un duo, les chœurs <small>en blanc, avec au-dessus les prénoms de ceux qui chantent</small></p>
+  <p class="c-off">La narration, la radio, la machine <small>une voix qui vient de la bande : personne ne chante sur scène</small></p>
+  <p class="c-pensee"><i>Une pensée</i> <small>ce qu'un personnage pense</small></p>
+</div>
+
+<div class="sommaire" id="sommaire">
+  <h2>Sommaire</h2>
+  <a href="#bloc01" class="narr"><span class="n">01</span><span class="t">Narration d&#x27;ouverture</span><span class="h">0'00</span></a>
+<a href="#bloc02" class=""><span class="n">02</span><span class="t">Quand on arrive en ville</span><span class="h">0'30</span></a>
+<a href="#bloc03" class="narr"><span class="n">03</span><span class="t">Explosion, flash radio</span><span class="h">1'48</span></a>
+<a href="#bloc04" class=""><span class="n">04</span><span class="t">Ziggy</span><span class="h">2'11</span></a>
+<a href="#bloc05" class=""><span class="n">05</span><span class="t">La chanson de Ziggy</span><span class="h">3'33</span></a>
+<a href="#bloc06" class="narr"><span class="n">06</span><span class="t">Radio Monopolis, le duplex</span><span class="h">5'16</span></a>
+<a href="#bloc07" class=""><span class="n">07</span><span class="t">Le Blues du Businessman</span><span class="h">6'06</span></a>
+<a href="#bloc08" class="narr"><span class="n">08</span><span class="t">Retour d&#x27;antenne</span><span class="h">8'34</span></a>
+<a href="#narr09_0" class="narr"><span class="n">◇</span><span class="t">Merci Christine</span><span class="h">8'45</span></a>
+<a href="#bloc09" class=""><span class="n">09</span><span class="t">Les uns contre les autres</span><span class="h">9'08</span></a>
+<a href="#bloc10" class="narr"><span class="n">10</span><span class="t">Cloches, narration</span><span class="h">10'20</span></a>
+<a href="#bloc11" class=""><span class="n">11</span><span class="t">Le Temps des Cathédrales</span><span class="h">10'27</span></a>
+<a href="#narr11_1" class="narr"><span class="n">◇</span><span class="t">L&#x27;entrée des Cathédrales</span><span class="h">10'31</span></a>
+<a href="#bloc12" class="narr"><span class="n">12</span><span class="t">Bataille, appel crié</span><span class="h">12'12</span></a>
+<a href="#bloc13" class=""><span class="n">13</span><span class="t">Les Sans-papiers</span><span class="h">12'27</span></a>
+<a href="#bloc14" class=""><span class="n">14</span><span class="t">Bohémienne</span><span class="h">13'59</span></a>
+<a href="#narr15_0" class="narr"><span class="n">◇</span><span class="t">L&#x27;appel de Belle</span><span class="h">16'00</span></a>
+<a href="#bloc15" class=""><span class="n">15</span><span class="t">Belle</span><span class="h">16'06</span></a>
+<a href="#narr16_0" class="narr"><span class="n">◇</span><span class="t">La bascule vers l&#x27;Égypte</span><span class="h">18'35</span></a>
+<a href="#bloc16" class=""><span class="n">16</span><span class="t">Le Dilemme</span><span class="h">19'05</span></a>
+<a href="#narr16_40" class="narr"><span class="n">◇</span><span class="t">Ramsès et Moïse, deux frères</span><span class="h">20'42</span></a>
+<a href="#bloc17" class=""><span class="n">17</span><span class="t">Mon Frère</span><span class="h">20'55</span></a>
+<a href="#bloc18" class="narr"><span class="n">18</span><span class="t">L&#x27;arrêt du temps</span><span class="h">23'00</span></a>
+<a href="#bloc19" class=""><span class="n">19</span><span class="t">Stone</span><span class="h">23'20</span></a>
+<a href="#narr20_0" class="narr"><span class="n">◇</span><span class="t">À Monopolis, à Notre-Dame, en Égypte</span><span class="h">23'58</span></a>
+<a href="#bloc20" class=""><span class="n">20</span><span class="t">Aimer</span><span class="h">24'20</span></a>
+  <p style="color:var(--gris);font-style:italic;font-size:1rem;margin-top:14px">Un clic mène au passage. En bleu, les narrations. Sous chaque titre, un lecteur joue la bande de ce bloc.</p>
+</div>
+
+<section class="bloc" id="bloc01" data-i="0">
+<div class="entete"><span class="num">01</span><h2>Narration d&#x27;ouverture</h2></div>
+<p class="place"><b>En place</b> Rideau fermé · Adrien, Mickaël, Bry, Candice et Élie déjà en place · Stéphanie en coulisse</p>
+<div class="lecteur" data-i="0">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off</span></div>
+<p class="ligne c-off" id="l01_0">Paris, 1978.</p>
+<p class="ligne c-off" id="l01_1">Un opéra rock va tout changer : Starmania.</p>
+<p class="ligne c-off" id="l01_2">Dans le rôle de Johnny Rockfort : Daniel Balavoine.</p>
+<p class="ligne c-off" id="l01_3">Ce soir…</p>
+<p class="ligne c-off" id="l01_4">Retour là où tout a commencé.</p>
+<p class="ligne c-off" id="l01_5">Il est minuit. Les zonards descendent sur la ville.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc02" data-i="1">
+<div class="entete"><span class="num">02</span><h2>Quand on arrive en ville</h2></div>
+<p class="place"><b>En place</b> Adrien, Mickaël, Bry, Candice et Élie · Stéphanie n&#x27;entre pas encore</p>
+<div class="lecteur" data-i="1">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l02_0">Quand tout l&#x27;monde dort tranquille</p>
+<p class="ligne c-adrien" id="l02_1">Dans les banlieues-dortoirs</p>
+<p class="ligne c-adrien" id="l02_2">C&#x27;est l&#x27;heure où les zonards descendent sur la ville.</p>
+<p class="ligne c-adrien" id="l02_3">Qui est-ce qui viole les filles, le soir, dans les parkings ?</p>
+<p class="ligne c-adrien" id="l02_4">Qui met l&#x27;feu aux buildings ? C&#x27;est toujours les zonards.</p>
+<p class="ligne c-adrien" id="l02_5">Alors c&#x27;est la panique sur les boulevards</p>
+<p class="ligne c-adrien" id="l02_6">Quand on arrive en ville.</p>
+<p class="ligne c-adrien" id="l02_7">Quand on arrive en ville</p>
+<p class="ligne c-adrien" id="l02_8">Tout l&#x27;monde change de trottoir.</p>
+<p class="ligne c-adrien" id="l02_9">On n&#x27;a pas l&#x27;air virils, mais on fait peur à voir.</p>
+<p class="ligne c-adrien" id="l02_10">Des gars qui se maquillent, ça fait rire les passants</p>
+<p class="ligne c-adrien" id="l02_11">Mais quand ils voient du sang sur nos lames de rasoir</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Chœurs avec <b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-tous" id="l02_12">Ça fait comme un éclair dans le brouillard</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l02_13">Quand on arrive en ville.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Chœurs avec <b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-tous" id="l02_14">Nous, tout c&#x27;qu&#x27;on veut, c&#x27;est être heureux</p>
+<p class="ligne c-tous" id="l02_15">Être heureux avant d&#x27;être vieux.</p>
+<p class="ligne c-tous" id="l02_16">On n&#x27;a pas l&#x27;temps d&#x27;attendre d&#x27;avoir trente ans.</p>
+<p class="ligne c-tous" id="l02_17">Nous, tout c&#x27;qu&#x27;on veut, c&#x27;est être heureux</p>
+<p class="ligne c-tous" id="l02_18">Être heureux avant d&#x27;être vieux.</p>
+<p class="ligne c-tous" id="l02_19">On prend tout c&#x27;qu&#x27;on veut prendre, mais en attendant…</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc03" data-i="2">
+<div class="entete"><span class="num">03</span><h2>Explosion, flash radio</h2></div>
+<p class="place"><b>En place</b> Mickaël et Candice sortent à jardin, Élie, Bry et Adrien à cour · Stéphanie entre à jardin</p>
+<div class="lecteur" data-i="2">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off</span></div>
+<p class="ligne c-off" id="l03_0">Ici Radio Monopolis, il est minuit passé, les émeutes embrasent la ville.</p>
+<p class="ligne c-off" id="l03_1">Pendant ce temps, dans un café des souterrains, une serveuse rêve les yeux ouverts d&#x27;un garçon qui ne l&#x27;aimera jamais.</p>
+<p class="ligne c-off" id="l03_2">Un garçon pas comme les autres.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc04" data-i="3">
+<div class="entete"><span class="num">04</span><h2>Ziggy</h2></div>
+<p class="place"><b>En place</b> Stéphanie seule en scène</p>
+<div class="lecteur" data-i="3">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l04_0">Ziggy…</p>
+<p class="ligne c-stephanie" id="l04_1">Il s&#x27;appelle Ziggy.</p>
+<p class="ligne c-stephanie" id="l04_2">Je suis folle de lui.</p>
+<p class="ligne c-stephanie" id="l04_3">C&#x27;est un garçon pas comme les autres</p>
+<p class="ligne c-stephanie" id="l04_4">Mais moi, je l&#x27;aime, c&#x27;est pas de ma faute</p>
+<p class="ligne c-stephanie" id="l04_5">Même si je sais</p>
+<p class="ligne c-stephanie" id="l04_6">Qu&#x27;il ne m&#x27;aimera jamais.</p>
+<p class="ligne c-stephanie" id="l04_7">Tous les soirs, il m&#x27;emmène danser</p>
+<p class="ligne c-stephanie" id="l04_8">Dans des endroits très, très gais</p>
+<p class="ligne c-stephanie" id="l04_9">Où il a des tas d&#x27;amis.</p>
+<p class="ligne c-stephanie" id="l04_10">Oui, je sais, il aime les garçons.</p>
+<p class="ligne c-stephanie" id="l04_11">Je devrais me faire une raison</p>
+<p class="ligne c-stephanie" id="l04_12">Essayer de l&#x27;oublier…</p>
+<p class="ligne c-stephanie" id="l04_13">Mais Ziggy, il s&#x27;appelle Ziggy.</p>
+<p class="ligne c-stephanie" id="l04_14">Je suis folle de lui.</p>
+<p class="ligne c-stephanie" id="l04_15">C&#x27;est un garçon pas comme les autres</p>
+<p class="ligne c-stephanie" id="l04_16">Mais moi, je l&#x27;aime, c&#x27;est pas ma faute</p>
+<p class="ligne c-stephanie" id="l04_17">Même si je sais qu&#x27;il ne m&#x27;aimera jamais.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc05" data-i="4">
+<div class="entete"><span class="num">05</span><h2>La chanson de Ziggy</h2></div>
+<p class="place"><b>En place</b> Adrien et Stéphanie, eux seuls</p>
+<div class="lecteur" data-i="4">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-pensee">
+<div class="qui"><span class="q-pensee">Pensée de <b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-pensee" id="l05_0">Le voilà, le voilà, c&#x27;est lui, c&#x27;est lui.</p>
+<p class="ligne c-pensee" id="l05_1">Tourne la tête, tourne la tête.</p>
+<p class="ligne c-pensee" id="l05_2">Un seul instant, un seul instant, un seul, un seul.</p>
+<p class="ligne c-pensee" id="l05_3">Non, non, il ne me regarde même pas.</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l05_4">Moi, j&#x27;étais un fils à maman.</p>
+<p class="ligne c-adrien" id="l05_5">Tous les soirs, en m&#x27;endormant</p>
+<p class="ligne c-adrien" id="l05_6">Elle me disait : « Quand tu s&#x27;ras grand</p>
+<p class="ligne c-adrien" id="l05_7">Tu danseras le Prince Charmant</p>
+<p class="ligne c-adrien" id="l05_8">Dans La Belle au bois dormant. »</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-adrien">Adrien</b> et <b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-tous" id="l05_9">Dans La Belle au bois dormant…</p>
+<p class="ligne c-tous" id="l05_10">À quinze ans, ma mère m&#x27;a donné</p>
+<p class="ligne c-tous" id="l05_11">En cadeau d&#x27;anniversaire</p>
+<p class="ligne c-tous" id="l05_12">Tout Tchaïkovski dans un coffret.</p>
+<p class="ligne c-tous" id="l05_13">Moi, j&#x27;ai couru chez le disquaire</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l05_14">Le lendemain</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-adrien">Adrien</b> et <b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-tous" id="l05_15">Pour l&#x27;échanger.</p>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l05_16">Je connais par cœur son histoire,</p>
+<p class="ligne c-stephanie" id="l05_17">il me l&#x27;a déjà raconté cent fois.</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l05_18">C&#x27;est ce jour-là que j&#x27;ai rencontré</p>
+<p class="ligne c-adrien" id="l05_19">Le premier amour de ma vie.</p>
+<p class="ligne c-adrien" id="l05_20">Il s&#x27;appelait David Bowie…</p>
+</div>
+<div class="groupe g-pensee">
+<div class="qui"><span class="q-pensee">Pensée de <b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-pensee" id="l05_21">David Bowie, David Bowie, évidemment, évidemment.</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l05_22">Sa musique a changé ma vie.</p>
+<p class="ligne c-adrien" id="l05_23">Moi, j&#x27;ai changé mon nom pour lui.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-adrien">Adrien</b> et <b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-tous" id="l05_24">J&#x27;ai changé mon nom pour lui.</p>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l05_25">Ziggy… Ziggy…</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc06" data-i="5">
+<div class="entete"><span class="num">06</span><h2>Radio Monopolis, le duplex</h2></div>
+<p class="place"><b>En place</b> Plateau noir pendant la voix off · les quatre hommes se mettent en place dans l&#x27;obscurité</p>
+<div class="lecteur" data-i="5">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Radio Monopolis — Stéphane</span></div>
+<p class="ligne c-off" id="l06_0">Excusez-moi, on a quelques interférences.</p>
+<p class="ligne c-off" id="l06_1">Un certain Ziggy, apparemment.</p>
+<p class="ligne c-off" id="l06_2">Bon, je ne sais même pas qui c&#x27;est.</p>
+<p class="ligne c-off" id="l06_3">Allez, franchement, ce n&#x27;est pas ça l&#x27;essentiel.</p>
+<p class="ligne c-off" id="l06_4">Ici Radio Monopolis, la radio qui ne dort jamais.</p>
+<p class="ligne c-off" id="l06_5">Il est minuit passé, et nous, on veille sur la ville.</p>
+<p class="ligne c-off" id="l06_6">Et ce soir, mesdames et messieurs, une exclusivité incroyable, tout en haut de la tour !</p>
+<p class="ligne c-off" id="l06_7">Christine, vous m&#x27;entendez ?</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Radio Monopolis — Christine</span></div>
+<p class="ligne c-off" id="l06_8">Oui, tout à fait Stéphane ! Je vous entends très bien !</p>
+<p class="ligne c-off" id="l06_9">Ici, c&#x27;est la folie au dernier étage de la tour.</p>
+<p class="ligne c-off" id="l06_10">Et les voici, mesdames et messieurs, ceux qui dirigent Monopolis.</p>
+<p class="ligne c-off" id="l06_11">Messieurs, bonsoir. Merci de nous recevoir.</p>
+<p class="ligne c-off" id="l06_12">Alors dites-nous, comment vit-on quand on voit la ville à ses pieds ?</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc07" data-i="6">
+<div class="entete"><span class="num">07</span><h2>Le Blues du Businessman</h2></div>
+<p class="place"><b>En place</b> Les quatre hommes en ligne, lumière froide et verticale · Stéphanie et Candice en retrait dans l&#x27;ombre, elles n&#x27;apparaissent que sur leurs questions</p>
+<div class="lecteur" data-i="6">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l07_0">J&#x27;ai du succès dans mes affaires</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l07_1">J&#x27;ai du succès dans mes amours.</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l07_2">Je change souvent de secrétaire.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l07_3">J&#x27;ai mon bureau en haut d&#x27;une tour</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l07_4">D&#x27;où je vois la ville à l&#x27;envers</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l07_5">D&#x27;où je contrôle mon univers.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l07_6">J&#x27;ai ma résidence secondaire</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l07_7">Dans tous les Hilton de la Terre.</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l07_8">J&#x27;peux pas supporter la misère.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-stephanie">Stéphanie</b> et <b class="c-candice">Candice</b></span></div>
+<p class="ligne c-tous" id="l07_9">Au moins, es-tu heureux ?</p>
+</div>
+<div class="groupe g-elie">
+<div class="qui"><span class="q-elie"><b class="c-elie">Élie</b></span></div>
+<p class="ligne c-elie" id="l07_10">J&#x27;suis pas heureux, mais j&#x27;en ai l&#x27;air.</p>
+<p class="ligne c-elie" id="l07_11">J&#x27;ai perdu le sens de l&#x27;humour</p>
+<p class="ligne c-elie" id="l07_12">Depuis qu&#x27;j&#x27;ai le sens des affaires.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l07_13">J&#x27;ai réussi et j&#x27;en suis fier.</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l07_14">Au fond, je n&#x27;ai qu&#x27;un seul regret :</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l07_15">J&#x27;fais pas c&#x27;que j&#x27;aurais voulu faire.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-stephanie">Stéphanie</b> et <b class="c-candice">Candice</b></span></div>
+<p class="ligne c-tous" id="l07_16">Qu&#x27;est-ce que tu veux, mon vieux ?</p>
+<p class="ligne c-tous" id="l07_17">Dans la vie, on fait ce qu&#x27;on peut</p>
+<p class="ligne c-tous" id="l07_18">Pas ce qu&#x27;on veut.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l07_19">J&#x27;aurais voulu être un artiste</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l07_20">Pour avoir le monde à refaire</p>
+</div>
+<div class="groupe g-adrien">
+<div class="qui"><span class="q-adrien"><b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-adrien" id="l07_21">Pour pouvoir être un anarchiste</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b>, <b class="c-bry">Bry</b> et <b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-tous" id="l07_22">Et vivre comme… un millionnaire.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Les 4 hommes</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l07_23">Et vivre comme… un millionnaire.</p>
+<p class="ligne c-tous" id="l07_24">J&#x27;aurais voulu être un artiste…</p>
+<p class="ligne c-tous" id="l07_25">Hum… hum…</p>
+<p class="ligne c-tous" id="l07_26">Ou-fa-dou-dé… ou-fa-dou-do…</p>
+<p class="ligne c-tous" id="l07_27">Oh… Oh !</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l07_28">Pour pouvoir dire POURQUOI J&#x27;EXISTE !</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc08" data-i="7">
+<div class="entete"><span class="num">08</span><h2>Retour d&#x27;antenne</h2></div>
+<p class="place"><b>En place</b> Tout le monde encore en place, comme à la fin du Blues</p>
+<div class="lecteur" data-i="7">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Radio Monopolis — Christine</span></div>
+<p class="ligne c-off" id="l08_0">Voilà Stéphane, c&#x27;était en direct du dernier étage de la tour.</p>
+<p class="ligne c-off" id="l08_1">Ils nous ont tout dit, ou presque.</p>
+<p class="ligne c-off" id="l08_2">Je vous rends l&#x27;antenne.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc09" data-i="8">
+<div class="entete"><span class="num">09</span><h2>Les uns contre les autres</h2></div>
+<p class="place"><b>En place</b> Bry et Élie sortent pendant la transition chantée · Stéphanie, Mickaël, Candice et Adrien se placent dans le noir, chacun sous sa douche</p>
+<div class="lecteur" data-i="8">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off" id="narr09_0">
+<div class="sous">◇ Narration · Merci Christine</div>
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l09_0">Merci, Christine, pour ce voyage.</p>
+<p class="ligne c-off" id="l09_1">Ils ont le blues, nos businessmen.</p>
+<p class="ligne c-off" id="l09_2">Ils ont tout eu, ils ont tout pris</p>
+<p class="ligne c-off" id="l09_3">Et ils s&#x27;en vont, seuls dans la nuit.</p>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l09_4">Mais au bout du compte</p>
+<p class="ligne c-stephanie" id="l09_5">Ils se rendent compte</p>
+<p class="ligne c-stephanie" id="l09_6">Qu&#x27;ils sont toujours tout seuls au monde.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Stéphanie, Mickaël, Candice et Adrien</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-tous" id="l09_7">On danse les uns avec les autres</p>
+<p class="ligne c-tous" id="l09_8">On court les uns après les autres</p>
+<p class="ligne c-tous" id="l09_9">On se déteste, on se déchire</p>
+<p class="ligne c-tous" id="l09_10">On se détruit, on se désire.</p>
+<p class="ligne c-tous" id="l09_11">Mais au bout du compte</p>
+<p class="ligne c-tous" id="l09_12">On se rend compte</p>
+<p class="ligne c-tous" id="l09_13">Qu&#x27;on est toujours tout seul au monde.</p>
+<p class="ligne c-tous" id="l09_14">Mais au bout du compte</p>
+<p class="ligne c-tous" id="l09_15">On se rend compte</p>
+<p class="ligne c-tous" id="l09_16">Qu&#x27;on est toujours tout seul au monde.</p>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l09_17">Toujours tout seul au monde…</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc10" data-i="9">
+<div class="entete"><span class="num">10</span><h2>Cloches, narration</h2></div>
+<p class="place"><b>En place</b> Noir · une cloche de cathédrale · les néons de Monopolis ont disparu</p>
+<div class="lecteur" data-i="9">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l10_0">Vous entendez ? Mais ce sont les cloches !</p>
+<p class="ligne c-off" id="l10_1">Elles sonnent depuis mille ans !</p>
+<p class="ligne c-off" id="l10_2">Elles ont vu Monopolis naître, briller… s&#x27;éteindre.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc11" data-i="10">
+<div class="entete"><span class="num">11</span><h2>Le Temps des Cathédrales</h2></div>
+<p class="place"><b>En place</b> Mickaël au centre, lumière chaude couleur pierre · les cinq autres le rejoignent pour le refrain final, chacun à sa place</p>
+<div class="lecteur" data-i="10">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_0">C&#x27;est une histoire qui a pour lieu</p>
+</div>
+<div class="groupe g-off" id="narr11_1">
+<div class="sous">◇ Narration · L&#x27;entrée des Cathédrales</div>
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_1">Aujourd&#x27;hui</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_2">Paris la belle, en l&#x27;an de Dieu</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_3">Nous remontons le temps</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_4">Mil quatre cent quatre-vingt-deux</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_5">Cinq siècles en arrière.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_6">Histoire d&#x27;amour et de désir.</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_7">Vous connaissez l&#x27;histoire</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_8">Nous, les artistes anonymes</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_9">Vous l&#x27;avez fredonnée.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_10">De la sculpture ou de la rime</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_11">Le temps des cathédrales</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_12">Tenterons de vous la transcrire</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_13">Revient pour nous ce soir :</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_14">Pour les siècles à venir.</p>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l11_15">Notre-Dame… de Paris.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l11_16">Il est venu, le temps des cathédrales.</p>
+<p class="ligne c-mickael" id="l11_17">Le monde est entré</p>
+<p class="ligne c-mickael" id="l11_18">Dans un nouveau millénaire.</p>
+<p class="ligne c-mickael" id="l11_19">L&#x27;homme a voulu monter vers les étoiles</p>
+<p class="ligne c-mickael" id="l11_20">Écrire son histoire</p>
+<p class="ligne c-mickael" id="l11_21">Dans le verre ou dans la pierre.</p>
+<p class="ligne c-mickael" id="l11_22">Il est foutu, le temps des cathédrales.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l11_23">La foule des barbares</p>
+<p class="ligne c-tous" id="l11_24">Est aux portes de la ville.</p>
+<p class="ligne c-tous" id="l11_25">Laissez entrer ces païens, ces vandales !</p>
+<p class="ligne c-tous" id="l11_26">La fin de ce monde</p>
+<p class="ligne c-tous" id="l11_27">Est prévue pour l&#x27;an deux mille</p>
+<p class="ligne c-tous" id="l11_28">Est prévue pour l&#x27;an deux mille.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc12" data-i="11">
+<div class="entete"><span class="num">12</span><h2>Bataille, appel crié</h2></div>
+<p class="place"><b>En place</b> La bataille · à la fin du Temps des Cathédrales, tout le monde tombe à terre</p>
+<div class="lecteur" data-i="11">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l12_0">Ils ont taillé la pierre ! Ils ont levé les tours ! Et on les jette dehors !</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc13" data-i="12">
+<div class="entete"><span class="num">13</span><h2>Les Sans-papiers</h2></div>
+<p class="place"><b>En place</b> Tous à terre, les chœurs le bras droit levé · Bry se relève seul et chante</p>
+<div class="lecteur" data-i="12">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l13_0">Pour Notre-Dame</p>
+<p class="ligne c-tous" id="l13_1">Nous te demandons</p>
+<p class="ligne c-tous" id="l13_2">Asile ! Asile !</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l13_3">Nous sommes plus de mille</p>
+<p class="ligne c-bry" id="l13_4">Aux portes de la ville</p>
+<p class="ligne c-bry" id="l13_5">Et bientôt nous serons</p>
+<p class="ligne c-bry" id="l13_6">Dix mille, et puis cent mille.</p>
+<p class="ligne c-bry" id="l13_7">Nous serons des millions</p>
+<p class="ligne c-bry" id="l13_8">Qui te demanderont :</p>
+<p class="ligne c-bry" id="l13_9">Asile ! Asile !</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l13_10">Nous sommes des étrangers</p>
+<p class="ligne c-tous" id="l13_11">Des sans-papiers</p>
+<p class="ligne c-tous" id="l13_12">Nous sommes des étrangers</p>
+<p class="ligne c-tous" id="l13_13">Des sans-papiers</p>
+<p class="ligne c-tous" id="l13_14">Des hommes et des femmes</p>
+<p class="ligne c-tous" id="l13_15">Sans domicile.</p>
+<p class="ligne c-tous" id="l13_16">Nous sommes des étrangers</p>
+<p class="ligne c-tous" id="l13_17">Des sans-papiers</p>
+<p class="ligne c-tous" id="l13_18">Des hommes et des femmes</p>
+<p class="ligne c-tous" id="l13_19">Sans domicile.</p>
+<p class="ligne c-tous" id="l13_20">Pour Notre-Dame</p>
+<p class="ligne c-tous" id="l13_21">Nous te demandons</p>
+<p class="ligne c-tous" id="l13_22">Asile ! Asile !</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="lA_1788374435012">Ouai !</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l13_23">Nous sommes des étrangers</p>
+<p class="ligne c-tous" id="l13_24">Des sans-papiers</p>
+<p class="ligne c-tous" id="l13_25">Des hommes et des femmes</p>
+<p class="ligne c-tous" id="l13_26">Sans domicile.</p>
+<p class="ligne c-tous" id="l13_27">Pour Notre-Dame</p>
+<p class="ligne c-tous" id="l13_28">Nous te demandons</p>
+<p class="ligne c-tous" id="l13_29">Asile ! Asile ! Asile !</p>
+<p class="ligne c-tous" id="l13_30">Asile !</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc14" data-i="13">
+<div class="entete"><span class="num">14</span><h2>Bohémienne</h2></div>
+<p class="place"><b>En place</b> Candice au centre, Mickaël sur le côté jardin · les quatre autres sont sortis sous la question</p>
+<div class="lecteur" data-i="13">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l14_0">D&#x27;où viens-tu, belle étrangère</p>
+<p class="ligne c-mickael" id="l14_1">Fille du ciel ou de la terre</p>
+<p class="ligne c-mickael" id="l14_2">Bel oiseau de paradis ?</p>
+<p class="ligne c-mickael" id="l14_3">Que viens-tu faire par ici ?</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l14_4">Moi, je n&#x27;ai ni toit ni patrie.</p>
+<p class="ligne c-candice" id="l14_5">J&#x27;ai fait de Paris mon pays</p>
+<p class="ligne c-candice" id="l14_6">Mais quand j&#x27;imagine la mer</p>
+<p class="ligne c-candice" id="l14_7">Elle m&#x27;emmène loin d&#x27;ici</p>
+<p class="ligne c-candice" id="l14_8">Vers les montagnes d&#x27;Andalousie.</p>
+<p class="ligne c-candice" id="l14_9">Bohémienne, nul ne sait le pays d&#x27;où je viens.</p>
+<p class="ligne c-candice" id="l14_10">Bohémienne, je suis fille de grands chemins.</p>
+<p class="ligne c-candice" id="l14_11">Bohémienne, Bohémienne, qui peut dire qui j&#x27;aimerai demain ?</p>
+<p class="ligne c-candice" id="l14_12">Bohémienne, bohémienne…</p>
+<p class="ligne c-candice" id="l14_13">C&#x27;est écrit dans les lignes de ma main.</p>
+<p class="ligne c-candice" id="l14_14">C&#x27;est écrit dans les lignes de ma main.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc15" data-i="14">
+<div class="entete"><span class="num">15</span><h2>Belle</h2></div>
+<p class="place"><b>En place</b> Candice au sol, centre-avant · Élie à jardin, Mickaël au centre en arrière, Bry à cour · personne ne la touche</p>
+<div class="lecteur" data-i="14">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off" id="narr15_0">
+<div class="sous">◇ Narration · L&#x27;appel de Belle</div>
+<div class="qui"><span class="q-off">Voix off — la bande</span></div>
+<p class="ligne c-off" id="l15_0">Belle ! Belle !</p>
+</div>
+<div class="groupe g-elie">
+<div class="qui"><span class="q-elie"><b class="c-elie">Élie</b></span></div>
+<p class="ligne c-elie" id="l15_1">Belle…</p>
+<p class="ligne c-elie" id="l15_2">C&#x27;est un mot qu&#x27;on dirait inventé pour elle.</p>
+<p class="ligne c-elie" id="l15_3">Quand elle danse et qu&#x27;elle met son corps à jour, tel</p>
+<p class="ligne c-elie" id="l15_4">Un oiseau qui étend ses ailes pour s&#x27;envoler</p>
+<p class="ligne c-elie" id="l15_5">Alors je sens l&#x27;enfer s&#x27;ouvrir sous mes pieds.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l15_6">Elle porte en elle le péché originel.</p>
+<p class="ligne c-mickael" id="l15_7">La désirer fait-il de moi un criminel ?</p>
+<p class="ligne c-mickael" id="l15_8">Celle qu&#x27;on prenait pour une fille de joie, une fille de rien</p>
+<p class="ligne c-mickael" id="l15_9">Semble soudain porter la croix du genre humain.</p>
+<p class="ligne c-mickael" id="l15_10">Ô Notre-Dame, oh, laisse-moi rien qu&#x27;une fois</p>
+<p class="ligne c-mickael" id="l15_11">Pousser la porte du jardin d&#x27;Esméralda.</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l15_12">Belle…</p>
+<p class="ligne c-bry" id="l15_13">Malgré ses grands yeux noirs qui vous ensorcellent</p>
+<p class="ligne c-bry" id="l15_14">La demoiselle serait-elle encore pucelle ?</p>
+<p class="ligne c-bry" id="l15_15">Quand ses mouvements me font voir monts et merveilles</p>
+<p class="ligne c-bry" id="l15_16">Sous son jupon aux couleurs de l&#x27;arc-en-ciel…</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l15_17">J&#x27;ai posé mes yeux sous sa robe de gitane.</p>
+<p class="ligne c-tous" id="l15_18">À quoi me sert encore de prier Notre-Dame ?</p>
+<p class="ligne c-tous" id="l15_19">Quel est celui qui lui jettera la première pierre ?</p>
+<p class="ligne c-tous" id="l15_20">Celui-là ne mérite pas d&#x27;être sur terre.</p>
+</div>
+<div class="groupe g-elie">
+<div class="qui"><span class="q-elie"><b class="c-elie">Élie</b></span></div>
+<p class="ligne c-elie" id="l15_21">Ô Lucifer, oh, laisse-moi rien qu&#x27;une fois</p>
+<p class="ligne c-elie" id="l15_22">Glisser mes doigts dans les cheveux d&#x27;Esméralda.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-elie">Élie</b>, <b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l15_23">Esméralda…</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc16" data-i="15">
+<div class="entete"><span class="num">16</span><h2>Le Dilemme</h2></div>
+<p class="place"><b>En place</b> Candice debout au centre, Néfertari · Mickaël (Ramsès) à cour, Bry (Moïse) à jardin · Élie est sorti à jardin</p>
+<div class="lecteur" data-i="15">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off" id="narr16_0">
+<div class="sous">◇ Narration · La bascule vers l&#x27;Égypte</div>
+<div class="qui"><span class="q-off">Voix off — la narratrice</span></div>
+<p class="ligne c-off" id="l16_0">Bien avant les cathédrales, Moïse est monté sur le mont Sinaï.</p>
+<p class="ligne c-off" id="l16_1">Il en est redescendu avec les... les dix commandements.</p>
+<p class="ligne c-off" id="l16_2">Néfertari aimait Moïse et Ramsès.</p>
+<p class="ligne c-off" id="l16_3">Elle ne voulait renoncer à aucun.</p>
+<p class="ligne c-off" id="l16_4">Et ça, c&#x27;était son dilemme.</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_5">Qui pourra</p>
+<p class="ligne c-candice" id="l16_6">M&#x27;ouvrir les yeux ?</p>
+<p class="ligne c-candice" id="l16_7">Qui saura</p>
+<p class="ligne c-candice" id="l16_8">Me dire lequel des deux je désire</p>
+<p class="ligne c-candice" id="l16_9">Lequel m&#x27;attire, qui j&#x27;admire, qui me fera choisir</p>
+<p class="ligne c-candice" id="l16_10">Entre l&#x27;espérance et un empire</p>
+<p class="ligne c-candice" id="l16_11">Entre un regard sans faille et un sourire ?</p>
+<p class="ligne c-candice" id="l16_12">Moi, j&#x27;aimerais</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_13">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_14">Pouvoir aimer</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_15">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_16">Aimer les yeux fermés</p>
+<p class="ligne c-candice" id="l16_17">Pouvoir partager</p>
+<p class="ligne c-candice" id="l16_18">Et l&#x27;amour</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_19">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_20">Et l&#x27;amitié</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_21">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_22">Aimer dans le plaisir</p>
+<p class="ligne c-candice" id="l16_23">Sans avoir à choisir.</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l16_24">Aime-moi sans me le dire.</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_25">Sans avoir à choisir…</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l16_26">Laisse-moi te conquérir.</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_27">Moi, j&#x27;aimerais</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_28">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_29">Pouvoir aimer</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_30">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_31">Aimer les yeux fermés</p>
+<p class="ligne c-candice" id="l16_32">Pouvoir partager</p>
+<p class="ligne c-candice" id="l16_33">Et l&#x27;amour</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_34">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_35">Et l&#x27;amitié</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_36">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l16_37">Aimer dans le plaisir</p>
+<p class="ligne c-candice" id="l16_38">Sans avoir à choisir.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l16_39">J&#x27;aimerais…</p>
+</div>
+<div class="groupe g-off" id="narr16_40">
+<div class="sous">◇ Narration · Ramsès et Moïse, deux frères</div>
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l16_40">Ramsès et Moïse, deux frères sous le même soleil.</p>
+<p class="ligne c-off" id="l16_41">Rien n&#x27;aurait pu les séparer.</p>
+<p class="ligne c-off" id="l16_42">Rien, sauf la liberté d&#x27;un peuple.</p>
+<p class="ligne c-off" id="l16_43">Et la main de Dieu.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc17" data-i="16">
+<div class="entete"><span class="num">17</span><h2>Mon Frère</h2></div>
+<p class="place"><b>En place</b> Mickaël (Ramsès) et Bry (Moïse) au centre, côte à côte · Candice est sortie à cour · Adrien et Élie entrent par jardin à la fin</p>
+<div class="lecteur" data-i="16">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_0">Bien sûr qu&#x27;un jour s&#x27;en va pour l&#x27;un, et pour l&#x27;autre s&#x27;en vient.</p>
+<p class="ligne c-mickael" id="l17_1">Bien sûr, les étoiles se meurent quand le ciel s&#x27;éteint.</p>
+<p class="ligne c-mickael" id="l17_2">C&#x27;est notre amour qui n&#x27;aura jamais de lendemain</p>
+<p class="ligne c-mickael" id="l17_3">Mon frère.</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_4">Bien plus qu&#x27;un monde qui s&#x27;ouvre à l&#x27;un, et pour l&#x27;autre chavire</p>
+<p class="ligne c-bry" id="l17_5">Bien plus qu&#x27;une mer qui supplie quand la source est tarie</p>
+<p class="ligne c-bry" id="l17_6">C&#x27;est tout notre amour qui s&#x27;éloigne des rives et se perd</p>
+<p class="ligne c-bry" id="l17_7">Mon frère.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_8">Puisqu&#x27;on ne sera toujours que la moitié d&#x27;un tout</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_9">Puisqu&#x27;on ne sera jamais que la moitié de nous</p>
+<p class="ligne c-bry" id="l17_10">Que la moitié, que la moitié de nous…</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_11">Mon frère</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_12">Oh, oh, oh, oh, mon frère</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_13">Mon frère</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_14">Mon frère</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_15">Mon frère.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l17_16">L&#x27;amour s&#x27;ra toujours cette moitié de nous qui reste</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_17">À faire</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_18">À faire</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-mickael">Mickaël</b> et <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l17_19">Mon frère.</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="lA_compte17_bry">1 · 2 · 3 ·</p>
+<p class="ligne c-bry" id="l17_20">Mon frère, mon frère</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_21">Mon frère</p>
+<p class="ligne c-mickael" id="lA_compte17_mickael">1 · 2 ·</p>
+<p class="ligne c-mickael" id="l17_22">Mon frère</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_23">Mon frère</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_24">Mon frère…</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l17_25">Mon frère !</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l17_26">Mon frère !</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc18" data-i="17">
+<div class="entete"><span class="num">18</span><h2>L&#x27;arrêt du temps</h2></div>
+<p class="place"><b>En place</b> Arrêt sur image : Ramsès retenu à jardin par Adrien, Moïse emmené à cour par Élie · personne ne bouge</p>
+<div class="lecteur" data-i="17">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off">
+<div class="qui"><span class="q-off">Voix off — la machine</span></div>
+<p class="ligne c-off" id="l18_0">Le temps s&#x27;arrête.</p>
+<p class="ligne c-off" id="l18_1">Trois mille ans passent, et rien n&#x27;a changé.</p>
+<p class="ligne c-off" id="l18_2">J&#x27;ai la tête qui éclate, je voudrais seulement dormir.</p>
+<p class="ligne c-off" id="l18_3">M&#x27;étendre sur l&#x27;asphalte et me laisser mourir.</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc19" data-i="18">
+<div class="entete"><span class="num">19</span><h2>Stone</h2></div>
+<p class="place"><b>En place</b> Stéphanie entre à jardin et vient au milieu, devant · les autres restent figés</p>
+<div class="lecteur" data-i="18">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l19_0">Stone…</p>
+<p class="ligne c-stephanie" id="l19_1">Le monde est stone.</p>
+<p class="ligne c-stephanie" id="l19_2">Je cherche le soleil</p>
+<p class="ligne c-stephanie" id="l19_3">Au milieu de la nuit.</p>
+<p class="ligne c-stephanie" id="l19_4">J&#x27;sais pas si c&#x27;est la terre</p>
+<p class="ligne c-stephanie" id="l19_5">Qui tourne à l&#x27;envers</p>
+<p class="ligne c-stephanie" id="l19_6">Ou bien si c&#x27;est moi</p>
+<p class="ligne c-stephanie" id="l19_7">Qui m&#x27;fais du cinéma</p>
+<p class="ligne c-stephanie" id="l19_8">Qui m&#x27;fais mon cinéma</p>
+</div>
+</section>
+
+<section class="bloc" id="bloc20" data-i="19">
+<div class="entete"><span class="num">20</span><h2>Aimer</h2></div>
+<p class="place"><b>En place</b> Tout le monde est figé pendant la narration · Mickaël ouvre Aimer à 24&#x27;21, les statues se réveillent une à une</p>
+<div class="lecteur" data-i="19">
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
+  <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
+  <div class="outils">
+    <button class="moins" title="Reculer de 5 secondes">−5 s</button>
+    <button class="plus" title="Avancer de 5 secondes">+5 s</button>
+    <button class="boucle" title="Rejouer le bloc en boucle">boucle</button>
+    <span class="bande">
+      <button class="actif" data-bande="voix" title="La bande avec les voix témoins">Voix témoin</button>
+      <button data-bande="instru" title="La bande seule, sans les voix">Instrumental</button>
+    </span>
+  </div>
+</div>
+<div class="groupe g-off" id="narr20_0">
+<div class="sous">◇ Narration · À Monopolis, à Notre-Dame, en Égypte</div>
+<div class="qui"><span class="q-off">Voix off — le narrateur</span></div>
+<p class="ligne c-off" id="l20_0">À Monopolis, il voulait être heureux avant d&#x27;être vieux.</p>
+<p class="ligne c-off" id="l20_1">À Notre-Dame, il écrivait pour les siècles à venir.</p>
+<p class="ligne c-off" id="l20_2">En Égypte, elle ne voulait pas choisir.</p>
+<p class="ligne c-off" id="l20_3">Et vous ce soir, pourquoi êtes-vous venu ?</p>
+<p class="ligne c-off" id="l20_4">Si vous n&#x27;avez pas la réponse, moi je l&#x27;ai.</p>
+<p class="ligne c-off" id="l20_5">Le monde n&#x27;a besoin que de ça.</p>
+</div>
+<div class="groupe g-mickael">
+<div class="qui"><span class="q-mickael"><b class="c-mickael">Mickaël</b></span></div>
+<p class="ligne c-mickael" id="l20_6">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus beau.</p>
+<p class="ligne c-mickael" id="l20_7">Aimer, c&#x27;est monter si haut</p>
+<p class="ligne c-mickael" id="l20_8">Et toucher les ailes des oiseaux.</p>
+<p class="ligne c-mickael" id="l20_9">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus beau.</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l20_10">Aimer, c&#x27;est voler le temps.</p>
+<p class="ligne c-candice" id="l20_11">Aimer, c&#x27;est rester vivant</p>
+<p class="ligne c-candice" id="l20_12">Et brûler au cœur d&#x27;un volcan.</p>
+<p class="ligne c-candice" id="l20_13">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus grand.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous"><b class="c-stephanie">Stéphanie</b> et <b class="c-adrien">Adrien</b></span></div>
+<p class="ligne c-tous" id="l20_14">Aimer, c&#x27;est plus fort que tout</p>
+<p class="ligne c-tous" id="l20_15">Donner le meilleur de nous.</p>
+<p class="ligne c-tous" id="l20_16">Aimer et sentir son cœur</p>
+<p class="ligne c-tous" id="l20_17">Aimer pour avoir moins peur.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_18">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus beau.</p>
+<p class="ligne c-tous" id="l20_19">Aimer, c&#x27;est monter si haut</p>
+<p class="ligne c-tous" id="l20_20">Et toucher les ailes des oiseaux.</p>
+<p class="ligne c-tous" id="lA_1788765346719">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus beau</p>
+<p class="ligne c-tous" id="l20_22">Aimer, c&#x27;est voler le temps.</p>
+<p class="ligne c-tous" id="l20_23">Aimer, c&#x27;est rester vivant</p>
+<p class="ligne c-tous" id="l20_24">Et brûler au cœur d&#x27;un volcan.</p>
+<p class="ligne c-tous" id="l20_25">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus grand.</p>
+<p class="ligne c-tous" id="l20_26">Aimer, c&#x27;est brûler ses nuits</p>
+</div>
+<div class="groupe g-stephanie">
+<div class="qui"><span class="q-stephanie"><b class="c-stephanie">Stéphanie</b></span></div>
+<p class="ligne c-stephanie" id="l20_27">C&#x27;est brûler ses nuits.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_28">Aimer, c&#x27;est payer le prix</p>
+</div>
+<div class="groupe g-candice">
+<div class="qui"><span class="q-candice"><b class="c-candice">Candice</b></span></div>
+<p class="ligne c-candice" id="l20_29">C&#x27;est payer le prix</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_30">Et donner un sens à sa vie.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six — Stéphanie et Candice dessus</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_31">Aimer, c&#x27;est brûler ses-es-es nuits</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_32">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus beau</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l20_33">C&#x27;est ce qu&#x27;il y a d&#x27;plus beau-o-o</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_34">Aimer, c&#x27;est monter si haut</p>
+</div>
+<div class="groupe g-bry">
+<div class="qui"><span class="q-bry"><b class="c-bry">Bry</b></span></div>
+<p class="ligne c-bry" id="l20_35">C&#x27;est monter si haut O...</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_36">Et toucher les ailes des oiseaux.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Chœurs avec <b class="c-bry">Bry</b></span></div>
+<p class="ligne c-tous" id="l20_37">Aimer, c&#x27;est ce qu&#x27;il y a d&#x27;plus beau.</p>
+</div>
+<div class="groupe g-tous">
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
+<p class="ligne c-tous" id="l20_38">Aimer…</p>
+</div>
+</section>
+
+<div class="fin motfin"><div class="mf-titre">Le mot de la fin</div><p>Dernier mot, dernière note. Personne ne bouge : le noir tombe.</p><p>Après le noir, il est possible que nous saluions : on se retrouve en ligne, on se prend la main, et on salue ensemble. Ensuite, peut-être, un enregistrement nous présentera un par un. Ça reste à voir avec la production ; pour l'instant, les saluts suffiront. Mais je crois que ce serait bien qu'on nous présente.</p><p>Voilà. Vous avez tout, ici, pour retravailler autant de fois que vous le voulez. C'est votre application : avec les aides ou sans, à votre rythme, bloc par bloc ou d'un seul trait.</p><p>Il y aura sûrement encore des mises à jour. Un signal vous préviendra dans l'application : il suffira de cliquer sur « Mise à jour ». Sur le site, vous trouverez aussi plusieurs vidéos, elles aussi mises à jour au fil du travail.</p><p>Bon travail à chacun. On se retrouve sur scène.</p><div class="mf-sign">— Mickaël</div></div>
+<button class="haut" id="btnHaut" title="Retour en haut">↑</button>
+
+<script>
+const D = [{"num": "01", "titre": "Narration d'ouverture", "deb": 0.0, "fin": 29.99, "lignes": [["l01_0", 4.48, 5.26], ["l01_1", 9.03, 12.05], ["l01_2", 14.17, 18.27], ["l01_3", 19.67, 20.17], ["l01_4", 21.61, 23.09], ["l01_5", 24.53, 28.54]]}, {"num": "02", "titre": "Quand on arrive en ville", "deb": 30.0, "fin": 110.25, "lignes": [["l02_0", 31.02, 32.56], ["l02_1", 33.38, 34.68], ["l02_2", 35.84, 39.3], ["l02_3", 40.76, 44.8], ["l02_4", 45.64, 48.8], ["l02_5", 49.59, 52.51], ["l02_6", 53.37, 54.79], ["l02_7", 63.29, 64.31], ["l02_8", 65.45, 66.83], ["l02_9", 67.73, 70.47], ["l02_10", 72.07, 75.61], ["l02_11", 76.45, 79.15], ["l02_12", 79.77, 82.45], ["l02_13", 83.25, 84.87], ["l02_14", 92.56, 95.48], ["l02_15", 96.08, 97.72], ["l02_16", 99.28, 101.08], ["l02_17", 101.36, 104.46], ["l02_18", 104.86, 106.44], ["l02_19", 107.84, 109.62]]}, {"num": "03", "titre": "Explosion, flash radio", "deb": 108.87, "fin": 130.6, "lignes": [["l03_0", 112.56, 117.55], ["l03_1", 119.51, 126.86], ["l03_2", 127.52, 129.82]]}, {"num": "04", "titre": "Ziggy", "deb": 130.62, "fin": 212.6, "lignes": [["l04_0", 131.86, 132.42], ["l04_1", 134.84, 136.62], ["l04_2", 138.64, 140.36], ["l04_3", 142.12, 145.42], ["l04_4", 145.94, 149.87], ["l04_5", 150.56, 152.79], ["l04_6", 154.23, 158.19], ["l04_7", 159.29, 162.33], ["l04_8", 163.49, 165.77], ["l04_9", 166.81, 169.09], ["l04_10", 170.47, 173.53], ["l04_11", 174.57, 176.65], ["l04_12", 177.91, 180.13], ["l04_13", 180.95, 186.21], ["l04_14", 188.09, 189.95], ["l04_15", 191.62, 194.88], ["l04_16", 195.29, 199.3], ["l04_17", 200.1, 209.94]]}, {"num": "05", "titre": "La chanson de Ziggy", "deb": 212.62, "fin": 316.9, "lignes": [["l05_0", 214.94, 217.39], ["l05_1", 218.36, 219.93], ["l05_2", 219.92, 222.99], ["l05_3", 224.49, 228.09], ["l05_4", 229.86, 233.24], ["l05_5", 234.84, 236.81], ["l05_6", 237.12, 239.31], ["l05_7", 240.96, 242.98], ["l05_8", 244.11, 246.21], ["l05_9", 247.52, 250.08], ["l05_10", 256.8, 259.04], ["l05_11", 262.7, 266.17], ["l05_12", 268.95, 271.51], ["l05_13", 274.72, 277.98], ["l05_14", 279.1, 280.46], ["l05_15", 282.26, 283.64], ["l05_16", 283.52, 285.72], ["l05_17", 286.55, 289.15], ["l05_18", 289.74, 292.32], ["l05_19", 294.46, 296.54], ["l05_20", 296.7, 298.08], ["l05_21", 298.5, 301.31], ["l05_22", 300.47, 302.37], ["l05_23", 303.45, 305.61], ["l05_24", 307.14, 309.44], ["l05_25", 310.65, 314.58]]}, {"num": "06", "titre": "Radio Monopolis, le duplex", "deb": 314.71, "fin": 365.7, "lignes": [["l06_0", 318.2, 320.56], ["l06_1", 320.84, 322.61], ["l06_2", 322.94, 325.21], ["l06_3", 325.65, 327.89], ["l06_4", 329.17, 333.17], ["l06_5", 333.51, 336.77], ["l06_6", 337.09, 343.28], ["l06_7", 343.62, 345], ["l06_8", 345.14, 348.4], ["l06_9", 349.17, 351.71], ["l06_10", 352.89, 355.63], ["l06_11", 356.73, 359.41], ["l06_12", 360.44, 363.02]]}, {"num": "07", "titre": "Le Blues du Businessman", "deb": 365.72, "fin": 514.4, "lignes": [["l07_0", 370.42, 373.06], ["l07_1", 373.64, 376.24], ["l07_2", 376.62, 380.12], ["l07_3", 383.32, 385.92], ["l07_4", 386.48, 389.12], ["l07_5", 389.46, 393.2], ["l07_6", 396.18, 398.76], ["l07_7", 399.46, 402.02], ["l07_8", 402.06, 406.68], ["l07_9", 407.55, 410.66], ["l07_10", 410.76, 415.92], ["l07_11", 413.87, 416.45], ["l07_12", 417.05, 420.73], ["l07_13", 423.41, 425.97], ["l07_14", 426.15, 429.55], ["l07_15", 429.7, 432.63], ["l07_16", 434.79, 437.04], ["l07_17", 437.78, 440.01], ["l07_18", 441.52, 443.45], ["l07_19", 443.92, 449.53], ["l07_20", 451.04, 456.3], ["l07_21", 457.96, 462.66], ["l07_22", 464.6, 470.3], ["l07_23", 471.58, 476.54], ["l07_24", 477.6, 486.36], ["l07_25", 486.7, 490.16], ["l07_26", 491.7, 494.87], ["l07_27", 495.2, 497.41], ["l07_28", 498.7, 509.76]]}, {"num": "08", "titre": "Retour d'antenne", "deb": 514.42, "fin": 525.7, "lignes": [["l08_0", 514.86, 519.02], ["l08_1", 520.1, 521.46], ["l08_2", 522.36, 523.26]]}, {"num": "09", "titre": "Les uns contre les autres", "deb": 525.75, "fin": 620.2, "lignes": [["l09_0", 525.92, 529.74], ["l09_1", 532.64, 535.86], ["l09_2", 539.27, 542.43], ["l09_3", 544.29, 547.31], ["l09_4", 548.81, 552.75], ["l09_5", 553.35, 555.27], ["l09_6", 555.41, 560.42], ["l09_7", 562.09, 565.93], ["l09_8", 568.53, 572.51], ["l09_9", 575.25, 578.87], ["l09_10", 580.21, 583.71], ["l09_11", 584.79, 588.65], ["l09_12", 589.35, 590.85], ["l09_13", 591.53, 595.91], ["l09_14", 597.98, 602.68], ["l09_15", 602.7, 604.38], ["l09_16", 604.42, 607.87], ["l09_17", 609.4, 615.35]]}, {"num": "10", "titre": "Cloches, narration", "deb": 620.22, "fin": 628.8, "lignes": [["l10_0", 620.94, 623.74], ["l10_1", 624.06, 625.26], ["l10_2", 625.6, 628.54]]}, {"num": "11", "titre": "Le Temps des Cathédrales", "deb": 628.5, "fin": 735.2, "lignes": [["l11_0", 628.84, 630.66], ["l11_1", 631.16, 631.9], ["l11_2", 632.14, 633.88], ["l11_3", 634.14, 635.34], ["l11_4", 635.34, 637.24], ["l11_5", 637.32, 638.6], ["l11_6", 638.62, 640.64], ["l11_7", 640.64, 641.76], ["l11_8", 641.84, 643.75], ["l11_9", 643.88, 644.92], ["l11_10", 644.92, 646.95], ["l11_11", 647.0, 648.35], ["l11_12", 648.37, 650.21], ["l11_13", 650.21, 651.23], ["l11_14", 651.23, 653.25], ["l11_15", 653.31, 654.81], ["l11_16", 657.89, 665.31], ["l11_17", 665.47, 668.61], ["l11_18", 669.51, 672.31], ["l11_19", 672.73, 679.21], ["l11_20", 679.29, 680.79], ["l11_21", 683.31, 690.19], ["l11_22", 690.19, 698.33], ["l11_23", 698.35, 702.22], ["l11_24", 702.27, 704.82], ["l11_25", 705.03, 711.92], ["l11_26", 711.92, 716.15], ["l11_27", 716.2, 721.78], ["l11_28", 722.68, 733.44]]}, {"num": "12", "titre": "Bataille, appel crié", "deb": 733.5, "fin": 748.2, "lignes": [["l12_0", 737.67, 746.05]]}, {"num": "13", "titre": "Les Sans-papiers", "deb": 748.19, "fin": 838.5, "lignes": [["l13_0", 746.13, 748.7], ["l13_1", 748.49, 750.83], ["l13_2", 750.68, 753.0], ["l13_3", 753.87, 756.44], ["l13_4", 756.51, 759.41], ["l13_5", 759.45, 762.46], ["l13_6", 762.53, 765.22], ["l13_7", 765.3, 767.94], ["l13_8", 768.0, 770.85], ["l13_9", 770.89, 776.03], ["l13_10", 777.28, 779.61], ["l13_11", 781.61, 782.56], ["l13_12", 783.06, 785.46], ["l13_13", 785.97, 787], ["l13_14", 787.12, 789.09], ["l13_15", 789.29, 791.35], ["l13_16", 791.35, 794.01], ["l13_17", 794.01, 795.96], ["l13_18", 795.99, 798.46], ["l13_19", 798.46, 800.09], ["l13_20", 800.12, 801.67], ["l13_21", 801.75, 803.31], ["l13_22", 803.43, 805.66], ["lA_1788374435012", 805.21, 806.0], ["l13_23", 806.01, 808.45], ["l13_24", 808.68, 810.4], ["l13_25", 810.47, 813.08], ["l13_26", 813.12, 814.7], ["l13_27", 814.73, 815.99], ["l13_28", 816.01, 817.77], ["l13_29", 817.81, 821.34], ["l13_30", 821.46, 833.51]]}, {"num": "14", "titre": "Bohémienne", "deb": 838.5, "fin": 959.95, "lignes": [["l14_0", 840.0, 842.85], ["l14_1", 844.74, 848.2], ["l14_2", 849.66, 851.61], ["l14_3", 853.68, 862.69], ["l14_4", 868.9, 871.21], ["l14_5", 872.72, 875.13], ["l14_6", 876.58, 879.57], ["l14_7", 880.48, 882.13], ["l14_8", 884.2, 887.51], ["l14_9", 889.84, 895.51], ["l14_10", 898.88, 909.2], ["l14_11", 909.4, 925.12], ["l14_12", 925.46, 930.94], ["l14_13", 934.49, 941.28], ["l14_14", 942.08, 954.58]]}, {"num": "15", "titre": "Belle", "deb": 959.98, "fin": 1115.3, "lignes": [["l15_0", 960.3, 964.3], ["l15_1", 966.59, 968.52], ["l15_2", 968.61, 973.55], ["l15_3", 974.3, 979.11], ["l15_4", 979.24, 984.6], ["l15_5", 986.02, 991.2], ["l15_6", 991.96, 996.6], ["l15_7", 997.72, 1003.18], ["l15_8", 1003.25, 1010.46], ["l15_9", 1010.9, 1015.56], ["l15_10", 1016.88, 1021.34], ["l15_11", 1022.68, 1031.21], ["l15_12", 1038.31, 1039.12], ["l15_13", 1040.16, 1044.6], ["l15_14", 1046.04, 1050.7], ["l15_15", 1051.88, 1056.14], ["l15_16", 1057.7, 1062.44], ["l15_17", 1063.74, 1068.48], ["l15_18", 1069.82, 1074.38], ["l15_19", 1075.14, 1082.58], ["l15_20", 1082.82, 1088.1], ["l15_21", 1088.17, 1092.47], ["l15_22", 1094.28, 1101.06], ["l15_23", 1103.12, 1108.02]]}, {"num": "16", "titre": "Le Dilemme", "deb": 1114.4, "fin": 1255.2, "lignes": [["l16_0", 1115.6, 1122.24], ["l16_1", 1122.5, 1128.54], ["l16_2", 1130.42, 1134.12], ["l16_3", 1134.86, 1138.52], ["l16_4", 1139.13, 1147.56], ["l16_5", 1145.38, 1148.76], ["l16_6", 1149.25, 1151.29], ["l16_7", 1151.91, 1154.68], ["l16_8", 1155.09, 1159.91], ["l16_9", 1160.88, 1168.56], ["l16_10", 1169.66, 1174.26], ["l16_11", 1175.38, 1179.39], ["l16_12", 1180.07, 1182.59], ["l16_13", 1181.5, 1182.86], ["l16_14", 1182.68, 1184.98], ["l16_15", 1183.49, 1184.56], ["l16_16", 1186.11, 1187.74], ["l16_17", 1189.83, 1190.92], ["l16_18", 1190.88, 1192.96], ["l16_19", 1193, 1194.16], ["l16_20", 1193.91, 1195.62], ["l16_21", 1195.5, 1196.66], ["l16_22", 1196.16, 1199.28], ["l16_23", 1201.47, 1203.52], ["l16_24", 1203.76, 1206.7], ["l16_25", 1207.14, 1209.36], ["l16_26", 1209.32, 1212.62], ["l16_27", 1214.79, 1216.12], ["l16_28", 1216, 1217.16], ["l16_29", 1217.41, 1218.66], ["l16_30", 1218.7, 1220.35], ["l16_31", 1220.86, 1222.48], ["l16_32", 1223.89, 1225.6], ["l16_33", 1225.94, 1227.48], ["l16_34", 1227.6, 1228.76], ["l16_35", 1229.05, 1230.52], ["l16_36", 1230.72, 1231.96], ["l16_37", 1232.46, 1233.9], ["l16_38", 1236.11, 1238.12], ["l16_39", 1238.14, 1240.15], ["l16_40", 1242.41, 1247], ["l16_41", 1247.87, 1250.49], ["l16_42", 1250.66, 1254.07], ["l16_43", 1254.17, 1259.14]]}, {"num": "17", "titre": "Mon Frère", "deb": 1255.23, "fin": 1383.4, "lignes": [["l17_0", 1255.48, 1264.22], ["l17_1", 1263.67, 1268.66], ["l17_2", 1270.26, 1276.42], ["l17_3", 1276.62, 1277.48], ["l17_4", 1281.18, 1287.46], ["l17_5", 1288.18, 1294.62], ["l17_6", 1295.24, 1301.36], ["l17_7", 1301.8, 1304.97], ["l17_8", 1305.84, 1315.72], ["l17_9", 1316.28, 1325.73], ["l17_10", 1325.94, 1332.14], ["l17_11", 1333.19, 1333.8], ["l17_12", 1333.85, 1336.6], ["l17_13", 1336.98, 1337.59], ["l17_14", 1337.64, 1340.39], ["l17_15", 1339.8, 1343.97], ["l17_16", 1344.05, 1350.13], ["l17_17", 1350.6, 1352.59], ["l17_18", 1352.23, 1355.32], ["l17_19", 1355.45, 1362.58], ["lA_compte17_bry", 1362.4, 1364], ["l17_20", 1364.02, 1367.82], ["l17_21", 1366.56, 1368.15], ["lA_compte17_mickael", 1368.2, 1369.25], ["l17_22", 1369.32, 1371.61], ["l17_23", 1370.54, 1371.87], ["l17_24", 1371.68, 1373.01], ["l17_25", 1373.35, 1382.4], ["l17_26", 1380.3, 1384.66]]}, {"num": "18", "titre": "L'arrêt du temps", "deb": 1382.4, "fin": 1400.3, "lignes": [["l18_0", 1383.71, 1384.58], ["l18_1", 1385.18, 1388.28], ["l18_2", 1390.41, 1395.03], ["l18_3", 1395.14, 1400.28]]}, {"num": "19", "titre": "Stone", "deb": 1400.33, "fin": 1438.0, "lignes": [["l19_0", 1400.4, 1401.65], ["l19_1", 1402.71, 1405.92], ["l19_2", 1406.28, 1408.54], ["l19_3", 1410.64, 1412.76], ["l19_4", 1414.66, 1416.94], ["l19_5", 1418.9, 1420.93], ["l19_6", 1423.3, 1425.18], ["l19_7", 1427.24, 1430.04], ["l19_8", 1431.12, 1436.62]]}, {"num": "20", "titre": "Aimer", "deb": 1438.06, "fin": 1610.0, "lignes": [["l20_0", 1438.26, 1441.68], ["l20_1", 1442.8, 1445.88], ["l20_2", 1446.66, 1449.08], ["l20_3", 1450.06, 1452.44], ["l20_4", 1453.38, 1455.62], ["l20_5", 1456.6, 1459.18], ["l20_6", 1460.52, 1464.2], ["l20_7", 1465.82, 1470.46], ["l20_8", 1470.94, 1474.68], ["l20_9", 1475.04, 1479.48], ["l20_10", 1480.4, 1484.52], ["l20_11", 1485.84, 1490.06], ["l20_12", 1490.92, 1494.42], ["l20_13", 1495.2, 1499.26], ["l20_14", 1500.38, 1504.56], ["l20_15", 1505.68, 1511.29], ["l20_16", 1511.36, 1516.25], ["l20_17", 1516.48, 1521.36], ["l20_18", 1521.68, 1525.36], ["l20_19", 1526.98, 1531.92], ["l20_20", 1532.02, 1535.47], ["lA_1788765346719", 1536.15, 1541.65], ["l20_22", 1541.74, 1546.73], ["l20_23", 1546.92, 1551.84], ["l20_24", 1552.0, 1556.28], ["l20_25", 1556.34, 1561.41], ["l20_26", 1561.7, 1565.55], ["l20_27", 1564.85, 1569.49], ["l20_28", 1565.79, 1571.91], ["l20_29", 1569.87, 1574.87], ["l20_30", 1571.98, 1576.13], ["l20_31", 1576.28, 1581.72], ["l20_32", 1581.9, 1586.56], ["l20_33", 1585.05, 1588.73], ["l20_34", 1587.2, 1591.84], ["l20_35", 1590.03, 1597.73], ["l20_36", 1592.28, 1595.73], ["l20_37", 1596.38, 1600.82], ["l20_38", 1601.6, 1610.2]]}];
+const au = document.getElementById('au');
+let actif = -1;            // le bloc en cours de lecture
+let boucle = {};           // par bloc : rejouer en boucle ?
+let glisse = null;         // la règle que l'on tient
+const secs = [...document.querySelectorAll('.bloc')];
+const lecteurs = [...document.querySelectorAll('.lecteur')];
+const fmt = t => Math.floor(t/60) + ':' + String(Math.floor(t%60)).padStart(2,'0');
+
+/* les graduations : un trait par seconde, un grand toutes les 10 */
+lecteurs.forEach(L => {
+  const i = +L.dataset.i, d = D[i].fin - D[i].deb, g = L.querySelector('.graduations');
+  for (let s = 0; s <= d; s += 1){
+    const e = document.createElement('i'); e.style.left = (100*s/d) + '%';
+    if (s % 10 === 0) e.className = 'dix'; g.appendChild(e);
+  }
+});
+
+function poser(i, t){                      // aller à un temps du bloc i
+  const b = D[i]; t = Math.max(b.deb, Math.min(b.fin, t));
+  if (actif !== i){ arreter(); actif = i; secs[i].classList.add('joue'); lecteurs[i].classList.add('joue'); }
+  au.currentTime = t; dessiner();
+}
+function jouer(i, t){
+  poser(i, t === undefined ? au.currentTime : t);
+  if (actif === i && (au.currentTime < D[i].deb || au.currentTime >= D[i].fin - 0.05)) au.currentTime = D[i].deb;
+  tDepart = au.currentTime; gain = 0; appliquerVolumes();      // fondu d'ouverture
+  au.play(); lecteurs[i].classList.add('joue');
+}
+function pause(){ au.pause(); if (actif >= 0) lecteurs[actif].classList.remove('joue'); }
+function arreter(){
+  au.pause();
+  if (actif >= 0){ secs[actif].classList.remove('joue'); lecteurs[actif].classList.remove('joue');
+    secs[actif].querySelectorAll('.ligne').forEach(l => l.classList.remove('en-cours','passee')); }
+  actif = -1;
+}
+function dessiner(){
+  if (actif < 0) return;
+  const b = D[actif], L = lecteurs[actif], t = au.currentTime, p = Math.max(0, Math.min(1, (t - b.deb)/(b.fin - b.deb)));
+  L.querySelector('.joue').style.width = (100*p) + '%';
+  L.querySelector('.tete').style.left = (100*p) + '%';
+  L.querySelector('.ecoule').textContent = fmt(Math.max(0, t - b.deb));
+  b.lignes.forEach(([id, d, f]) => {
+    const e = document.getElementById(id);
+    const enCours = t >= d - 0.15 && t < f + 0.25;
+    e.classList.toggle('en-cours', enCours); e.classList.toggle('passee', !enCours && t >= f);
+  });
+}
+/* ═══ LA FIN ET LE DÉBUT DE CHAQUE BLOC, AU MILLIMÈTRE ═══
+   L'événement timeupdate ne vient que 4 fois par seconde : on dépassait la fin d'un quart
+   de seconde et on attrapait le début de la voix off suivante. Ici, une surveillance toutes
+   les 20 ms, un FONDU DE FERMETURE sur les 0,7 dernières secondes, un FONDU D'OUVERTURE de
+   0,25 s au départ (pour ne pas entendre la fin du morceau précédent), et l'arrêt net. */
+const FERME = 0.7, OUVRE = 0.25;
+let gain = 1, tDepart = 0;
+function appliquerVolumes(){ au.volume = vVoix * gain; auI.volume = vInstru * gain; }
+setInterval(() => {
+  if (actif < 0 || au.paused) return;
+  const b = D[actif], t = au.currentTime;
+  let g = 1;
+  if (t < tDepart + OUVRE) g = Math.max(0, (t - tDepart) / OUVRE);
+  if (t > b.fin - FERME) g = Math.min(g, Math.max(0, (b.fin - t) / FERME));
+  if (g !== gain){ gain = g; appliquerVolumes(); }
+  if (t >= b.fin - 0.02){
+    if (boucle[actif]){ au.currentTime = b.deb; tDepart = b.deb; gain = 0; appliquerVolumes(); }
+    else { au.pause(); au.currentTime = b.deb; gain = 1; appliquerVolumes(); dessiner(); }
+  }
+}, 20);
+au.addEventListener('timeupdate', () => { if (actif >= 0) dessiner(); });
+au.addEventListener('pause', () => { if (actif >= 0) lecteurs[actif].classList.remove('joue'); });
+au.addEventListener('play',  () => { if (actif >= 0) lecteurs[actif].classList.add('joue'); });
+
+/* les commandes de chaque lecteur */
+lecteurs.forEach(L => {
+  const i = +L.dataset.i, R = L.querySelector('.regle');
+  L.querySelector('.lire').onclick = () => { if (actif === i && !au.paused) pause(); else jouer(i, actif === i ? undefined : D[i].deb); };
+  L.querySelector('.moins').onclick = () => poser(i, (actif === i ? au.currentTime : D[i].deb) - 5);
+  L.querySelector('.plus').onclick  = () => poser(i, (actif === i ? au.currentTime : D[i].deb) + 5);
+  L.querySelector('.boucle').onclick = e => { boucle[i] = !boucle[i]; e.currentTarget.classList.toggle('actif', !!boucle[i]); };
+  const versTemps = ev => { const r = R.getBoundingClientRect(); const p = Math.max(0, Math.min(1, (ev.clientX - r.left)/r.width)); return D[i].deb + p*(D[i].fin - D[i].deb); };
+  R.addEventListener('pointerdown', ev => { R.setPointerCapture(ev.pointerId); glisse = {i, jouait: actif === i && !au.paused}; if (glisse.jouait) au.pause(); poser(i, versTemps(ev)); });
+  R.addEventListener('pointermove', ev => { if (glisse && glisse.i === i) poser(i, versTemps(ev)); });
+  const lacher = ev => { if (!glisse || glisse.i !== i) return; if (glisse.jouait) au.play(); glisse = null; };
+  R.addEventListener('pointerup', lacher); R.addEventListener('pointercancel', lacher);
+});
+
+/* cliquer une phrase : y aller */
+document.querySelectorAll('.bloc').forEach(sec => {
+  const i = +sec.dataset.i;
+  sec.querySelectorAll('.ligne').forEach(p => {
+    const l = D[i].lignes.find(x => x[0] === p.id); if (!l) return;
+    p.style.cursor = 'pointer'; p.title = 'Écouter cette phrase';
+    p.onclick = () => jouer(i, l[1] - 0.3);
+  });
+});
+
+/* la barre : bloc courant, précédent / suivant, bande */
+function blocVisible(){
+  let best = 0, y = window.scrollY + 140;
+  secs.forEach((s, i) => { if (s.offsetTop <= y) best = i; });
+  return best;
+}
+function majBarre(){ const i = blocVisible(); document.getElementById('courant').textContent = D[i].num + ' · ' + D[i].titre; }
+addEventListener('scroll', majBarre, {passive:true}); majBarre();
+document.getElementById('prec').onclick = () => { const i = Math.max(0, blocVisible() - 1); location.hash = '#bloc' + D[i].num; };
+document.getElementById('suiv').onclick = () => { const i = Math.min(D.length - 1, blocVisible() + 1); location.hash = '#bloc' + D[i].num; };
+document.getElementById('btnHaut').onclick = () => scrollTo({top:0, behavior:'smooth'});
+/* ═══ VOIX TÉMOIN / INSTRUMENTAL, SANS AUCUN SAUT — la méthode du karaoké ═══
+   Les deux bandes jouent EN MÊME TEMPS, l'une muette. Le bouton ne fait que croiser
+   les volumes en un quart de seconde : on ne change jamais de fichier, donc rien ne
+   saute. Seule la bande muette se recale discrètement sur celle qu'on entend. */
+const auI = new Audio('media/bande-diffusee.mp3'); auI.preload = 'auto'; auI.volume = 0;
+let modeBande = 'voix';
+try { if (localStorage.getItem('livre-bande') === 'instru') modeBande = 'instru'; } catch(e){}
+let vVoix = 1, vInstru = 0;          // les volumes de la bascule ; le gain des fondus s'y multiplie
+let fondu = null;
+function croiser(versInstru){
+  clearInterval(fondu);
+  const debut = performance.now(), DUREE = 260;
+  fondu = setInterval(() => {
+    const p = Math.min(1, (performance.now() - debut) / DUREE);
+    vVoix = versInstru ? 1 - p : p; vInstru = versInstru ? p : 1 - p; appliquerVolumes();
+    if (p >= 1) clearInterval(fondu);
+  }, 16);
+}
+let sautInterne = false;
+setInterval(() => {
+  try {
+    if (au.paused) return;
+    if (modeBande === 'voix'){ if (!auI.paused && Math.abs(auI.currentTime - au.currentTime) > 0.12) auI.currentTime = au.currentTime; }
+    else if (Math.abs(au.currentTime - auI.currentTime) > 0.12){ sautInterne = true; au.currentTime = auI.currentTime; }
+  } catch(e){}
+}, 500);
+au.addEventListener('seeked', () => { if (sautInterne){ sautInterne = false; return; } try { auI.currentTime = au.currentTime; } catch(e){} });
+au.addEventListener('play',  () => { try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); });
+au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
+function peindreBande(){
+  document.querySelectorAll('[data-bande]').forEach(x => x.classList.toggle('actif', (x.dataset.bande === 'instru') === (modeBande === 'instru')));
+}
+document.querySelectorAll('[data-bande]').forEach(b => b.onclick = () => {
+  const vers = b.dataset.bande === 'instru' ? 'instru' : 'voix';
+  if (vers === modeBande) return;
+  modeBande = vers;
+  try { localStorage.setItem('livre-bande', modeBande); } catch(e){}
+  peindreBande();
+  if (!au.paused && auI.paused){ try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); }
+  croiser(modeBande === 'instru');
+});
+if (modeBande === 'instru'){ vVoix = 0; vInstru = 1; }
+appliquerVolumes(); peindreBande();
+/* la durée de chaque lecteur */
+lecteurs.forEach(L => { const i = +L.dataset.i; L.querySelector('.duree').textContent = fmt(D[i].fin - D[i].deb); });
+/* chaque phrase sur une seule ligne : on réduit la taille jusqu'à ce qu'elle tienne */
+function ajuster(){
+  /* une seule taille par bloc (la plus grande qui fait tenir ses phrases), jamais sous 62 % de la
+     taille normale ; une phrase trop longue même réduite (téléphone) revient à la ligne */
+  document.querySelectorAll('.groupe').forEach(sec => {
+    const L = [...sec.querySelectorAll('.ligne')]; if (!L.length) return;
+    L.forEach(p => { p.style.fontSize = ''; p.style.whiteSpace = ''; });
+    const base = parseFloat(getComputedStyle(L[0]).fontSize), plancher = Math.max(15, base * 0.62);
+    let taille = base;
+    L.forEach(p => {
+      const largeur = p.clientWidth; if (!largeur) return;
+      let t = parseFloat(getComputedStyle(p).fontSize);
+      p.style.fontSize = '';
+      while (p.scrollWidth > largeur && t > plancher){ t -= 1; p.style.fontSize = t + 'px'; }
+      if (p.scrollWidth <= largeur) taille = Math.min(taille, t);
+      else taille = Math.min(taille, plancher);
+    });
+    L.forEach(p => { p.style.fontSize = taille + 'px'; if (p.scrollWidth > p.clientWidth) p.style.whiteSpace = 'normal'; });
+  });
+}
+let ajustTimer = null;
+addEventListener('resize', () => { clearTimeout(ajustTimer); ajustTimer = setTimeout(ajuster, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster); else ajuster();
+addEventListener('load', ajuster);
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const i = actif >= 0 ? actif : blocVisible();
+  if (e.code === 'Space'){ e.preventDefault(); if (actif === i && !au.paused) pause(); else jouer(i, actif === i ? undefined : D[i].deb); }
+  if (e.key === 'ArrowLeft'){ e.preventDefault(); poser(i, (actif === i ? au.currentTime : D[i].deb) - 5); }
+  if (e.key === 'ArrowRight'){ e.preventDefault(); poser(i, (actif === i ? au.currentTime : D[i].deb) + 5); }
+});
+</script>
+</body>
+</html>
