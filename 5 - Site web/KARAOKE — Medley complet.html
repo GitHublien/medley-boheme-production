@@ -3664,8 +3664,6 @@ if (SUR_MOBILE){
 <style>
 /* ═══ LE BOUTON VOIX / INSTRUMENTAL ═══
    À sa place : dans la barre, avec les autres commandes. */
-#btnMusique.ok{ border-color:rgba(157,255,53,.6) !important; color:#9dff35 !important; }
-#btnMusique{ white-space:nowrap; }
 #btnBande.instru{ border-color:rgba(157,255,53,.6) !important;
                   color:#d9ffb0 !important; }
 
@@ -5013,7 +5011,7 @@ body[data-pour] #bandeau{ display:flex; }
       essai:{ zone:'#bNext' },
       bravo:'Le medley a sauté au titre suivant. On remet tout en place.' },
     { id:'btnBlocs', t:'Blocs — essaie',
-      x:'Voilà la liste du medley (je viens de l\'ouvrir pour toi), dans l\'ordre du spectacle : les chansons en clair, les narrations en bleu. Touche ce que tu veux — ça t\'y emmène directement.',
+      x:'Voilà la liste des titres du medley (je viens de l\'ouvrir pour toi). Touche celui que tu veux — il t\'y emmène directement.',
       avant:'ouvrirBlocs', essai:{ zone:'#menuB a' }, lumiere:'#menuB',
       bravo:'Et voilà : on est arrivé pile sur ce titre. C\'est ça, les Blocs. On remet tout en place.',
       apres:'fermerBlocs' },
@@ -5030,14 +5028,6 @@ body[data-pour] #bandeau{ display:flex; }
       x:'Le karaoké seul à l\'écran, rien d\'autre. Appuie dessus pour voir la différence.',
       essai:{ zone:'#btnPlein' },
       bravo:'Voilà la différence. Le même bouton (ou Échap) pour revenir.' },
-    { id:'btnBande', t:'Voix témoins / Instrumental — essaie',
-      x:'Avec les voix témoins, tu entends la version chantée. Appuie : la bande instrumentale prend la place, sans le moindre saut — les deux sont collées à la même seconde. Réappuie pour revenir.',
-      essai:{ zone:'#btnBande' },
-      bravo:'Tu as entendu ? Même endroit, même instant. Réappuie quand tu veux pour retrouver les voix témoins.' },
-    { id:'btnMusique', t:'Garder la musique',
-      x:'Sur téléphone, appuie ici une fois, en Wi-Fi : les deux bandes (2 × 64 Mo) restent sur ton appareil. Ensuite chaque saut est instantané, et la musique marche même sans réseau.' },
-    { id:'btnMaj',   t:'Mise à jour',
-      x:'Mickaël continue de peaufiner. Quand il publie du nouveau, un petit mot te le dit à l\'ouverture : appuie ici, et tu as la dernière version. Rien ne se recharge tout seul.' },
     { id:'btnIntro', t:'Revoir l\'intro',
       x:'Le film d\'ouverture. Celui-là, je ne te le fais pas essayer — il dure cinquante secondes et tu viens de le voir. Mais il t\'attend ici, quand tu veux.' },
     { id:'btnAide',  t:'Ton aide personnelle',
@@ -5321,8 +5311,7 @@ body[data-pour] #bandeau{ display:flex; }
    ═══════════════════════════════════════════════════════════════ */
 (function(){
   const auI = new Audio('media/bande-diffusee.mp3');
-  window.auI = auI;   /* joignable : la relance après « musique gardée » doit l'atteindre */
-  auI.preload = 'metadata';   /* plus de téléchargement entier à l'ouverture (7 sept) : il se charge à la première bascule */
+  auI.preload = 'auto';
   auI.volume = 0;
 
   let modeBande = 'voix';
@@ -5367,20 +5356,17 @@ body[data-pour] #bandeau{ display:flex; }
   setInterval(() => {
     try {
       if (au.paused) return;
-      if (enSynchro) return;
-      const ecart = Math.abs(auI.currentTime - au.currentTime);
       if (modeBande === 'voix'){
-        /* on entend au ; auI (muette) doit jouer avec elle — sinon, départ commun */
-        if (auI.paused && !au.paused && performance.now() - derniereSynchro > 1500) synchroniser();
+        /* on entend au ; auI (muette) suit — si elle joue */
+        if (!auI.paused && Math.abs(auI.currentTime - au.currentTime) > 0.12)
+          auI.currentTime = au.currentTime;
       } else {
-        /* on entend auI ; au (muette, qui pilote les paroles) suit —
-           mais JAMAIS un instrumental en erreur, à l'arrêt ou pas prêt (7 sept : ça
-           faisait clignoter le karaoké sur le téléphone) */
-        if (auI.error){
-          try { const t = au.currentTime; auI.load(); auI.currentTime = t; auI.play().catch(() => {}); } catch(e){}
-          return;
+        /* on entend auI ; au (muette, qui pilote les paroles) suit */
+        const d = au.currentTime - auI.currentTime;
+        if (Math.abs(d) > 0.12){
+          sautInterne = true;
+          au.currentTime = auI.currentTime;
         }
-        if ((auI.paused || auI.readyState < 2) && performance.now() - derniereSynchro > 1500){ synchroniser(); return; }
       }
     } catch(e){}
   }, 500);
@@ -5388,108 +5374,29 @@ body[data-pour] #bandeau{ display:flex; }
   /* les déplacements de l'utilisateur passent tous par au (le rail,
      les Blocs, les phrases). On répercute sur l'instrumentale —
      mais pas nos propres recalages internes, sinon on tourne en rond */
-  /* ─── LE DÉPART COMMUN (7 septembre) ───
-     Les deux lecteurs sont posés au même temps, on attend qu'ils soient prêts TOUS LES
-     DEUX, et on les lance dans le même instant : écart mesuré 0,0 ms, et stable. Tout
-     passage par « play » ou par un saut de la bande repasse par là. */
-  let enSynchro = false, derniereSynchro = 0, refaire = false;
-  const attendre = (el, ev, cond) => new Promise(res => {
-    if (cond()) return res();
-    const fin = () => { el.removeEventListener(ev, fin); res(); };
-    el.addEventListener(ev, fin); setTimeout(fin, 4000);          /* jamais bloqué plus de 4 s */
-  });
-  let essais = 0;
-  async function synchroniser(nouvelEssai){
-    if (nouvelEssai === undefined) essais = 0;
-    if (enSynchro){ refaire = true; return; }          /* on le rejouera à la fin, avec l'état du moment */
-    enSynchro = true;
-    try {
-      try { mesures.length = 0; poserVitesse(au, vitesseBase); poserVitesse(auI, vitesseBase); } catch(e){}
-      const t = au.currentTime, jouait = !au.paused;
-      if (!au.paused) au.pause(); if (!auI.paused) auI.pause();
-      if (auI.error){ try { auI.load(); } catch(e){} }
-      auI.currentTime = t; au.currentTime = t;
-      await Promise.all([attendre(au, 'seeked', () => !au.seeking), attendre(auI, 'seeked', () => !auI.seeking)]);
-      await Promise.all([attendre(au, 'canplay', () => au.readyState >= 3), attendre(auI, 'canplay', () => auI.readyState >= 3)]);
-      if (jouait){ const p1 = au.play(), p2 = auI.play(); await Promise.all([p1.catch(()=>{}), p2.catch(()=>{})]); }
-      derniereSynchro = performance.now();
-      /* on vérifie : 400 ms plus tard, si l'écart dépasse 40 ms, le départ a raté (un des
-         deux n'était pas vraiment prêt) → on recommence, deux fois au plus */
-      if (jouait && essais < 2){
-        await new Promise(r => setTimeout(r, 400));
-        if (!au.paused && Math.abs(au.currentTime - auI.currentTime) > 0.04){ essais++; enSynchro = false; return synchroniser(essais); }
-      }
-      essais = 0;
-    } catch(e){}
-    enSynchro = false;
-    if (refaire){ refaire = false; synchroniser(); }
-  }
-  /* ─── LE CONTRÔLE FIN ─── toutes les 400 ms, pendant la lecture : la bande MUETTE est
-     recalée sur celle qu'on entend, par pas de quelques millisecondes (inaudible, elle est
-     muette). Au-delà de 60 ms, ce n'est plus un réglage fin : départ commun. */
-  /* la vitesse de base : celle qu'on a choisie (vitesse de travail) ; nos retouches
-     fines ne comptent pas comme un choix */
-  let vitesseBase = 1;
-  let vouluAu = null, vouluAuI = null;                     /* ce que NOUS avons posé en dernier */
-  let derniereAbsorption = 0;
-  function poserVitesse(el, v){ if (el === au) vouluAu = v; else vouluAuI = v; try { el.playbackRate = v; } catch(e){} }
-  const mesures = [];
-  setInterval(() => {
-    try {
-      if (enSynchro || au.paused || auI.paused || auI.error){ mesures.length = 0; return; }
-      const ecart = au.currentTime - auI.currentTime;          /* > 0 : au est en avance */
-      mesures.push(ecart); if (mesures.length > 2) mesures.shift();
-      if (mesures.length < 2) return;
-      const moy = mesures.reduce((x, y) => x + y, 0) / mesures.length;
-      const muette = (modeBande === 'voix') ? auI : au, audible = (modeBande === 'voix') ? au : auI;
-      const sens = (muette === auI) ? 1 : -1;                     /* auI en retard si ecart > 0 */
-      /* un gros écart (le départ a raté sur cet appareil) : on l'absorbe d'un coup sur la
-         muette — inaudible — au plus une fois toutes les 1,5 s ; la vitesse finit ensuite */
-      if (Math.abs(moy) > 0.1 && !muette.seeking && performance.now() - derniereAbsorption > 1500){
-        derniereAbsorption = performance.now(); mesures.length = 0;
-        if (muette === au) sautInterne = true;
-        try { muette.currentTime = muette.currentTime + sens * moy; } catch(e){}
-        return;
-      }
-      const plafond = Math.abs(moy) > 0.06 ? 0.15 : 0.06;      /* gros écart : on rattrape plus vite (la muette ne s'entend pas) */
-      const v = Math.abs(moy) < 0.003 ? vitesseBase : vitesseBase * (1 + Math.max(-plafond, Math.min(plafond, sens * moy * 1.5)));
-      if (Math.abs(muette.playbackRate - v) > 0.0005) poserVitesse(muette, v);
-      if (Math.abs(audible.playbackRate - vitesseBase) > 0.0005) poserVitesse(audible, vitesseBase);
-    } catch(e){}
-  }, 250);
-  window.synchroniserBandes = synchroniser;
   au.addEventListener('seeked', () => {
-    if (enSynchro) return;
     if (sautInterne){ sautInterne = false; return; }
-    synchroniser();
+    try { auI.currentTime = au.currentTime; } catch(e){}
   });
-  au.addEventListener('playing', () => {
-    /* l'instrumental n'a pas démarré avec la voix (premier play, ou lecture relancée
-       ailleurs) : départ commun — mais pas dans la seconde qui suit un départ commun */
-    if (!enSynchro && auI.paused && performance.now() - derniereSynchro > 1000) synchroniser();
+  au.addEventListener('play', () => {
+    try { auI.currentTime = au.currentTime; } catch(e){}
+    auI.play().catch(()=>{});
   });
-  au.addEventListener('pause', () => { if (!enSynchro){ try { auI.pause(); } catch(e){} } });
+  au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
   /* le réglage de vitesse de travail (ordinateur) vaut pour les deux
      bandes — c'est un choix de l'utilisateur, pas un recalage */
-  au.addEventListener('ratechange', () => {
-    if (vouluAu !== null && Math.abs(au.playbackRate - vouluAu) < 1e-6) return;   /* une de nos retouches fines */
-    try { vitesseBase = au.playbackRate; vouluAu = null; auI.playbackRate = au.playbackRate; vouluAuI = null; } catch(e){}
-  });
+  au.addEventListener('ratechange', () => { try { auI.playbackRate = au.playbackRate; } catch(e){} });
 
   bb.addEventListener('click', (e) => {
     e.stopPropagation();
     modeBande = (modeBande === 'voix') ? 'instru' : 'voix';
     try { localStorage.setItem('boheme-bande', modeBande); } catch(e2){}
     peindre();
-    /* on ne croise les volumes qu'une fois les deux bandes alignées (< 15 ms) */
-    (async () => {
-      /* on attend que les deux bandes soient alignées (< 15 ms), 2,5 s au plus, puis on croise */
-      if (!au.paused && auI.paused) synchroniser();
-      const t0 = performance.now();
-      while (!au.paused && Math.abs(auI.currentTime - au.currentTime) > 0.015 && performance.now() - t0 < 2500)
-        await new Promise(r => setTimeout(r, 60));
-      croiser(modeBande === 'instru');
-    })();
+    if (!au.paused && auI.paused){
+      try { auI.currentTime = au.currentTime; } catch(e3){}
+      auI.play().catch(()=>{});
+    }
+    croiser(modeBande === 'instru');
   });
 
   /* au réveil, son dernier choix est déjà en place */
@@ -5508,7 +5415,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 13h52';
+const VERSION_APPLI = '07/09/2026 · 14h00';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5532,7 +5439,6 @@ const VERSION_APPLI = '07/09/2026 · 13h52';
     location.replace(location.pathname + '?' + q.toString());
   }
 
-  window.dire = dire;   /* le petit mot, joignable par les autres scripts (musique sur l'appareil) */
   window.chercherMaj = async function(){
     dire('⟳ Je cherche s\'il y a du nouveau…', 0);
     try {
@@ -6079,118 +5985,4 @@ const VERSION_APPLI = '07/09/2026 · 13h52';
 })();
 </script>
 
-<script>
-
-</script>
-<script>
-
-</script>
-<script>
-
-</script>
-<script>
-/* ═══ LA MUSIQUE SUR L'APPAREIL (7 septembre 2026) ═══ */
-(function(){
-  if (!('caches' in window)) return;
-  const BANDES = ['media/bande-voix-temoins.mp3', 'media/bande-diffusee.mp3'].map(u => new URL(u, location.href).href);
-  const CACHE = 'boheme-musique-v1';
-  const bt = document.createElement('button'); bt.id = 'btnMusique'; bt.className = 'btn-reg';
-  let enCours = false;
-  (function poser(){
-    const barre = document.querySelector('.barre');
-    const maj = document.getElementById('btnMaj');
-    if (barre){ if (maj && maj.parentNode === barre) barre.insertBefore(bt, maj); else barre.appendChild(bt); }
-    else setTimeout(poser, 300);
-  })();
-  async function gardees(){
-    try { const c = await caches.open(CACHE); const r = await Promise.all(BANDES.map(u => c.match(u))); return r.filter(Boolean).length; }
-    catch(e){ return 0; }
-  }
-  async function peindre(texte){
-    if (texte){ bt.textContent = texte; return; }
-    const k = await gardees();
-    bt.classList.toggle('ok', k === BANDES.length);
-    bt.textContent = k === BANDES.length ? '♫ Musique sur l\'appareil' : (k ? '♫ Musique : 1 bande sur 2' : '⬇ Garder la musique');
-    bt.title = k === BANDES.length
-      ? 'Les deux bandes sont gardées sur cet appareil : les sauts sont instantanés, et ça marche sans réseau. Appuie pour les retirer.'
-      : 'Garde les deux bandes (2 × 64 Mo) sur cet appareil, une fois pour toutes : ensuite, chaque saut dans le morceau est instantané, même sans réseau. À faire en Wi-Fi.';
-  }
-  async function garder(){
-    if (enCours) return; enCours = true;
-    try {
-      const c = await caches.open(CACHE);
-      for (let i = 0; i < BANDES.length; i++){
-        const u = BANDES[i];
-        if (await c.match(u)) continue;
-        const rep = await fetch(u, { cache: 'no-store' });
-        if (!rep.ok || !rep.body) throw new Error('réponse ' + rep.status);
-        const total = parseInt(rep.headers.get('content-length') || '0', 10);
-        const lecteur = rep.body.getReader(); const morceaux = []; let recu = 0;
-        while (true){
-          const { done, value } = await lecteur.read(); if (done) break;
-          morceaux.push(value); recu += value.length;
-          const p = total ? Math.round(100 * (i + recu / total) / BANDES.length) : 0;
-          await peindre('⬇ ' + p + ' %');
-        }
-        const blob = new Blob(morceaux, { type: 'audio/mpeg' });
-        await c.put(u, new Response(blob, { headers: { 'Content-Type': 'audio/mpeg', 'Content-Length': String(blob.size), 'Accept-Ranges': 'bytes' } }));
-      }
-    } catch(e){
-      await peindre('✗ pas réussi — réessaie');
-      setTimeout(peindre, 3000); enCours = false; return;
-    }
-    enCours = false; await peindre();
-    recharger();
-  }
-  /* pendant le téléchargement, le lecteur peut passer en erreur réseau (il n'a plus de
-     bande passante) — et un lecteur en erreur ne saute plus jamais. Une fois la musique
-     gardée, on recharge les deux lecteurs à la même position : ils lisent désormais
-     depuis l'appareil. */
-  function recharger(){
-    try {
-      const au = document.getElementById('au'); if (!au) return;
-      const t = au.currentTime, jouait = !au.paused;
-      au.load(); au.currentTime = t;
-      const auI2 = window.auI || null;
-      if (auI2){ auI2.load(); auI2.currentTime = t; }
-      if (jouait) au.play().catch(() => {});
-    } catch(e){}
-  }
-  /* et si le lecteur tombe en erreur alors que la musique est gardée : on le relance une fois */
-  (function(){
-    const au = document.getElementById('au'); if (!au) return;
-    let deja = false;
-    au.addEventListener('error', async () => {
-      if (deja) return;
-      if (await gardees() === BANDES.length){ deja = true; setTimeout(recharger, 300); }
-    });
-  })();
-  async function retirer(){
-    try { const c = await caches.open(CACHE); for (const u of BANDES) await c.delete(u); } catch(e){}
-    await peindre();
-  }
-  bt.addEventListener('click', async e => {
-    e.stopPropagation();
-    if (enCours) return;
-    if (await gardees() === BANDES.length){ if (confirm('Retirer la musique de cet appareil ? Tu pourras la garder à nouveau plus tard.')) retirer(); }
-    else garder();
-  });
-  peindre();
-  window.garderMusique = garder;
-  /* l'invitation : sur téléphone ou tablette, tant que la musique n'est pas gardée, un mot à
-     l'ouverture, avec le bouton dedans. Pas plus d'une fois par ouverture. */
-  setTimeout(async () => {
-    try {
-      if (!matchMedia('(pointer: coarse)').matches) return;
-      if (await gardees() === BANDES.length) return;
-      if (typeof dire !== 'function') return;
-      dire('♫ <b>Pour que l\'appli soit rapide</b>, garde la musique sur ton téléphone : une fois, en Wi-Fi (2 × 64 Mo). '
-         + 'Ensuite, chaque saut est instantané, même sans réseau.<br>'
-         + '<button onclick="window.garderMusique(); this.disabled = true; this.textContent = \'⬇ Ça se télécharge… regarde le bouton Musique dans la barre\';" '
-         + 'style="margin-top:8px;font:inherit;font-size:.95em;padding:8px 14px;border-radius:999px;border:1px solid #9dff35;background:rgba(157,255,53,.14);color:#9dff35;cursor:pointer">⬇ Garder la musique maintenant</button>', 20000);
-    } catch(e){}
-  }, 9000);
-})();
-/* ═══ fin musique sur l'appareil ═══ */
-</script>
 </body>
