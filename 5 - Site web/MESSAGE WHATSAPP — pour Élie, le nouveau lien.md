@@ -1,27 +1,26 @@
-# MESSAGE WHATSAPP — pour Élie (7 septembre, 21 h)
+# MESSAGE WHATSAPP — pour Élie (7 septembre, 22 h)
 
-*Ce qui se passait chez lui, vérifié avec le moteur de Safari sur un iPhone simulé : ton lien
-menait à la porte, la porte lui montrait « Installer l'application » (qui n'existe pas sur
-iPhone), puis, s'il passait, le film lui demandait de tourner le téléphone. Un iPhone dont la
-rotation est verrouillée, ce qui est le cas de presque tout le monde, restait devant un écran
-noir pour toujours. Sylvie, avec ton lien pour Élie, tombait sur le même mur. Ce n'est ni lui,
-ni son téléphone : c'était la porte. C'est corrigé et en ligne. Envoie-lui ceci tel quel.*
+*Pourquoi ça marchait avant et plus maintenant : au début tu lui avais donné la racine du
+site, cinquante-quatre caractères, que des lettres. Hier soir tu lui as donné le lien de sa
+porte, cent caractères, avec un tiret cadratin encodé « %E2%80%94 », des espaces et un point
+d'interrogation. Dans WhatsApp, sur iPhone, un lien pareil se coupe : il n'ouvre rien, d'où
+son « je n'ai absolument rien ». Ce n'était ni son iPhone ni le site.*
+
+*Il a maintenant un lien à son nom, sans aucun caractère spécial. Vérifié sur le moteur de
+Safari, dans Safari et dans WhatsApp : les deux mènent au bon écran.*
 
 ---
 
-Élie, j'ai trouvé. Ce n'était ni toi ni ton iPhone : la page d'entrée demandait de tourner le téléphone pour voir le film, et sur un iPhone verrouillé en portrait, elle attendait pour rien. C'est réparé.
+Élie, j'ai trouvé, et ce n'était pas ton iPhone. Le lien que je t'ai envoyé hier soir était trop long et contenait des caractères spéciaux : WhatsApp le coupe, et il n'ouvre rien. C'est pour ça que tu n'avais absolument rien, et Sylvie non plus.
 
-Refais exactement ceci :
+Voici ton lien, à ton nom, tout simple :
 
-1. Appuie sur ce lien :
-https://githublien.github.io/medley-boheme-production/installer.html?pour=elie
+https://githublien.github.io/medley-boheme-production/elie/
 
-2. Si la page s'ouvre dans WhatsApp, appuie sur la petite boussole en bas à droite : elle ouvre la page dans Safari.
+Appuie dessus. Il te dira exactement quoi faire, en deux gestes. Si la page s'ouvre dans WhatsApp, elle te demandera d'appuyer sur la petite boussole en bas à droite pour passer dans Safari : c'est normal, WhatsApp ne sait pas installer d'application.
 
-3. Dans Safari, appuie sur Partager (le carré avec la flèche, en bas au milieu), puis « Sur l'écran d'accueil », puis Ajouter.
+Ensuite, dans Safari : Partager, puis « Sur l'écran d'accueil ». Bohème apparaît avec le logo doré, et tu entres par là.
 
-Bohème est alors sur ton écran, avec le logo doré. Ouvre-la par là. Si un écran te dit « tourne ton téléphone », attends trois secondes : un bouton doré te propose de continuer debout.
-
-Dis-moi ce que tu vois, même si c'est « rien » : une photo d'écran me suffit.
+Dis-moi ce que tu vois, même si c'est encore « rien ». Une photo d'écran me suffit.
 
 Mickaël
