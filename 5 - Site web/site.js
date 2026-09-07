@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 21h33';
+const VERSION_SITE = '07/09/2026 · 21h49';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -99,6 +99,12 @@ const VERSION_SITE = '07/09/2026 · 21h33';
     addEventListener('scroll', () => { y = Math.min(scrollY, innerHeight * 1.2); if (!demande){ demande = true; requestAnimationFrame(peindre); } }, { passive: true });
   }
 
+  /* l'ouvrier de service force le réseau pour les pages, le style et les scripts :
+     sans lui, GitHub Pages fait garder les fichiers dix minutes et la mise à jour tourne en rond */
+  if ('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
+  }
+
   /* ── LA MISE À JOUR, comme dans le karaoké : un petit mot qui répond ──
      Elle vérifie à l'ouverture, sans déranger, et dit toujours où on en est.
      Les nouveautés du jour allument une pastille sur les pages concernées. */
@@ -123,11 +129,27 @@ const VERSION_SITE = '07/09/2026 · 21h33';
       const enLigne = m ? m[1] : null;
       if (!enLigne){ if (!silencieux) dire('Je n\'ai pas pu vérifier. Réessaie dans un moment.', 5000); return; }
       if (enLigne === VERSION_SITE){
+        try { sessionStorage.removeItem('boheme-maj-tentee'); } catch(e){}
         if (!silencieux) dire('✔ Tu as déjà la <b>dernière version</b>.<br><span class="pt">Version ' + VERSION_SITE + '</span>', 5000);
         return;
       }
+      /* ─── LE GARDE-FOU (7 sept) ──────────────────────────────────────────
+         On ne recharge qu'UNE fois pour une version donnée. Si le navigateur
+         resert quand même l'ancien fichier, on ne recommence pas : on le dit. */
+      let dejaTentee = null;
+      try { dejaTentee = sessionStorage.getItem('boheme-maj-tentee'); } catch(e){}
+      if (dejaTentee === enLigne){
+        dire('La nouvelle version est prête, mais ton navigateur garde encore l\'ancienne en mémoire.<br>'
+           + '<b>Ferme complètement l\'application, puis rouvre-la</b> : elle sera là.', 9000);
+        return;
+      }
+      try { sessionStorage.setItem('boheme-maj-tentee', enLigne); } catch(e){}
       dire('🎉 Une <b>nouvelle version</b> est arrivée !<br>Je l\'installe…', 0);
-      setTimeout(() => location.replace(location.pathname + '?maj=' + Date.now() + (pour ? '&pour=' + pour : '')), 1200);
+      /* on vide aussi les caches de l'application avant de recharger */
+      setTimeout(async () => {
+        try { if (window.caches) for (const n of await caches.keys()) await caches.delete(n); } catch(e){}
+        location.replace(location.pathname + '?maj=' + Date.now() + (pour ? '&pour=' + pour : ''));
+      }, 1200);
     } catch(e){ if (!silencieux) dire('Pas de réseau pour l\'instant. Réessaie quand tu auras de la connexion.', 5000); }
   }
   window.chercherMajSite = chercherMaj;

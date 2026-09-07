@@ -5498,7 +5498,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 21h32';
+const VERSION_APPLI = '07/09/2026 · 21h50';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5860,7 +5860,7 @@ const VERSION_APPLI = '07/09/2026 · 21h32';
     const p = enPaysage();
     if (p !== etaitPaysage){
       notes(p);
-      pastille(p ? 'mode paysage' : 'mode portrait');
+      /* la pastille « mode paysage » ne servait à rien : retirée le 7 sept */
       etaitPaysage = p;
     }
   });
@@ -6320,4 +6320,130 @@ const VERSION_APPLI = '07/09/2026 · 21h32';
   }
 }
 </style>
+
+<style>
+/* ═══ LES PASTILLES : RONDES, TOUTES PAREILLES (7 septembre 2026) ═══
+   Une seule taille, fixée en pixels : rien ne grossit ni ne s'aplatit quand on
+   tourne le téléphone. Et une bulle explique chaque pictogramme. */
+@media (pointer: coarse) and (max-width: 1100px){
+  :root{ --past: 48px; --picto: 25px; }
+
+  .barre .btn-reg, .barre .b-aller{
+    width:var(--past) !important; height:var(--past) !important;
+    min-width:var(--past) !important; max-width:var(--past) !important;
+    min-height:var(--past) !important; max-height:var(--past) !important;
+    flex:0 0 var(--past) !important; aspect-ratio:1 / 1 !important;
+    border-radius:50% !important; padding:0 !important; margin:0 !important;
+    display:grid !important; place-items:center !important; box-sizing:border-box !important;
+  }
+  .barre .btn-reg::before, .barre .b-aller::before{
+    width:var(--picto) !important; height:var(--picto) !important;
+  }
+  /* « aller à ton passage » : le geste le plus utile, donc le plus visible */
+  .barre .b-aller.la{
+    width:60px !important; height:60px !important;
+    min-width:60px !important; max-width:60px !important;
+    min-height:60px !important; max-height:60px !important;
+    flex:0 0 60px !important;
+    border-color:rgba(255,200,20,.95) !important;
+    background:rgba(255,200,20,.16) !important;
+    box-shadow:0 0 0 4px rgba(255,200,20,.10), 0 8px 26px rgba(0,0,0,.5) !important;
+    order:-2 !important;
+  }
+  .barre .b-aller.la::before{ width:31px !important; height:31px !important; }
+  .barre{ align-items:center !important; }
+
+  /* LA BULLE QUI EXPLIQUE — elle nomme le bouton et dit à quoi il sert */
+  .bulle{
+    position:fixed; z-index:97; max-width:min(310px, 84vw);
+    padding:.75rem 1rem; border-radius:14px;
+    background:rgba(12,11,10,.98); border:1px solid rgba(212,175,55,.55);
+    box-shadow:0 18px 46px rgba(0,0,0,.7); backdrop-filter:blur(16px);
+    color:#e8e2d2; font-size:13px; line-height:1.45; text-align:left;
+    opacity:0; transform:translateY(-7px); pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .bulle.la{ opacity:1; transform:none; }
+  .bulle b{ display:block; color:#ffc814; font-size:14px; margin-bottom:.15rem; }
+}
+
+/* en tournant le téléphone, plus rien ne saute : la taille ne dépend pas de l'écran */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
+  :root{ --past: 44px; --picto: 23px; }
+  .barre .b-aller.la{ width:54px !important; height:54px !important;
+    min-width:54px !important; max-width:54px !important;
+    min-height:54px !important; max-height:54px !important; flex:0 0 54px !important; }
+  .barre .b-aller.la::before{ width:28px !important; height:28px !important; }
+}
+</style>
+
+<script>
+/* ═══ CHAQUE PICTOGRAMME S'EXPLIQUE (7 septembre 2026) ═══
+   Au premier appui sur un bouton, une bulle dit son nom et à quoi il sert, puis
+   l'action se fait normalement. Ensuite la bulle ne revient plus, sauf si on garde
+   le doigt appuyé : c'est le rappel, à tout moment. */
+(function(){
+  if (!(matchMedia('(pointer: coarse)').matches && innerWidth <= 1100)) return;
+
+  const DIT = {
+    btnSite:    ['Retour au site', 'Le hall : les textes, la mise en scène, les documents, les vidéos, le calendrier.'],
+    btnBande:   ['Voix témoins ou instrumental', 'Tu entends les voix qui guident, ou la bande seule, comme au concert. Le son ne saute jamais.'],
+    btnBlocs:   ['Les vingt blocs', 'La liste de tout le medley. Touche un titre : la musique y va.'],
+    btnAide:    ['Ton aide personnelle', 'Tes lignes à toi s\'allument dans ta couleur, et un mot te dit où tu es et ce qui arrive.'],
+    btnStyle:   ['Le style', 'Change la façon dont les paroles s\'allument.'],
+    btnTuto:    ['Le guide', 'La visite guidée : chaque bouton, expliqué, en quelques écrans.'],
+    btnInfos:   ['Les explications', 'Ce que contient l\'application, et comment s\'en servir.'],
+    btnMaj:     ['Mise à jour', 'Va voir s\'il y a du nouveau et l\'installe. Rien à réinstaller à la main.'],
+    btnIntro:   ['Revoir le film', 'Le film d\'ouverture, autant de fois que tu veux.'],
+    btnPlein:   ['Plein écran', 'Cache tout ce qui n\'est pas le medley.'],
+    btnPresence:['La présence', 'Le visage qui accompagne l\'ouverture.'],
+    btnPlus:    ['Les autres commandes', 'Le style, le guide, la mise à jour, le film, le plein écran.']
+  };
+  const ALLER = ['Aller à ton passage', 'Un appui, et la musique va directement là où TU chantes. C\'est le bouton doré.'];
+
+  const bulle = document.createElement('div'); bulle.className = 'bulle';
+  document.body.appendChild(bulle);
+  let minuteur = null;
+  function montrer(b, titre, texte, duree){
+    bulle.innerHTML = '<b>' + titre + '</b>' + texte;
+    bulle.classList.add('la');
+    const r = b.getBoundingClientRect();
+    bulle.style.visibility = 'hidden'; bulle.style.left = '0px'; bulle.style.top = '0px';
+    requestAnimationFrame(() => {
+      const bb = bulle.getBoundingClientRect();
+      const paysage = matchMedia('(orientation: landscape)').matches;
+      let x, y;
+      if (paysage){ x = r.right + 10; y = Math.min(Math.max(8, r.top - 6), innerHeight - bb.height - 8); }
+      else { x = Math.min(Math.max(8, r.left + r.width / 2 - bb.width / 2), innerWidth - bb.width - 8); y = r.bottom + 10; }
+      bulle.style.left = Math.round(x) + 'px'; bulle.style.top = Math.round(y) + 'px';
+      bulle.style.visibility = 'visible';
+    });
+    clearTimeout(minuteur);
+    minuteur = setTimeout(() => bulle.classList.remove('la'), duree || 4200);
+  }
+  document.addEventListener('click', e => { if (!bulle.contains(e.target)) bulle.classList.remove('la'); }, true);
+
+  function vu(id){ try { return localStorage.getItem('boheme-su-' + id) === '1'; } catch(e){ return true; } }
+  function noter(id){ try { localStorage.setItem('boheme-su-' + id, '1'); } catch(e){} }
+
+  function equiper(b){
+    if (b.dataset.explique) return;
+    const est = b.classList.contains('b-aller') ? 'aller' : b.id;
+    const d = est === 'aller' ? ALLER : DIT[b.id];
+    if (!d) return;
+    b.dataset.explique = '1';
+    /* le premier appui explique d'abord, puis laisse faire */
+    b.addEventListener('click', () => { if (!vu(est)){ noter(est); montrer(b, d[0], d[1], 5200); } }, true);
+    /* l'appui long redonne l'explication, à tout moment */
+    let t = null;
+    b.addEventListener('touchstart', () => { t = setTimeout(() => montrer(b, d[0], d[1]), 480); }, { passive: true });
+    ['touchend', 'touchmove', 'touchcancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(t), { passive: true }));
+  }
+
+  function passer(){ document.querySelectorAll('.barre .btn-reg, .tiroir .btn-reg, .barre .b-aller').forEach(equiper); }
+  passer();
+  new MutationObserver(passer).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
 </body>
