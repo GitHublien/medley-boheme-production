@@ -131,7 +131,8 @@ section{ padding:clamp(3.2rem,8vw,7.5rem) 0; }
 @media (prefers-reduced-motion:reduce){ .rev{ opacity:1; transform:none; filter:none; transition:none } .poussiere{ animation:none } }
 
 /* ─── la frise des trois mondes ─────────────────────────────────────── */
-.mondes{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+.mondes{ display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+.monde.romeo .img{ background:radial-gradient(60% 60% at 50% 30%, rgba(200,60,80,.25), transparent), #14090c; }
 .monde .coeur{ min-height:380px; padding:1.4rem; display:flex; flex-direction:column; justify-content:flex-end; isolation:isolate; }
 .monde .img{ position:absolute; inset:0; z-index:-1; margin:0; background:var(--noir3); }
 .monde .img img{ width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.2s var(--lent), transform 6s var(--lent); }
@@ -196,7 +197,8 @@ section{ padding:clamp(3.2rem,8vw,7.5rem) 0; }
 /* ─── le pied ───────────────────────────────────────────────────────── */
 footer{ padding:4rem 0 6rem; color:var(--gris2); font-size:.85rem; }
 footer .page{ display:grid; gap:1.2rem; }
-footer img{ width:120px; opacity:.7; }
+footer img{ width:min(320px, 62vw); opacity:.9; }
+footer .btn.maj{ justify-self:start; }
 footer .liens{ display:flex; flex-wrap:wrap; gap:.4rem 1.4rem; }
 footer .liens a:hover{ color:var(--or2); }
 

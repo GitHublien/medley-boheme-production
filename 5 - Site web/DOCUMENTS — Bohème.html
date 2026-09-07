@@ -6,32 +6,79 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
+<style>
+  .doc{ display:grid; gap:.9rem; }
+  .doc .coeur{ padding:clamp(1.1rem,2.4vw,1.6rem); display:grid; gap:.9rem; }
+  .doc .haut{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .doc .type{ font-family:var(--disp); letter-spacing:.2em; color:var(--or); font-size:.95rem; }
+  .doc h3{ margin:.1rem 0 0; }
+  .doc p{ color:var(--gris); max-width:66ch; }
+  .doc .quand{ color:var(--gris2); font-size:.85rem; }
+  .doc .gestes{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.2rem; }
+  .apercu{ margin-top:.4rem; border-radius:var(--r2); overflow:hidden; border:1px solid rgba(255,255,255,.08); background:#0a0908; display:none; }
+  .apercu.ouvert{ display:block; }
+  .apercu iframe{ width:100%; height:min(72vh,760px); border:0; background:#111; }
+  .apercu img{ width:100%; display:block; }
+  @media (max-width:700px){ .apercu iframe{ height:62vh; } }
+</style>
 </head>
 <body>
 <header class="enTete">
   <div class="fond" data-img="site-images/09-documents.jpg"></div><div class="brume"></div>
   <div class="page texte">
-    <span class="etiq rev">Les documents</span>
     <h1 class="rev d1">À garder <span class="it">sur soi.</span></h1>
-    <p class="lead rev d2">Chaque fichier porte sa date. Si une version plus récente existe, elle est ici, et le karaoké te l'aura signalé.</p>
+    <p class="lead rev d2">Chaque document s'ouvre ici, en aperçu, et se télécharge d'un appui. Sur le téléphone comme sur l'ordinateur.</p>
   </div>
 </header>
 
 <section class="page">
-  <div class="liste">
-    <a class="ligne rev" href="media/fiche/fiche-technique-4-octobre-2026.pdf" target="_blank" rel="noopener"><span class="n">PDF</span><span class="t">La fiche technique du 4 octobre<small>Pour le Palais : lumière, son, écran, fumée. Ce que nous demandons, et pourquoi.</small></span><span class="h">29 août</span></a>
-    <a class="ligne rev d1" href="media/fiche/plan-plateau.png" target="_blank" rel="noopener"><span class="n">IMG</span><span class="t">Le plan de plateau<small>Jardin, cour, les lampes, les entrées et les sorties.</small></span><span class="h">3 sept.</span></a>
-    <a class="ligne rev d2" href="LIVRE — Les textes du medley.html"><span class="n">WEB</span><span class="t">Le livre des textes<small>Tous les textes, chaque voix dans sa couleur, avec la musique bloc par bloc. La version PDF arrive.</small></span><span class="h">7 sept.</span></a>
-    <a class="ligne rev d3" href="KARAOKE — Medley complet.html"><span class="n">APP</span><span class="t">Le karaoké complet<small>Les vingt blocs, réglés à l'oreille. Installable sur le téléphone.</small></span><span class="h">7 sept.</span></a>
+  <div class="doc">
+
+    <article class="coque rev"><div class="coeur">
+      <div class="haut"><span class="type">PDF</span><span class="quand">29 août 2026</span></div>
+      <h3>La fiche technique du 4 octobre</h3>
+      <p>Pour le Palais : lumière, son, écran, fumée. Ce que nous demandons, et pourquoi. C'est le document que le régisseur reçoit.</p>
+      <div class="gestes">
+        <button class="btn doux" data-voir="apercu-fiche">Voir ici <b>◉</b></button>
+        <a class="btn" href="media/fiche/fiche-technique-4-octobre-2026.pdf" download>Télécharger <b>⇩</b></a>
+        <a class="btn doux" href="media/fiche/fiche-technique-4-octobre-2026.pdf" target="_blank" rel="noopener">Ouvrir à part <b>↗</b></a>
+      </div>
+      <div class="apercu" id="apercu-fiche"><iframe data-src="media/fiche/fiche-technique-4-octobre-2026.pdf#view=FitH" title="La fiche technique"></iframe></div>
+    </div></article>
+
+    <article class="coque rev d1"><div class="coeur">
+      <div class="haut"><span class="type">IMAGE</span><span class="quand">3 septembre 2026</span></div>
+      <h3>Le plan de plateau</h3>
+      <p>Jardin, cour, les lampes, les entrées et les sorties, bloc par bloc. À regarder avant la répétition.</p>
+      <div class="gestes">
+        <button class="btn doux" data-voir="apercu-plan">Voir ici <b>◉</b></button>
+        <a class="btn" href="media/fiche/plan-plateau.png" download>Télécharger <b>⇩</b></a>
+        <a class="btn doux" href="media/fiche/plan-plateau.png" target="_blank" rel="noopener">Ouvrir à part <b>↗</b></a>
+      </div>
+      <div class="apercu" id="apercu-plan"><img data-src="media/fiche/plan-plateau.png" alt="Le plan de plateau"></div>
+    </div></article>
+
   </div>
 </section>
 
 <section class="page">
   <div class="vide rev">
     <h3>Ce qui arrive ensuite</h3>
-    <p>Le livre des textes en PDF, le plan de plateau simplifié, bloc par bloc, et le calendrier imprimable. Chacun apparaîtra ici avec sa date.</p>
+    <p>Le livre des textes en PDF, à imprimer ou à garder hors ligne. Le plan de plateau simplifié, bloc par bloc. Le calendrier avec les horaires du Palais. Chacun apparaîtra ici avec sa date, et le bouton « Mise à jour » te préviendra.</p>
   </div>
 </section>
+
 <script src="site.js"></script>
+<script>
+/* l'aperçu : le document ne se charge qu'au moment où on le demande */
+document.querySelectorAll('[data-voir]').forEach(b => b.addEventListener('click', () => {
+  const z = document.getElementById(b.getAttribute('data-voir'));
+  const ouvert = z.classList.toggle('ouvert');
+  const el = z.querySelector('[data-src]');
+  if (ouvert && el && !el.src){ el.src = el.getAttribute('data-src'); }
+  b.innerHTML = ouvert ? 'Fermer l\'aperçu <b>×</b>' : 'Voir ici <b>◉</b>';
+  if (ouvert) setTimeout(() => z.scrollIntoView({ behavior: 'smooth', block: 'center' }), 220);
+}));
+</script>
 </body>
 </html>

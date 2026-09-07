@@ -87,6 +87,26 @@
     addEventListener('scroll', () => { y = Math.min(scrollY, innerHeight * 1.2); if (!demande){ demande = true; requestAnimationFrame(peindre); } }, { passive: true });
   }
 
+  /* ── la mise à jour, sur le site aussi ──────────────────────────────── */
+  (function(){
+    const b = document.createElement('button'); b.className = 'btn doux maj';
+    b.innerHTML = 'Mise à jour <b>⟳</b>';
+    b.title = 'Va chercher la dernière version du site';
+    b.onclick = async () => {
+      b.innerHTML = 'Je cherche… <b>⟳</b>';
+      try {
+        const r = await fetch(location.pathname + '?verif=' + Date.now(), { cache: 'no-store' });
+        const t = await r.text();
+        const ici = document.documentElement.outerHTML.length, la = t.length;
+        b.innerHTML = (Math.abs(ici - la) > 40) ? 'Nouvelle version ! <b>⟳</b>' : 'Tu as la dernière <b>✓</b>';
+        if (Math.abs(ici - la) > 40) setTimeout(() => location.reload(true), 900);
+        else setTimeout(() => { b.innerHTML = 'Mise à jour <b>⟳</b>'; }, 3000);
+      } catch(e){ b.innerHTML = 'Pas de réseau <b>!</b>'; setTimeout(() => { b.innerHTML = 'Mise à jour <b>⟳</b>'; }, 3000); }
+    };
+    const poser = () => { const p = document.querySelector('footer .page'); if (p) p.insertBefore(b, p.querySelector('.liens')); else setTimeout(poser, 200); };
+    setTimeout(poser, 60);
+  })();
+
   /* ── le bouton « j'ai tout reçu » ───────────────────────────────────── */
   const recu = document.querySelector('[data-recu]');
   if (recu){
