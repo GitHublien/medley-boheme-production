@@ -1484,7 +1484,7 @@ const attendre = (el, ev, cond) => new Promise(res => {
   const fin = () => { el.removeEventListener(ev, fin); res(); };
   el.addEventListener(ev, fin); setTimeout(fin, 4000);
 });
-let vouluAu = null, vouluAuI = null; const mesures = [];
+let vouluAu = null, vouluAuI = null, derniereAbsorption = 0; const mesures = [];
 function poserVitesse(el, v){ if (el === au) vouluAu = v; else vouluAuI = v; try { el.playbackRate = v; } catch(e){} }
 let essais = 0;
 async function synchroniser(nouvelEssai){
@@ -1518,11 +1518,15 @@ setInterval(() => {
   try {
     if (enSynchro || au.paused || auI.paused || auI.error){ mesures.length = 0; return; }
     const ecart = au.currentTime - auI.currentTime;
-    if (Math.abs(ecart) > 0.25){ mesures.length = 0; if (performance.now() - derniereSynchro > 3000) synchroniser(); return; }
     mesures.push(ecart); if (mesures.length > 2) mesures.shift(); if (mesures.length < 2) return;
     const moy = (mesures[0] + mesures[1]) / 2;
     const muette = (modeBande === 'voix') ? auI : au, audible = (modeBande === 'voix') ? au : auI;
     const sens = (muette === auI) ? 1 : -1;
+    if (Math.abs(moy) > 0.1 && !muette.seeking && performance.now() - derniereAbsorption > 1500){
+      derniereAbsorption = performance.now(); mesures.length = 0;
+      try { muette.currentTime = muette.currentTime + sens * moy; } catch(e){}
+      return;
+    }
     const plafond = Math.abs(moy) > 0.06 ? 0.15 : 0.06;
     const v = Math.abs(moy) < 0.003 ? 1 : 1 + Math.max(-plafond, Math.min(plafond, sens * moy * 1.5));
     if (Math.abs(muette.playbackRate - v) > 0.0005) poserVitesse(muette, v);
@@ -1539,7 +1543,10 @@ document.querySelectorAll('[data-bande]').forEach(b => b.onclick = () => {
   try { localStorage.setItem('livre-bande', modeBande); } catch(e){}
   peindreBande();
   (async () => {
-    if (!au.paused && (auI.paused || Math.abs(auI.currentTime - au.currentTime) > 0.015)) await synchroniser();
+    if (!au.paused && auI.paused) synchroniser();
+    const t0 = performance.now();
+    while (!au.paused && Math.abs(auI.currentTime - au.currentTime) > 0.015 && performance.now() - t0 < 2500)
+      await new Promise(r => setTimeout(r, 60));
     croiser(modeBande === 'instru');
   })();
 });

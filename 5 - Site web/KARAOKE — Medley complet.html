@@ -5431,18 +5431,26 @@ body[data-pour] #bandeau{ display:flex; }
      fines ne comptent pas comme un choix */
   let vitesseBase = 1;
   let vouluAu = null, vouluAuI = null;                     /* ce que NOUS avons posé en dernier */
+  let derniereAbsorption = 0;
   function poserVitesse(el, v){ if (el === au) vouluAu = v; else vouluAuI = v; try { el.playbackRate = v; } catch(e){} }
   const mesures = [];
   setInterval(() => {
     try {
       if (enSynchro || au.paused || auI.paused || auI.error){ mesures.length = 0; return; }
       const ecart = au.currentTime - auI.currentTime;          /* > 0 : au est en avance */
-      if (Math.abs(ecart) > 0.25){ mesures.length = 0; if (performance.now() - derniereSynchro > 3000) synchroniser(); return; }
       mesures.push(ecart); if (mesures.length > 2) mesures.shift();
       if (mesures.length < 2) return;
       const moy = mesures.reduce((x, y) => x + y, 0) / mesures.length;
       const muette = (modeBande === 'voix') ? auI : au, audible = (modeBande === 'voix') ? au : auI;
       const sens = (muette === auI) ? 1 : -1;                     /* auI en retard si ecart > 0 */
+      /* un gros écart (le départ a raté sur cet appareil) : on l'absorbe d'un coup sur la
+         muette — inaudible — au plus une fois toutes les 1,5 s ; la vitesse finit ensuite */
+      if (Math.abs(moy) > 0.1 && !muette.seeking && performance.now() - derniereAbsorption > 1500){
+        derniereAbsorption = performance.now(); mesures.length = 0;
+        if (muette === au) sautInterne = true;
+        try { muette.currentTime = muette.currentTime + sens * moy; } catch(e){}
+        return;
+      }
       const plafond = Math.abs(moy) > 0.06 ? 0.15 : 0.06;      /* gros écart : on rattrape plus vite (la muette ne s'entend pas) */
       const v = Math.abs(moy) < 0.003 ? vitesseBase : vitesseBase * (1 + Math.max(-plafond, Math.min(plafond, sens * moy * 1.5)));
       if (Math.abs(muette.playbackRate - v) > 0.0005) poserVitesse(muette, v);
@@ -5475,7 +5483,11 @@ body[data-pour] #bandeau{ display:flex; }
     peindre();
     /* on ne croise les volumes qu'une fois les deux bandes alignées (< 15 ms) */
     (async () => {
-      if (!au.paused && (auI.paused || Math.abs(auI.currentTime - au.currentTime) > 0.015)) await synchroniser();
+      /* on attend que les deux bandes soient alignées (< 15 ms), 2,5 s au plus, puis on croise */
+      if (!au.paused && auI.paused) synchroniser();
+      const t0 = performance.now();
+      while (!au.paused && Math.abs(auI.currentTime - au.currentTime) > 0.015 && performance.now() - t0 < 2500)
+        await new Promise(r => setTimeout(r, 60));
       croiser(modeBande === 'instru');
     })();
   });
@@ -5496,7 +5508,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 13h47';
+const VERSION_APPLI = '07/09/2026 · 13h52';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
