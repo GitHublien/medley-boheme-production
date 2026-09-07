@@ -337,3 +337,12 @@ footer .liens a:hover{ color:var(--or2); }
   /* et celui de la barre du bas aussi */
   .bas a.menuBas span:not(.ico){ font-size:1.9rem !important; }
 }
+
+/* ═══ PLUS DE TITRE EN DOUBLE (7 sept) ═══
+   Les images des pages intérieures portent déjà leur titre gravé en or. Le titre
+   écrit par-dessus faisait donc doublon : « LES DOCUMENTS » dans l'image, et
+   « À garder sur soi » écrit dessus. On ne garde que celui de l'image, et la
+   phrase d'explication descend sous la photo. */
+.enTete.a-image h1{ display:none; }
+.enTete.a-image .texte{ justify-content:flex-end; }
+.enTete.a-image .lead{ margin-top:auto; }

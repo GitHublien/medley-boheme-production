@@ -10,23 +10,38 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css">
 <style>
-  .repartition{ display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:.7rem; margin-bottom:2.5rem; }
-  .qui{ padding:.9rem 1rem; border-radius:16px; background:rgba(255,255,255,.035);
-        border:1px solid color-mix(in srgb, var(--c) 45%, transparent); display:grid; gap:.15rem; }
-  .qui .n{ font-family:var(--disp); font-size:1.35rem; color:var(--c); }
-  .qui .l{ font-size:.8rem; color:var(--gris2); letter-spacing:.08em; text-transform:uppercase; }
-  .bloc{ padding:1rem 0 1.1rem; border-bottom:1px solid rgba(255,255,255,.07); }
-  .bloc .tete{ display:flex; align-items:baseline; gap:.9rem; margin-bottom:.6rem; flex-wrap:wrap; }
-  .bloc .num{ font-family:var(--disp); font-size:1.15rem; color:var(--or); min-width:1.6em; }
-  .bloc h3{ margin:0; font-size:clamp(1.1rem,3.4vw,1.5rem); flex:1; }
-  .bloc .dur{ color:var(--gris2); font-size:.9rem; font-variant-numeric:tabular-nums; }
-  .voix{ display:flex; flex-wrap:wrap; gap:.45rem; padding-left:calc(1.6em + .9rem); }
-  .v{ display:inline-flex; align-items:center; gap:.4rem; padding:.32rem .7rem; border-radius:999px;
-      background:color-mix(in srgb, var(--c) 12%, transparent);
-      border:1px solid color-mix(in srgb, var(--c) 40%, transparent); font-size:.86rem; }
-  .v b{ color:var(--c); font-weight:600; }
-  .v i{ font-style:normal; color:var(--gris2); font-size:.78em; }
-  @media (max-width:700px){ .voix{ padding-left:0; } }
+  .onglets{ display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 1.8rem; position:sticky; top:calc(var(--nav) + .4rem); z-index:12;
+            padding:.6rem; border-radius:999px; background:rgba(10,9,8,.94); backdrop-filter:blur(16px); }
+  .onglet{ flex:1 1 auto; padding:.6rem 1rem; border-radius:999px; cursor:pointer; font:inherit; font-size:.95rem;
+           border:1px solid color-mix(in srgb, var(--c) 45%, transparent); background:transparent; color:var(--c);
+           transition:background .35s var(--lent), transform .35s var(--lent); }
+  .onglet.actif{ background:color-mix(in srgb, var(--c) 20%, transparent); font-weight:600;
+                 box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 12%, transparent); }
+  .onglet:active{ transform:scale(.97); }
+  .vue{ display:none; } .vue.la{ display:block; }
+  .pas{ padding:1rem 0 1.1rem; border-bottom:1px solid rgba(255,255,255,.07); }
+  .pas .haut{ display:flex; align-items:baseline; gap:.8rem; flex-wrap:wrap; }
+  .pas .num{ font-family:var(--disp); font-size:1.1rem; color:var(--gris2); min-width:1.6em; }
+  .pas h3{ margin:0; font-size:clamp(1.05rem,3.3vw,1.4rem); flex:1; }
+  .pas .tps{ color:var(--gris2); font-size:.85rem; font-variant-numeric:tabular-nums; }
+  .pas .quoi{ margin:.45rem 0 0 2.4rem; font-size:clamp(.95rem,3.3vw,1.1rem); color:var(--c); font-weight:600; }
+  .pas.muet .quoi, .pas.coulisse .quoi{ color:var(--gris2); font-weight:400; font-style:italic; }
+  .pas.solo{ background:linear-gradient(90deg, color-mix(in srgb, var(--c) 9%, transparent), transparent 55%); border-radius:12px; padding-left:.7rem; }
+  .pas .sc{ margin:.5rem 0 0 2.4rem; padding:.55rem .8rem; border-radius:10px;
+            background:rgba(255,255,255,.03); border-left:2px solid color-mix(in srgb, var(--c) 40%, transparent); }
+  .pas .sc b{ display:block; color:var(--encre); font-size:.9rem; font-weight:600; }
+  .pas .sc span{ color:var(--gris); font-size:.88rem; line-height:1.5; }
+  .noms{ display:flex; flex-wrap:wrap; gap:.45rem; margin:.5rem 0 0 2.4rem; }
+  .noms .v{ display:inline-flex; flex-direction:column; padding:.35rem .8rem; border-radius:12px;
+            background:color-mix(in srgb, var(--c) 11%, transparent);
+            border:1px solid color-mix(in srgb, var(--c) 38%, transparent); }
+  .noms .v b{ color:var(--c); font-size:.9rem; font-weight:600; }
+  .noms .v i{ font-style:normal; color:var(--gris2); font-size:.78rem; }
+  .noms .v.vide{ --c:#8fb0d8; }
+  @media (max-width:700px){
+    .pas .quoi, .pas .sc, .noms{ margin-left:0; }
+    .onglet{ flex:1 1 28%; font-size:.88rem; padding:.55rem .5rem; }
+  }
 </style>
 </head>
 <body>
@@ -34,45 +49,863 @@
   <div class="fond" data-img="site-images/07-textes.jpg"></div><div class="brume"></div>
   <div class="page texte">
     <h1 class="rev d1">Qui chante <span class="it">quoi.</span></h1>
-    <p class="lead rev d2">Les vingt blocs, dans l'ordre, et pour chacun qui prend la parole. Chaque nom porte sa couleur, la même que dans le karaoké et dans le livre.</p>
+    <p class="lead rev d2">Choisis ton prénom : tu vois ton parcours du début à la fin. Où tu es, quand tu chantes, seul ou avec qui, et quand tu attends en coulisse.</p>
   </div>
 </header>
 
 <section class="page">
-  <div class="tete rev"><h2>Sur tout le medley</h2>
-  <p class="lead">Le nombre de lignes chantées par chacun, chœurs et duos compris.</p></div>
-  <div class="repartition rev"><div class="qui" style="--c:#ffc814"><span class="n">Adrien</span><span class="l">58 lignes</span></div><div class="qui" style="--c:#ff4fa8"><span class="n">Stéphanie</span><span class="l">66 lignes</span></div><div class="qui" style="--c:#b45cff"><span class="n">Candice</span><span class="l">55 lignes</span></div><div class="qui" style="--c:#00ffcc"><span class="n">Mickaël</span><span class="l">75 lignes</span></div><div class="qui" style="--c:#ff7a1f"><span class="n">Bry</span><span class="l">49 lignes</span></div><div class="qui" style="--c:#9dff35"><span class="n">Élie</span><span class="l">11 lignes</span></div></div>
-
-  <div class="tete rev"><h2>Bloc par bloc</h2></div>
-  <article class="bloc rev"><div class="tete"><span class="num">01</span><h3>Narration d'ouverture</h3><span class="dur">0:30</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off</b><i>6</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">02</span><h3>Quand on arrive en ville</h3><span class="dur">1:18</span></div><div class="voix"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>13</i></span><span class="v" style="--c:#ffc814"><b>Chœurs avec Adrien</b><i>7</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">03</span><h3>Explosion, flash radio</h3><span class="dur">0:22</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off</b><i>3</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">04</span><h3>Ziggy</h3><span class="dur">1:22</span></div><div class="voix"><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>18</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">05</span><h3>La chanson de Ziggy</h3><span class="dur">1:43</span></div><div class="voix"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>11</i></span><span class="v" style="--c:#ffc814"><b>Adrien et Stéphanie</b><i>7</i></span><span class="v" style="--c:#ff4fa8"><b>Pensée de Stéphanie</b><i>5</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>3</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3><span class="dur">0:50</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Radio Monopolis — Stéphane</b><i>8</i></span><span class="v" style="--c:#8fb0d8"><b>Radio Monopolis — Christine</b><i>5</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">07</span><h3>Le Blues du Businessman</h3><span class="dur">2:28</span></div><div class="voix"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>5</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>5</i></span><span class="v" style="--c:#ffc814"><b>Adrien</b><i>5</i></span><span class="v" style="--c:#d4af37"><b>Les 4 hommes</b><i>5</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie et Candice</b><i>4</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>3</i></span><span class="v" style="--c:#ffc814"><b>Mickaël, Bry et Adrien</b><i>1</i></span><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>1</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">08</span><h3>Retour d'antenne</h3><span class="dur">0:12</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Radio Monopolis — Christine</b><i>3</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">09</span><h3>Les uns contre les autres</h3><span class="dur">1:34</span></div><div class="voix"><span class="v" style="--c:#ffc814"><b>Stéphanie, Mickaël, Candice et Adrien</b><i>10</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>4</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>4</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">10</span><h3>Cloches, narration</h3><span class="dur">0:07</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>3</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">11</span><h3>Le Temps des Cathédrales</h3><span class="dur">1:45</span></div><div class="voix"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>15</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>8</i></span><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>6</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">12</span><h3>Bataille, appel crié</h3><span class="dur">0:15</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>1</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">13</span><h3>Les Sans-papiers</h3><span class="dur">1:32</span></div><div class="voix"><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>25</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>6</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">14</span><h3>Bohémienne</h3><span class="dur">2:01</span></div><div class="voix"><span class="v" style="--c:#b45cff"><b>Candice</b><i>11</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>4</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">15</span><h3>Belle</h3><span class="dur">2:35</span></div><div class="voix"><span class="v" style="--c:#9dff35"><b>Élie</b><i>7</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>6</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>5</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël et Bry</b><i>4</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — la bande</b><i>1</i></span><span class="v" style="--c:#00ffcc"><b>Élie, Mickaël et Bry</b><i>1</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">16</span><h3>Le Dilemme</h3><span class="dur">2:20</span></div><div class="voix"><span class="v" style="--c:#b45cff"><b>Candice</b><i>24</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël et Bry</b><i>9</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — la narratrice</b><i>5</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>4</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>1</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>1</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">17</span><h3>Mon Frère</h3><span class="dur">2:05</span></div><div class="voix"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>12</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>12</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël et Bry</b><i>3</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">18</span><h3>L'arrêt du temps</h3><span class="dur">0:20</span></div><div class="voix"><span class="v" style="--c:#8fb0d8"><b>Voix off — la machine</b><i>4</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">19</span><h3>Stone</h3><span class="dur">0:37</span></div><div class="voix"><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>9</i></span></div></article>
-  <article class="bloc rev"><div class="tete"><span class="num">20</span><h3>Aimer</h3><span class="dur">2:52</span></div><div class="voix"><span class="v" style="--c:#d4af37"><b>Tous les six</b><i>16</i></span><span class="v" style="--c:#8fb0d8"><b>Voix off — le narrateur</b><i>6</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>5</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>4</i></span><span class="v" style="--c:#ffc814"><b>Stéphanie et Adrien</b><i>4</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>2</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>1</i></span><span class="v" style="--c:#ff4fa8"><b>Tous les six — Stéphanie et Candice dessus</b><i>1</i></span></div></article>
-</section>
-
-<section class="page">
-  <div class="vide rev">
-    <h3>À quoi ça sert</h3>
-    <p>À savoir d'un coup d'œil où tu chantes, avec qui, et ce que font les autres pendant ce temps. Dans le karaoké, la liste des blocs porte les mêmes indications, et ton aide personnelle allume tes lignes dans ta couleur.</p>
-  </div>
+  <div class="onglets"><button class="onglet actif" data-qui="adrien" style="--c:#ffc814">Adrien</button><button class="onglet" data-qui="stephanie" style="--c:#ff4fa8">Stéphanie</button><button class="onglet" data-qui="candice" style="--c:#b45cff">Candice</button><button class="onglet" data-qui="mickael" style="--c:#00ffcc">Mickaël</button><button class="onglet" data-qui="bry" style="--c:#ff7a1f">Bry</button><button class="onglet" data-qui="elie" style="--c:#9dff35">Élie</button><button class="onglet" data-qui="tous" style="--c:#d4af37">Tout le monde</button></div>
+  <div class="vue la" id="vue-adrien" style="--c:#ffc814">
+     <article class="pas muet">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Rideau fermé · tu es en place, en cuir</b><span>Le rideau est fermé, tout est noir. Tu es à ton emplacement avec les quatre autres, blouson de cuir : c'est l'accessoire clé de tout le medley. Le narrateur ouvre le spectacle.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ À TOI · les deux couplets, seul en lumière</b><span>Une seule douche sur toi, latérale et dure, le reste du plateau noir. Les quatre autres sont là mais invisibles. C'est ta chanson : tu es le zonard qui gueule dans la rue.</span></div><div class="sc"><b>★ Le flash · la bande apparaît derrière toi</b><span>Sur « un éclair dans le brouillard », à 1'20, un flash blanc découvre les cinq silhouettes. Puis le refrain, en lumière plus large et plus chaude : ce n'est plus une menace, c'est une supplique.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ L'explosion · tu sors à COUR, avec ton blouson</b><span>Sur « mais en attendant », explosion et coups de feu, noir sec. Vous partez tous ensemble et très vite. Tu sors à COUR, avec Élie et Bry, et tu enlèves ton blouson. Tu reviendras par cour.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Ziggy · en coulisse à cour, tu quittes le cuir</b><span>Stéphanie chante seule, elle est entrée à jardin. Tu as 1'14 pour enlever le blouson et revenir en chemise, par cour. C'est là que le zonard redevient l'homme.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Tu entres · tu ne la vois pas</b><span>La lumière s'ouvre sur tout le plateau. Tu entres et tu vas à P3. Elle avance vers toi, elle te supplie : tu ne t'en aperçois pas. Ne la regarde jamais, même du coin de l'œil. C'est ça qui rend la scène cruelle.</span></div><div class="sc"><b>Ta douche · tu commences seul</b><span>Noir, et tout de suite une douche sur toi. Tu es seul dans la lumière, elle s'éloigne dans l'ombre derrière toi. Tu enchaînes « Moi, j'étais un fils à maman » sans attendre : le noir ne doit pas durer plus d'une seconde.</span></div><div class="sc"><b>Le duo · ton histoire, pas la sienne</b><span>Elle chante avec toi, mais tu l'ignores. Tu racontes ton enfance, ta mère, le ballet, Bowie. « Le lendemain » est à toi seul. Sur le « Ziggy » final, tu te tournes une seconde, sans la voir, et tu repars.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Le noir · tu rejoins les hommes, en TROISIÈME</b><span>Sa douche grésille et s'éteint. Tu quittes P3 et tu remontes tout droit : ta place est la plus à cour, tu ne croises personne. Tu pars après Élie et Bry. Dos au public, marche lentement.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Le Blues · à P3, immobile</b><span>Tu es à cour, à P3, dans la ligne des quatre. Tu prends tes phrases à ton tour, après Mickaël et Bry. Aucun déplacement : une intention, un regard, c'est tout. Candice passe derrière toi vers 7'00.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Retour d'antenne · vous restez en place</b><span>Christine rend l'antenne au studio. Vous êtes encore tous les six en place, immobiles, dans la lumière de la fin du Blues.</span></div>
+  </article>
+<article class="pas duo">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="quoi">Avec Stéphanie et Candice et Mickaël</div>
+    <div class="sc"><b>★ Tu vas à P4 · au LOINTAIN, et en DERNIER</b><span>Tu pars le dernier. Tu remontes vers le cyclorama, tu longes le fond vers jardin, tu redescends sur P4 : jamais en diagonale. 6,6 m, seul dans ce couloir. Tu passes devant Mickaël, déjà posé. Par cœur, c'est dans le noir.</span></div><div class="sc"><b>Les uns contre les autres · ta douche vert-bleu pâle</b><span>Stéphanie chante seule d'abord. Sur le premier mot du refrain, ta douche s'allume d'un coup avec celles de Mickaël et Candice : vous étiez là depuis le début. Chacun chante depuis son puits, personne ne se tourne vers personne.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Les cloches · tu sors à jardin</b><span>Ta douche s'éteint, noir complet. Sur le premier coup de cloche, tu sors à jardin avec Stéphanie. Mickaël, lui, reste et descend au centre.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Les cloches · tu sors à jardin</b><span>Ta douche s'éteint, noir complet. Sur le premier coup de cloche, tu sors à jardin avec Stéphanie. Mickaël, lui, reste et descend au centre.</span></div><div class="sc"><b>★ Tu entres à jardin · ta place est au milieu-jardin</b><span>Sur « La foule des barbares », tu entres à jardin avec Stéphanie. Ta place est au milieu-jardin. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres à jardin · ta place est au milieu-jardin</b><span>Sur « La foule des barbares », tu entres à jardin avec Stéphanie. Ta place est au milieu-jardin. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div><div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div><div class="sc"><b>Bry se relève seul · tu restes à genoux</b><span>Bry est le seul debout. Il travaille le côté cour, puis il vient au centre. Tu restes à genoux, tourné vers lui, et tu le laisses mener.</span></div><div class="sc"><b>Les chœurs, au sol · Bry vient vers toi</b><span>Vous chantez les chœurs à genoux, immobiles, buste droit. Sur « plus de mille aux portes de la ville », Bry vient jusqu'à toi, puis il continue vers Stéphanie. Accueille-le, ne quitte pas ta place.</span></div><div class="sc"><b>★ Vous vous levez · tu es le deuxième à jardin</b><span>Sur « Pour Notre-Dame », vous vous levez tous ensemble. Ta place dans la ligne : entre Stéphanie et Mickaël, côté jardin. Bry prend le centre. Puis vous avancez ensemble à l'avant-scène.</span></div><div class="sc"><b>★ Le final · le bras, et on tient</b><span>Debout à l'avant-scène. Sur le dernier « Asile », le bras à demi plié, tous ensemble, et vous tenez treize secondes.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Tu sors à JARDIN avec Stéphanie · en jouant, à vue</b><span>La sortie est jouée, tout le monde vous voit partir. Tu sors à jardin avec Stéphanie, sous la question de Mickaël, qui fait mine de vous suivre puis reste. Tu reviens à la fin de Mon Frère, avec Élie.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Belle · tu es en coulisse à jardin</b><span>Élie, Mickaël et Bry chantent Belle autour de Candice. Tu es sorti à jardin avec Stéphanie. Tu reviens à la fin de Mon Frère, avec Élie, pour séparer les deux frères.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Le Dilemme · tu es en coulisse à jardin</b><span>Élie sort de Belle à jardin, la tête basse, et te rejoint. Candice chante Néfertari entre Mickaël et Bry, devenus Ramsès et Moïse. Tu reviens à la fin de Mon Frère, avec Élie, pour séparer les deux frères.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Pendant Mon Frère · tu attends à jardin, avec Élie</b><span>Mickaël et Bry chantent Mon Frère au centre, seuls en scène. Élie et toi attendez ensemble en coulisse jardin. Vous entrerez tous les deux du même côté, sur les derniers « Mon frère ». Tu n'as aucune traversée à faire.</span></div><div class="sc"><b>★ À TOI · COMPTE 1-2-3-4 et tu retiens Ramsès</b><span>Ils se serrent dans les bras sur le grand « Mon frère ». Dès que les chœurs entrent, compte 1-2-3-4 avec Élie : sur le 4, vous êtes sur eux. Tu saisis Mickaël par les deux bras en arrière et tu le RETIENS à jardin. Il se débat. Puis tout se fige.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ ARRÊT SUR IMAGE · tu retiens Mickaël</b><span>Sur le dernier « Mon frère ! » de Mickaël, ARRÊT SUR IMAGE : plus personne ne bouge. La voix machine dit « Le temps s'arrête, trois mille ans passent ». Tu tiens ta position, stable, pendant toute la voix.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Stone · tu restes figé, en train de le retenir</b><span>Stéphanie chante le refrain de Stone au milieu, seule vivante. Tu restes figé, les mains sur les bras de Mickaël : trouve une position stable, tu la tiens 35 secondes. Le réveil se fera sur Aimer, à décider.</span></div>
+  </article>
+<article class="pas duo">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="quoi">Avec Stéphanie</div>
+    <div class="sc"><b>★ Tous figés · tu lâches Mickaël sur sa 1re phrase</b><span>Personne ne bouge jusqu'à « Le monde n'a besoin que de ça » (24'16) : là, tu OUVRES LES MAINS et vous vous tournez tous les six vers le public. Tu restes où tu es, les bras vides, vivant, et tu regardes. Tu chantes à 25'05, avec Stéphanie.</span></div><div class="sc"><b>★ AIMER · tu rejoins Stéphanie, puis la LIGNE</b><span>Ton couplet avec Stéphanie à 25'05 : tierce sur les deux dernières phrases, à écrire et à répéter. Puis vous échangez vos places en jouant, elle passe derrière toi. Ta place dans la ligne : entre Stéphanie et Bry.</span></div>
+  </article>
+   </div>
+<div class="vue" id="vue-stephanie" style="--c:#ff4fa8">
+     <article class="pas coulisse">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Rideau fermé · tu es en coulisse</b><span>Tu n'es pas sur scène. Les cinq autres sont en place derrière le rideau et le narrateur ouvre : « Paris 1978… ». Tu dois apparaître neuve, plus tard : on ne doit pas t'avoir vue avant.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Quand on arrive en ville · tu attends à JARDIN</b><span>Adrien chante seul, la bande fait les chœurs. Tu n'entres toujours pas. Prépare-toi côté JARDIN : jardin est ta coulisse pour tout le medley, tu y entres et tu en ressors à chaque fois.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres à JARDIN et tu vas à P5</b><span>Explosion, noir sec, les cinq sortent. Tu entres à JARDIN et tu montes au CENTRE, sur P5 — pas à l'avant. On te découvre là, immobile, sur « une serveuse rêve les yeux ouverts ».</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ À TOI · Ziggy, depuis P2</b><span>Sur « un garçon pas comme les autres », tu descends de P5 à P2 : deux mètres, très lentement, tu es posée avant la première note. Puis tu chantes tout Ziggy de là, sans bouger. Une confession, pas un tour de chant.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Il arrive · tu le vois, il ne te voit pas</b><span>Lumière large, mauve et froide. Adrien entre à P3 sans un regard. Sur « Le voilà », tu avances, tu tends la main. Sur « Tourne la tête », mains jointes. Sur « il ne me regarde même pas », elles retombent.</span></div><div class="sc"><b>Le noir · tu rejoins ta place à P1</b><span>Noir, puis une douche sur Adrien seul. C'est là que tu te retournes, et seulement là. Tu marches lentement jusqu'à P1, côté jardin. Sois arrivée et immobile AVANT que ta lumière ne monte.</span></div><div class="sc"><b>Ta douche · tu chantes avec lui</b><span>Ta lumière monte, blanche, exactement sur « Dans La Belle au bois dormant ». Sept mètres vous séparent, le centre reste vide. Tu termines ses phrases, tu n'en commences aucune. Le « Ziggy » final est à toi.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Les interférences · tu ne bouges plus</b><span>Ta douche grésille pendant que la radio parle de Ziggy, deux ou trois sursauts, puis elle meurt. Tu restes figée, exactement où tu es. Candice vient près de toi dans le noir : vous êtes Radio Monopolis.</span></div>
+  </article>
+<article class="pas duo">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="quoi">Avec Candice</div>
+    <div class="sc"><b>Le Blues · tu ne bouges pas, à P1</b><span>Tu restes à P1, à jardin, immobile de tout le morceau. Candice circule ; toi, tu es la seule qui ne bouge jamais. Tu chantes tes questions depuis ta place.</span></div><div class="sc"><b>Tes questions · avec Candice, depuis ta place</b><span>« Au moins es-tu heureux ? » puis « Qu'est-ce que tu veux mon vieux ? » : tu chantes avec Candice, elle tout près d'Élie puis à cour, toi depuis P1. À la fin, vous encadrez les quatre hommes, une de chaque côté.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Retour d'antenne · vous restez en place</b><span>Christine rend l'antenne au studio. Vous êtes encore tous les six en place, immobiles, dans la lumière de la fin du Blues.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>★ Tu vas à P2 · DEVANT la ligne, vers cour</b><span>Tu pars en troisième, après Élie. Tu passes DEVANT la ligne, jamais derrière : Élie et Bry vont dans le même sens que toi, personne ne se croise. 3,5 m. Par cœur : douze secondes dans le noir, pas le temps de chercher.</span></div><div class="sc"><b>★ À TOI · Les uns contre les autres</b><span>Ta douche blanche s'allume, rien d'autre. « Ils se rendent compte » : tu parles d'eux, froidement. Puis les trois autres s'allument. Le dernier « Toujours tout seul au monde » est à toi, dans le silence.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Les cloches · tu sors à jardin</b><span>Ta douche s'éteint, noir complet. Sur le premier coup de cloche, tu sors à jardin avec Adrien. Remonte d'abord vers le lointain, ne longe pas le nez de scène dans le noir.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Les cloches · tu sors à jardin</b><span>Ta douche s'éteint, noir complet. Sur le premier coup de cloche, tu sors à jardin avec Adrien. Remonte d'abord vers le lointain, ne longe pas le nez de scène dans le noir.</span></div><div class="sc"><b>★ Tu entres à jardin · ta place est à l'avant-jardin</b><span>Sur « La foule des barbares », tu entres à jardin avec Adrien. Ta place est à l'avant-jardin. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres à jardin · ta place est à l'avant-jardin</b><span>Sur « La foule des barbares », tu entres à jardin avec Adrien. Ta place est à l'avant-jardin. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div><div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div><div class="sc"><b>Bry se relève seul · tu restes à genoux</b><span>Bry est le seul debout. Il travaille le côté cour, puis il vient au centre. Tu restes à genoux, tournée vers lui, et tu le laisses mener.</span></div><div class="sc"><b>Les chœurs, au sol · Bry vient vers toi</b><span>Vous chantez les chœurs à genoux, immobiles, buste droit. Sur « dix mille, et puis cent mille », Bry vient jusqu'à toi. Accueille-le, réponds-lui, mais ne quitte pas ta place.</span></div><div class="sc"><b>★ Vous vous levez · tu es au bout, à jardin</b><span>Sur « Pour Notre-Dame », vous vous levez tous ensemble. Ta place dans la ligne : à l'extrémité jardin. Bry prend le centre. Puis, sur « Nous sommes des étrangers », vous avancez ensemble.</span></div><div class="sc"><b>★ Le final · le bras, et on tient</b><span>Debout à l'avant-scène. Sur le dernier « Asile », le bras à demi plié, tous ensemble, et vous tenez treize secondes.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Tu sors à JARDIN avec Adrien · en jouant, à vue</b><span>La sortie est jouée, à vue : vous quittez la place, pas la scène. Tu sors à jardin avec Adrien, sous la question de Mickaël. Jardin est ta coulisse pour tout le medley. Tu reviens pour Stone.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Belle · tu es en coulisse à jardin</b><span>Élie, Mickaël et Bry chantent Belle autour de Candice. Tu es sortie à jardin avec Adrien. Tu reviens pour Stone.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Le Dilemme · tu es en coulisse à jardin</b><span>Candice chante Néfertari entre Mickaël et Bry, devenus Ramsès et Moïse. Tu reviens pour Stone.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Mon Frère · tu es en coulisse à jardin</b><span>Mickaël et Bry chantent Mon Frère au centre, seuls en scène. Tu es en coulisse à jardin, avec Adrien et Élie qui entreront à la fin. Tu reviens pour Stone : jardin est ta coulisse.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ À TOI · tu entres à jardin, tranquillement</b><span>La machine dit « J'ai la tête qui éclate… ». Tu entres à jardin SUR CES MOTS, la MAIN GAUCHE contre le front, le micro dans la droite : c'est comme si c'était toi qui parlais. Tous les autres sont figés, le centre est vide.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ À TOI · Stone, le refrain, seule vivante</b><span>Tu chantes EN MARCHANT, tu traverses entre Mickaël à jardin et Bry à cour. Sur « ou bien si c'est moi qui me fais mon cinéma », tu es devant, face au public : tu REPRENDS LA MAIN CONTRE LE FRONT et tu te FIGES à la dernière note.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>★ Tous figés · tu te réveilles à 25'05</b><span>Tu t'es figée à la fin de Stone, la main au front. Rien ne bouge jusqu'à « Le monde n'a besoin que de ça » (24'16) : là, la main retombe et vous vous tournez tous les six vers le public. Tu chantes à 25'05, à ta place, au centre.</span></div><div class="sc"><b>★ AIMER · l'échange de places avec Adrien</b><span>Ton couplet avec Adrien à 25'05, main dans la main, vous avancez. Puis vous ÉCHANGEZ vos places en jouant : tu passes derrière lui, une caresse, et tu te mets à côté de Candice. Au pont, tu réponds « C'est brûler ses nuits ».</span></div>
+  </article>
+   </div>
+<div class="vue" id="vue-candice" style="--c:#b45cff">
+     <article class="pas coulisse">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Rideau fermé · tu es déjà en place</b><span>Le rideau est fermé, tout est noir. Tu es à ton emplacement avec les quatre autres ; Stéphanie est en coulisse. Le narrateur ouvre : « Paris 1978… ». Tu ne bouges pas.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Les couplets d'Adrien · tu es invisible</b><span>C'est sa chanson : il chante seul, sous une douche, et le reste du plateau est noir. On ne vous voit pas encore. Le premier son qui sortira de toi, c'est le chœur.</span></div><div class="sc"><b>★ Le flash · on vous découvre, puis les chœurs</b><span>Sur « un éclair dans le brouillard », à 1'20, un flash blanc découvre vos cinq silhouettes. Tu chantes les chœurs et le refrain. Regard droit, presque menaçant : vous êtes une bande.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ L'explosion · tu sors à JARDIN</b><span>Sur « mais en attendant », explosion et coups de feu, noir sec. Vous partez tous ensemble et très vite. Toi, tu sors à JARDIN, avec Mickaël. Stéphanie entre à jardin pendant ce temps.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Ziggy · tu es en coulisse</b><span>Stéphanie est seule en scène sous une douche unique. Tu es sorti. Ton change de costume commence : tu as trois minutes, c'est large.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>La chanson de Ziggy · toujours en coulisse</b><span>Adrien revient sans son blouson de cuir et chante avec Stéphanie. Tu restes en coulisse : tu ne reviens qu'au Blues du Businessman, à 6'06.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres sur « Christine, vous m'entendez ? »</b><span>Tu n'entres QUE sur ce mot, à 5'43, par jardin, dans une lumière douce. Tu rejoins Stéphanie à P1 et tu te places à côté d'elle : vous êtes les deux voix de Radio Monopolis. Sans mimer, sans parler.</span></div>
+  </article>
+<article class="pas duo">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="quoi">Avec Stéphanie</div>
+    <div class="sc"><b>Le Blues · première série, tu écoutes</b><span>Mickaël, Bry, Adrien se vantent. Tu ne bouges pas : tu écoutes, tu découvres. Le public a besoin de dix secondes pour comprendre.</span></div><div class="sc"><b>Tu circules · derrière la ligne, vers celui qui parle</b><span>Tu passes DERRIÈRE, vers celui qui chante : tu hoches la tête, tu avances le micro sans le mettre devant sa bouche. Puis tu vas vers le seul qui n'a rien dit, Élie. Tu bouges pendant les phrases, jamais dans les silences.</span></div><div class="sc"><b>« Au moins es-tu heureux ? » · près d'Élie, puis à cour</b><span>Tu poses la question tout près d'Élie. Il répond : personne ne bouge. Puis tu repasses derrière jusqu'à cour, à côté d'Adrien. Ensuite, plus personne ne bouge jusqu'à la fin du morceau.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Retour d'antenne · vous restez en place</b><span>Christine rend l'antenne au studio. Vous êtes encore tous les six en place, immobiles, dans la lumière de la fin du Blues.</span></div>
+  </article>
+<article class="pas duo">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="quoi">Avec Adrien et Stéphanie et Mickaël</div>
+    <div class="sc"><b>★ Tu montes à P6 · tout droit, en PREMIER</b><span>Tu pars en premier avec Mickaël : tout droit vers le milieu-cour, 2,8 m, le trajet le plus court. En place en trois secondes, ça libère le passage pour Adrien. Puis tu ne bouges plus du morceau.</span></div><div class="sc"><b>Les uns contre les autres · ta douche bleu glacier</b><span>Stéphanie chante seule d'abord. Sur le premier mot du refrain, ta douche s'allume d'un coup avec celles de Mickaël et Adrien. Chacun chante depuis son puits, sans se tourner vers personne.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>★ Les cloches · tu sors à cour</b><span>Ta douche s'éteint, noir complet. Sur le premier coup de cloche, tu sors à cour, seule de ton côté. Tu retrouves Bry et Élie en coulisse.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Les cloches · tu sors à cour</b><span>Ta douche s'éteint, noir complet. Sur le premier coup de cloche, tu sors à cour, seule de ton côté. Tu retrouves Bry et Élie en coulisse.</span></div><div class="sc"><b>★ Tu entres à cour · ta place est à l'avant-cour</b><span>Sur « La foule des barbares », tu entres à cour avec Bry et Élie. Ta place est à l'avant-cour. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres à cour · ta place est à l'avant-cour</b><span>Sur « La foule des barbares », tu entres à cour avec Bry et Élie. Ta place est à l'avant-cour. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div><div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div><div class="sc"><b>★ Bry se relève · il descend vers toi en premier</b><span>Bry est le seul debout. Il descend d'abord vers toi, puis il remonte vers Élie et va au centre. Tu restes à genoux : accueille-le, ne quitte pas ta place.</span></div><div class="sc"><b>Les chœurs, au sol · Bry s'éloigne</b><span>Vous chantez les chœurs à genoux, immobiles, buste droit. Bry t'a déjà visitée : il part maintenant vers Adrien puis Stéphanie. Tu restes en place, tournée face public.</span></div><div class="sc"><b>★ Vous vous levez · tu es au bout, à cour</b><span>Sur « Pour Notre-Dame », vous vous levez tous ensemble. Ta place dans la ligne : à l'extrémité cour. Bry prend le centre. Puis, sur « Nous sommes des étrangers », vous avancez ensemble.</span></div><div class="sc"><b>★ Le final · le bras, et on tient</b><span>Debout à l'avant-scène. Sur le dernier « Asile », le bras à demi plié, tous ensemble, et vous tenez treize secondes.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ À TOI · Bohémienne, tu restes</b><span>Les autres sortent en jouant, toi tu restes et tu gagnes le centre. Mickaël fait mine de partir puis revient vers toi : un pas en arrière sur son premier vers, tu te protèges, puis tu l'écoutes. À 14'28, tu réponds. Tu danses, surtout des mains.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Tu es au sol · Quasimodo, puis Frollo</b><span>Tu es couchée au centre-avant, sur le flanc, le dos relevé sur un bras : tu ne bouges plus. Élie vient vers toi et n'ose pas, puis Mickaël revient et se retire. Tu ne les regardes pas.</span></div><div class="sc"><b>Phœbus, puis le trio · tu restes au sol</b><span>Bry entre à cour, même approche. Puis les trois se rapprochent à un pas de toi. Tu restes au sol jusqu'à « Esméralda » : tu te relèveras sur la narration de Moïse, pas avant.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ Tu restes au sol · Notre-Dame devient l'Égypte</b><span>Belle s'éteint, tu ne bouges pas. Élie tente un dernier pas vers toi et sort. Mickaël passe derrière toi et va à jardin, Bry reste à cour. La lumière vire au doré : tu n'es plus Esméralda, tu es Néfertari, la pharaonne.</span></div><div class="sc"><b>★ Ils te relèvent à deux</b><span>Sur « elle ne voulait renoncer à aucun », Mickaël te prend par le BRAS et Bry par la MAIN — tu as ton micro. Tu te lèves entre eux sur « et ça, c'était son dilemme ». Sur « Lequel m'attire » (19'20), ils s'en vont chacun à son bord.</span></div><div class="sc"><b>★ À TOI · seule au centre, Néfertari</b><span>Tu es seule au milieu, ils sont loin, chacun près de son rideau. Tu chantes pour toi : un monologue, tu ne leur parles pas. Ils répondent « J'aimerais » de leur bord. Tu peux regarder à gauche, à droite, mais tu ne vas vers personne.</span></div><div class="sc"><b>★ Ils t'appellent de loin · tu ne te retournes pas</b><span>Bry, de cour : « Aime-moi sans me le dire ». Toi : « sans avoir à choisir », sans te tourner vers lui. Mickaël, de jardin : « Laisse-moi te conquérir ». Ils ne bougent pas, ils appellent à travers le plateau. Tu continues, seule.</span></div><div class="sc"><b>★ Ils viennent à toi · sur « à choisir », tu te retournes</b><span>Ils marchent vers toi dès « Laisse-moi te conquérir » fini, et ils sont en place JUSTE DERRIÈRE TOI sur « Aimer les yeux fermés » (20'20). Tu ne les vois pas : tu chantes devant. Tu te retournes UNE FOIS « sans avoir à choisir » fini.</span></div><div class="sc"><b>★ Tu ne choisis personne · puis tu t'en vas</b><span>Tu n'as qu'à te retourner : ils sont là. Une main à chacun, chacun te BAISE LA MAIN à son tour, très vite. Tu libères les deux mains, tu RECULES de deux pas par le centre — c'est ça, le refus —, puis tu sors à COUR, ton côté.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Mon Frère · tu attends en coulisse à cour</b><span>Tu es sortie à cour en ne choisissant personne. Mickaël et Bry chantent Mon Frère au centre, seuls. Tiens-toi prête : tu rentres sur les derniers « Mon frère », pendant qu'on les sépare.</span></div><div class="sc"><b>★ TU REVIENS EN COURANT, à cour · puis tu te figes</b><span>Sur les « Mon frère » de la fin, tu entres à cour en courant : tu as entendu, tu reviens. Tu cherches du regard, tu veux réparer. Tu t'arrêtes à MI-COUR, près de Bry et d'Élie, FACE AU PUBLIC, UNE main levée, l'autre tient ton micro.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ ARRÊT SUR IMAGE · figée en plein élan</b><span>Tu t'es figée au même instant que les autres, sur le dernier « Mon frère ! ». UNE main reste en l'air, l'autre tient ton micro : le geste inutile. La machine dit « Le temps s'arrête ». Stéphanie entre à jardin, la main au front. Tu ne bouges plus.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Stone · tu restes figée à mi-cour</b><span>Tu restes figée à mi-cour, face au public, UNE main levée. Stéphanie traverse le plateau, passe devant toi sans te voir, et chante Stone au centre. Le gel est TOTAL tant qu'elle est la seule vivante : pas un doigt ne bouge.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ Tous figés · tu te réveilles à 24'41</b><span>Personne ne bouge jusqu'à « Le monde n'a besoin que de ça » (24'16) : là, la main retombe et vous vous tournez tous les six vers le public. Tu es vivante, mais tu ne quittes ta place qu'à 24'41, sur ton couplet, en marchant vers Mickaël.</span></div><div class="sc"><b>★ AIMER · tu traverses, puis la LIGNE</b><span>Ton couplet entier est à TOI SEULE (24'41 → 25'00) : tu traverses vers Mickaël en le chantant, main dans la main, vous descendez. Ta place dans la ligne : entre Mickaël et Stéphanie. Au pont, tu réponds « C'est payer le prix ».</span></div>
+  </article>
+   </div>
+<div class="vue" id="vue-mickael" style="--c:#00ffcc">
+     <article class="pas coulisse">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Rideau fermé · tu es déjà en place</b><span>Le rideau est fermé, tout est noir. Tu es à ton emplacement avec les quatre autres ; Stéphanie est en coulisse. Le narrateur ouvre : « Paris 1978… ». Tu ne bouges pas.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Les couplets d'Adrien · tu es invisible</b><span>C'est sa chanson : il chante seul, sous une douche, et le reste du plateau est noir. On ne vous voit pas encore. Le premier son qui sortira de toi, c'est le chœur.</span></div><div class="sc"><b>★ Le flash · on vous découvre, puis les chœurs</b><span>Sur « un éclair dans le brouillard », à 1'20, un flash blanc découvre vos cinq silhouettes. Tu chantes les chœurs et le refrain. Regard droit, presque menaçant : vous êtes une bande.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ L'explosion · tu sors à JARDIN</b><span>Sur « mais en attendant », explosion et coups de feu, noir sec. Vous partez tous ensemble et très vite. Toi, tu sors à JARDIN, avec Candice. Stéphanie entre à jardin pendant ce temps.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Ziggy · tu es en coulisse</b><span>Stéphanie est seule en scène sous une douche unique. Tu es sorti. Ton change de costume commence : tu as trois minutes, c'est large.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>La chanson de Ziggy · toujours en coulisse</b><span>Adrien revient sans son blouson de cuir et chante avec Stéphanie. Tu restes en coulisse : tu ne reviens qu'au Blues du Businessman, à 6'06.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu reviens le DERNIER · par jardin</b><span>Tu entres à jardin, et tu pars le dernier des quatre. Tu dois passer la place d'Élie, déjà arrivé et immobile : passe COTÉ PUBLIC, jamais derrière lui, il n'y a pas de place. Ta place : entre Élie et Bry.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>★ Le Blues · tu ouvres, au centre</b><span>C'est toi qui lances le morceau, au centre de la ligne. Tu passes tes phrases à Bry puis à Adrien, à tour de rôle. Immobile : le mouvement, c'est la lumière et les voix. Candice circule derrière vous.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Retour d'antenne · vous restez en place</b><span>Christine rend l'antenne au studio. Vous êtes encore tous les six en place, immobiles, dans la lumière de la fin du Blues.</span></div>
+  </article>
+<article class="pas duo">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="quoi">Avec Adrien et Stéphanie et Candice</div>
+    <div class="sc"><b>★ Tu montes à P7 · tout droit, en PREMIER</b><span>Tu pars en premier avec Candice : tout droit vers le lointain, 4 m, aucun croisement. En place en trois secondes, ça libère le plateau pour les autres. Puis tu ne bouges plus. Ta place : P7, décalé d'un demi-mètre à cour.</span></div><div class="sc"><b>Les uns contre les autres · ta douche violet pâle</b><span>Stéphanie chante seule d'abord. Sur le premier mot du refrain, ta douche s'allume avec celles d'Adrien et Candice. Chacun chante de son puits, sans se tourner. À la fin, la tienne s'éteint, pas la sienne.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Les cloches · tu descends au centre</b><span>Au noir, Stéphanie et Adrien sortent à jardin, Candice à cour. Toi, tu descends tout droit du lointain jusqu'au centre, et tu es en place avant que la lumière monte.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ Les cloches · tu descends au centre</b><span>Au noir, Stéphanie et Adrien sortent à jardin, Candice à cour. Toi, tu descends tout droit du lointain jusqu'au centre, et tu es en place avant que la lumière monte.</span></div><div class="sc"><b>★ Le refrain final · les cinq te rejoignent</b><span>Tu chantes seul « Il est foutu le temps des cathédrales ». Sur « La foule des barbares », les cinq entrent, deux à jardin et trois à cour, et se rangent autour de toi. Le refrain est à six.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Le refrain final · les cinq te rejoignent</b><span>Tu chantes seul « Il est foutu le temps des cathédrales ». Sur « La foule des barbares », les cinq entrent, deux à jardin et trois à cour, et se rangent autour de toi. Le refrain est à six.</span></div><div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div><div class="sc"><b>Bry prend le centre · tu restes à genoux</b><span>Bry s'est relevé seul et vient prendre ta place au centre. Tu restes à genoux, un quart de tour du buste vers lui. Tu ne bouges plus, tu le laisses mener.</span></div><div class="sc"><b>Les chœurs, au sol · il reviendra près de toi</b><span>Vous chantez les chœurs à genoux, immobiles, buste droit. Bry quitte le centre, va vers Adrien puis Stéphanie, et revient près de toi avant le relevé. Toi, tu ne bouges pas.</span></div><div class="sc"><b>★ Tu te lèves et tu laisses le centre à Bry</b><span>Sur « Pour Notre-Dame », vous vous levez tous ensemble. Toi, tu te décales d'un pas et demi vers jardin : le centre est à Bry, c'est lui la voix principale. Puis vous avancez ensemble.</span></div><div class="sc"><b>★ Le final · le bras, et on tient</b><span>Debout à l'avant-scène. Sur le dernier « Asile », le bras à demi plié, tous ensemble, et vous tenez treize secondes.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ À TOI · « D'où viens-tu belle étrangère »</b><span>Tu fais mine de sortir à jardin avec Adrien et Stéphanie, un pas, deux, et tu te retournes vers elle : fausse sortie. Tu chantes la question en revenant, sur le côté jardin. Tu ne la touches jamais : tu l'apprivoises.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Élie entre · tu es au centre, en arrière</b><span>Tu t'es retiré vers le centre, en arrière, visible : ta place de Frollo. Élie entre par cour sur « Belle ! », va vers elle, n'ose pas, file à jardin et chante. Tu regardes, immobile.</span></div><div class="sc"><b>★ À TOI · Frollo, depuis ta place</b><span>Tu n'entres pas, tu étais là. Toi qui t'étais retiré, tu reviens vers elle sur « Elle porte en elle… », tu te penches, tu ne la touches pas, et tu te retires à nouveau. Le désir qu'il s'interdit.</span></div><div class="sc"><b>Bry entre à cour · Phœbus</b><span>Bry entre par cour et chante Phœbus, même approche, même recul. Toi tu restes au centre, en arrière. À la fin de « l'arc-en-ciel », pas une seconde : le trio enchaîne.</span></div><div class="sc"><b>★ À TOI, à deux avec Bry · puis Élie seul</b><span>« J'ai posé mes yeux… » jusqu'à « …d'être sur terre » à deux avec Bry, à un pas d'elle. Puis tu te tais : Élie seul sur « Ô Lucifer ». « Esméralda » à trois, la tierce aiguë par toi ou Bry, à trancher en répétition.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Fin de Belle · Élie s'en va, tu attends</b><span>Elle est au sol. Élie tente un dernier pas vers elle et sort à jardin. La lumière vire lentement au doré : Notre-Dame devient l'Égypte. Tu ne bouges pas encore.</span></div><div class="sc"><b>★ Tu passes à JARDIN · Bry ne bouge pas</b><span>Pendant « Bien avant les cathédrales », tu passes du centre à jardin, derrière elle, pendant qu'Élie sort. Bry reste à cour. Puis vous vous regardez d'un bord à l'autre : une pointe de rivalité, jamais de dureté. Frères et amis.</span></div><div class="sc"><b>★ Vous la relevez à deux · MAIN GAUCHE</b><span>Dès « Néfertari aimait Moïse et Ramsès », vous allez vers elle. Elle a son MICRO : tu la prends par le BRAS, Bry par la MAIN. Elle se lève sur « et ça, c'était son dilemme ». Vous vous séparez sur « Lequel m'attire » (19'20).</span></div><div class="sc"><b>★ Loin d'elle, à JARDIN · tu l'imagines</b><span>Tu es à jardin, tout au bord, près du rideau. Elle est seule au centre et chante pour elle. Tu réponds « J'aimerais » de loin, sans un pas vers elle. Le piège est d'être en carafe : tu la regardes, tu l'imagines. Elle est à toi dans ta tête.</span></div><div class="sc"><b>★ À TOI · « Laisse-moi te conquérir », DE LOIN</b><span>Bry le dit le premier depuis cour : « Aime-moi sans me le dire ». Puis toi, de ta place à jardin : « Laisse-moi te conquérir ». Personne ne bouge pendant les deux appels. Ta phrase finie (20'09), vous vous mettez en marche tous les deux.</span></div><div class="sc"><b>★ Vous vous rejoignez au centre · le sourire</b><span>Tu marches doucement depuis 20'09 : tu es arrivé, immobile, JUSTE DERRIÈRE ELLE, sur « Aimer les yeux fermés » (20'20). Là seulement, Bry et toi vous vous souriez : c'est toi ou c'est moi. Puis vous ne bougez plus, elle chante devant vous.</span></div><div class="sc"><b>★ Elle ne choisit personne · puis la main de Dieu</b><span>Elle donne une main à chacun : chacun à son tour lui BAISE LA MAIN, très vite, quitte à déborder sur la narration. Elle recule par le centre, face à vous, puis sort à COUR. Sur « Et la main de Dieu » (20'54), vous levez vos mains jointes.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>★ MON FRÈRE · à toi d'ouvrir, Ramsès</b><span>C'est un passage d'amour, pas de conflit. Tu chantes face au public, mais c'est à Bry que tu parles. La tête ne se tourne vers lui qu'APRÈS une phrase, jamais pendant. Sur « Mon frère », tu le dis au public, puis tu tournes la tête vers lui.</span></div><div class="sc"><b>Le deuxième couplet est à Bry · tu laisses la place</b><span>« Qui s'éloigne des rives et se perd » : c'est Moïse. Tu es là, présent, sans le fixer. Un pas ou deux vers jardin puis retour, du jeu, jamais un déplacement pour rien. C'est un duo, chacun son tour d'être devant.</span></div><div class="sc"><b>★ À TOI · « Puisqu'on ne sera TOUJOURS que la moitié d'un tout »</b><span>Introspectif, presque pleurant, et énervé en même temps. Sur « que la moitié d'un tout », tu reviens vers lui. Bry répond « jamais que la moitié de nous ». Sur « que la moitié de nous », vous levez les bras en l'air tous les deux.</span></div><div class="sc"><b>★ « Mon frère » · la main sur l'épaule</b><span>Tu vas à lui et tu lui poses la main sur l'épaule. Il répond « Mon frère » et te prend l'épaule aussi. Vous vous tenez tous les deux, au centre. C'est le premier apaisement du morceau.</span></div><div class="sc"><b>★ Ton cri, les mains reprises, puis L'ÉTREINTE</b><span>Ton « Mon frère ! » crié, seul. Sur « l'amour sera toujours… », les mains reprises en haut, micros vers l'extérieur. Puis sur le grand « Mon frère » (22'35), vous vous prenez dans les bras : ATTENTION AUX MICROS, jamais entre les torses.</span></div><div class="sc"><b>★ Le compte, l'arrachement, l'arrêt sur image</b><span>Les chœurs entrent : Bry compte 1-2-3-4 et chante sur le 4. Tu réponds tout de suite, puis tu comptes 1-2 et tu redis sur le 3. Sur ce même 4, Adrien te saisit par les bras et te retient à jardin. Ton dernier « Mon frère ! » crié : tout se fige.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ ARRÊT SUR IMAGE · retenu à jardin par Adrien</b><span>Sur le dernier « Mon frère ! » de Mickaël, ARRÊT SUR IMAGE : plus personne ne bouge. La voix machine dit « Le temps s'arrête, trois mille ans passent ». Tu tiens ta position, stable, pendant toute la voix.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Stone · tu restes figé, tendu vers Bry</b><span>Stéphanie entre à jardin, vient au milieu devant et chante le refrain de Stone, seule vivante. Tu restes figé, retenu par Adrien, tendu vers ton frère. Le réveil se fera sur Aimer : à décider, à la fin de Stone ou sur ta première phrase.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ Tous figés · puis TU OUVRES Aimer</b><span>Personne ne bouge jusqu'à « Le monde n'a besoin que de ça » (24'16) : là, Adrien te LÂCHE et vous vous tournez tous les six vers le public, lentement. Deux secondes de silence, et TU CHANTES (24'21). C'est toi qui ouvres Aimer.</span></div><div class="sc"><b>★ AIMER · tu ouvres, puis la LIGNE</b><span>Tu ouvres seul à 24'21, le refrain entier. Candice te rejoint à jardin pendant SON couplet, main dans la main, vous descendez. À 25'21 la ligne se range : Élie, TOI, Candice, Stéphanie, Adrien, Bry. Ensuite tu chantes avec tout le monde.</span></div>
+  </article>
+   </div>
+<div class="vue" id="vue-bry" style="--c:#ff7a1f">
+     <article class="pas coulisse">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Rideau fermé · tu es déjà en place</b><span>Le rideau est fermé, tout est noir. Tu es à ton emplacement avec les quatre autres ; Stéphanie est en coulisse. Le narrateur ouvre : « Paris 1978… ». Tu ne bouges pas.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Les couplets d'Adrien · tu es invisible</b><span>C'est sa chanson : il chante seul, sous une douche, et le reste du plateau est noir. On ne vous voit pas encore. Le premier son qui sortira de toi, c'est le chœur.</span></div><div class="sc"><b>★ Le flash · on vous découvre, puis les chœurs</b><span>Sur « un éclair dans le brouillard », à 1'20, un flash blanc découvre vos cinq silhouettes. Tu chantes les chœurs et le refrain. Regard droit, presque menaçant : vous êtes une bande.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ L'explosion · tu sors à COUR</b><span>Sur « mais en attendant », explosion et coups de feu, noir sec. Vous partez tous ensemble et très vite. Toi, tu sors à COUR, avec Élie et Adrien. Stéphanie entre à jardin pendant ce temps.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Ziggy · tu es en coulisse</b><span>Stéphanie est seule en scène sous une douche unique. Tu es sorti. Ton change de costume commence : tu as trois minutes, c'est large.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>La chanson de Ziggy · toujours en coulisse</b><span>Adrien revient sans son blouson de cuir et chante avec Stéphanie. Tu restes en coulisse : tu ne reviens qu'au Blues du Businessman, à 6'06.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu reviens par cour, DERRIÈRE Élie</b><span>Tu entres à cour juste après Élie, qui va jusqu'au bout à jardin. Tu t'arrêtes avant sa place : la ligne est Élie, Mickaël, toi, Adrien. Dos au public, en profondeur devant le fond.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Le Blues · à ta place dans la ligne</b><span>Tu prends tes phrases après Mickaël, à tour de rôle avec Adrien. Immobile, comme les autres. Candice passe derrière vous.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Retour d'antenne · vous restez en place</b><span>Christine rend l'antenne au studio. Vous êtes encore tous les six en place, immobiles, dans la lumière de la fin du Blues.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>★ Tu sors à COUR, derrière Élie · devant la ligne</b><span>Élie part le premier, tu le suis dans le même couloir, DEVANT la ligne. Même sens, aucun dépassement, 5,5 m. Tu ne reviens qu'au Temps des Cathédrales, par cour.</span></div><div class="sc"><b>En coulisses · Les uns contre les autres</b><span>Les quatre restants chantent, chacun sous sa douche. Toi, tu souffles en coulisses. Ta prochaine entrée : la foule des barbares, dans Notre-Dame.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Les cloches · tu attends à cour</b><span>Tu es en coulisse depuis 8'46. Mickaël chante seul avec le narrateur. Tu attends côté cour avec Élie : c'est de là que vous rentrerez tous les deux.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>Les cloches · tu attends à cour</b><span>Tu es en coulisse depuis 8'46. Mickaël chante seul avec le narrateur. Tu attends côté cour avec Élie : c'est de là que vous rentrerez tous les deux.</span></div><div class="sc"><b>★ Tu entres à cour · ta place est au milieu-cour</b><span>Sur « La foule des barbares », tu entres à cour avec Élie et Candice. Ta place est au milieu-cour. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres à cour · ta place est au milieu-cour</b><span>Sur « La foule des barbares », tu entres à cour avec Élie et Candice. Ta place est au milieu-cour. Vous vous rangez autour de Mickaël et le refrain final est à six.</span></div><div class="sc"><b>★ Tu tombes, puis tu te relèves seul</b><span>Sur « l'an deux mille », tu tombes comme les autres, un genou à terre. Sur le texte crié, tu es le seul à te relever. Tu descends vers Candice, tu remontes vers Élie, tu viens au centre.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ Tu tombes, puis tu te relèves seul</b><span>Sur « l'an deux mille », tu tombes comme les autres, un genou à terre. Sur le texte crié, tu es le seul à te relever. Tu descends vers Candice, tu remontes vers Élie, tu viens au centre.</span></div><div class="sc"><b>★ À TOI · seul debout au milieu des corps</b><span>Tu chantes « Nous sommes plus de mille ». Tu vas de l'un à l'autre : une épaule, une tête que tu relèves, la salle que tu prends à témoin. Tu ne mimes jamais les mots, tu montres les hommes.</span></div><div class="sc"><b>★ Les cinq chantent au sol · ton parcours</b><span>Toi seul debout. Tu vas vers Adrien sur « plus de mille », vers Stéphanie sur « dix mille et cent mille », et tu reviens au centre avant qu'ils se lèvent. De cour vers jardin, jamais en arrière.</span></div><div class="sc"><b>★ Ils se lèvent autour de toi · le centre est à toi</b><span>Sois revenu au centre avant « Pour Notre-Dame ». Ils se lèvent tous ensemble, Mickaël se décale et te laisse le milieu. Ton « Ouai ! » tombe pile là-dessus. Puis vous avancez, toi au milieu d'eux.</span></div><div class="sc"><b>★ Le final · le bras, et on tient</b><span>Debout au centre, à l'avant-scène. Sur le dernier « Asile », le bras à demi plié avec les cinq autres, et vous tenez treize secondes.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Tu sors à COUR avec Élie · en jouant, à vue</b><span>La sortie est jouée, tout le monde vous voit partir : vous quittez la place, pas la scène. Tu sors à cour avec Élie, sous la question de Mickaël. Tu reviens sur ton « Belle » de Phœbus à 17'17, par cour.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>En coulisse à cour · tu entres après Frollo</b><span>Élie chante Quasimodo, puis Mickaël chante Frollo. Toi, tu attends à cour. Tu entres à 17'11, pendant les six secondes d'orchestre avant ton « Belle », et tu restes à cour.</span></div><div class="sc"><b>★ À TOI · Phœbus, depuis cour</b><span>Tu chantes en allant vers elle, tu veux la toucher, tu recules vers cour. Personne ne la touche. À la fin de « l'arc-en-ciel », pas une seconde : le trio enchaîne.</span></div><div class="sc"><b>★ À TOI, à deux avec Mickaël · puis Élie seul</b><span>« J'ai posé mes yeux… » jusqu'à « …d'être sur terre » à deux avec Mickaël, à un pas d'elle. Puis tu te tais : Élie seul sur « Ô Lucifer ». « Esméralda » à trois, la tierce aiguë par Mickaël ou toi, à trancher en répétition.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>Fin de Belle · Élie s'en va, tu attends</b><span>Elle est au sol. Élie tente un dernier pas vers elle et sort à jardin. La lumière vire au doré : Notre-Dame devient l'Égypte. Tu ne bouges pas encore.</span></div><div class="sc"><b>★ Tu ne bouges pas · tu restes à COUR</b><span>Pendant « Bien avant les cathédrales », Mickaël passe du centre à jardin, derrière elle. Toi, tu ne bouges pas. Puis vous vous regardez d'un bord à l'autre : une pointe de rivalité, jamais de dureté. Frères et amis.</span></div><div class="sc"><b>★ Vous la relevez à deux · MAIN DROITE</b><span>Dès « Néfertari aimait Moïse et Ramsès », vous allez vers elle. Elle a son MICRO : Mickaël la prend par le BRAS, toi par la MAIN. Elle se lève sur « et ça, c'était son dilemme ». Vous partez sur « Lequel m'attire » (19'20).</span></div><div class="sc"><b>★ Loin d'elle, à COUR · tu l'imagines</b><span>Tu es à cour, tout au bord, près du rideau. Elle est seule au centre et chante pour elle. Tu réponds « J'aimerais » de loin, sans un pas vers elle. Le piège est d'être en carafe : tu la regardes, tu l'imagines. Elle est à toi dans ta tête.</span></div><div class="sc"><b>★ À TOI · « Aime-moi sans me le dire », DE LOIN</b><span>C'est toi qui parles le premier, depuis ta place à cour : « Aime-moi sans me le dire ». Puis Mickaël, de jardin : « Laisse-moi te conquérir ». Personne ne bouge pendant les deux appels. Sa phrase finie (20'09), vous marchez tous les deux.</span></div><div class="sc"><b>★ Vous vous rejoignez au centre · le sourire</b><span>Tu marches doucement depuis 20'09 : tu es arrivé, immobile, JUSTE DERRIÈRE ELLE, sur « Aimer les yeux fermés » (20'20). Là seulement, Mickaël et toi vous vous souriez : c'est toi ou c'est moi. Puis vous ne bougez plus, elle chante devant vous.</span></div><div class="sc"><b>★ Elle ne choisit personne · puis la main de Dieu</b><span>Elle donne une main à chacun : chacun à son tour lui BAISE LA MAIN, très vite, quitte à déborder sur la narration. Elle recule par le centre, face à vous, puis sort à COUR. Sur « Et la main de Dieu » (20'54), vous levez vos mains jointes.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>★ MON FRÈRE · Mickaël ouvre, tu es là</b><span>C'est un passage d'amour, pas de conflit. Il chante face au public, mais c'est à toi qu'il parle. Tu es au centre avec lui, présent, sans le fixer. Quand il tourne la tête vers toi après une phrase, tu es là pour recevoir ce regard.</span></div><div class="sc"><b>★ À TOI · le deuxième couplet, Moïse</b><span>« Qui s'éloigne des rives et se perd » : c'est toi qui pars, c'est ta phrase. Face au public, mais c'est à lui que tu parles ; la tête ne se tourne vers lui qu'APRÈS une phrase. Un pas vers cour, puis retour.</span></div><div class="sc"><b>★ À TOI · « Puisqu'on ne sera JAMAIS que la moitié de nous »</b><span>Mickaël dit d'abord « toujours que la moitié d'un tout » et revient vers toi. Tu réponds « jamais que la moitié de nous », la colère monte. Sur « que la moitié de nous », vous levez les bras en l'air tous les deux.</span></div><div class="sc"><b>★ « Mon frère » · la main sur l'épaule</b><span>Il vient à toi et te pose la main sur l'épaule. Tu réponds « Mon frère » et tu lui prends l'épaule aussi. Vous vous tenez tous les deux, au centre. C'est le premier apaisement du morceau.</span></div><div class="sc"><b>★ Les mains reprises, puis L'ÉTREINTE</b><span>Mickaël crie « Mon frère ! », seul. Sur « l'amour sera toujours… », les mains reprises en haut, micros vers l'extérieur. Puis sur le grand « Mon frère » (22'35), vous vous prenez dans les bras : ATTENTION AUX MICROS, jamais entre les torses.</span></div><div class="sc"><b>★ COMPTE 1-2-3-4, l'arrachement, l'arrêt sur image</b><span>Les chœurs entrent : COMPTE 1-2-3-4, ton « Mon frère, mon frère » sur le 4 (le compte est dans le karaoké). Sur ce même 4, Élie te saisit par les bras et t'emmène à cour. Tu chantes en te débattant. Dernier « Mon frère ! » de Mickaël : tout se fige.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ ARRÊT SUR IMAGE · emmené à cour par Élie</b><span>Sur le dernier « Mon frère ! » de Mickaël, ARRÊT SUR IMAGE : plus personne ne bouge. La voix machine dit « Le temps s'arrête, trois mille ans passent ». Tu tiens ta position, stable, pendant toute la voix.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Stone · tu restes figé, le bras tendu</b><span>Stéphanie entre à jardin, vient au milieu devant et chante le refrain de Stone, seule vivante. Tu restes figé, emmené par Élie, le bras tendu vers ton frère. Le réveil se fera sur Aimer : à décider, à la fin de Stone ou sur ta phrase.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>★ Tous figés · tu es le DERNIER à revenir</b><span>Personne ne bouge jusqu'à « Le monde n'a besoin que de ça » (24'16) : là, Élie te LÂCHE et vous vous tournez tous les six vers le public. Tu restes à cour, vivant, tu écoutes. Tu chantes à partir de 25'21, sur le refrain à six.</span></div><div class="sc"><b>★ AIMER · le dernier à revenir · ta phrase</b><span>Tu te réveilles à 25'21, sur le refrain à six : tu es le dernier. Tu rejoins la ligne à côté d'Adrien, au bout à cour. ★ Au DERNIER REFRAIN (26'21), les DEUX ÉCHOS sont à toi, SEUL : tu réponds à tout le monde, de ta place.</span></div>
+  </article>
+   </div>
+<div class="vue" id="vue-elie" style="--c:#9dff35">
+     <article class="pas muet">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Tu es en place · rideau fermé</b><span>À ton emplacement, celui de ta fiche, derrière le rideau, dans le noir. Tu ne bouges pas tant que la lumière n'a pas commencé.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Le rideau s'ouvre · tu es dans la pénombre</b><span>Adrien chante seul. On doit croire qu'il est seul en scène, mais vous êtes bien là, tous les cinq, dans l'ombre. Tu ne bouges pas encore.</span></div><div class="sc"><b>Les chœurs · reste sur ta douche</b><span>Ta première phrase de chœur se chante SUR TA DOUCHE de lumière, à ta place. Tu n'avances pas encore : Adrien reprend seul juste après.</span></div><div class="sc"><b>Tous ensemble · vous avancez devant</b><span>Vous avancez devant, avec Adrien. Plus de douche : la lumière s'ouvre en plusieurs couleurs. Vous chantez tous ensemble, en ligne.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Tous ensemble · vous avancez devant</b><span>Vous avancez devant, avec Adrien. Plus de douche : la lumière s'ouvre en plusieurs couleurs. Vous chantez tous ensemble, en ligne.</span></div><div class="sc"><b>Le boom · noir et explosion</b><span>Juste après « on prend tout c'qu'on veut prendre » : l'explosion. Noir sec, et des spots qui partent dans tous les sens. L'esprit est celui d'une bagarre.</span></div><div class="sc"><b>★ Vous sortez tous d'un bloc · toi à COUR</b><span>Vous sortez ensemble, presque en courant, dans le noir : on ne doit pas vous voir partir. Toi, tu sors à COUR, avec Bry et Adrien. Mickaël et Candice sortent à jardin.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>★ Vous sortez tous d'un bloc · toi à COUR</b><span>Vous sortez ensemble, presque en courant, dans le noir : on ne doit pas vous voir partir. Toi, tu sors à COUR, avec Bry et Adrien. Mickaël et Candice sortent à jardin.</span></div><div class="sc"><b>Tu es en coulisse à cour · Ziggy commence</b><span>Stéphanie est entrée à jardin, elle est seule en scène pour Ziggy. Toi, tu n'es plus là. Rien à faire : souffle, et écoute.</span></div><div class="sc"><b>Reste en coulisses</b><span>Ziggy continue, Stéphanie toujours seule. Tu attends au calme : tu as encore un long moment avant de revenir.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>En coulisses · Adrien rejoint Stéphanie</b><span>Adrien revient sur scène et la rejoint pour La chanson de Ziggy. Ils sont seuls tous les deux. Toi, tu es toujours en coulisses.</span></div><div class="sc"><b>Reste en coulisses · prépare ta rentrée</b><span>Leur duo se termine bientôt. Tiens-toi prêt : tu reviens en scène juste après, pour Le Blues du Businessman.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu reviens le PREMIER · par cour</b><span>Tu entres à cour, et tu pars le premier des quatre : ta place est à l'autre bout, côté jardin, et la ligne doit être vide quand tu la traverses. Dos au public. Onze secondes, tu as le temps, ne cours pas.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="quoi">Ton solo</div>
+    <div class="sc"><b>Le Blues · tu es en place, tu attends ton moment</b><span>Vous êtes quatre en ligne, lumière froide et verticale, immobiles. Mickaël, Bry et Adrien se passent les phrases à tour de rôle. Toi, tu ne chantes pas encore : tu es là, tu écoutes, tu les regardes se vanter.</span></div><div class="sc"><b>★ À TOI · seul en lumière</b><span>Les filles demandent « au moins es-tu heureux ? », et c'est toi qui réponds, seul. Trois phrases. Douche serrée sur toi, le reste baissé. Prends ton temps, c'est presque parlé : le sommet du morceau est à toi.</span></div><div class="sc"><b>Le final · tout le monde</b><span>Les trois autres reprennent chacun leur tour, puis vous chantez tous ensemble jusqu'à la fin. Sur les tenues et le scat, tu es à l'octave grave. Dernière phrase à six, avec les filles.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Retour d'antenne · vous restez en place</b><span>Christine rend l'antenne au studio. Vous êtes encore tous les six en place, immobiles, dans la lumière de la fin du Blues.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>★ Tu sors à COUR, le PREMIER · devant la ligne</b><span>Tu pars le premier des six : 8,7 m, le plus long, parce que tu finis côté jardin et que tu sors à cour. Tu passes DEVANT la ligne, jamais en diagonale. Bry te suit. Tu reviens au Temps des Cathédrales.</span></div><div class="sc"><b>En coulisses · Les uns contre les autres</b><span>Les quatre restants chantent, chacun sous sa douche. Toi, tu souffles en coulisses : ta prochaine entrée est la foule des barbares, dans Notre-Dame.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Les cloches · tu attends à cour</b><span>Tu es en coulisse depuis 8'46. Mickaël chante seul avec le narrateur, lumière chaude, couleur pierre. Tu attends côté cour avec Bry.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>Les cloches · tu attends à cour</b><span>Tu es en coulisse depuis 8'46. Mickaël chante seul avec le narrateur, lumière chaude, couleur pierre. Tu attends côté cour avec Bry.</span></div><div class="sc"><b>★ Tu entres à cour · entre Mickaël et le milieu-cour</b><span>Sur « La foule des barbares », tu entres à cour avec Bry et Candice. Ta place est entre Mickaël et le milieu-cour. Le refrain final est à six.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ Tu entres à cour · entre Mickaël et le milieu-cour</b><span>Sur « La foule des barbares », tu entres à cour avec Bry et Candice. Ta place est entre Mickaël et le milieu-cour. Le refrain final est à six.</span></div><div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Le boum · tout le monde tombe</b><span>Sur « l'an deux mille », vous tombez tous : un genou à terre, l'autre levé, buste droit. Sur « Pour Notre-Dame, nous te demandons asile », le bras à demi plié, tous ensemble, puis tu le baisses.</span></div><div class="sc"><b>Bry se relève seul · il vient vers toi</b><span>Bry est le seul debout. Il passe par Candice, puis il vient vers toi avant d'aller au centre. Tu restes à genoux : laisse-le jouer, réponds-lui du regard.</span></div><div class="sc"><b>Les chœurs, au sol · Bry circule</b><span>Vous chantez les chœurs à genoux, immobiles, buste droit. Bry passe entre vous : il va vers Adrien, puis vers Stéphanie, et il revient au centre. Celui qu'il touche réagit, les autres restent face public.</span></div><div class="sc"><b>★ Vous vous levez · tu es à côté de Bry</b><span>Sur « Pour Notre-Dame », vous vous levez tous ensemble, chacun là où il était. Ta place dans la ligne : juste à cour de Bry, qui prend le centre. Puis vous avancez ensemble à l'avant-scène.</span></div><div class="sc"><b>★ Le final · le bras, et on tient</b><span>Debout à l'avant-scène. Sur le dernier « Asile », le bras à demi plié, tous ensemble, et vous tenez treize secondes.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Tu sors à COUR avec Bry · derrière Candice</b><span>La sortie est jouée, à vue. Tu passes DERRIÈRE Candice pour ne pas la croiser, et tu sors à cour avec Bry, sous la question. Tu reviens sur le mot « Belle » à 16'05, par cour : c'est ton entrée de Quasimodo.</span></div>
+  </article>
+<article class="pas solo">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="quoi">Ton solo, et un passage à plusieurs</div>
+    <div class="sc"><b>★ À TOI · tu entres sur « Belle ! Belle ! »</b><span>Tu entres par cour sur l'appel, tu vas vers elle, tu veux la toucher, tu n'oses pas, et tu continues jusqu'à JARDIN : c'est joué, et c'est rapide. Tu chantes de là. Pas de bosse : des mains cachées, les yeux baissés quand elle est trop près.</span></div><div class="sc"><b>Tu es à jardin · Frollo, puis Phœbus</b><span>Tu restes à jardin, tourné vers elle. Mickaël chante depuis le centre, puis Bry entre à cour et chante. Chacun vient vers elle et recule : personne ne la touche, jamais.</span></div><div class="sc"><b>Le trio · les deux chantent, tu te rapproches</b><span>Mickaël et Bry chantent « J'ai posé mes yeux… » à deux. Tu te rapproches d'elle avec eux, à un pas, pas moins. Tu prépares ta phrase : elle arrive seule.</span></div><div class="sc"><b>★ À TOI, SEUL · « Ô Lucifer… »</b><span>Deux voix se taisent, il ne reste que toi : « Ô Lucifer, oh laisse-moi rien qu'une fois, glisser mes doigts dans les cheveux d'Esméralda ». Puis « Esméralda » à trois, en tierce. Elle reste au sol.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>★ Un dernier pas vers elle, puis tu sors</b><span>Belle s'éteint, elle est au sol. Sur « Bien avant les cathédrales », tu fais encore un pas vers elle. Tu renonces, et tu sors à JARDIN, la tête basse. Quasimodo n'a jamais rien eu : c'est la fin de Notre-Dame.</span></div><div class="sc"><b>Le Dilemme · tu es en coulisse à jardin</b><span>Candice chante Néfertari, debout entre Mickaël et Bry, devenus Ramsès et Moïse. Tu reviens à la fin de Mon Frère, avec Adrien, pour séparer les deux frères.</span></div>
+  </article>
+<article class="pas coulisse">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="quoi">Tu es en coulisse</div>
+    <div class="sc"><b>Pendant Mon Frère · tu attends à jardin, avec Adrien</b><span>Mickaël et Bry chantent Mon Frère au centre, seuls en scène. Adrien et toi attendez ensemble en coulisse jardin. Vous entrerez tous les deux du même côté, sur les derniers « Mon frère ».</span></div><div class="sc"><b>★ À TOI · COMPTE 1-2-3-4 et tu emmènes Moïse</b><span>Ils se serrent dans les bras sur le grand « Mon frère ». Dès que les chœurs entrent, compte 1-2-3-4 avec Adrien : sur le 4, vous êtes sur eux. Tu saisis Bry par les deux bras en arrière et tu l'EMMÈNES à cour. Il se débat. Puis tout se fige.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>★ ARRÊT SUR IMAGE · tu emmènes Bry</b><span>Sur le dernier « Mon frère ! » de Mickaël, ARRÊT SUR IMAGE : plus personne ne bouge. La voix machine dit « Le temps s'arrête, trois mille ans passent ». Tu tiens ta position, stable, pendant toute la voix.</span></div>
+  </article>
+<article class="pas muet">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="quoi">Tu es en place, tu ne chantes pas</div>
+    <div class="sc"><b>Stone · tu restes figé, en train de l'emmener</b><span>Stéphanie chante le refrain de Stone au milieu, seule vivante. Tu restes figé, les mains sur les bras de Bry, vers cour : trouve une position stable, tu la tiens 35 secondes. Le réveil se fera sur Aimer, à décider.</span></div>
+  </article>
+<article class="pas choeur">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="quoi">Tous les six ensemble</div>
+    <div class="sc"><b>★ Tous figés · tu te réveilles pour les chœurs</b><span>Personne ne bouge jusqu'à « Le monde n'a besoin que de ça » (24'16) : là, tu OUVRES LES MAINS et vous vous tournez tous les six vers le public. Tu chantes à 24'41, aux chœurs sous Candice. Tu ne te déplaces qu'à 25'21.</span></div><div class="sc"><b>★ AIMER · tu traverses, et tu réponds aux échos</b><span>Tu chantes dès 24'41, aux chœurs — et tu ne t'arrêtes plus : c'est toi qui tiens l'ensemble sous tout le monde. Tu ne te déplaces qu'à 25'21, quand les quatre sont devant : tu traverses PAR DERRIÈRE jusqu'à jardin, EN CHANTANT.</span></div>
+  </article>
+   </div>
+  <div class="vue" id="vue-tous">
+  <article class="pas tousb">
+    <div class="haut"><span class="num">01</span><h3>Narration d'ouverture</h3>
+      <span class="tps">0:00 → 0:30</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">02</span><h3>Quand on arrive en ville</h3>
+      <span class="tps">0:30 → 1:48</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Ton solo</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">03</span><h3>Explosion, flash radio</h3>
+      <span class="tps">1:48 → 2:10</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">04</span><h3>Ziggy</h3>
+      <span class="tps">2:11 → 3:33</span></div>
+    <div class="noms"><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Ton solo</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">05</span><h3>La chanson de Ziggy</h3>
+      <span class="tps">3:33 → 5:16</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Ton solo, et un passage à plusieurs</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">06</span><h3>Radio Monopolis, le duplex</h3>
+      <span class="tps">5:16 → 6:06</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">07</span><h3>Le Blues du Businessman</h3>
+      <span class="tps">6:06 → 8:34</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Avec Candice</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>Avec Stéphanie</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>Ton solo</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">08</span><h3>Retour d'antenne</h3>
+      <span class="tps">8:34 → 8:46</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">09</span><h3>Les uns contre les autres</h3>
+      <span class="tps">8:46 → 10:20</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Avec Stéphanie et Candice et Mickaël</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>Avec Adrien et Stéphanie et Mickaël</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Avec Adrien et Stéphanie et Candice</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">10</span><h3>Cloches, narration</h3>
+      <span class="tps">10:20 → 10:27</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">11</span><h3>Le Temps des Cathédrales</h3>
+      <span class="tps">10:27 → 12:12</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>Tous les six ensemble</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">12</span><h3>Bataille, appel crié</h3>
+      <span class="tps">12:12 → 12:27</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">13</span><h3>Les Sans-papiers</h3>
+      <span class="tps">12:27 → 13:59</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Tous les six ensemble</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Ton solo</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>Tous les six ensemble</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">14</span><h3>Bohémienne</h3>
+      <span class="tps">13:59 → 16:00</span></div>
+    <div class="noms"><span class="v" style="--c:#b45cff"><b>Candice</b><i>Ton solo</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">15</span><h3>Belle</h3>
+      <span class="tps">16:00 → 18:35</span></div>
+    <div class="noms"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>Ton solo, et un passage à plusieurs</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">16</span><h3>Le Dilemme</h3>
+      <span class="tps">18:35 → 20:55</span></div>
+    <div class="noms"><span class="v" style="--c:#b45cff"><b>Candice</b><i>Ton solo</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Ton solo, et un passage à plusieurs</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">17</span><h3>Mon Frère</h3>
+      <span class="tps">20:55 → 23:00</span></div>
+    <div class="noms"><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Ton solo, et un passage à plusieurs</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">18</span><h3>L'arrêt du temps</h3>
+      <span class="tps">23:00 → 23:20</span></div>
+    <div class="noms"><span class="v vide"><b>Personne ne chante sur scène</b><i>la voix vient de la bande</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">19</span><h3>Stone</h3>
+      <span class="tps">23:20 → 23:58</span></div>
+    <div class="noms"><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Ton solo</i></span></div>
+  </article>
+<article class="pas tousb">
+    <div class="haut"><span class="num">20</span><h3>Aimer</h3>
+      <span class="tps">23:58 → 26:50</span></div>
+    <div class="noms"><span class="v" style="--c:#ffc814"><b>Adrien</b><i>Avec Stéphanie</i></span><span class="v" style="--c:#ff4fa8"><b>Stéphanie</b><i>Ton solo, et un passage à plusieurs</i></span><span class="v" style="--c:#b45cff"><b>Candice</b><i>Ton solo</i></span><span class="v" style="--c:#00ffcc"><b>Mickaël</b><i>Ton solo</i></span><span class="v" style="--c:#ff7a1f"><b>Bry</b><i>Ton solo</i></span><span class="v" style="--c:#9dff35"><b>Élie</b><i>Tous les six ensemble</i></span></div>
+  </article>
+</div>
 </section>
 
 <script src="site.js"></script>
+<script>
+/* on choisit un prénom, on voit son parcours ; le lien personnel ouvre le sien */
+(function(){
+  const onglets = [...document.querySelectorAll('.onglet')];
+  function montrer(cle){
+    document.querySelectorAll('.vue').forEach(v => v.classList.toggle('la', v.id === 'vue-' + cle));
+    onglets.forEach(o => o.classList.toggle('actif', o.dataset.qui === cle));
+    try { localStorage.setItem('boheme-qui-vu', cle); } catch(e){}
+  }
+  onglets.forEach(o => o.addEventListener('click', () => montrer(o.dataset.qui)));
+  let depart = new URLSearchParams(location.search).get('pour');
+  try { if (!depart) depart = localStorage.getItem('boheme-pour'); } catch(e){}
+  if (depart && document.getElementById('vue-' + depart)) montrer(depart);
+})();
+</script>
 </body>
 </html>
