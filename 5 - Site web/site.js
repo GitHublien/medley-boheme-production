@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 20h33';
+const VERSION_SITE = '07/09/2026 · 20h59';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -134,10 +134,13 @@ const VERSION_SITE = '07/09/2026 · 20h33';
   setTimeout(() => chercherMaj(true), 3500);
 
   /* la pastille rouge sur ce qui a changé, dans le menu et dans la barre du bas */
+  /* une page « nouvelle » qu'on a OUVERTE dans cette version n'a plus de pastille : on note qu'on l'a vue */
+  const vu = p => { try { return localStorage.getItem('boheme-vu-' + p) === VERSION_SITE; } catch(e){ return false; } };
+  try { if (NOUVEAU.includes(ici)) localStorage.setItem('boheme-vu-' + ici, VERSION_SITE); } catch(e){}
   function pastiller(){
     document.querySelectorAll('.nav a.l, .voile a, .bas a').forEach(a => {
       const h = decodeURIComponent((a.getAttribute('href') || '').split('?')[0]);
-      if (NOUVEAU.includes(h) && !a.querySelector('.pastille')){
+      if (NOUVEAU.includes(h) && !vu(h) && !a.querySelector('.pastille')){
         const i = document.createElement('i'); i.className = 'pastille'; i.title = 'du nouveau ici'; a.appendChild(i);
       }
     });

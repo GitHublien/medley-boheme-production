@@ -739,18 +739,22 @@ if ('serviceWorker' in navigator){
      ouvre une petite porte : personne ne doit rester bloqué devant
      un mur noir. Celui qui découvre le lien, lui, ne la voit
      jamais : il reçoit la vraie proposition d'installation. */
+  const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   setTimeout(() => {
     if (promesse || ecran.dataset.fini === '1') return;
     const sortie = document.createElement('div');
-    sortie.textContent = 'Déjà installée ? Continuer ici →';
-    sortie.style.cssText = 'margin-top:6px;padding:12px 20px;font-size:14px;'
+    sortie.textContent = iOS ? 'Continuer sans installer →' : 'Déjà installée ? Continuer ici →';
+    sortie.style.cssText = iOS
+      ? 'margin-top:6px;padding:13px 22px;font-size:16px;font-weight:700;color:#ffc814;cursor:pointer;flex:none;'
+        + 'border:1px solid rgba(212,175,55,.7);border-radius:999px;background:rgba(212,175,55,.14);'
+      : 'margin-top:6px;padding:12px 20px;font-size:14px;'
       + 'color:#b9b2a0;text-decoration:underline;cursor:pointer;flex:none;';
     sortie.addEventListener('click', (e) => {
       e.stopPropagation();
       ecran.style.display = 'none';
     });
     ecran.appendChild(sortie);
-  }, 3000);
+  }, iOS ? 400 : 3000);   /* sur iPhone, l'installation automatique n'existe pas : la sortie vient tout de suite */
 
   let promesse = null;
   window.addEventListener('beforeinstallprompt', e => {
@@ -853,6 +857,20 @@ setTimeout(() => {
       quandPret();
     };
     matchMedia('(orientation: portrait)').addEventListener('change', veille);
+    /* LA SORTIE (7 sept) : un iPhone dont la rotation est verrouillée ne tournera jamais.
+       Après trois secondes, on propose de regarder le film debout : il passe entier,
+       avec des bandes noires en haut et en bas. Personne ne reste devant un mur. */
+    setTimeout(() => {
+      if (dejaServi || ecran.querySelector('.sortieDebout')) return;
+      const s = document.createElement('div'); s.className = 'sortieDebout';
+      s.textContent = 'Ou regarde-le comme ça, debout →';
+      s.style.cssText = 'margin-top:8px;padding:13px 22px;border-radius:999px;border:1px solid rgba(212,175,55,.7);'
+        + 'background:rgba(212,175,55,.14);color:#ffc814;font-size:clamp(15px,4.2vw,18px);font-weight:700;cursor:pointer;';
+      s.addEventListener('click', e => { e.stopPropagation(); if (dejaServi) return; dejaServi = true;
+        try { matchMedia('(orientation: portrait)').removeEventListener('change', veille); } catch(x){}
+        ecran.style.display = 'none'; quandPret(); });
+      ecran.appendChild(s);
+    }, 3000);
   };
 })();
 </script>

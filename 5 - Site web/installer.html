@@ -109,7 +109,7 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
 <!-- iPhone dans Safari -->
 <div class="ecran" id="e-iphone">
   <h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1>
-  <p>Sur iPhone, c'est Safari qui installe. Regarde en bas de l'écran :</p>
+  <p>Sur iPhone, c'est Safari qui installe. <b>Si tu as ouvert ce lien depuis WhatsApp</b>, appuie d'abord sur la petite <b>boussole</b> en bas à droite : elle ouvre la page dans Safari. Puis :</p>
   <div class="pas">
     <div><b class="n">1</b><span>Appuie sur <b>Partager</b>, le carré avec une flèche vers le haut, en bas au milieu de l'écran.</span></div>
     <div><b class="n">2</b><span>Fais défiler la liste et choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</span></div>
@@ -145,7 +145,11 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
   <a class="btn doux" href="ACCUEIL — Bohème.html">Ou entrer tout de suite</a>
 </div>
 
+<noscript><div class="ecran la"><h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1><p>Sur iPhone : dans Safari, appuie sur <b>Partager</b> puis <b>« Sur l'écran d'accueil »</b>. Sur Android : dans Chrome, les trois points puis <b>« Installer l'application »</b>.</p><p><a class="btn" href="ACCUEIL — Bohème.html">Ouvrir le site</a></p></div></noscript>
 <script>
+/* filet : si quoi que ce soit casse dans le script, on montre quand même un écran complet */
+window.addEventListener('error', function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } });
+setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } }, 1500);
 (function(){
   const par = new URLSearchParams(location.search);
   const pour = par.get('pour');

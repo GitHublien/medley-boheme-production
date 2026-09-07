@@ -604,7 +604,10 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 window.QUATRE_CANAUX = false;
 try {
   const _au = document.getElementById('au');
-  if ((window.AudioContext || window.webkitAudioContext) && _au.canPlayType('audio/webm; codecs="opus"')){
+  /* iPhone et iPad : Safari ramène les quatre canaux à deux (les deux bandes s'entendraient
+     ensemble et la bascule ne ferait plus rien). Là, on garde les deux MP3 et la méthode d'avant. */
+  const _iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!_iOS && (window.AudioContext || window.webkitAudioContext) && _au.canPlayType('audio/webm; codecs="opus"')){
     _au.src = 'media/bande-4canaux.webm'; window.QUATRE_CANAUX = true;
   }
 } catch(e){}
@@ -5495,7 +5498,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 20h10';
+const VERSION_APPLI = '07/09/2026 · 20h59';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5891,8 +5894,10 @@ const VERSION_APPLI = '07/09/2026 · 20h10';
   .barre{
     left:0 !important; right:auto !important; top:0 !important; bottom:0 !important;
     width:var(--rail) !important; height:100% !important;
-    flex-direction:column !important; justify-content:flex-start !important;
-    align-items:stretch !important; gap:5px !important;
+    display:grid !important; grid-template-columns:repeat(3, 1fr) !important;
+    grid-auto-rows:min-content !important; align-content:start !important;
+    flex-wrap:nowrap !important;          /* UNE colonne : jamais une deuxième cachée derrière le texte (7 sept) */
+    align-items:stretch !important; gap:4px !important;
     padding:calc(10px + env(safe-area-inset-top)) 10px 12px
             calc(10px + env(safe-area-inset-left)) !important;
     background:linear-gradient(90deg, rgba(6,5,4,.97) 82%, transparent) !important;
@@ -5917,8 +5922,16 @@ const VERSION_APPLI = '07/09/2026 · 20h10';
   /* dans le rail, le bouton « aller à ton passage » revient à la
      ligne au lieu de déborder : la place est étroite */
   .b-aller.la{ max-width:100% !important; white-space:normal !important;
-               line-height:1.25 !important; padding:7px 5px !important;
-               text-overflow:clip !important; order:0 !important; }
+               line-height:1.2 !important; padding:6px 5px !important;
+               text-overflow:clip !important; order:0 !important;
+               display:-webkit-box !important; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden !important; }
+  #btnSite{ order:-1 !important; }
+  .barre > *{ grid-column:1 / -1; }                      /* un bouton = une rangée… */
+  #btnInfos, #btnTuto, #btnPlein{ grid-column:auto !important; }   /* …sauf les trois petits, côte à côte */
+  #btnInfos{ order:6 !important; } #btnTuto{ order:6 !important; } #btnPlein{ order:6 !important; }
+  #btnInfos, #btnTuto, #btnPlein{ font-size:13px !important; padding:6px 2px !important; }
+  #btnMaj, #btnStyle, #btnPlein, #btnBlocs, #btnTuto, #btnAide,
+  #btnIntro, #btnBande, #btnPresence, #btnSite{ min-height:31px !important; padding:6px 4px !important; }
 
   /* ─── LA MISE EN SCÈNE : une bande fine, à droite du rail ────── */
   #bandeau{

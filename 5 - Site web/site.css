@@ -296,3 +296,12 @@ footer .liens a:hover{ color:var(--or2); }
   .ouverture.a-image .fond{ aspect-ratio:768/1376; max-height:none; width:100%; }
   .ouverture.a-image{ padding-top:calc(var(--nav) + .6rem); }
 }
+
+/* LE MENU PLEIN ÉCRAN DÉFILE (7 sept) : en paysage, neuf entrées ne tiennent pas dans 390 px.
+   Le voile devient la zone qui défile, le doigt fait défiler, et rien n'est coupé. */
+.voile{ overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; }
+@media (max-height:640px){
+  .voile{ align-items:start; padding:calc(var(--nav) + .8rem) 1.2rem 1.4rem; }
+  .voile a{ padding:.42rem 0; font-size:1.25rem; }
+  .voile a small{ font-size:.66rem; }
+}
