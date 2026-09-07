@@ -5498,7 +5498,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 21h02';
+const VERSION_APPLI = '07/09/2026 · 21h03';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5933,6 +5933,12 @@ const VERSION_APPLI = '07/09/2026 · 21h02';
   /* dans la grille, chaque bouton prend exactement sa case : ni plus large que le rail, ni décalé */
   .barre{ box-sizing:border-box !important; }
   .barre > *{ width:auto !important; min-width:0 !important; max-width:none !important; justify-self:stretch; margin:0 !important; }
+  /* dans la petite case ronde, « Plein écran » n'entre pas : on ne garde que son signe */
+  #btnPlein{ font-size:0 !important; }
+  #btnPlein::before{ content:'⛶'; font-size:15px; }
+  /* « Aller à ton passage » : une seule ligne courte, le nom du bloc reste dans le bandeau */
+  .b-aller.la{ font-size:0 !important; display:block !important; line-height:1 !important; padding:9px 4px !important; }
+  .b-aller.la::before{ content:'⏩ Aller à ton passage'; font-size:9.5px; letter-spacing:.8px; white-space:nowrap; }
   #btnMaj, #btnStyle, #btnPlein, #btnBlocs, #btnTuto, #btnAide,
   #btnIntro, #btnBande, #btnPresence, #btnSite{ min-height:31px !important; padding:6px 4px !important; }
 
