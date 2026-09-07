@@ -5495,7 +5495,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 19h57';
+const VERSION_APPLI = '07/09/2026 · 20h10';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -6070,11 +6070,16 @@ const VERSION_APPLI = '07/09/2026 · 19h57';
 /* le retour vers le hall du site (7 sept) */
 (function(){
   const b = document.createElement('a'); b.id = 'btnSite'; b.className = 'btn-reg';
-  b.textContent = '⌂ Le site'; b.title = 'le hall : textes, mise en scène, documents, vidéos, calendrier';
+  b.textContent = '⌂ Retour au site'; b.title = 'revenir au site : les textes, la mise en scène, les documents, les vidéos, le calendrier';
   const pour = new URLSearchParams(location.search).get('pour');
   b.href = 'ACCUEIL — Bohème.html' + (pour ? '?pour=' + encodeURIComponent(pour) : '');
   b.style.cssText = 'text-decoration:none;display:inline-flex;align-items:center;';
-  (function poser(){ const barre = document.querySelector('.barre'); if (barre) barre.appendChild(b); else setTimeout(poser, 300); })();
+  /* EN TÊTE de la barre, et mis en avant : c'est la sortie, elle doit sauter aux yeux */
+  b.style.cssText += 'border:1px solid rgba(212,175,55,.7);background:rgba(212,175,55,.16);font-weight:600;';
+  (function poser(){
+    const barre = document.querySelector('.barre');
+    if (barre) barre.insertBefore(b, barre.firstChild); else setTimeout(poser, 300);
+  })();
 })();
 </script>
 <script src="retour.js"></script>

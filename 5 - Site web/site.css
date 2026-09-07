@@ -197,8 +197,25 @@ section{ padding:clamp(3.2rem,8vw,7.5rem) 0; }
 /* ─── le pied ───────────────────────────────────────────────────────── */
 footer{ padding:4rem 0 6rem; color:var(--gris2); font-size:.85rem; }
 footer .page{ display:grid; gap:1.2rem; }
-footer img{ width:min(320px, 62vw); opacity:.9; }
-footer .btn.maj{ justify-self:start; }
+footer .page{ justify-items:center; text-align:center; }
+footer img{ width:min(520px, 84vw); opacity:.95; margin:0 auto; }
+footer .liens{ justify-content:center; }
+/* le petit mot qui répond (mise à jour), comme dans le karaoké */
+.mot{ position:fixed; left:50%; bottom:22px; transform:translate(-50%, 24px); z-index:50; max-width:min(560px, 92vw);
+  padding:.9rem 1.3rem; border-radius:1.1rem; background:rgba(12,11,10,.94); border:1px solid var(--orl);
+  box-shadow:0 20px 60px rgba(0,0,0,.6); color:var(--encre); font-size:1rem; line-height:1.45; text-align:center;
+  opacity:0; pointer-events:none; transition:opacity .5s var(--lent), transform .5s var(--lent); backdrop-filter:blur(14px); }
+.mot.la{ opacity:1; transform:translate(-50%, 0); pointer-events:auto; cursor:pointer; }
+.mot b{ color:var(--or2); font-weight:600; }
+.mot .pt{ font-size:.86em; opacity:.75; }
+@media (max-width:700px) and (orientation:portrait){ .mot{ bottom:88px; } }
+/* la pastille rouge : du nouveau par ici */
+.pastille{ display:inline-block; width:.5rem; height:.5rem; border-radius:50%; background:#ff4d4d; margin-left:.45rem;
+  box-shadow:0 0 10px rgba(255,77,77,.85); vertical-align:middle; animation:battement 2s ease-in-out infinite; }
+@keyframes battement{ 0%,100%{ transform:scale(1); opacity:1 } 50%{ transform:scale(1.35); opacity:.65 } }
+.voile a .pastille{ width:.6rem; height:.6rem; }
+.bas a .pastille{ position:absolute; margin:0; top:.35rem; right:.9rem; }
+.bas a{ position:relative; }
 footer .liens{ display:flex; flex-wrap:wrap; gap:.4rem 1.4rem; }
 footer .liens a:hover{ color:var(--or2); }
 

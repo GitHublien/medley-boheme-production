@@ -5,6 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
+const VERSION_SITE = '07/09/2026 · 17h30';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', s:'le hall' },
@@ -87,25 +88,50 @@
     addEventListener('scroll', () => { y = Math.min(scrollY, innerHeight * 1.2); if (!demande){ demande = true; requestAnimationFrame(peindre); } }, { passive: true });
   }
 
-  /* ── la mise à jour, sur le site aussi ──────────────────────────────── */
-  (function(){
-    const b = document.createElement('button'); b.className = 'btn doux maj';
-    b.innerHTML = 'Mise à jour <b>⟳</b>';
-    b.title = 'Va chercher la dernière version du site';
-    b.onclick = async () => {
-      b.innerHTML = 'Je cherche… <b>⟳</b>';
-      try {
-        const r = await fetch(location.pathname + '?verif=' + Date.now(), { cache: 'no-store' });
-        const t = await r.text();
-        const ici = document.documentElement.outerHTML.length, la = t.length;
-        b.innerHTML = (Math.abs(ici - la) > 40) ? 'Nouvelle version ! <b>⟳</b>' : 'Tu as la dernière <b>✓</b>';
-        if (Math.abs(ici - la) > 40) setTimeout(() => location.reload(true), 900);
-        else setTimeout(() => { b.innerHTML = 'Mise à jour <b>⟳</b>'; }, 3000);
-      } catch(e){ b.innerHTML = 'Pas de réseau <b>!</b>'; setTimeout(() => { b.innerHTML = 'Mise à jour <b>⟳</b>'; }, 3000); }
-    };
-    const poser = () => { const p = document.querySelector('footer .page'); if (p) p.insertBefore(b, p.querySelector('.liens')); else setTimeout(poser, 200); };
-    setTimeout(poser, 60);
-  })();
+  /* ── LA MISE À JOUR, comme dans le karaoké : un petit mot qui répond ──
+     Elle vérifie à l'ouverture, sans déranger, et dit toujours où on en est.
+     Les nouveautés du jour allument une pastille sur les pages concernées. */
+  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'DOCUMENTS — Bohème.html'];   /* ce qui a changé aujourd'hui */
+  const mot = document.createElement('div'); mot.className = 'mot';
+  document.body.appendChild(mot);
+  let motMinuteur = null;
+  function dire(html, duree){
+    clearTimeout(motMinuteur); mot.innerHTML = html; mot.classList.add('la');
+    if (duree) motMinuteur = setTimeout(() => mot.classList.remove('la'), duree);
+  }
+  mot.addEventListener('click', () => mot.classList.remove('la'));
+  window.direBoheme = dire;
+
+  async function chercherMaj(silencieux){
+    if (!silencieux) dire('⟳ Je cherche s\'il y a du nouveau…', 0);
+    try {
+      /* la version vit dans site.js : c'est lui qu'on interroge, pas la page */
+      const r = await fetch('site.js?verif=' + Date.now(), { cache: 'no-store' });
+      const t = await r.text();
+      const m = t.match(/const VERSION_SITE = '([^']+)'/);
+      const enLigne = m ? m[1] : null;
+      if (!enLigne){ if (!silencieux) dire('Je n\'ai pas pu vérifier. Réessaie dans un moment.', 5000); return; }
+      if (enLigne === VERSION_SITE){
+        if (!silencieux) dire('✔ Tu as déjà la <b>dernière version</b>.<br><span class="pt">Version ' + VERSION_SITE + '</span>', 5000);
+        return;
+      }
+      dire('🎉 Une <b>nouvelle version</b> est arrivée !<br>Je l\'installe…', 0);
+      setTimeout(() => location.replace(location.pathname + '?maj=' + Date.now() + (pour ? '&pour=' + pour : '')), 1200);
+    } catch(e){ if (!silencieux) dire('Pas de réseau pour l\'instant. Réessaie quand tu auras de la connexion.', 5000); }
+  }
+  window.chercherMajSite = chercherMaj;
+  setTimeout(() => chercherMaj(true), 3500);
+
+  /* la pastille rouge sur ce qui a changé, dans le menu et dans la barre du bas */
+  function pastiller(){
+    document.querySelectorAll('.nav a.l, .voile a, .bas a').forEach(a => {
+      const h = decodeURIComponent((a.getAttribute('href') || '').split('?')[0]);
+      if (NOUVEAU.includes(h) && !a.querySelector('.pastille')){
+        const i = document.createElement('i'); i.className = 'pastille'; i.title = 'du nouveau ici'; a.appendChild(i);
+      }
+    });
+  }
+  pastiller();
 
   /* ── le bouton « j'ai tout reçu » ───────────────────────────────────── */
   const recu = document.querySelector('[data-recu]');
