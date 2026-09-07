@@ -5313,6 +5313,7 @@ body[data-pour] #bandeau{ display:flex; }
    ═══════════════════════════════════════════════════════════════ */
 (function(){
   const auI = new Audio('media/bande-diffusee.mp3');
+  window.auI = auI;   /* joignable : la relance après « musique gardée » doit l'atteindre */
   auI.preload = 'metadata';   /* plus de téléchargement entier à l'ouverture (7 sept) : il se charge à la première bascule */
   auI.volume = 0;
 
@@ -5363,7 +5364,14 @@ body[data-pour] #bandeau{ display:flex; }
         if (!auI.paused && Math.abs(auI.currentTime - au.currentTime) > 0.12)
           auI.currentTime = au.currentTime;
       } else {
-        /* on entend auI ; au (muette, qui pilote les paroles) suit */
+        /* on entend auI ; au (muette, qui pilote les paroles) suit —
+           mais JAMAIS un instrumental en erreur, à l'arrêt ou pas prêt (7 sept : ça
+           faisait clignoter le karaoké sur le téléphone) */
+        if (auI.error){
+          try { const t = au.currentTime; auI.load(); auI.currentTime = t; auI.play().catch(() => {}); } catch(e){}
+          return;
+        }
+        if (auI.paused || auI.readyState < 2){ try { auI.play().catch(() => {}); } catch(e){} return; }
         const d = au.currentTime - auI.currentTime;
         if (Math.abs(d) > 0.12){
           sautInterne = true;
@@ -5417,7 +5425,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 13h18';
+const VERSION_APPLI = '07/09/2026 · 13h22';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -6060,7 +6068,7 @@ const VERSION_APPLI = '07/09/2026 · 13h18';
       const au = document.getElementById('au'); if (!au) return;
       const t = au.currentTime, jouait = !au.paused;
       au.load(); au.currentTime = t;
-      const auI2 = (typeof auI !== 'undefined') ? auI : null;
+      const auI2 = window.auI || null;
       if (auI2){ auI2.load(); auI2.currentTime = t; }
       if (jouait) au.play().catch(() => {});
     } catch(e){}
