@@ -1474,17 +1474,52 @@ function croiser(versInstru){
     if (p >= 1) clearInterval(fondu);
   }, 16);
 }
-let sautInterne = false;
+/* ═══ LE DÉPART COMMUN, puis la vitesse fine — jamais de saut (même méthode que le karaoké) ═══
+   Les deux lecteurs sont posés au même temps, prêts tous les deux, lancés dans le même
+   instant (écart mesuré 0 ms). Ensuite la bande MUETTE ajuste sa vitesse de quelques
+   millièmes pour tenir l'écart sous quelques millisecondes. Aucun recalage par saut. */
+let enSynchro = false, derniereSynchro = 0, refaire = false;
+const attendre = (el, ev, cond) => new Promise(res => {
+  if (cond()) return res();
+  const fin = () => { el.removeEventListener(ev, fin); res(); };
+  el.addEventListener(ev, fin); setTimeout(fin, 4000);
+});
+let vouluAu = null, vouluAuI = null; const mesures = [];
+function poserVitesse(el, v){ if (el === au) vouluAu = v; else vouluAuI = v; try { el.playbackRate = v; } catch(e){} }
+async function synchroniser(){
+  if (enSynchro){ refaire = true; return; }
+  enSynchro = true;
+  try {
+    mesures.length = 0; poserVitesse(au, 1); poserVitesse(auI, 1);
+    const t = au.currentTime, jouait = !au.paused;
+    if (!au.paused) au.pause(); if (!auI.paused) auI.pause();
+    if (auI.error){ try { auI.load(); } catch(e){} }
+    auI.currentTime = t; au.currentTime = t;
+    await Promise.all([attendre(au, 'seeked', () => !au.seeking), attendre(auI, 'seeked', () => !auI.seeking)]);
+    await Promise.all([attendre(au, 'canplay', () => au.readyState >= 3), attendre(auI, 'canplay', () => auI.readyState >= 3)]);
+    if (jouait){ const p1 = au.play(), p2 = auI.play(); await Promise.all([p1.catch(()=>{}), p2.catch(()=>{})]); }
+    derniereSynchro = performance.now();
+  } catch(e){}
+  enSynchro = false;
+  if (refaire){ refaire = false; synchroniser(); }
+}
+au.addEventListener('seeked', () => { if (!enSynchro) synchroniser(); });
+au.addEventListener('playing', () => { if (!enSynchro && auI.paused && performance.now() - derniereSynchro > 1000) synchroniser(); });
+au.addEventListener('pause', () => { if (!enSynchro){ try { auI.pause(); } catch(e){} } });
 setInterval(() => {
   try {
-    if (au.paused) return;
-    if (modeBande === 'voix'){ if (!auI.paused && Math.abs(auI.currentTime - au.currentTime) > 0.12) auI.currentTime = au.currentTime; }
-    else if (Math.abs(au.currentTime - auI.currentTime) > 0.12){ sautInterne = true; au.currentTime = auI.currentTime; }
+    if (enSynchro || au.paused || auI.paused || auI.error){ mesures.length = 0; return; }
+    const ecart = au.currentTime - auI.currentTime;
+    if (Math.abs(ecart) > 0.25){ mesures.length = 0; if (performance.now() - derniereSynchro > 3000) synchroniser(); return; }
+    mesures.push(ecart); if (mesures.length > 2) mesures.shift(); if (mesures.length < 2) return;
+    const moy = (mesures[0] + mesures[1]) / 2;
+    const muette = (modeBande === 'voix') ? auI : au, audible = (modeBande === 'voix') ? au : auI;
+    const sens = (muette === auI) ? 1 : -1;
+    const v = Math.abs(moy) < 0.003 ? 1 : 1 + Math.max(-0.06, Math.min(0.06, sens * moy * 1.5));
+    if (Math.abs(muette.playbackRate - v) > 0.0005) poserVitesse(muette, v);
+    if (Math.abs(audible.playbackRate - 1) > 0.0005) poserVitesse(audible, 1);
   } catch(e){}
-}, 500);
-au.addEventListener('seeked', () => { if (sautInterne){ sautInterne = false; return; } try { auI.currentTime = au.currentTime; } catch(e){} });
-au.addEventListener('play',  () => { try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); });
-au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
+}, 250);
 function peindreBande(){
   document.querySelectorAll('[data-bande]').forEach(x => x.classList.toggle('actif', (x.dataset.bande === 'instru') === (modeBande === 'instru')));
 }
@@ -1494,7 +1529,7 @@ document.querySelectorAll('[data-bande]').forEach(b => b.onclick = () => {
   modeBande = vers;
   try { localStorage.setItem('livre-bande', modeBande); } catch(e){}
   peindreBande();
-  if (!au.paused && auI.paused){ try { auI.currentTime = au.currentTime; } catch(e){} auI.play().catch(()=>{}); }
+  if (!au.paused && (auI.paused || Math.abs(auI.currentTime - au.currentTime) > 0.25)) synchroniser();
   croiser(modeBande === 'instru');
 });
 if (modeBande === 'instru'){ vVoix = 0; vInstru = 1; }
