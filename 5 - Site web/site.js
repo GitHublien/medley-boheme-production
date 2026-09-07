@@ -57,7 +57,11 @@
   document.querySelectorAll('[data-img]').forEach(el => {
     const src = el.getAttribute('data-img');
     const img = new Image();
-    img.onload = () => { img.classList.add('la'); el.appendChild(img); requestAnimationFrame(() => img.classList.add('la')); };
+    img.onload = () => {
+      el.appendChild(img); requestAnimationFrame(() => img.classList.add('la'));
+      /* l'affiche porte déjà son titre gravé : le texte de secours s'efface */
+      const carte = el.closest('.monde, .ouverture'); if (carte) carte.classList.add('a-image');
+    };
     img.onerror = () => {};       /* pas d'image : le fond dessiné reste */
     img.alt = ''; img.src = src;
   });
