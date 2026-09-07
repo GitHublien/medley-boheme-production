@@ -5013,7 +5013,7 @@ body[data-pour] #bandeau{ display:flex; }
       essai:{ zone:'#bNext' },
       bravo:'Le medley a sauté au titre suivant. On remet tout en place.' },
     { id:'btnBlocs', t:'Blocs — essaie',
-      x:'Voilà la liste des titres du medley (je viens de l\'ouvrir pour toi). Touche celui que tu veux — il t\'y emmène directement.',
+      x:'Voilà la liste du medley (je viens de l\'ouvrir pour toi), dans l\'ordre du spectacle : les chansons en clair, les narrations en bleu. Touche ce que tu veux — ça t\'y emmène directement.',
       avant:'ouvrirBlocs', essai:{ zone:'#menuB a' }, lumiere:'#menuB',
       bravo:'Et voilà : on est arrivé pile sur ce titre. C\'est ça, les Blocs. On remet tout en place.',
       apres:'fermerBlocs' },
@@ -5030,6 +5030,14 @@ body[data-pour] #bandeau{ display:flex; }
       x:'Le karaoké seul à l\'écran, rien d\'autre. Appuie dessus pour voir la différence.',
       essai:{ zone:'#btnPlein' },
       bravo:'Voilà la différence. Le même bouton (ou Échap) pour revenir.' },
+    { id:'btnBande', t:'Voix témoins / Instrumental — essaie',
+      x:'Avec les voix témoins, tu entends la version chantée. Appuie : la bande instrumentale prend la place, sans le moindre saut — les deux sont collées à la même seconde. Réappuie pour revenir.',
+      essai:{ zone:'#btnBande' },
+      bravo:'Tu as entendu ? Même endroit, même instant. Réappuie quand tu veux pour retrouver les voix témoins.' },
+    { id:'btnMusique', t:'Garder la musique',
+      x:'Sur téléphone, appuie ici une fois, en Wi-Fi : les deux bandes (2 × 64 Mo) restent sur ton appareil. Ensuite chaque saut est instantané, et la musique marche même sans réseau.' },
+    { id:'btnMaj',   t:'Mise à jour',
+      x:'Mickaël continue de peaufiner. Quand il publie du nouveau, un petit mot te le dit à l\'ouverture : appuie ici, et tu as la dernière version. Rien ne se recharge tout seul.' },
     { id:'btnIntro', t:'Revoir l\'intro',
       x:'Le film d\'ouverture. Celui-là, je ne te le fais pas essayer — il dure cinquante secondes et tu viens de le voir. Mais il t\'attend ici, quand tu veux.' },
     { id:'btnAide',  t:'Ton aide personnelle',
@@ -5359,10 +5367,11 @@ body[data-pour] #bandeau{ display:flex; }
   setInterval(() => {
     try {
       if (au.paused) return;
+      if (enSynchro) return;
+      const ecart = Math.abs(auI.currentTime - au.currentTime);
       if (modeBande === 'voix'){
-        /* on entend au ; auI (muette) suit — si elle joue */
-        if (!auI.paused && Math.abs(auI.currentTime - au.currentTime) > 0.12)
-          auI.currentTime = au.currentTime;
+        /* on entend au ; auI (muette) doit jouer avec elle — sinon, départ commun */
+        if (auI.paused && !au.paused && performance.now() - derniereSynchro > 1500) synchroniser();
       } else {
         /* on entend auI ; au (muette, qui pilote les paroles) suit —
            mais JAMAIS un instrumental en erreur, à l'arrêt ou pas prêt (7 sept : ça
@@ -5371,12 +5380,7 @@ body[data-pour] #bandeau{ display:flex; }
           try { const t = au.currentTime; auI.load(); auI.currentTime = t; auI.play().catch(() => {}); } catch(e){}
           return;
         }
-        if (auI.paused || auI.readyState < 2){ try { auI.play().catch(() => {}); } catch(e){} return; }
-        const d = au.currentTime - auI.currentTime;
-        if (Math.abs(d) > 0.12){
-          sautInterne = true;
-          au.currentTime = auI.currentTime;
-        }
+        if ((auI.paused || auI.readyState < 2) && performance.now() - derniereSynchro > 1500){ synchroniser(); return; }
       }
     } catch(e){}
   }, 500);
@@ -5384,28 +5388,82 @@ body[data-pour] #bandeau{ display:flex; }
   /* les déplacements de l'utilisateur passent tous par au (le rail,
      les Blocs, les phrases). On répercute sur l'instrumentale —
      mais pas nos propres recalages internes, sinon on tourne en rond */
+  /* ─── LE DÉPART COMMUN (7 septembre) ───
+     Les deux lecteurs sont posés au même temps, on attend qu'ils soient prêts TOUS LES
+     DEUX, et on les lance dans le même instant : écart mesuré 0,0 ms, et stable. Tout
+     passage par « play » ou par un saut de la bande repasse par là. */
+  let enSynchro = false, derniereSynchro = 0, refaire = false;
+  const attendre = (el, ev, cond) => new Promise(res => {
+    if (cond()) return res();
+    const fin = () => { el.removeEventListener(ev, fin); res(); };
+    el.addEventListener(ev, fin); setTimeout(fin, 4000);          /* jamais bloqué plus de 4 s */
+  });
+  async function synchroniser(){
+    if (enSynchro){ refaire = true; return; }          /* on le rejouera à la fin, avec l'état du moment */
+    enSynchro = true;
+    try {
+      try { mesures.length = 0; poserVitesse(au, vitesseBase); poserVitesse(auI, vitesseBase); } catch(e){}
+      const t = au.currentTime, jouait = !au.paused;
+      if (!au.paused) au.pause(); if (!auI.paused) auI.pause();
+      if (auI.error){ try { auI.load(); } catch(e){} }
+      auI.currentTime = t; au.currentTime = t;
+      await Promise.all([attendre(au, 'seeked', () => !au.seeking), attendre(auI, 'seeked', () => !auI.seeking)]);
+      await Promise.all([attendre(au, 'canplay', () => au.readyState >= 3), attendre(auI, 'canplay', () => auI.readyState >= 3)]);
+      if (jouait){ const p1 = au.play(), p2 = auI.play(); await Promise.all([p1.catch(()=>{}), p2.catch(()=>{})]); }
+      derniereSynchro = performance.now();
+    } catch(e){}
+    enSynchro = false;
+    if (refaire){ refaire = false; synchroniser(); }
+  }
+  /* ─── LE CONTRÔLE FIN ─── toutes les 400 ms, pendant la lecture : la bande MUETTE est
+     recalée sur celle qu'on entend, par pas de quelques millisecondes (inaudible, elle est
+     muette). Au-delà de 60 ms, ce n'est plus un réglage fin : départ commun. */
+  /* la vitesse de base : celle qu'on a choisie (vitesse de travail) ; nos retouches
+     fines ne comptent pas comme un choix */
+  let vitesseBase = 1;
+  let vouluAu = null, vouluAuI = null;                     /* ce que NOUS avons posé en dernier */
+  function poserVitesse(el, v){ if (el === au) vouluAu = v; else vouluAuI = v; try { el.playbackRate = v; } catch(e){} }
+  const mesures = [];
+  setInterval(() => {
+    try {
+      if (enSynchro || au.paused || auI.paused || auI.error){ mesures.length = 0; return; }
+      const ecart = au.currentTime - auI.currentTime;          /* > 0 : au est en avance */
+      if (Math.abs(ecart) > 0.25){ mesures.length = 0; if (performance.now() - derniereSynchro > 3000) synchroniser(); return; }
+      mesures.push(ecart); if (mesures.length > 2) mesures.shift();
+      if (mesures.length < 2) return;
+      const moy = mesures.reduce((x, y) => x + y, 0) / mesures.length;
+      const muette = (modeBande === 'voix') ? auI : au, audible = (modeBande === 'voix') ? au : auI;
+      const sens = (muette === auI) ? 1 : -1;                     /* auI en retard si ecart > 0 */
+      const v = Math.abs(moy) < 0.003 ? vitesseBase : vitesseBase * (1 + Math.max(-0.06, Math.min(0.06, sens * moy * 1.5)));
+      if (Math.abs(muette.playbackRate - v) > 0.0005) poserVitesse(muette, v);
+      if (Math.abs(audible.playbackRate - vitesseBase) > 0.0005) poserVitesse(audible, vitesseBase);
+    } catch(e){}
+  }, 250);
+  window.synchroniserBandes = synchroniser;
   au.addEventListener('seeked', () => {
+    if (enSynchro) return;
     if (sautInterne){ sautInterne = false; return; }
-    try { auI.currentTime = au.currentTime; } catch(e){}
+    synchroniser();
   });
-  au.addEventListener('play', () => {
-    try { auI.currentTime = au.currentTime; } catch(e){}
-    auI.play().catch(()=>{});
+  au.addEventListener('playing', () => {
+    /* l'instrumental n'a pas démarré avec la voix (premier play, ou lecture relancée
+       ailleurs) : départ commun — mais pas dans la seconde qui suit un départ commun */
+    if (!enSynchro && auI.paused && performance.now() - derniereSynchro > 1000) synchroniser();
   });
-  au.addEventListener('pause', () => { try { auI.pause(); } catch(e){} });
+  au.addEventListener('pause', () => { if (!enSynchro){ try { auI.pause(); } catch(e){} } });
   /* le réglage de vitesse de travail (ordinateur) vaut pour les deux
      bandes — c'est un choix de l'utilisateur, pas un recalage */
-  au.addEventListener('ratechange', () => { try { auI.playbackRate = au.playbackRate; } catch(e){} });
+  au.addEventListener('ratechange', () => {
+    if (vouluAu !== null && Math.abs(au.playbackRate - vouluAu) < 1e-6) return;   /* une de nos retouches fines */
+    try { vitesseBase = au.playbackRate; vouluAu = null; auI.playbackRate = au.playbackRate; vouluAuI = null; } catch(e){}
+  });
 
   bb.addEventListener('click', (e) => {
     e.stopPropagation();
     modeBande = (modeBande === 'voix') ? 'instru' : 'voix';
     try { localStorage.setItem('boheme-bande', modeBande); } catch(e2){}
     peindre();
-    if (!au.paused && auI.paused){
-      try { auI.currentTime = au.currentTime; } catch(e3){}
-      auI.play().catch(()=>{});
-    }
+    if (!au.paused && (auI.paused || Math.abs(auI.currentTime - au.currentTime) > 0.25)) synchroniser();
     croiser(modeBande === 'instru');
   });
 
@@ -5425,7 +5483,7 @@ body[data-pour] #bandeau{ display:flex; }
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 13h22';
+const VERSION_APPLI = '07/09/2026 · 13h38';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
