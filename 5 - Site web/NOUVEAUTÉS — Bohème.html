@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bohème — les nouveautés</title><meta name="theme-color" content="#050505"><link rel="manifest" href="manifest.json"><link rel="icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .journal{ display:grid; gap:0; }
+  .jour{ display:grid; grid-template-columns:9rem 1fr; gap:1.4rem; padding:1.6rem 0; border-top:1px solid rgba(255,255,255,.07); }
+  .jour .q{ font-family:var(--disp); font-size:1.5rem; color:var(--or2); }
+  .jour ul{ margin:0; padding:0; list-style:none; display:grid; gap:.5rem; color:var(--gris); }
+  .jour li b{ color:var(--encre); font-weight:400; }
+  @media (max-width:700px){ .jour{ grid-template-columns:1fr; gap:.5rem; } }
+</style>
+</head>
+<body>
+<header class="enTete">
+  <div class="fond" data-img="site-images/08-nouveautes.png"></div><div class="brume"></div>
+  <div class="page texte">
+    <span class="etiq rev">Les nouveautés</span>
+    <h1 class="rev d1">Ce qui a changé, <span class="it">en trois lignes.</span></h1>
+    <p class="lead rev d2">Je continue à peaufiner. À chaque fois, c'est écrit ici, et le bouton « Mise à jour » du karaoké te prévient.</p>
+  </div>
+</header>
+
+<section class="page">
+  <div class="journal">
+    <div class="jour rev"><div class="q">7 septembre</div><ul>
+      <li><b>Le site.</b> Ce hall, avec toutes les portes : karaoké, textes, mise en scène, documents, vidéos, calendrier.</li>
+      <li><b>Le karaoké est complet.</b> Les vingt blocs, réglés à l'oreille, avec les syllabes tenues telles qu'on les chante. Un mot de la fin après le dernier bloc.</li>
+      <li><b>Le menu Blocs</b> montre les narrations en bleu, à leur place dans le temps.</li>
+      <li><b>Voix témoin et instrumental</b> sont dans un seul fichier, collés au même instant : la bascule ne saute plus.</li>
+      <li><b>Le livre des textes</b>, en très gros, chaque voix dans sa couleur, avec un lecteur par bloc.</li>
+      <li><b>Les Sans-papiers</b> sont la chanson de Bry, <b>Le Temps des Cathédrales</b> celle de Mickaël : les chœurs sont « avec » eux.</li>
+    </ul></div>
+    <div class="jour rev d1"><div class="q">6 septembre</div><ul>
+      <li><b>Le medley entier dans le karaoké</b>, de « Paris 1978 » au dernier « Aimer ».</li>
+      <li><b>La mise en scène de la fin</b> : le Dilemme, Mon Frère, le tableau figé, Aimer, le salut.</li>
+    </ul></div>
+    <div class="jour rev d2"><div class="q">4 septembre</div><ul>
+      <li><b>La version d'essai</b> envoyée, avec les liens personnels et la page Bienvenue.</li>
+    </ul></div>
+  </div>
+</section>
+<script src="site.js"></script>
+</body>
+</html>

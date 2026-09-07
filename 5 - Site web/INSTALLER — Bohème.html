@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bohème — installer l'application</title><meta name="theme-color" content="#050505"><link rel="manifest" href="manifest.json"><link rel="icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+<style>
+  .etapes{ display:grid; gap:1rem; }
+  .etape .coeur{ padding:clamp(1.3rem,3vw,2rem); display:grid; gap:.6rem; }
+  .etape .k{ font-family:var(--disp); font-size:2.2rem; color:var(--or2); line-height:1; }
+  .etape ol{ margin:.3rem 0 0; padding-left:1.2rem; color:var(--gris); display:grid; gap:.35rem; }
+  .etape ol b{ color:var(--encre); font-weight:400; }
+</style>
+</head>
+<body>
+<header class="enTete">
+  <div class="fond" data-img="site-images/09-installer.png"></div><div class="brume"></div>
+  <div class="page texte">
+    <span class="etiq rev">Installer</span>
+    <h1 class="rev d1">Une icône sur ton écran, <span class="it">et c'est chez toi.</span></h1>
+    <p class="lead rev d2">Le site s'installe comme une application, sans magasin, en trois gestes. Il s'ouvre en plein écran, et les mises à jour arrivent toutes seules.</p>
+  </div>
+</header>
+
+<section class="page">
+  <div class="grille">
+    <div class="etape coque c4 rev"><div class="coeur"><span class="k">Android</span><h3>Dans Chrome</h3><ol><li>Ouvre ton lien personnel dans <b>Chrome</b>.</li><li>Appuie sur les <b>trois points</b>, en haut à droite.</li><li>Choisis <b>« Installer l'application »</b>, ou « Ajouter à l'écran d'accueil ».</li></ol></div></div>
+    <div class="etape coque c4 rev d1"><div class="coeur"><span class="k">iPhone</span><h3>Dans Safari</h3><ol><li>Ouvre ton lien personnel dans <b>Safari</b>, pas dans une autre appli.</li><li>Appuie sur le bouton <b>Partager</b>, le carré avec la flèche.</li><li>Choisis <b>« Sur l'écran d'accueil »</b>, puis Ajouter.</li></ol></div></div>
+    <div class="etape coque c4 rev d2"><div class="coeur"><span class="k">Ordinateur</span><h3>Dans Chrome ou Edge</h3><ol><li>Ouvre ton lien personnel.</li><li>Clique sur la petite icône <b>« Installer »</b> à droite de la barre d'adresse.</li><li>L'application s'ouvre dans sa propre fenêtre.</li></ol></div></div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="vide rev">
+    <h3>Et si je ne l'installe pas ?</h3>
+    <p>Tout marche aussi dans le navigateur, avec ton lien. L'installation ne fait qu'ajouter l'icône et le plein écran. Le son, lui, a besoin du réseau dans les deux cas.</p>
+  </div>
+</section>
+<script src="site.js"></script>
+</body>
+</html>

@@ -2905,6 +2905,12 @@ function allerBloc(i){
   if (au.paused) au.play();
   menuB.classList.remove('vu');
 }
+/* le site peut ouvrir le karaoké pile sur un bloc : ?bloc=07 (7 sept) */
+try {
+  const _b = new URLSearchParams(location.search).get('bloc');
+  if (_b){ const _i = BLOCS.findIndex(x => x.num === _b.padStart(2, '0'));
+    if (_i >= 0) setTimeout(() => { try { au.currentTime = debutBloc(BLOCS[_i]); courante = -1; reprendre(); } catch(e){} }, 400); }
+} catch(e){}
 
 /* une seule liste, dans l'ordre du temps : les chansons en clair, les narrations en
    bleu. Un bloc qui n'est que narration est une seule entrée bleue. */
@@ -5489,7 +5495,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '07/09/2026 · 14h09';
+const VERSION_APPLI = '07/09/2026 · 14h43';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -6059,4 +6065,15 @@ const VERSION_APPLI = '07/09/2026 · 14h09';
 })();
 </script>
 
+<script>
+/* le retour vers le hall du site (7 sept) */
+(function(){
+  const b = document.createElement('a'); b.id = 'btnSite'; b.className = 'btn-reg';
+  b.textContent = '⌂ Le site'; b.title = 'le hall : textes, mise en scène, documents, vidéos, calendrier';
+  const pour = new URLSearchParams(location.search).get('pour');
+  b.href = 'ACCUEIL — Bohème.html' + (pour ? '?pour=' + encodeURIComponent(pour) : '');
+  b.style.cssText = 'text-decoration:none;display:inline-flex;align-items:center;';
+  (function poser(){ const barre = document.querySelector('.barre'); if (barre) barre.appendChild(b); else setTimeout(poser, 300); })();
+})();
+</script>
 </body>
