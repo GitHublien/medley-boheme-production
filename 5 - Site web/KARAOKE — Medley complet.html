@@ -5732,7 +5732,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '08/09/2026 · 00h12';
+const VERSION_APPLI = '08/09/2026 · 08h38';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -6358,7 +6358,7 @@ const VERSION_APPLI = '08/09/2026 · 00h12';
   const PICTO = { btnQui:'aide', btnSite:'retour', btnBande:'micro', btnBlocs:'blocs', btnStyle:'style',
                   btnAide:'aide', btnTuto:'question', btnInfos:'info', btnMaj:'maj',
                   btnIntro:'film', btnPlein:'plein', btnPresence:'aide' };
-  const DEHORS = ['btnSite', 'btnBande', 'btnBlocs', 'btnAide'];
+  const DEHORS = ['btnSite', 'btnBande', 'btnBlocs', 'btnAide', 'btnQui'];
   const NOMS = { btnQui:'Qui es-tu', btnSite:'Retour au site', btnBande:'Voix témoins', btnBlocs:'Blocs',
                  btnStyle:'Style', btnAide:'Ton aide', btnTuto:'Le guide', btnInfos:'Infos',
                  btnMaj:'Mise à jour', btnIntro:"Revoir l'intro", btnPlein:'Plein écran',
@@ -6710,9 +6710,19 @@ const VERSION_APPLI = '08/09/2026 · 00h12';
     try { localStorage.setItem(CLE, '1'); } catch(e){}
     location.href = 'BIENVENUE — Bohème.html' + location.search;
   });
-  /* on la montre dès que la page est prête, avant tout le reste */
-  setTimeout(() => carte.classList.add('la'), 500);
-  window.montrerBienvenue = () => carte.classList.add('la');
+  /* ORDRE DES CARTES (8 sept) : la liste des six prénoms passe EN PREMIER — elle
+     s'ouvre par-dessus sinon, et on ne voit jamais les prénoms. La bienvenue attend
+     que la question « qui es-tu » soit réglée. */
+  function montrer(){ carte.classList.add('la'); }
+  window.montrerBienvenue = montrer;
+  let essais = 0;
+  (function attendreSonTour(){
+    const q = document.getElementById('quiEsTu');
+    /* on laisse d'abord la liste des prénoms s'ouvrir (elle vient à 300 ms), puis on
+       attend qu'elle soit refermée : sinon les deux cartes se superposent */
+    if (essais++ < 4 || (q && q.classList.contains('la'))) return setTimeout(attendreSonTour, 300);
+    setTimeout(montrer, 400);
+  })();
 })();
 </script>
 
@@ -6807,10 +6817,15 @@ const VERSION_APPLI = '08/09/2026 · 00h12';
     barre.appendChild(b);
   })();
 
-  /* première ouverture, sans prénom connu : on demande avant tout le reste */
-  let sansNom = null;
-  try { sansNom = localStorage.getItem('boheme-sans-nom'); } catch(e){}
-  if (!actuel && sansNom !== '1') setTimeout(ouvrir, 300);
+  /* PREMIÈRE OUVERTURE : on montre toujours la liste des six, même si le lien porte
+     déjà un prénom. C'est le moment où l'on comprend que le karaoké sait qui on est,
+     et qu'on peut en changer. Ensuite elle ne revient plus (bouton « Qui es-tu »). */
+  let dejaDemande = null, sansNom = null;
+  try { dejaDemande = localStorage.getItem('boheme-nom-demande'); sansNom = localStorage.getItem('boheme-sans-nom'); } catch(e){}
+  if (dejaDemande !== '1' && sansNom !== '1'){
+    try { localStorage.setItem('boheme-nom-demande', '1'); } catch(e){}
+    setTimeout(ouvrir, 300);
+  }
 })();
 </script>
 
