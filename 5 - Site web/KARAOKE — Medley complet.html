@@ -192,6 +192,10 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
   .ligne.aupoint{ position:relative; }
   .ligne.aupoint::before{ content:'\2713'; position:absolute; left:-1.15em; top:.3em;
                           font-size:.5em; color:var(--or); }
+  /* un duo n'est pas un choeur : un trait aux couleurs des deux voix, a gauche (8 sept) */
+  .ligne.q-duo{ position:relative; }
+  .ligne.q-duo::after{ content:''; position:absolute; left:-.44em; top:.12em; bottom:.16em;
+                       width:.07em; min-width:3px; border-radius:3px; }
   .gmot{ display:inline-block; white-space:pre; }
   .mot{ position:relative; display:inline-block; white-space:pre; color:var(--eteint);
         transition:transform .14s ease; will-change:transform; }
@@ -874,6 +878,36 @@ function etiquette(q){
   return h;
 }
 
+/* --- LES DUOS ET LES PETITS GROUPES ---------------------------------------
+   Le blanc dit << on est ensemble >> : un soliste porte par les choeurs, ou tous
+   les six. Un duo, lui, n'est pas un ensemble : deux voix nommees, a parts
+   egales. On garde le texte blanc -- il se lit -- et on pose a gauche un trait
+   fin aux couleurs des voix concernees. Rien d'autre ne change. */
+const COUL6 = { adrien:'#d4af37', stephanie:'#f2a3c7', candice:'#c9a2ea',
+                mickael:'#6fd0bb', bry:'#f0955c', elie:'#a9d97f' };
+const _duosVus = new Set();
+const _styleDuo = document.createElement('style');
+(document.head || document.documentElement).appendChild(_styleDuo);
+function clesDuo(q){
+  const n = (q || '').toLowerCase().replace(/\u0153/g, 'oe')
+              .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (/choeur|tous|les six|pensee|voix off|radio/.test(n)) return null;
+  const c = Object.keys(COUL6).filter(k => n.includes(k));
+  return c.length > 1 ? c : null;
+}
+function classeDuo(q){
+  const c = clesDuo(q);
+  if (!c) return '';
+  const nom = 'duo-' + c.join('-');
+  if (!_duosVus.has(nom)){
+    _duosVus.add(nom);
+    _styleDuo.textContent += '.ligne.' + nom + '::after{ background:linear-gradient(180deg, '
+                           + c.map(k => COUL6[k]).join(', ') + '); }\n';
+  }
+  return ' q-duo ' + nom;
+}
+function classesLigne(type, q){ return 'ligne ' + type + ' ' + classeQui(q) + classeDuo(q); }
+
 BLOCS.forEach(bl => {
   const s = document.createElement('div'); s.className = 'sep';
   s.innerHTML = '<span class="n">' + bl.num + '</span><span class="t">' + bl.titre + '</span>'
@@ -895,7 +929,7 @@ BLOCS.forEach(bl => {
       l._q = q;
     }
     const p = document.createElement('div');
-    p.className = 'ligne ' + l.type + ' ' + classeQui(l.qui); l._p = p;
+    p.className = classesLigne(l.type, l.qui); l._p = p;
     p.title = 'Aller à ' + Math.floor(l.debut/60) + ':' + String(Math.floor(l.debut%60)).padStart(2,'0');
     let cible = p;
     l.mots.forEach((m, i) => {
@@ -1389,7 +1423,7 @@ function refaireEtiquettes(){
 function appliquerVoix(x){
   const v = voixModif[x.cle];
   if (v) x.d.qui = v;
-  x.el.className = 'ligne ' + x.d.type + ' ' + classeQui(x.d.qui)
+  x.el.className = classesLigne(x.d.type, x.d.qui)
                  + (LIGNES[choisie] === x ? ' choisie' : '');
 }
 
@@ -1425,7 +1459,7 @@ function insererAjout(cle, aj){
              mots: motsDepuisTexte(texte, aj.debut, aj.fin)};
   l._bloc = 'A'; l._i = cle;
   const p = document.createElement('div');
-  p.className = 'ligne ' + l.type + ' ' + classeQui(l.qui);
+  p.className = classesLigne(l.type, l.qui);
   l._p = p;                       /* le repère que l'aide personnelle utilise */
   let cible = p;
   l.mots.forEach((m, i) => {
@@ -5743,7 +5777,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '08/09/2026 · 08h55';
+const VERSION_APPLI = '08/09/2026 · 09h05';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
