@@ -5732,7 +5732,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '08/09/2026 · 08h38';
+const VERSION_APPLI = '08/09/2026 · 08h39';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -6755,6 +6755,20 @@ const VERSION_APPLI = '08/09/2026 · 08h38';
 #quiEsTu .apres button{ padding:.8rem 1rem; border-radius:999px; cursor:pointer; font:inherit;
   font-size:.95rem; color:#b9b2a0; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.12); }
 @media (max-width:380px){ #quiEsTu .noms{ grid-template-columns:1fr; } }
+
+@media (pointer: coarse) and (max-width: 1100px){
+  /* « Qui es-tu » : le bouton LUI-MÊME porte les six couleurs. C'est le plus lisible,
+     et impossible à confondre avec l'étoile de l'aide. */
+  .barre #btnQui{
+    background:conic-gradient(#ffc814 0 60deg,#ff4fa8 0 120deg,#b45cff 0 180deg,
+               #00ffcc 0 240deg,#ff7a1f 0 300deg,#9dff35 0) !important;
+    border-color:rgba(255,255,255,.5) !important;
+  }
+  .barre #btnQui::before{
+    content:'' !important; background:rgba(10,9,8,.86) !important; background-image:none !important;
+    width:19px !important; height:19px !important; border-radius:50% !important; filter:none !important;
+  }
+}
 </style>
 
 <div id="quiEsTu"><div class="dedans">
