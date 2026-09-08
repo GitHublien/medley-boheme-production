@@ -86,8 +86,8 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
 
 <!-- Android dans Chrome : un seul bouton -->
 <div class="ecran" id="e-android">
-  <h1>Une icône sur ton écran, <span class="it">et c'est chez toi.</span></h1>
-  <p>Un appui, ton téléphone te demande de confirmer, et <b>Bohème</b> est sur ton écran d'accueil, avec le logo doré. Plus jamais besoin du lien.</p>
+  <h1>Tout est prêt, <span class="it">Élie.</span></h1>
+  <p id="bonjour">Entre, et travaille : le karaoké, les textes, la mise en scène. Si tu veux, tu peux aussi <b>poser l'icône</b> sur ton écran pour ne plus chercher le lien.</p>
   <button class="btn" id="grosBouton">Installer Bohème <span class="ico" style="background-image:url(site-images/icones/telecharger.png)"></span></button>
   <p class="petit" id="attente">Je prépare l'installation…</p>
   <a class="discret" href="ACCUEIL — Bohème.html">Continuer sans installer, pour l'instant</a>
@@ -95,27 +95,27 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
 
 <!-- Android sans proposition automatique : le chemin manuel -->
 <div class="ecran" id="e-manuel">
-  <h1>Trois gestes, <span class="it">et c'est chez toi.</span></h1>
-  <p>Ton téléphone ne me laisse pas lancer l'installation tout seul. Voici le chemin :</p>
+  <h1>Tout est prêt.</h1>
+  <p>Tout marche déjà : <b>entre</b>, et travaille. Si tu veux l'icône sur ton écran pour ne plus chercher le lien, voici le chemin :</p>
   <div class="pas">
     <div><b class="n">1</b><span>Appuie sur les <b>trois points ⋮</b>, en haut à droite de Chrome.</span></div>
     <div><b class="n">2</b><span>Choisis <b>« Installer l'application »</b>, ou « Ajouter à l'écran d'accueil ».</span></div>
     <div><b class="n">3</b><span>Confirme. L'icône <b>Bohème</b> apparaît sur ton écran.</span></div>
   </div>
-  <a class="discret" href="ACCUEIL — Bohème.html">Continuer sans installer, pour l'instant</a>
+  <a class="btn" href="ACCUEIL — Bohème.html" style="margin-top:.4rem">Entrer tout de suite <span class="ico" style="background-image:url(site-images/icones-karaoke/retour.png)"></span></a>
   <i class="fleche hautDroite">⤴</i>
 </div>
 
 <!-- iPhone dans Safari -->
 <div class="ecran" id="e-iphone">
-  <h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1>
+  <h1>Tout est prêt.</h1>
   <p>Sur iPhone, c'est Safari qui installe. <b>Si tu as ouvert ce lien depuis WhatsApp</b>, appuie d'abord sur la petite <b>boussole</b> en bas à droite : elle ouvre la page dans Safari. Puis :</p>
   <div class="pas">
     <div><b class="n">1</b><span>Appuie sur <b>Partager</b>, le carré avec une flèche vers le haut, en bas au milieu de l'écran.</span></div>
     <div><b class="n">2</b><span>Fais défiler la liste et choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</span></div>
   </div>
-  <p class="petit">L'icône Bohème apparaît sur ton écran, avec le logo doré. C'est par là que tu entreras.</p>
-  <a class="discret" href="ACCUEIL — Bohème.html">Continuer sans installer, pour l'instant</a>
+  <p class="petit">L'icône Bohème apparaît sur ton écran, avec le logo doré. Mais rien ne t'y oblige : tout marche déjà dans Safari.</p>
+  <a class="btn" href="ACCUEIL — Bohème.html">Entrer tout de suite <span class="ico" style="background-image:url(site-images/icones-karaoke/retour.png)"></span></a>
   <i class="fleche bas">⤵</i>
 </div>
 
@@ -168,6 +168,11 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
   const safari = iOS && /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua) && !dedans;
 
   const montrer = id => { document.querySelectorAll('.ecran').forEach(e => e.classList.remove('la')); document.getElementById(id).classList.add('la'); };
+  /* le prénom, si on le connaît, dans le titre : on sait tout de suite que c'est pour soi */
+  if (pour){
+    const P = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice', mickael:'Mickaël', bry:'Bry', elie:'Élie' }[pour];
+    if (P) document.querySelectorAll('.ecran h1 .it').forEach(e => { if (/Élie/.test(e.textContent)) e.textContent = P + '.'; });
+  }
   const lienPropre = location.origin + location.pathname + suite;
   document.querySelectorAll('#champLien, #champLien2').forEach(i => i.value = lienPropre);
   const copier = (btn, champ) => btn && btn.addEventListener('click', async () => {
