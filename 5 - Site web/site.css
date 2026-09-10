@@ -267,7 +267,7 @@ footer .liens a:hover{ color:var(--or2); }
   .nav a.l{ display:none !important; }
   .nav .burger{ margin:.3rem auto 0; }
   .nav .marque{ padding-bottom:.4rem !important; }
-  .nav .rond, .nav .musique{ margin:.25rem auto !important; }
+  .nav .rond, .nav .musique, .nav .marque{ margin:.25rem auto !important; }
   /* la colonne est sur le cote, elle ne recouvre rien : elle ne s'efface jamais */
   .nav.filante{ transform:none !important; translate:0 -50%; opacity:1 !important; pointer-events:auto !important; }
   .page{ width:min(1380px, 100% - 190px); margin-left:172px; }
@@ -432,13 +432,13 @@ footer .liens a:hover{ color:var(--or2); }
    élégant de partout. » Un seul dessin pour les trois : l'accueil, la musique, le
    menu. Même diamètre, même bord d'or, même espacement — sur toutes les tailles. */
 .nav{ gap:.45rem; }
-.nav .rond, .nav .musique .mRond, .nav .burger{
+.nav .rond, .nav .musique .mRond, .nav .burger, .nav .marque{
   width:42px !important; height:42px !important; flex:none; border-radius:50% !important;
   display:grid !important; place-items:center; margin:0 !important; padding:0 !important;
   border:1px solid rgba(212,175,55,.42) !important; background:rgba(212,175,55,.08) !important;
   color:var(--or2); text-decoration:none; cursor:pointer; box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   transition:background .5s var(--lent), border-color .5s, transform .4s var(--lent); }
-.nav .rond:hover, .nav .musique .mRond:hover, .nav .burger:hover{ background:rgba(212,175,55,.18) !important; border-color:rgba(212,175,55,.75) !important; }
+.nav .rond:hover, .nav .musique .mRond:hover, .nav .burger:hover, .nav .marque:hover{ background:rgba(212,175,55,.18) !important; border-color:rgba(212,175,55,.75) !important; }
 .nav .rond:active, .nav .burger:active{ transform:scale(.93); }
 .nav .rond .ico{ width:20px; height:20px; }
 .nav .musique .mRond{ opacity:1; font-size:1.5rem; }   /* 24px, le poids du menu a cote */
@@ -452,9 +452,9 @@ footer .liens a:hover{ color:var(--or2); }
 /* téléphone debout : la marque garde son logo, les trois ronds prennent la place */
 @media (max-width:700px) and (orientation:portrait){
   .nav{ gap:.5rem; padding:.35rem .4rem .35rem .55rem; }
-  .nav .rond, .nav .musique .mRond, .nav .burger{ width:46px !important; height:46px !important; }
+  .nav .rond, .nav .musique .mRond, .nav .burger, .nav .marque{ width:46px !important; height:46px !important; }
   .nav .burger i{ width:20px !important; }
-  .nav .marque img{ width:34px; height:34px; }
+  .nav .marque img{ width:32px; height:32px; }
   .nav .marque{ padding-right:.6rem; }
 }
 /* paysage : la barre est une colonne à gauche — les ronds s'empilent, centrés */
@@ -473,6 +473,9 @@ footer .liens a:hover{ color:var(--or2); }
 @media (max-height:640px) and (orientation:landscape){
   .nav.filante{ transform:translateX(-50%) translateY(-160%); }
 }
-/* la marque n'a plus de texte : elle se réduit à son logo, sans trait de séparation */
-.nav .marque{ padding-right:0 !important; margin-right:.2rem !important; border-right:0 !important; }
-.nav .marque img{ display:block; }
+/* ═══ LE LOGO EST UN ROND COMME LES DEUX AUTRES (11 septembre, 0 h) ═══════════
+   Mesuré sur le téléphone de Mickaël : le logo faisait 34×34 sans bord, la musique
+   et le menu 46×46 avec le bord d'or. « Il faut que les ronds soient tous à la même
+   taille. » Le logo prend le même rond, le même bord, la même place. */
+.nav .marque{ font-size:0; }
+.nav .marque img{ display:block; width:30px; height:30px; border-radius:50%; }
