@@ -257,9 +257,13 @@ const VERSION_SITE = '10/09/2026 · 20h05';
   (function barreFilante(){
     const nav = document.querySelector('.nav');
     if (!nav) return;
-    let dernier = window.scrollY, enAttente = false;
+    let dernier = null, enAttente = false;
     const juger = () => {
       const y = window.scrollY;
+      /* vu sur le telephone : au rechargement, Chrome remet la page ou elle etait,
+         et ce saut comptait comme une descente - la barre partait avant tout geste.
+         Le premier signal ne fait que prendre ses marques. */
+      if (dernier === null){ dernier = y; enAttente = false; return; }
       if (y < 80) nav.classList.remove('filante');            /* en haut : toujours visible */
       else if (y > dernier + 6) nav.classList.add('filante');  /* on descend : elle s'efface */
       else if (y < dernier - 6) nav.classList.remove('filante');/* on remonte : elle revient */
