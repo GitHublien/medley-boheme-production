@@ -264,10 +264,16 @@ footer .liens a:hover{ color:var(--or2); }
      liens, menu - dans 390px de haut. Le logo etait coupe en haut, le menu coupe
      en bas. Elle ne garde plus que les trois ronds, comme la barre en portrait :
      les pages sont dans le menu. */
-  .nav a.l{ display:none !important; }
-  .nav .burger{ margin:.3rem auto 0; }
-  .nav .marque{ padding-bottom:.4rem !important; }
-  .nav .rond, .nav .musique, .nav .marque{ margin:.25rem auto !important; }
+  /* Mickael, 11/09 a 0 h 20 : « je veux que tu me remettes toute la jolie ligne,
+     toutes les options ». Le defaut n'etait pas la ligne, c'etait qu'elle ne
+     RENTRAIT pas. Alors tout reste - logo, musique, les sept pages, le menu -
+     mais serre pour tenir dans 406 px de haut, mesure sur son telephone. */
+  .nav{ padding:.35rem !important; gap:.1rem !important; max-height:calc(100dvh - 16px); }
+  .nav a.l{ display:block !important; font-size:.72rem; padding:.22rem .55rem; line-height:1.15; }
+  .nav a.l:nth-child(n+6){ display:block !important; }
+  .nav .burger{ margin:.15rem auto 0 !important; }
+  .nav .rond, .nav .musique, .nav .marque{ margin:.12rem auto !important; }
+  .nav .marque{ margin-bottom:.2rem !important; }
   /* la colonne est sur le cote, elle ne recouvre rien : elle ne s'efface jamais */
   .nav.filante{ transform:none !important; translate:0 -50%; opacity:1 !important; pointer-events:auto !important; }
   .page{ width:min(1380px, 100% - 190px); margin-left:172px; }
