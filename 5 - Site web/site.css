@@ -465,7 +465,7 @@ footer .liens a:hover{ color:var(--or2); }
 }
 /* paysage : la barre est une colonne à gauche — les ronds s'empilent, centrés */
 @media (max-height:640px) and (orientation:landscape){
-  .nav .rond, .nav .burger, .nav .musique{ margin:.2rem auto !important; }
+  .nav .rond, .nav .burger, .nav .musique, .nav .marque{ margin:.2rem auto !important; }   /* le logo aussi : il restait colle a gauche */
 }
 
 
