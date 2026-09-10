@@ -140,11 +140,22 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
   <p>Ton téléphone ne me laisse pas la lancer tout seul : voici le chemin, trois gestes.</p>
   <div class="pas">
     <div><b class="n">1</b><span>Appuie sur les <b>trois points ⋮</b>, en haut à droite de Chrome.</span></div>
-    <div><b class="n">2</b><span>Choisis <b>« Installer l'application »</b>, ou « Ajouter à l'écran d'accueil ».</span></div>
-    <div><b class="n">3</b><span>Confirme. L'icône <b>Bohème</b> apparaît sur ton écran.</span></div>
+    <div><b class="n">2</b><span>Choisis <b>« Installer et créer un raccourci »</b>.</span></div>
+    <div><b class="n">3</b><span>Chrome propose alors <b>deux choses</b>. Appuie sur <b>« Installer »</b>.</span></div>
+    <div><b class="n">4</b><span>Confirme. L'icône <b>Bohème</b> apparaît sur ton écran.</span></div>
   </div>
+  <div class="sur" style="background:rgba(255,200,20,.07);border-color:rgba(255,200,20,.42)"><i style="background:rgba(255,200,20,.2);color:#ffc814">!</i><span><b>Surtout pas « Créer un raccourci ».</b> C'est Chrome qui te le propose, et ça ne fait qu'un lien : la page rouvrirait dans le navigateur, avec la barre d'adresse. Ce n'est pas l'application. <b>Il faut « Installer ».</b></span></div>
   <div class="sur"><i>✓</i><span><b>Aucun risque.</b> Rien ne se télécharge d'un magasin, aucune permission n'est demandée : c'est le site, posé sur ton écran d'accueil. Pas de virus, pas de suivi.</span></div>
   <i class="fleche hautDroite">⤴</i>
+</div>
+
+<!-- déjà installée : Chrome ne propose jamais deux fois, et le bouton tombait
+     alors dans le vide en donnant l'impression d'une panne (11 sept) -->
+<div class="ecran" id="e-deja">
+  <div class="ok">C'est déjà installé.</div>
+  <p><b>Bohème</b> est sur ton écran d'accueil, avec le logo doré. Cherche l'icône et entre par là : c'est par elle que tout se passe.</p>
+  <p class="petit">Chrome ne propose jamais d'installer deux fois la même application — c'est pour ça que le bouton ne faisait rien.</p>
+  <a class="btn doux" href="PORTE — Bohème.html">Ou entrer tout de suite</a>
 </div>
 
 <!-- iPhone dans Safari -->
@@ -186,7 +197,7 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
   <a class="btn doux" href="PORTE — Bohème.html">Ou entrer tout de suite</a>
 </div>
 
-<noscript><div class="ecran la"><h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1><p>Sur iPhone : dans Safari, appuie sur <b>Partager</b> puis <b>« Sur l'écran d'accueil »</b>. Sur Android : dans Chrome, les trois points puis <b>« Installer l'application »</b>.</p><p><a class="btn" href="PORTE — Bohème.html">Entrer</a></p></div></noscript>
+<noscript><div class="ecran la"><h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1><p>Sur iPhone : dans Safari, appuie sur <b>Partager</b> puis <b>« Sur l'écran d'accueil »</b>. Sur Android : dans Chrome, les trois points puis <b>« Installer et créer un raccourci »</b>, et là <b>« Installer »</b> — pas « Créer un raccourci », qui ne ferait qu'un lien.</p><p><a class="btn" href="PORTE — Bohème.html">Entrer</a></p></div></noscript>
 <script>
 /* ═══ LE SERVICE WORKER, EN PREMIER ═══
    Sans lui, Chrome et Edge REFUSENT de proposer « Installer l'application » : ils
@@ -293,6 +304,24 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
   if (iOS){ montrer(safari ? 'e-iphone' : 'e-iphone-autre'); return; }
   if (android || tactile){
     montrer('e-android');
+    /* ═══ EST-ELLE DÉJÀ INSTALLÉE ? (11 sept) ═══
+       Chrome ne propose JAMAIS d'installer une application déjà posée sur l'écran
+       d'accueil : la proposition n'arrive pas, le bouton semble en panne, et on
+       renvoyait l'utilisateur vers les trois points pour rien. On le lui dit. */
+    if (navigator.getInstalledRelatedApps){
+      navigator.getInstalledRelatedApps().then(apps => {
+        if (apps && apps.length && !promesse) montrer('e-deja');
+      }).catch(()=>{});
+    }
+    /* le petit texte sous le bouton dit la vérité, seconde par seconde */
+    const att = document.getElementById('attente');
+    let s = 0;
+    const tic = setInterval(() => {
+      if (promesse || !document.getElementById('e-android').classList.contains('la')){ clearInterval(tic); return; }
+      s += 1;
+      if (att && s >= 3) att.textContent = 'Chrome n\'a encore rien proposé (' + s + ' s). S\'il ne dit rien, c\'est qu\'elle est déjà installée.';
+      if (s > 20) clearInterval(tic);
+    }, 1000);
     /* « automatique » : Chrome exige un geste de l'utilisateur pour lancer l'installation.
        Alors le PREMIER geste, où qu'il soit sur l'écran, la lance — pas seulement le bouton. */
     const lancer = async () => {
