@@ -448,3 +448,18 @@ footer .liens a:hover{ color:var(--or2); }
 @media (max-height:640px) and (orientation:landscape){
   .nav .rond, .nav .burger, .nav .musique{ margin:.2rem auto !important; }
 }
+
+
+/* ═══ LA BARRE DU HAUT S'EFFACE AU DÉFILEMENT (10 septembre, au soir) ══════════
+   Mickaël : « aucun logo ne doit manger un autre logo, aucun texte ne doit manger
+   un autre texte. » Mesuré en 844×390 : la barre flottait au milieu de l'écran et
+   recouvrait le titre des tuiles. Elle part vers le haut quand on descend. */
+.nav{ transition:transform .45s var(--lent), opacity .35s; }
+.nav.filante{ transform:translateX(-50%) translateY(-160%); opacity:0; pointer-events:none; }
+/* en colonne à gauche (paysage), elle part sur le côté et non vers le haut */
+@media (max-height:640px) and (orientation:landscape){
+  .nav.filante{ transform:translateX(-50%) translateY(-160%); }
+}
+/* la marque n'a plus de texte : elle se réduit à son logo, sans trait de séparation */
+.nav .marque{ padding-right:0 !important; margin-right:.2rem !important; border-right:0 !important; }
+.nav .marque img{ display:block; }

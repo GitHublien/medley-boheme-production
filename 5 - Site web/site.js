@@ -40,7 +40,7 @@ const VERSION_SITE = '10/09/2026 · 20h05';
      élégant de partout. » Dans la barre : l'accueil (⌂, caché quand on y est déjà),
      la musique (♪), le menu (≡). Même diamètre, même or, même espacement. */
   const surAccueil = /^ACCUEIL/i.test(ici) || ici === '' || ici === 'site.html';
-  nav.innerHTML = '<a class="marque" href="' + lien(PAGES[0]) + '"><img src="icone-192.png" alt=""><span>Bohème</span></a>'
+  nav.innerHTML = '<a class="marque" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><img src="icone-192.png" alt=""></a>'
     + (surAccueil ? '' : '<a class="rond maison" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><i class="ico ico-maison"></i></a>')
     + PAGES.slice(0, 7).map(p => '<a class="l' + (p.f === ici ? ' ici' : '') + '" href="' + lien(p) + '">' + p.t + '</a>').join('')
     + '<button class="burger rond" aria-label="Menu"><i></i><i></i></button>';
@@ -249,6 +249,27 @@ const VERSION_SITE = '10/09/2026 · 20h05';
 
      Pour ajouter un morceau : une ligne dans MUSIQUES, et c'est tout.
      ═══════════════════════════════════════════════════════════════════════ */
+  /* ═══ LA BARRE DU HAUT NE MANGE PLUS RIEN (10 septembre, au soir) ═══════════
+     Mesure en 844x390, telephone couche : l'ecran ne fait que 390 de haut et la
+     barre en occupait 77, posee en plein milieu du contenu. Elle recouvrait le
+     titre des tuiles. Elle s'efface maintenant des qu'on descend, et revient des
+     qu'on remonte d'un cheveu - ou des qu'on est en haut de la page. */
+  (function barreFilante(){
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+    let dernier = window.scrollY, enAttente = false;
+    const juger = () => {
+      const y = window.scrollY;
+      if (y < 80) nav.classList.remove('filante');            /* en haut : toujours visible */
+      else if (y > dernier + 6) nav.classList.add('filante');  /* on descend : elle s'efface */
+      else if (y < dernier - 6) nav.classList.remove('filante');/* on remonte : elle revient */
+      dernier = y; enAttente = false;
+    };
+    addEventListener('scroll', () => { if (!enAttente){ enAttente = true; requestAnimationFrame(juger); } }, { passive:true });
+    /* le menu ouvert la retient : on ne fait pas disparaitre ce qu'on manipule */
+    nav.addEventListener('click', () => nav.classList.remove('filante'));
+  })();
+
   (function musique(){
     const MUSIQUES = [
       { f:'media/site/air-sing-boheme.mp3',     t:'Air Sing Bohème' },
