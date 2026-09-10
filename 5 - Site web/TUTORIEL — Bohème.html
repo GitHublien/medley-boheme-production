@@ -38,6 +38,12 @@ header .marque{ font-weight:800; letter-spacing:.24em; text-transform:uppercase;
   font-size:13px; color:var(--or); }
 header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   color:var(--gris); margin-top:2px; text-transform:none; }
+/* 10 sept : les pictogrammes EXACTS de l'atelier, pour qu'on reconnaisse les
+   vrais boutons quand on y arrive. Avant : de simples caracteres. */
+.pic{ display:inline-block; width:1.3em; height:1.3em; vertical-align:-.28em;
+      background:center/contain no-repeat; }
+.btn-sim .pic{ margin-right:.15em; }
+.btn-sim.grand .pic{ width:1.5em; height:1.5em; margin:0; }
 #btnQuitter{ border:1px solid rgba(212,175,55,.4); background:rgba(212,175,55,.08);
   color:var(--encre); border-radius:999px; padding:9px 16px; font-size:13px;
   min-height:42px; transition:background .5s cubic-bezier(0.32,0.72,0,1); }
@@ -433,7 +439,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <div class="scene-sim" id="sceneLecture"></div>
   </div></div>
   <div class="pupitre">
-    <button class="btn-sim grand appelle" id="simPlay">▶</button>
+    <button class="btn-sim grand appelle" id="simPlay" aria-label="Lecture"><i class="pic" style="background-image:url(site-images/icones-karaoke/lecture2.png)"></i></button>
   </div>
   <div class="consigne" id="cLecture"><span class="rond">👆</span>
     <span>Appuie sur <b><i class="ico ico-lecture"></i></b> : regarde les mots s'allumer au moment où ils se chantent.</span></div>
@@ -481,8 +487,8 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <div class="scene-sim" id="sceneFleches"></div>
   </div></div>
   <div class="pupitre">
-    <button class="btn-sim grand" id="simPrev">⟨</button>
-    <button class="btn-sim grand appelle" id="simNext">⟩</button>
+    <button class="btn-sim grand" id="simPrev" aria-label="Phrase precedente"><i class="pic" style="background-image:url(site-images/icones-karaoke/precedent.png)"></i></button>
+    <button class="btn-sim grand appelle" id="simNext" aria-label="Phrase suivante"><i class="pic" style="background-image:url(site-images/icones-karaoke/suivant.png)"></i></button>
   </div>
   <div class="consigne" id="cFleches"><span class="rond">👆</span>
     <span>Appuie sur <b>⟩</b> puis encore : regarde le titre changer dans le bandeau.</span></div>
@@ -499,7 +505,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   <p class="sous">Le sommaire du medley. Un appui sur « Blocs » : la liste des sept
     titres apparaît. Tu choisis, et tu y es. C'est tout, et c'est précieux.</p>
   <div class="pupitre" style="padding-top:4px;">
-    <button class="btn-sim grand appelle" id="simBlocs">Blocs</button>
+    <button class="btn-sim grand appelle" id="simBlocs"><i class="pic" style="background-image:url(site-images/icones-karaoke/blocs.png)"></i>Blocs</button>
   </div>
   <div class="menu-sim" id="menuSimB"></div>
   <div id="ficheBloc">
@@ -530,7 +536,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   <p class="sous">L'habillage des paroles. Huit costumes différents pour le même
     texte : choisis-en un, et prends dix secondes pour le regarder vivre.</p>
   <div class="pupitre" style="padding-top:4px;">
-    <button class="btn-sim grand appelle" id="simStyle">Style</button>
+    <button class="btn-sim grand appelle" id="simStyle"><i class="pic" style="background-image:url(site-images/icones-karaoke/style.png)"></i>Style</button>
   </div>
   <div class="menu-sim" id="menuSimS"></div>
   <div class="ecran-cadre" style="margin-top:12px;"><div class="ecran" id="ecranStyle">
@@ -605,7 +611,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <div class="bandeau"><span class="n">🎙</span><span class="t" id="bandeNom">Le bouton dans l'atelier</span><span class="h"></span></div>
     <div class="scene-sim" style="height:auto;padding:24px 16px;overflow:visible;">
       <div class="pupitre" style="padding:0;">
-        <button class="btn-sim appelle" id="simBande">🎙 Voix témoins</button>
+        <button class="btn-sim appelle" id="simBande"><i class="pic" style="background-image:url(site-images/icones-karaoke/micro.png)"></i> Voix témoins</button>
       </div>
       <p id="bandeDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
         Tu entends la bande de travail : les voix témoins te guident.</p>
@@ -645,7 +651,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <div class="bandeau"><span class="n">⟳</span><span class="t">Le bouton dans l'atelier</span><span class="h"></span></div>
     <div class="scene-sim" style="height:auto;padding:24px 16px;overflow:visible;">
       <div class="pupitre" style="padding:0;">
-        <button class="btn-sim" style="pointer-events:none;">⟳ Mise à jour</button>
+        <button class="btn-sim" style="pointer-events:none;"><i class="pic" style="background-image:url(site-images/icones-karaoke/maj.png)"></i> Mise à jour</button>
       </div>
       <p style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
         Il est en bas de l'atelier, avec les autres commandes.<br>
@@ -936,13 +942,13 @@ PREPARATIONS['lecture'] = () => {
 document.getElementById('simPlay').addEventListener('click', function(){
   this.classList.remove('appelle');
   if (!lectureEnCours){
-    lectureEnCours = true; this.textContent = '⏸';
+    lectureEnCours = true; this.innerHTML = '<i class="pic" style="background-image:url(site-images/icones-karaoke/pause.png)"></i>';
     jouerExtrait(document.getElementById('sceneLecture'), blocLecture.lignes,
-      () => { lectureEnCours = false; document.getElementById('simPlay').textContent = '▶'; });
+      () => { lectureEnCours = false; document.getElementById('simPlay').innerHTML = '<i class="pic" style="background-image:url(site-images/icones-karaoke/lecture2.png)"></i>'; });
     reussir('cLecture', 'C’est ça ! La musique joue, les mots s’allument. '
       + 'Le même bouton met en <b>pause</b> — essaie aussi.');
   } else {
-    lectureEnCours = false; this.textContent = '▶';
+    lectureEnCours = false; this.innerHTML = '<i class="pic" style="background-image:url(site-images/icones-karaoke/lecture2.png)"></i>';
     arreterExtrait();
     reussir('cLecture', 'Parfait : lecture, pause, c’est le même bouton.');
   }
@@ -1177,7 +1183,7 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
   b.addEventListener('click', () => {
     b.classList.remove('appelle');
     voix = !voix;
-    b.textContent = voix ? '🎙 Voix témoins' : '🎼 Instrumental';
+    b.innerHTML = voix ? '<i class="pic" style="background-image:url(site-images/icones-karaoke/micro.png)"></i> Voix témoins' : '<i class="pic" style="background-image:url(site-images/icones-karaoke/piano.png)"></i> Instrumental';
     document.getElementById('bandeDit').textContent = voix
       ? 'Tu entends la bande de travail : les voix témoins te guident.'
       : 'Tu entends l\'instrumental : la bande du concert, à toi de chanter.';
