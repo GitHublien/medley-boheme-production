@@ -245,7 +245,7 @@ footer .liens a:hover{ color:var(--or2); }
   .ouverture{ min-height:92dvh; padding-bottom:6.5rem; }
   .ouverture .descend{ display:none; }
   .ligne{ grid-template-columns:auto 1fr; } .ligne .h{ grid-column:2; }
-  body{ padding-bottom:72px; }
+  body{ padding-bottom:116px; }   /* la barre du bas fait 95px : 72 ne suffisait pas, elle recouvrait le dernier paragraphe */
   .bas{ display:grid; grid-template-columns:repeat(4,1fr); position:fixed; left:12px; right:12px; bottom:calc(10px + env(safe-area-inset-bottom)); z-index:40;
     border-radius:999px; background:rgba(12,11,10,.8); border:1px solid rgba(255,255,255,.08); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); box-shadow:0 20px 60px rgba(0,0,0,.6); padding:.35rem; }
   .bas a{ display:grid; place-items:center; gap:.15rem; padding:.45rem .2rem; border-radius:999px; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gris); }
@@ -425,9 +425,14 @@ footer .liens a:hover{ color:var(--or2); }
 .nav .rond:hover, .nav .musique .mRond:hover, .nav .burger:hover{ background:rgba(212,175,55,.18) !important; border-color:rgba(212,175,55,.75) !important; }
 .nav .rond:active, .nav .burger:active{ transform:scale(.93); }
 .nav .rond .ico{ width:20px; height:20px; }
-.nav .musique .mRond{ opacity:1; font-size:1rem; }
+.nav .musique .mRond{ opacity:1; font-size:1.5rem; }   /* 24px, le poids du menu a cote */
 .nav .burger i{ background:var(--or2) !important; width:18px !important; }
-.nav .marque{ padding-right:.75rem; margin-right:.15rem; }
+.nav .marque{ padding-right:.75rem; margin-right:.15rem;
+  /* Mesure du 10/09 au soir : la marque faisait 78px pour un texte de 102px.
+     Elle avait le droit de retrecir (flex:0 1 auto), donc « Boheme » sortait de
+     sa boite et passait SOUS le rond de la musique. Regle de Mickael : aucun
+     logo ne mange un texte. flex:none = elle garde sa largeur, toujours. */
+  flex:none !important; white-space:nowrap; }
 /* téléphone debout : la marque garde son logo, les trois ronds prennent la place */
 @media (max-width:700px) and (orientation:portrait){
   .nav{ gap:.5rem; padding:.35rem .4rem .35rem .55rem; }
