@@ -38,29 +38,32 @@ Do not touch anything else. The small circular golden medallion at the bottom ri
 
 # IMAGE 2 · le téléphone
 
-**Ce qui ne va pas — et tu as vu juste :** un téléphone doré, ça veut dire « installe-moi ».
-Or cette page ne dit plus ça. Elle est devenue **« Comment ça marche »** : ce qu'il y a
-dans l'application, à quoi sert chaque porte, le bandeau, la salle d'entraînement. Un mode
-d'emploi. L'image annonçait autre chose que ce qu'il y avait derrière.
+**Ce qui ne va pas :** elle dit « INSTALLER · l'application sur ton téléphone ». Or cette
+page est devenue **« Comment ça marche »** — ce qu'il y a dans l'application, à quoi sert
+chaque porte. Elle n'installe plus rien. *(Et son logo dit « Bukins Production ».)*
 
-**Ce qui correspond :** un **programme de spectacle** posé sur un fauteuil de velours.
-C'est exactement l'objet qu'on ouvre avant la représentation pour savoir ce qu'il y a
-dedans. On garde le décor de scène, on remplace le téléphone.
+**Ton idée, qui est la bonne :** on garde le téléphone — c'est bien de l'application
+qu'on parle — et on met **un grand point d'interrogation doré sur son écran**. On
+comprend d'un coup d'œil : c'est l'aide.
 
-*(Son logo était déjà faux, d'ailleurs : il dit « Bukins Production ».)*
+**Dépose DEUX images :** `IMAGE 2 — le téléphone.jpg` **et** `LE LOGO — à déposer avec.png`
+· format **9:16** (vertical)
 
-**Dépose : `IMAGE 2 — le téléphone.jpg`** · format **9:16** (vertical)
+*(Le logo, c'est pour qu'il le recopie au lieu de le réinventer. C'est ce qui a raté
+partout ailleurs.)*
 
 ```
-Keep the atmosphere, the framing and the lighting of this image exactly: same deep black, same warm gold, same spotlight beams from above, same haze, same reflections on the dark stage floor, same vertical composition.
+Keep the first image almost exactly as it is: same deep black, same warm gold, same spotlight beams from above, same haze, same reflections on the dark stage floor, same vertical framing, same golden phone standing in the centre.
 
-Replace the golden phone in the centre with a theatre programme: a slim printed booklet standing slightly open on a dark red velvet theatre seat, its cover deep black with a thin golden border, catching the warm light from above. Fine golden dust floats in the beams. The booklet is closed enough that no text is readable on it.
+Change three things.
 
-Change the golden text on the left: replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "tout ce qu'il y a dedans".
+First, the phone screen: instead of a plain golden screen, show a single large elegant golden question mark, centred, glowing softly, as if lit from within. Nothing else on the screen — no icons, no interface, no words.
 
-The small circular golden medallion at the bottom right stays in place, same shape, same size, same glow, and its lettering must read exactly "Bohème Production", correctly spelled.
+Second, the golden text on the left: replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "tout ce qu'il y a dedans".
 
-Photorealistic, cinematic, warm gold on deep black. No people, no phone, no screen.
+Third, the small circular medallion at the bottom right: replace it with the medallion of the second image, reproduced exactly as it is — same shape, same lettering "Bohème Production", same golden ring. Do not redraw it, do not re-letter it, do not stylise it. Same size, same position, same soft glow.
+
+Everything else stays strictly identical. Photorealistic, cinematic, warm gold on deep black. No people.
 ```
 
 ---
