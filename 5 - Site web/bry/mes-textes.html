@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bohème — ce que chante Bry</title>
+<link rel="icon" href="../icone-192.png">
+<style>
+:root{ --or:#ff7a1f; --fond:#050505; --texte:#eae6e0; --gris:#6f6a64; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--texte);
+  font-family:Georgia,'Times New Roman',serif;line-height:1.55;
+  padding:0 0 8rem;-webkit-text-size-adjust:100%}
+header{padding:2.4rem 1.2rem 1.4rem;text-align:center;
+  background:radial-gradient(120% 80% at 50% 0%, rgba(255,122,31,.20), transparent 70%)}
+header h1{margin:0;font-size:1.9rem;letter-spacing:.02em;font-weight:400}
+header h1 b{color:var(--or);font-weight:400}
+header p{margin:.6rem 0 0;color:var(--gris);font-size:.95rem;font-style:italic}
+.chiffres{margin:1.1rem auto 0;display:flex;gap:1.6rem;justify-content:center;flex-wrap:wrap}
+.chiffres div{text-align:center}
+.chiffres strong{display:block;font-size:1.5rem;color:var(--or);font-weight:400}
+.chiffres span{font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:.12em}
+
+.lecteur{position:sticky;top:0;z-index:10;background:rgba(5,5,5,.96);
+  backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,122,31,.25);
+  padding:.7rem 1rem;display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;
+  justify-content:center}
+.lecteur button{font:inherit;font-size:.9rem;background:transparent;color:var(--texte);
+  border:1px solid rgba(255,122,31,.45);border-radius:999px;padding:.42rem 1rem;
+  cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lecteur button.on{background:var(--or);border-color:var(--or);color:#140b04}
+#play{min-width:5.4rem}
+#temps{color:var(--gris);font-size:.85rem;font-variant-numeric:tabular-nums;min-width:5.5rem;text-align:center}
+#barre{width:100%;max-width:640px;height:3px;background:#241d17;border-radius:2px;cursor:pointer}
+#barre i{display:block;height:100%;width:0;background:var(--or);border-radius:2px}
+
+main{max-width:640px;margin:0 auto;padding:1.6rem 1.2rem 0}
+.bloc{margin:0 0 2.8rem}
+.bloc h2{font-size:1.15rem;font-weight:400;margin:0 0 .2rem;
+  display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap}
+.num{color:var(--or);font-size:.8rem;letter-spacing:.1em}
+.go{font:inherit;font-size:.78rem;background:transparent;color:var(--or);
+  border:1px solid rgba(255,122,31,.4);border-radius:999px;padding:.16rem .6rem;
+  cursor:pointer;margin-left:auto;white-space:nowrap}
+.place{margin:0 0 1rem;color:var(--gris);font-size:.8rem;font-style:italic}
+.qui{margin:1.3rem 0 .35rem;font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase}
+.qui.moi{color:var(--or)}
+.qui.avec{color:var(--gris)}
+.l{margin:0;padding:.16rem .5rem .16rem .7rem;border-left:2px solid transparent;cursor:pointer}
+.l.moi{color:#fff;border-left-color:var(--or);font-size:1.06rem}
+.l.avec{color:#9d968e;font-size:.98rem}
+.l.ici{background:rgba(255,122,31,.14)}
+footer{max-width:640px;margin:2rem auto 0;padding:1.6rem 1.2rem;
+  color:var(--gris);font-size:.84rem;border-top:1px solid #1a1512;text-align:center}
+footer b{color:var(--or);font-weight:400}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ce que tu chantes, <b>Bry</b></h1>
+  <p>Medley Bohème — Palais des Festivals de Cannes, 4 octobre</p>
+  <div class="chiffres">
+    <div><strong>7</strong><span>blocs</span></div>
+    <div><strong>31</strong><span>lignes seul</span></div>
+    <div><strong>103</strong><span>lignes en tout</span></div>
+  </div>
+</header>
+
+<div class="lecteur">
+  <button id="play">▶ Écouter</button>
+  <button id="bVoix" class="on">Voix témoins</button>
+  <button id="bInstru">Instrumental</button>
+  <span id="temps">0'00</span>
+  <div id="barre"><i></i></div>
+</div>
+
+<main>
+<section class="bloc">
+  <h2><span class="num">07</span> Le Blues du Businessman <button class="go" data-t="366">▶ 6'06</button></h2>
+  <p class="place">Les quatre hommes en ligne, lumière froide et verticale · Stéphanie et Candice en retrait dans l'ombre, elles n'apparaissent que sur leurs questions</p>
+  <div class="lignes"><p class="qui moi">Bry</p><p class="l moi" data-t="373.641">J'ai du succès dans mes amours</p><p class="l moi" data-t="386.483">D'où je vois la ville à l'envers</p><p class="l moi" data-t="399.465">Dans tous les Hilton de la Terre</p><p class="l moi" data-t="426.148">Au fond je n'ai qu'un seul regret</p><p class="l moi" data-t="451.043">Pour avoir le monde à refaire</p><p class="qui avec">Mickaël, Bry et Adrien</p><p class="l avec" data-t="464.604">Et vivre comme… un millionnaire</p><p class="qui avec">Les 4 hommes</p><p class="l avec" data-t="471.583">Et vivre comme… un millionnaire</p><p class="l avec" data-t="477.6">J'aurais voulu être un artiste</p><p class="l avec" data-t="486.7">Hum… hum…</p><p class="l avec" data-t="491.7">Ou-fa-dou-dé… ou-fa-dou-do…</p><p class="l avec" data-t="495.2">Oh… Oh !</p><p class="qui avec">Tous les six</p><p class="l avec" data-t="498.7">Pour pouvoir dire POURQUOI J'EXISTE</p></div></section><section class="bloc">
+  <h2><span class="num">11</span> Le Temps des Cathédrales <button class="go" data-t="627">▶ 10'27</button></h2>
+  <p class="place">Mickaël au centre, lumière chaude couleur pierre · les cinq autres le rejoignent pour le refrain final, chacun à sa place</p>
+  <div class="lignes"><p class="qui avec">Tous les six</p><p class="l avec" data-t="698.354">La foule des barbares</p><p class="l avec" data-t="702.275">Est aux portes de la ville</p><p class="l avec" data-t="705.035">Laissez entrer ces païens, ces vandales</p><p class="l avec" data-t="711.916">La fin de ce monde</p><p class="l avec" data-t="716.057">Est prévue pour l'an deux mille</p><p class="l avec" data-t="722.678">Est prévue pour l'an deux mille</p></div></section><section class="bloc">
+  <h2><span class="num">13</span> Les Sans-papiers <button class="go" data-t="747">▶ 12'27</button></h2>
+  <p class="place">Tous à terre, les chœurs le bras droit levé · Bry se relève seul et chante</p>
+  <div class="lignes"><p class="qui avec">Tous les six</p><p class="l avec" data-t="748.245">Pour Notre-Dame</p><p class="l avec" data-t="749.221">Nous te demandons</p><p class="l avec" data-t="752.425">Asile Asile</p><p class="qui moi">Bry</p><p class="l moi" data-t="754.023">Nous sommes plus de mille</p><p class="l moi" data-t="756.985">Aux portes de la ville</p><p class="l moi" data-t="759.905">Et bientôt nous serons</p><p class="l moi" data-t="762.764">Dix mille et puis cent mille</p><p class="l moi" data-t="765.302">Nous serons des millions</p><p class="l moi" data-t="768.566">Qui te demanderont</p><p class="qui avec">Tous les six</p><p class="l avec" data-t="771.302">Asile Asile</p><p class="l avec" data-t="777.284">Nous sommes des étrangers</p><p class="l avec" data-t="781.611">Des sans-papiers</p><p class="l avec" data-t="783.064">Nous sommes des étrangers</p><p class="l avec" data-t="785.972">Des sans-papiers</p><p class="l avec" data-t="786.701">Des hommes et des femmes</p><p class="l avec" data-t="790.312">Sans domicile</p><p class="l avec" data-t="790.681">Nous sommes des étrangers</p><p class="l avec" data-t="792.5">Des sans-papiers</p><p class="l avec" data-t="794.641">Des hommes et des femmes</p><p class="l avec" data-t="797.08">Sans domicile</p><p class="l avec" data-t="799.54">Pour Notre-Dame</p><p class="l avec" data-t="801.121">Nous te demandons</p><p class="l avec" data-t="804.549">Asile Asile</p><p class="l avec" data-t="806.184">Nous sommes des étrangers</p><p class="l avec" data-t="809.107">Des sans-papiers</p><p class="l avec" data-t="810.543">Des hommes et des femmes</p><p class="l avec" data-t="813.446">Sans domicile</p><p class="l avec" data-t="814.883">Pour Notre-Dame</p><p class="l avec" data-t="816.121">Nous te demandons</p><p class="l avec" data-t="817.62">Asile Asile Asile</p><p class="l avec" data-t="822.863">Asile</p></div></section><section class="bloc">
+  <h2><span class="num">15</span> Belle <button class="go" data-t="960">▶ 16'00</button></h2>
+  <p class="place">Candice au sol, centre-avant · Élie à jardin, Mickaël au centre en arrière, Bry à cour · personne ne la touche</p>
+  <div class="lignes"><p class="qui moi">Bry</p><p class="l moi" data-t="1038.31">Belle</p><p class="l moi" data-t="1040.163">Malgré ses grands yeux noirs qui vous ensorcellent</p><p class="l moi" data-t="1046.043">La demoiselle serait-elle encore pucelle ?</p><p class="l moi" data-t="1051.883">Quand ses mouvements me font voir monts et merveilles</p><p class="l moi" data-t="1057.704">Sous son jupon aux couleurs de l'arc-en-ciel</p><p class="qui avec">Mickaël et Bry</p><p class="l avec" data-t="1063.742">J'ai posé mes yeux sous sa robe de gitane</p><p class="l avec" data-t="1069.82">À quoi me sert encore de prier Notre-Dame</p><p class="l avec" data-t="1076.902">Quel est celui qui lui jettera la première pierre</p><p class="l avec" data-t="1082.82">Celui-là ne mérite pas d'être sur terre</p><p class="qui avec">Élie, Mickaël et Bry</p><p class="l avec" data-t="1108.022">Esméralda</p></div></section><section class="bloc">
+  <h2><span class="num">16</span> Le Dilemme <button class="go" data-t="1115">▶ 18'35</button></h2>
+  <p class="place">Candice debout au centre, Néfertari · Mickaël (Ramsès) à cour, Bry (Moïse) à jardin · Élie est sorti à jardin</p>
+  <div class="lignes"><p class="qui avec">Mickaël et Bry</p><p class="l avec" data-t="1181.5">J'aimerais</p><p class="l avec" data-t="1183.6">J'aimerais</p><p class="l avec" data-t="1193">J'aimerais</p><p class="l avec" data-t="1195.5">J'aimerais</p><p class="qui moi">Bry</p><p class="l moi" data-t="1203.762">Aime-moi sans me le dire</p><p class="qui avec">Mickaël et Bry</p><p class="l avec" data-t="1216">J'aimerais</p><p class="l avec" data-t="1218.7">J'aimerais</p><p class="l avec" data-t="1227.6">J'aimerais</p><p class="l avec" data-t="1230.723">J'aimerais</p><p class="l avec" data-t="1238.14">J'aimerais</p></div></section><section class="bloc">
+  <h2><span class="num">17</span> Mon Frère <button class="go" data-t="1255">▶ 20'55</button></h2>
+  <p class="place">Mickaël (Ramsès) et Bry (Moïse) au centre, côte à côte · Candice est sortie à cour · Adrien et Élie entrent par jardin à la fin</p>
+  <div class="lignes"><p class="qui moi">Bry</p><p class="l moi" data-t="1281.183">Bien plus qu'un monde qui s'ouvre à l'un et pour l'autre chavire</p><p class="l moi" data-t="1288.183">Bien plus qu'une mer qui supplie quand la source est tarie</p><p class="l moi" data-t="1295.244">C'est tout notre amour qui s'éloigne des rives et se perd</p><p class="l moi" data-t="1299.742">Mon frère</p><p class="l moi" data-t="1316.281">Puisqu'on ne sera jamais que la moitié de nous</p><p class="l moi" data-t="1326.905">Que la moitié, que la moitié de nous</p><p class="l moi" data-t="1335.067">Oh, oh, mon frère</p><p class="l moi" data-t="1338.863">Mon frère</p><p class="qui avec">Mickaël et Bry</p><p class="l avec" data-t="1339.8">Mon frère</p><p class="l avec" data-t="1344.466">L'amour sera toujours cette moitié de nous qui reste à faire</p><p class="qui moi">Bry</p><p class="l moi" data-t="1352.4">À faire</p><p class="qui avec">Mickaël et Bry</p><p class="l avec" data-t="1355.735">Mon frère</p><p class="qui moi">Bry</p><p class="l moi" data-t="1356.201">Mon frère, mon frère</p><p class="l moi" data-t="1367.8">Mon frère</p><p class="l moi" data-t="1373.9">Mon frère !</p></div></section><section class="bloc">
+  <h2><span class="num">20</span> Aimer <button class="go" data-t="1437.5">▶ 23'58</button></h2>
+  <p class="place">Tout le monde est figé pendant la narration · Mickaël ouvre Aimer à 24'21, les statues se réveillent une à une</p>
+  <div class="lignes"><p class="qui avec">Tous les six</p><p class="l avec" data-t="1521.681">Aimer, c'est ce qu'il y a d'plus beau</p><p class="l avec" data-t="1526.981">Aimer, c'est monter si haut</p><p class="l avec" data-t="1532.024">Et toucher les ailes des oiseaux</p><p class="l avec" data-t="1536.14">Aimer, c'est ce qu'il y a d'plus beau</p><p class="l avec" data-t="1541.742">Aimer, c'est voler le temps</p><p class="l avec" data-t="1546.921">Aimer, c'est rester vivant</p><p class="l avec" data-t="1552.003">Et brûler au cœur d'un volcan</p><p class="l avec" data-t="1556.341">Aimer, c'est ce qu'il y a d'plus grand</p><p class="l avec" data-t="1561.7">Aimer, c'est brûler ses nuits</p><p class="l avec" data-t="1566.9">Aimer, c'est payer le prix</p><p class="l avec" data-t="1571.98">Et donner un sens à sa vie</p><p class="qui avec">Tous les six — Stéphanie et Candice dessus</p><p class="l avec" data-t="1576.28">Aimer, c'est brûler ses nuits</p><p class="qui avec">Tous les six</p><p class="l avec" data-t="1581.9">Aimer, c'est ce qu'il y a d'plus beau</p><p class="qui moi">Bry</p><p class="l moi" data-t="1585.05">C'est ce qu'il y a d'plus beau</p><p class="qui avec">Tous les six</p><p class="l avec" data-t="1587.2">Aimer, c'est monter si haut</p><p class="qui moi">Bry</p><p class="l moi" data-t="1590.35">C'est monter si haut</p><p class="qui avec">Tous les six</p><p class="l avec" data-t="1592.28">Et toucher les ailes des oiseaux</p><p class="l avec" data-t="1596.38">Aimer, c'est ce qu'il y a d'plus beau</p><p class="l avec" data-t="1601.6">Aimer</p></div></section></main>
+
+<footer>
+  Touche une ligne pour aller l'écouter.<br>
+  Les lignes <b>en clair</b> sont les tiennes seul, les grises sont celles où tu chantes avec les autres.<br><br>
+  Le medley entier fait 26'50.
+</footer>
+
+<audio id="aVoix" src="../media/bande-voix-temoins.mp3" preload="metadata"></audio>
+<audio id="aInstru" src="../media/bande-diffusee.mp3" preload="metadata"></audio>
+
+<script>
+(function(){
+  const A = document.getElementById('aVoix');
+  const B = document.getElementById('aInstru');
+  const bPlay = document.getElementById('play');
+  const bV = document.getElementById('bVoix'), bI = document.getElementById('bInstru');
+  const tps = document.getElementById('temps');
+  const barre = document.getElementById('barre'), jauge = barre.querySelector('i');
+  const lignes = [...document.querySelectorAll('.l')];
+
+  // Les DEUX bandes tournent toujours ensemble, du début à la fin.
+  // Changer de bande ne change JAMAIS de fichier : on fait seulement un fondu
+  // croisé entre deux pistes déjà synchrones. Aucun saut, aucun silence.
+  A.volume = 1; B.volume = 0;
+  let voix = true, fondu = null;
+
+  function bascule(versVoix){
+    if (versVoix === voix) return;
+    voix = versVoix;
+    bV.classList.toggle('on', voix); bI.classList.toggle('on', !voix);
+    clearInterval(fondu);
+    const t0 = performance.now(), duree = 260;
+    const dA = voix ? 1 : 0, dB = voix ? 0 : 1;
+    const oA = A.volume, oB = B.volume;
+    fondu = setInterval(() => {
+      const k = Math.min(1, (performance.now() - t0) / duree);
+      A.volume = oA + (dA - oA) * k;
+      B.volume = oB + (dB - oB) * k;
+      if (k >= 1) clearInterval(fondu);
+    }, 16);
+  }
+  bV.onclick = () => bascule(true);
+  bI.onclick = () => bascule(false);
+
+  function jouer(){ A.play(); B.play(); bPlay.textContent = '❙❙ Pause'; }
+  function pause(){ A.pause(); B.pause(); bPlay.textContent = '▶ Écouter'; }
+  bPlay.onclick = () => A.paused ? jouer() : pause();
+
+  function aller(t){
+    A.currentTime = t; B.currentTime = t;
+    if (A.paused) jouer();
+    maj();
+  }
+  document.querySelectorAll('[data-t]').forEach(e => {
+    e.addEventListener('click', ev => { ev.preventDefault(); aller(parseFloat(e.dataset.t)); });
+  });
+
+  barre.onclick = e => {
+    const r = barre.getBoundingClientRect();
+    aller(((e.clientX - r.left) / r.width) * (A.duration || 1610));
+  };
+
+  const mmss = t => Math.floor(t/60) + "'" + String(Math.floor(t%60)).padStart(2,'0');
+  let ici = null;
+  function maj(){
+    const t = A.currentTime;
+    tps.textContent = mmss(t);
+    jauge.style.width = (100 * t / (A.duration || 1610)) + '%';
+    // On garde les deux bandes rigoureusement ensemble.
+    if (Math.abs(A.currentTime - B.currentTime) > 0.08) B.currentTime = A.currentTime;
+    let cour = null;
+    for (const l of lignes) { if (parseFloat(l.dataset.t) <= t + 0.15) cour = l; else break; }
+    if (cour !== ici) {
+      if (ici) ici.classList.remove('ici');
+      ici = cour;
+      if (ici) ici.classList.add('ici');
+    }
+  }
+  A.addEventListener('timeupdate', maj);
+  A.addEventListener('ended', pause);
+})();
+</script>
+</body>
+</html>

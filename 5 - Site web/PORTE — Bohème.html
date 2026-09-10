@@ -13,7 +13,9 @@
 
    1.  un écran noir, le logo, et « entrer »
    2.  au clic : PLEIN ÉCRAN + LE SON (le clic autorise les deux)
-   3.  le film entier, avec sa voix — 60 secondes
+   3.  le film entier, avec sa voix — 3 min 01 (depuis le 10 septembre 2026 :
+       « Le Medley des Légendes », 181,2 s, les médias portent la date dans
+       leur nom pour que les téléphones ne resservent jamais l'ancien film)
    4.  à la dernière image, une PHOTO prend le relais au pixel près
    5.  le logo respire, la présence rôde
    6.  au clic : la chute à travers les visages, puis le karaoké
@@ -61,11 +63,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 /* le logo posé n'est pas une image morte : il balance doucement de
    gauche à droite, comme une enseigne, et il s'éclaire par vagues */
 #photo.la{opacity:1;animation:photoVit 9s cubic-bezier(0.32,0.72,0,1) 1.4s infinite}
+/* ⚠️ L'animation DOIT partir et finir sur la position neutre.
+   Avant, elle commençait à translateX(-1.1%) rotate(-1.1deg) : après le
+   délai de 1,4 s, le logo sautait d'un coup à cette position. Le raccord
+   avec la dernière image du film n'était plus au pixel près. */
 @keyframes photoVit{
-  0%,100%{ transform:translateX(-1.1%) rotate(-1.1deg) scale(1);   filter:brightness(1) }
-  27%    { transform:translateX(0)      rotate(0deg)    scale(1.02);filter:brightness(1.16) }
-  50%    { transform:translateX(1.1%)  rotate(1.1deg)  scale(1);   filter:brightness(1) }
-  77%    { transform:translateX(0)      rotate(0deg)    scale(1.02);filter:brightness(1.16) }
+  0%,100%{ transform:translateX(0)      rotate(0deg)    scale(1);   filter:brightness(1) }
+  25%    { transform:translateX(1.1%)   rotate(1.1deg)  scale(1.02);filter:brightness(1.14) }
+  50%    { transform:translateX(0)      rotate(0deg)    scale(1);   filter:brightness(1) }
+  75%    { transform:translateX(-1.1%)  rotate(-1.1deg) scale(1.02);filter:brightness(1.14) }
 }
 
 #passage{opacity:0;transition:opacity .25s;z-index:5;object-fit:cover}
@@ -206,9 +212,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 <div id="halo"></div>
 
 <video id="film" playsinline preload="auto">
-  <source src="media/porte/intro.mp4" type="video/mp4">
+  <source src="media/porte/intro-2026-09-10.mp4" type="video/mp4">
 </video>
-<img id="photo" src="media/porte/logo-cale.png" alt="Bohème Production">
+<img id="photo" src="media/porte/logo-cale-2026-09-10.png" alt="Bohème Production">
 <canvas id="poussieres"></canvas>
 <video id="passage" playsinline preload="none">
   <source src="media/porte/passage.mp4" type="video/mp4">
@@ -222,7 +228,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
     <span style="font-size:.72em;color:#e8e2d2;font-weight:600;">le karaoké du medley — Cannes, 4 octobre 2026</span></div>
 
   <div style="display:flex;gap:10px;justify-content:center;max-width:560px;width:100%;">
-    <img src="media/porte/apercu-film.jpg" alt="" style="width:48%;border-radius:12px;
+    <img src="media/porte/apercu-film-2026-09-10.jpg" alt="" style="width:48%;border-radius:12px;
       border:1px solid rgba(212,175,55,.4);">
     <img src="media/porte/apercu-logo.jpg" alt="" style="width:48%;border-radius:12px;
       border:1px solid rgba(212,175,55,.4);">
@@ -428,14 +434,14 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
   }
   if (q.get('premiere') === '1'){
     try {
-      localStorage.removeItem('boheme-intro-vue');
+      localStorage.removeItem('boheme-intro-vue-2');
       localStorage.removeItem('boheme-tuto');
     } catch(e){}
     return;
   }
   if (q.get('revoir') === '1') return;
   try {
-    if (localStorage.getItem('boheme-intro-vue') === '1'){
+    if (localStorage.getItem('boheme-intro-vue-2') === '1'){
       location.replace('ACCUEIL — Bohème.html' + location.search);   /* le hall (7 sept) : le site est l'application */
     }
   } catch(e){}
@@ -673,7 +679,7 @@ function allerAuKaraoke(){
   let lue = false;
   try {
     sessionStorage.setItem('boheme-plein-ecran', '1');
-    localStorage.setItem('boheme-intro-vue', '1');   /* l'intro est vue : plus de détour */
+    localStorage.setItem('boheme-intro-vue-2', '1');   /* l'intro est vue : plus de détour */
     lue = localStorage.getItem('boheme-bienvenue') === '1';
   } catch(e){}
   /* la premiere fois, le logo mene aux explications (la video, ce que contient

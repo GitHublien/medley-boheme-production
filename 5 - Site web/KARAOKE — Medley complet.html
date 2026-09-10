@@ -5,18 +5,18 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 /* ═══ LA PREMIÈRE FOIS, ON VOIT L'INTRO ═══
    Quelqu'un reçoit son lien et arrive ici directement : on l'envoie
    d'abord voir le film, une seule fois. La porte note son passage
-   (boheme-intro-vue), et toutes les visites suivantes viennent
+   (boheme-intro-vue-2), et toutes les visites suivantes viennent
    droit au karaoké. En local, sur l'ordinateur de travail, jamais
    de détour. Placé tout en haut : la redirection part avant même
    que la page ne se charge. */
 (function(){
   try {
     if (new URLSearchParams(location.search).get('premiere') === '1'){
-      localStorage.removeItem('boheme-intro-vue');
+      localStorage.removeItem('boheme-intro-vue-2');
       localStorage.removeItem('boheme-tuto');
     }
     if (!/github\.io$/i.test(location.hostname)) return;
-    if (localStorage.getItem('boheme-intro-vue') === '1') return;
+    if (localStorage.getItem('boheme-intro-vue-2') === '1') return;
     location.replace('PORTE — Bohème.html' + location.search);
   } catch(e){}
 })();
