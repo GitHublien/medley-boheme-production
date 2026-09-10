@@ -6725,7 +6725,7 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
   <p class="astuce"><b>Une chose à retenir :</b> si un dessin ne te dit rien, <b>garde le doigt appuyé dessus</b> une seconde. Une explication apparaît, sans rien déclencher. Et la visite guidée complète reste à ta disposition : le <b>point d'interrogation</b>, dans les autres commandes.</p>
   <div class="gestes">
     <button id="bvEntrer">Entrer dans l'atelier</button>
-    <button class="doux" id="bvTout">Voir les explications en entier</button>
+    <button class="doux" id="bvTout">Relire le mode d'emploi</button>
   </div>
 </div></div>
 
@@ -6742,6 +6742,23 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
   try { deja = localStorage.getItem(CLE); } catch(e){}
   const params = new URLSearchParams(location.search);
   const forcee = params.get('bienvenue') === '1';
+
+  /* ⚠️ 10 septembre — LES EXPLICATIONS SE LISENT AVANT D'ENTRER.
+     Elles étaient derrière un bouton facultatif (« voir les explications en entier »),
+     et Mickaël : « il n'y a même pas besoin de le proposer, il faut qu'il les VOIE en
+     entier avant de rentrer ». À la toute première ouverture de l'atelier, on l'envoie
+     donc lire la page complète ; son bouton « Entrer dans l'atelier » le ramène ici,
+     et cette carte-ci ne sert plus que de rappel (le « i » des commandes). */
+  if (deja !== '1' && !forcee){
+    let lue = null;
+    try { lue = localStorage.getItem('boheme-bienvenue'); } catch(e){}
+    if (lue !== '1'){
+      const p = new URLSearchParams(location.search);
+      p.delete('bienvenue');
+      location.replace('BIENVENUE — Bohème.html' + (p.toString() ? '?' + p.toString() : ''));
+      return;
+    }
+  }
   if (deja === '1' && !forcee) return;
 
   function fermer(){

@@ -48,7 +48,7 @@ const VERSION_SITE = '10/09/2026 · 19h25';
   const pied = document.createElement('footer');
   pied.innerHTML = '<div class="page"><img src="site-assets/signature-blanc.png" alt="" onerror="this.remove()">'
     + '<div class="liens">' + PAGES.map(p => '<a href="' + lien(p) + '">' + p.t + '</a>').join('') + '</div>'
-    + '<p>Bohème Production · Medley Starmania, Notre-Dame de Paris, Les Dix Commandements, Aimer · Palais des Festivals, Cannes, 4 octobre 2026</p></div>';
+    + '<p>Bohème Production · <b>Le Medley des Légendes</b> · Starmania, Notre-Dame de Paris, Les Dix Commandements, Roméo et Juliette · Palais des Festivals, Cannes, 4 octobre 2026</p></div>';
   document.body.appendChild(pied);
 
 
