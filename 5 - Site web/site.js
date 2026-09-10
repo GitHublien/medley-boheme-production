@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '10/09/2026 · 19h25';
+const VERSION_SITE = '10/09/2026 · 20h05';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -259,13 +259,21 @@ const VERSION_SITE = '10/09/2026 · 19h25';
     const boite = document.createElement('div');
     boite.className = 'musique';
     boite.innerHTML =
-        '<div class="mPan">'
+        '<button class="mRond" aria-label="Musique du site"><span class="mIco">♪</span></button>'
+      + '<div class="mPan">'
       +   '<button class="mNav" data-m="prec" aria-label="Morceau précédent">‹</button>'
       +   '<span class="mTitre"></span>'
       +   '<button class="mNav" data-m="suiv" aria-label="Morceau suivant">›</button>'
-      + '</div>'
-      + '<button class="mRond" aria-label="Musique du site"><span class="mIco">♪</span></button>';
-    document.body.appendChild(boite);
+      + '</div>';
+    /* ⚠️ 10 septembre — LE LECTEUR MONTE DANS LA BARRE, à côté de « Bohème ».
+       Mickaël : « pourquoi tu ne mets pas le lecteur en haut, au niveau de Bohème ? »
+       Il avait raison : en bas, il fallait sans cesse le tenir à l'écart de la barre du
+       bas et du menu. Dans la barre du haut, il ne peut recouvrir personne — et il se
+       trouve du premier coup d'œil, sur les trois dispositions (barre horizontale sur
+       ordinateur, réduite sur téléphone debout, colonne à gauche en paysage). */
+    const marque = nav.querySelector('.marque');
+    if (marque && marque.parentNode === nav) marque.insertAdjacentElement('afterend', boite);
+    else nav.appendChild(boite);
 
     const rond   = boite.querySelector('.mRond');
     const ico    = boite.querySelector('.mIco');
@@ -278,22 +286,8 @@ const VERSION_SITE = '10/09/2026 · 19h25';
     son.setAttribute('data-musique-du-site', '1');
     document.body.appendChild(son);
 
-    /* ═══ IL NE DOIT JAMAIS TOUCHER LA BARRE DU BAS ═══
-       « Il ne faut jamais qu'il y ait un bouton qui soit sur les autres. »
-       J'avais estimé la hauteur de la barre à 62 px, puis à 94. Mesurée : 95 px.
-       On arrête de deviner : on demande sa hauteur à la barre elle-même, et on se
-       pose 14 px au-dessus. Recalculé à chaque rotation, sur tous les téléphones. */
-    function seRanger(){
-      const barre = document.querySelector('.bas');
-      const visible = barre && getComputedStyle(barre).display !== 'none';
-      if (!visible){ boite.style.bottom = ''; return; }
-      const r = barre.getBoundingClientRect();
-      boite.style.bottom = Math.round(innerHeight - r.top + 14) + 'px';
-    }
-    seRanger();
-    addEventListener('resize', seRanger, { passive:true });
-    addEventListener('orientationchange', () => setTimeout(seRanger, 120), { passive:true });
-
+    /* Il vit maintenant DANS la barre du haut : plus rien à esquiver, plus aucun
+       calcul de position. C'est la barre qui le place, comme les autres boutons. */
     let replier = null;
     const deplier = () => {
       boite.classList.add('ouvert');

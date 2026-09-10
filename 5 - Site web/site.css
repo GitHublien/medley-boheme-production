@@ -106,6 +106,12 @@ section{ padding:clamp(3.2rem,8vw,7.5rem) 0; }
 .grille{ display:grid; gap:clamp(.8rem,1.6vw,1.3rem); grid-template-columns:repeat(12, 1fr); }
 .c4{ grid-column:span 4; } .c5{ grid-column:span 5; } .c6{ grid-column:span 6; } .c7{ grid-column:span 7; } .c8{ grid-column:span 8; } .c12{ grid-column:span 12; }
 .r2{ grid-row:span 2; }
+/* ⚠️ 10 septembre — LA DOUBLE HAUTEUR NE VAUT QUE SUR UN GRAND ÉCRAN.
+   Mesuré en 844×390 (téléphone couché) : la tuile de l'atelier faisait 704 px de
+   haut contre 345 pour toutes les autres. « Ça prend presque toute une page », et
+   ça creusait le trou gris à côté de « Qui chante quoi ». Dès que l'écran est bas
+   ou étroit, toutes les tuiles ont la même taille. */
+@media (max-height:760px), (max-width:1100px){ .r2{ grid-row:auto; } }
 
 /* ─── l'ouverture (hero) : image plein écran, calques en parallaxe ──── */
 .ouverture{ position:relative; min-height:100dvh; display:grid; align-items:end; padding:calc(var(--nav) + 3rem) 0 clamp(2.5rem,6vw,5rem); overflow:hidden; isolation:isolate; }
@@ -225,7 +231,7 @@ footer .liens a:hover{ color:var(--or2); }
   .grille{ grid-template-columns:repeat(6,1fr); }
   .c4,.c5,.c6,.c7,.c8{ grid-column:span 3; } .c12{ grid-column:span 6; }
   .six{ grid-template-columns:repeat(3,1fr); }
-  .mondes{ grid-template-columns:1fr 1fr; } .mondes .monde:last-child{ grid-column:span 2; }
+  .mondes{ grid-template-columns:1fr 1fr; }   /* 4 mondes = 2×2, personne ne s'étale (10 sept) */
   .nav a.l:nth-child(n+6){ display:none; }
 }
 /* téléphone debout : une colonne, la barre du bas sous le pouce */
@@ -235,7 +241,7 @@ footer .liens a:hover{ color:var(--or2); }
   .grille{ grid-template-columns:1fr; } .c4,.c5,.c6,.c7,.c8,.c12{ grid-column:span 1; } .r2{ grid-row:auto; }
   .tuile .coeur{ min-height:200px; }
   .six{ grid-template-columns:repeat(2,1fr); }
-  .mondes{ grid-template-columns:1fr; } .mondes .monde:last-child{ grid-column:auto; } .monde .coeur{ min-height:260px; }
+  .mondes{ grid-template-columns:1fr; } .monde .coeur{ min-height:260px; }
   .ouverture{ min-height:92dvh; padding-bottom:6.5rem; }
   .ouverture .descend{ display:none; }
   .ligne{ grid-template-columns:auto 1fr; } .ligne .h{ grid-column:2; }
@@ -260,7 +266,12 @@ footer .liens a:hover{ color:var(--or2); }
   .ouverture{ min-height:100dvh; padding-top:1.5rem; }
   h1{ font-size:clamp(2rem,6vh,3.2rem); } .lead{ font-size:.95rem; }
   section{ padding:2.2rem 0; }
+  /* PAYSAGE (10 sept) : deux tuiles par ligne, toutes de la même hauteur.
+     L'atelier gardait sa double hauteur (.r2) au milieu d'une grille de six :
+     il occupait presque une page à lui seul et laissait un trou gris à côté de
+     « Qui chante quoi ». Ici, personne ne déborde. */
   .grille{ grid-template-columns:repeat(6,1fr); } .c4,.c5,.c6,.c7,.c8{ grid-column:span 3; } .c12{ grid-column:span 6; }
+  .r2{ grid-row:auto; }
   .tuile .coeur{ min-height:170px; padding:1rem; }
   .six{ grid-template-columns:repeat(6,1fr); gap:.5rem; } .six .nom{ font-size:1rem; }
   .mondes{ grid-template-columns:repeat(3,1fr); } .monde .coeur{ min-height:220px; }
@@ -347,59 +358,53 @@ footer .liens a:hover{ color:var(--or2); }
 .enTete.a-image .texte{ justify-content:flex-end; }
 .enTete.a-image .lead{ margin-top:auto; }
 
-/* ═══ LA MUSIQUE DU SITE (10 septembre 2026) ═══════════════════════════════
-   « Je ne veux en aucun cas que ça gêne dans le site. » Alors : un rond de
-   42 px, en bas à droite, à peine visible tant qu'on ne s'en occupe pas.
-   Il ne se déplie qu'au toucher, et se replie tout seul au bout de 4,5 s.
-   Sur téléphone il se pose AU-DESSUS de la barre du bas, jamais dessus. */
-.musique{ position:fixed; right:16px; bottom:calc(18px + env(safe-area-inset-bottom));
-  z-index:41; display:flex; align-items:center; gap:.4rem; pointer-events:none; }
-/* ⚠️ 41, pas 38 : la barre du bas est à 40, et le rond passait DERRIÈRE elle sur
-   téléphone — « en mode téléphone il est caché derrière le menu, on ne le voit pas »
-   (Mickaël, 10 sept). Quand le menu plein écran s'ouvre, il s'efface. */
-body.menu .musique{ opacity:0; pointer-events:none; transition:opacity .3s; }
-.musique > *{ pointer-events:auto; }
+/* ═══ LA MUSIQUE DU SITE — DANS LA BARRE DU HAUT (10 septembre 2026) ═══════
+   Elle était en bas à droite, et il fallait sans cesse la tenir à l'écart de la
+   barre du bas. Mickaël : « pourquoi tu ne mets pas le lecteur en haut, au niveau
+   de Bohème ? » — dans la barre, il ne peut recouvrir personne, et on le trouve
+   du premier coup d'œil. Le panneau des titres se déplie par-dessus la page, sans
+   jamais élargir la barre. */
+.musique{ position:relative; display:flex; align-items:center; flex:none; }
 
-.musique .mRond{ width:42px; height:42px; flex:none; border-radius:50%; cursor:pointer;
-  border:1px solid rgba(212,175,55,.34); background:rgba(12,11,10,.72);
-  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  color:var(--or2); display:grid; place-items:center; font-size:1rem; line-height:1;
-  opacity:.42; transition:opacity .5s var(--lent), transform .5s var(--lent), border-color .5s; }
-.musique .mRond:hover{ opacity:.95; }
-.musique .mRond:active{ transform:scale(.93); }
-.musique.joue .mRond{ opacity:.95; border-color:rgba(212,175,55,.7);
-  box-shadow:0 0 0 0 rgba(212,175,55,.32); animation:mPulse 3.6s ease-in-out infinite; }
-@keyframes mPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(212,175,55,.26) }
-                   50%{ box-shadow:0 0 0 7px rgba(212,175,55,0) } }
-/* pendant une vidéo, elle dort : on le voit, elle s'efface presque */
-.musique.endormie .mRond{ opacity:.2; animation:none; }
+.musique .mRond{ width:34px; height:34px; flex:none; border-radius:50%; cursor:pointer;
+  border:1px solid rgba(212,175,55,.3); background:rgba(212,175,55,.07);
+  color:var(--or2); display:grid; place-items:center; font-size:.92rem; line-height:1;
+  opacity:.62; transition:opacity .5s var(--lent), transform .4s var(--lent), border-color .5s, background .5s; }
+.musique .mRond:hover{ opacity:1; background:rgba(212,175,55,.16); }
+.musique .mRond:active{ transform:scale(.92); }
+.musique.joue .mRond{ opacity:1; border-color:rgba(212,175,55,.72); background:rgba(212,175,55,.16);
+  animation:mPulse 3.6s ease-in-out infinite; }
+@keyframes mPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(212,175,55,.3) }
+                   50%{ box-shadow:0 0 0 6px rgba(212,175,55,0) } }
+/* pendant une vidéo elle dort : on le voit, sans que ça saute aux yeux */
+.musique.endormie .mRond{ opacity:.28; animation:none; }
 
-/* le panneau des titres : replié par défaut, il ne prend aucune place */
-.musique .mPan{ display:flex; align-items:center; gap:.15rem; max-width:0; overflow:hidden;
-  opacity:0; transform:translateX(10px); white-space:nowrap;
-  border-radius:999px; background:rgba(12,11,10,.82);
-  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(212,175,55,.2); padding:0;
-  transition:max-width .55s var(--lent), opacity .4s, transform .55s var(--lent), padding .55s; }
-.musique.ouvert .mPan{ max-width:min(64vw,20rem); opacity:1; transform:none; padding:.28rem .3rem; }
-.musique .mTitre{ font-size:.76rem; letter-spacing:.05em; color:var(--gris);
-  padding:0 .35rem; overflow:hidden; text-overflow:ellipsis; }
+/* le panneau : il FLOTTE sous le rond, il n'écarte jamais la barre */
+.musique .mPan{ position:absolute; top:calc(100% + 10px); left:50%; transform:translateX(-50%) translateY(-6px);
+  display:flex; align-items:center; gap:.15rem; white-space:nowrap;
+  opacity:0; visibility:hidden; pointer-events:none;
+  border-radius:999px; background:rgba(12,11,10,.94); padding:.28rem .3rem;
+  border:1px solid rgba(212,175,55,.3); box-shadow:0 16px 40px rgba(0,0,0,.6);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  transition:opacity .35s, transform .45s var(--lent), visibility .35s; }
+.musique.ouvert .mPan{ opacity:1; visibility:visible; pointer-events:auto; transform:translateX(-50%); }
+.musique .mTitre{ font-size:.76rem; letter-spacing:.04em; color:var(--gris);
+  padding:0 .4rem; max-width:11rem; overflow:hidden; text-overflow:ellipsis; }
 .musique.joue .mTitre{ color:var(--or2); }
 .musique .mNav{ width:26px; height:26px; flex:none; border:0; border-radius:50%; cursor:pointer;
-  background:transparent; color:var(--or2); font-size:1.1rem; line-height:1; opacity:.75;
+  background:transparent; color:var(--or2); font-size:1.1rem; line-height:1; opacity:.8;
   display:grid; place-items:center; }
-.musique .mNav:hover{ opacity:1; background:rgba(212,175,55,.14); }
+.musique .mNav:hover{ opacity:1; background:rgba(212,175,55,.16); }
 
-/* La barre du bas n'existe QU'EN PORTRAIT sous 700 px : c'est là, et là seulement,
-   qu'il faut monter. En paysage il n'y a pas de barre, et le rond reste en bas. */
-@media (max-width:700px) and (orientation:portrait){
-  .musique{ right:14px; bottom:calc(94px + env(safe-area-inset-bottom)); }
-}
+/* téléphone debout : la barre se réduit à la marque, la musique et le menu */
 @media (max-width:820px){
-  .musique .mRond{ width:38px; height:38px; font-size:.92rem; }
-  .musique.ouvert .mPan{ max-width:min(58vw,15rem); }
-  .musique .mTitre{ font-size:.7rem; }
+  .musique .mRond{ width:32px; height:32px; font-size:.86rem; }
+  .musique .mTitre{ font-size:.72rem; max-width:8.5rem; }
 }
-@media (prefers-reduced-motion: reduce){
-  .musique.joue .mRond{ animation:none; }
+/* paysage : la barre devient une colonne à gauche — le panneau sort sur le côté */
+@media (max-height:640px) and (orientation:landscape){
+  .musique{ justify-content:center; margin:.25rem 0; }
+  .musique .mPan{ top:50%; left:calc(100% + 10px); transform:translateY(-50%) translateX(-6px); }
+  .musique.ouvert .mPan{ transform:translateY(-50%); }
 }
+@media (prefers-reduced-motion: reduce){ .musique.joue .mRond{ animation:none; } }
