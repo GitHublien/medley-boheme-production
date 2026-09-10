@@ -6,6 +6,26 @@
 <title>Bohème — l'application</title>
 <meta name="theme-color" content="#050505">
 <link rel="manifest" href="manifest.json">
+<script>
+/* ═══ ON ATTRAPE LA PROPOSITION DE CHROME AVANT TOUT LE RESTE ═══
+   Chrome n'annonce QU'UNE FOIS qu'il accepte d'installer le site
+   (l'événement « beforeinstallprompt »), et il le fait très tôt —
+   souvent avant que le gros script du bas ait fini de se lire.
+   L'écouteur était posé là-bas : la proposition arrivait dans le
+   vide et était perdue pour de bon. D'où « ça ne s'installe pas
+   tout seul » (11 septembre). Ici, on est la première ligne de la
+   page : plus rien ne peut passer avant nous. */
+window.__bip = null;
+window.__bipQuand = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  window.__bip = e;
+  window.__bipQuand = Date.now();
+  if (typeof window.__bipArrivee === 'function') window.__bipArrivee(e);
+});
+window.__installee = false;
+window.addEventListener('appinstalled', function(){ window.__installee = true; });
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -177,22 +197,13 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
 if ('serviceWorker' in navigator){
   try {
     navigator.serviceWorker.register('sw.js');
-    /* AU TOUT PREMIER PASSAGE, l'ouvrier n'est pas encore aux commandes quand la
-       page s'affiche — et Chrome ne propose l'installation QUE s'il l'est déjà.
-       C'est pour ça que « ça ne partait pas tout seul » : il aurait fallu ouvrir
-       le lien une deuxième fois. Alors on recharge nous-mêmes, UNE seule fois,
-       dès qu'il prend les commandes. Deux verrous contre la boucle : le drapeau
-       de session, et le fait qu'au retour l'ouvrier est déjà là. */
-    if (!navigator.serviceWorker.controller){
-      let dejaFait = false;
-      try { dejaFait = sessionStorage.getItem('boheme-sw-relance') === '1'; } catch(e){}
-      if (!dejaFait){
-        navigator.serviceWorker.addEventListener('controllerchange', function(){
-          try { sessionStorage.setItem('boheme-sw-relance', '1'); } catch(e){}
-          location.reload();
-        });
-      }
-    }
+    /* ⚠️ 11 septembre — LE RECHARGEMENT AUTOMATIQUE A ÉTÉ RETIRÉ.
+       Hier soir j'avais fait recharger la page dès que l'ouvrier prenait les
+       commandes, en croyant aider. C'était probablement nuisible : Chrome était
+       en train d'examiner le site pour décider s'il l'installe, le rechargement
+       annulait cet examen, et sa proposition n'arrivait jamais. Chrome refait
+       cet examen tout seul quand l'ouvrier s'active — aucun rechargement n'est
+       nécessaire. NE PAS LE REMETTRE. */
   } catch(e){}
 }
 /* filet : si quoi que ce soit casse dans le script, on montre quand même un écran complet */
@@ -253,11 +264,23 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
   copier(document.getElementById('copier'), document.getElementById('champLien'));
   copier(document.getElementById('copier2'), document.getElementById('champLien2'));
 
-  let promesse = null;
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promesse = e;
-    const a = document.getElementById('attente'); if (a) a.textContent = 'Prêt. Appuie sur le bouton — ou n\'importe où.';
+  /* La proposition de Chrome a peut-être DÉJÀ été attrapée par les quelques
+     lignes placées tout en haut de la page (elle arrive souvent avant qu'on
+     arrive ici). On la récupère telle quelle, et on demande à être prévenu
+     si elle arrive plus tard. */
+  let promesse = window.__bip || null;
+  function proposition(e){
+    promesse = e;
+    const a = document.getElementById('attente');
+    if (a) a.textContent = 'Prêt. Appuie sur le bouton — ou n\'importe où.';
     const o = document.getElementById('grosBoutonOrdi'); if (o) o.style.display = 'inline-flex';
-  });
+    /* elle arrive en retard, alors qu'on avait déjà basculé sur les
+       explications manuelles : on revient à l'installation en un geste. */
+    const man = document.getElementById('e-manuel');
+    if (man && man.classList.contains('la') && (android || tactile)) montrer('e-android');
+  }
+  window.__bipArrivee = proposition;
+  if (promesse) proposition(promesse);
   window.addEventListener('appinstalled', () => montrer('e-fait'));
 
   if (enApp){ montrer('e-app'); return; }
@@ -280,8 +303,11 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
     };
     document.getElementById('grosBouton').addEventListener('click', lancer);
     document.getElementById('e-android').addEventListener('pointerdown', e => { if (promesse && !e.target.closest('a')) lancer(); }, { once:false });
-    /* si Chrome n'a rien proposé au bout de 4 s, on montre le chemin manuel, sans mur */
-    setTimeout(() => { if (!promesse && document.getElementById('e-android').classList.contains('la')) montrer('e-manuel'); }, 4000);
+    /* Si Chrome n'a rien proposé, on montre le chemin manuel — mais PAS trop tôt :
+       sa proposition arrive parfois après plusieurs secondes, et l'écran manuel
+       la faisait passer pour un échec. Dix secondes, et si elle arrive quand même
+       après, « proposition() » nous ramène tout seul à l'installation en un geste. */
+    setTimeout(() => { if (!promesse && document.getElementById('e-android').classList.contains('la')) montrer('e-manuel'); }, 10000);
     return;
   }
   montrer('e-ordi');

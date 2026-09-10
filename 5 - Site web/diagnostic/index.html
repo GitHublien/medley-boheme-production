@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bohème — diagnostic de l'installation</title>
+<meta name="theme-color" content="#050505">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" href="../icone-192.png">
+<script>
+/* on attrape la proposition de Chrome AVANT tout le reste : c'est
+   exactement ce qu'on cherche à vérifier, il ne faut pas la rater */
+window.__bip = null; window.__bipMs = null;
+var __t0 = Date.now();
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); window.__bip = e; window.__bipMs = Date.now() - __t0;
+  if (window.__bipVu) window.__bipVu();
+});
+window.__installee = false;
+window.addEventListener('appinstalled', function(){ window.__installee = true; if (window.__bipVu) window.__bipVu(); });
+</script>
+<style>
+  :root{ --or:#d4af37; --or2:#f1d27a; --encre:#f2ede1; --gris:#bcb4a2; --fond:#050505;
+         --vert:#9dff35; --rouge:#ff7a6b; --orange:#ffc814; }
+  *{ box-sizing:border-box }
+  html,body{ margin:0; background:var(--fond); color:var(--encre);
+             font-family:'Outfit',system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased }
+  body{ padding:calc(1.6rem + env(safe-area-inset-top)) 1.1rem calc(2rem + env(safe-area-inset-bottom));
+        max-width:40rem; margin:0 auto }
+  h1{ font-family:Georgia,serif; font-weight:600; font-size:1.5rem; margin:0 0 .3rem; color:var(--or2) }
+  .sous{ color:var(--gris); font-size:.95rem; margin:0 0 1.3rem; line-height:1.5 }
+  .l{ display:flex; gap:.7rem; align-items:flex-start; padding:.75rem .9rem; margin-bottom:.5rem;
+      border-radius:.9rem; background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.2);
+      font-size:.95rem; line-height:1.45 }
+  .l i{ flex:none; width:1.5rem; height:1.5rem; border-radius:50%; display:grid; place-items:center;
+        font-style:normal; font-weight:700; font-size:.85rem; margin-top:.05rem }
+  .ok i{ background:rgba(157,255,53,.18); color:var(--vert) } .ok{ border-color:rgba(157,255,53,.3) }
+  .no i{ background:rgba(255,122,107,.18); color:var(--rouge) } .no{ border-color:rgba(255,122,107,.42) }
+  .at i{ background:rgba(255,200,20,.18); color:var(--orange) } .at{ border-color:rgba(255,200,20,.34) }
+  .l b{ color:var(--encre) } .l span{ color:var(--gris) } .l em{ color:var(--gris); font-style:normal; font-size:.86rem; display:block; margin-top:.15rem }
+  .btn{ display:block; width:100%; padding:1rem 1.4rem; margin:.6rem 0 0; border:0; border-radius:999px;
+        font:inherit; font-size:1.05rem; font-weight:600; cursor:pointer;
+        background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408 }
+  .btn.doux{ background:rgba(212,175,55,.12); color:var(--or2); border:1px solid rgba(212,175,55,.5); font-weight:400 }
+  .btn:disabled{ opacity:.4 }
+  h2{ font-size:1rem; color:var(--or2); margin:1.6rem 0 .6rem; font-weight:600;
+      text-transform:uppercase; letter-spacing:.08em }
+  textarea{ width:100%; height:9rem; margin-top:.6rem; padding:.8rem; border-radius:.8rem; font-size:.8rem;
+            background:rgba(255,255,255,.05); color:var(--gris); border:1px solid rgba(212,175,55,.3);
+            font-family:ui-monospace,monospace }
+</style>
+</head>
+<body>
+
+<h1>Diagnostic de l'installation</h1>
+<p class="sous">Cette page n'installe rien toute seule : elle regarde ce que ton téléphone
+répond, et le met à plat. Laisse-la ouverte <b>quinze secondes</b>, puis appuie sur
+« Copier le résultat » et colle-le-moi.</p>
+
+<div id="liste"></div>
+
+<h2>Si l'installation est possible</h2>
+<button class="btn" id="installer" disabled>Installer Bohème maintenant</button>
+<button class="btn doux" id="copier">Copier le résultat</button>
+<textarea id="brut" readonly></textarea>
+
+<script>
+const $ = i => document.getElementById(i);
+const L = [];
+function ligne(etat, titre, valeur, note){ L.push({ etat, titre, valeur, note: note || '' }); }
+
+function dessiner(){
+  $('liste').innerHTML = L.map(x =>
+    '<div class="l ' + x.etat + '"><i>' + (x.etat === 'ok' ? '✓' : x.etat === 'no' ? '✕' : '…') + '</i>'
+    + '<div><b>' + x.titre + '</b> <span>' + x.valeur + '</span>'
+    + (x.note ? '<em>' + x.note + '</em>' : '') + '</div></div>').join('');
+  $('brut').value = 'DIAGNOSTIC BOHÈME — ' + new Date().toLocaleString('fr-FR') + '\n'
+    + L.map(x => (x.etat === 'ok' ? '[OK] ' : x.etat === 'no' ? '[NON] ' : '[?] ')
+                 + x.titre + ' : ' + x.valeur + (x.note ? ' — ' + x.note : '')).join('\n');
+}
+
+(async () => {
+  const ua = navigator.userAgent || '';
+  const nav = /EdgA|Edg\//i.test(ua) ? 'Edge' : /SamsungBrowser/i.test(ua) ? 'Samsung Internet'
+            : /OPR|Opera/i.test(ua) ? 'Opera' : /Firefox|FxiOS/i.test(ua) ? 'Firefox'
+            : /CriOS/i.test(ua) ? 'Chrome sur iPhone' : /Chrome/i.test(ua) ? 'Chrome' : 'autre';
+  const dedans = /WhatsApp|FBAN|FBAV|FB_IAB|Messenger|Instagram|MicroMessenger|; wv\)/i.test(ua);
+  const iOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const enApp = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+
+  ligne('ok', 'Navigateur', nav + (dedans ? ' — DANS une autre application (WhatsApp, etc.)' : ''),
+        dedans ? 'Aucune installation possible ici : il faut ouvrir dans le vrai navigateur.' : '');
+  ligne('ok', 'Appareil', iOS ? 'iPhone ou iPad' : /Android/i.test(ua) ? 'Android' : 'ordinateur ou autre');
+  ligne(enApp ? 'ok' : 'at', 'Mode d\'affichage', enApp ? 'DANS l\'application installée' : 'dans le navigateur',
+        enApp ? 'Chrome ne propose jamais d\'installer ce qui est déjà installé.' : '');
+
+  /* 1. le service worker */
+  if (!('serviceWorker' in navigator)) ligne('no', 'Service worker', 'pas géré par ce navigateur');
+  else {
+    try {
+      const r = await navigator.serviceWorker.register('../sw.js');
+      const actif = !!(r.active);
+      const ctrl = !!navigator.serviceWorker.controller;
+      ligne(actif ? 'ok' : 'at', 'Service worker', actif ? 'enregistré et actif' : 'enregistré, pas encore actif');
+      ligne(ctrl ? 'ok' : 'at', 'Il pilote la page', ctrl ? 'oui' : 'pas encore',
+            ctrl ? '' : 'Chrome n\'évalue l\'installation qu\'une fois qu\'il pilote.');
+    } catch (e) { ligne('no', 'Service worker', 'REFUSÉ : ' + e.message); }
+  }
+
+  /* 2. le manifeste et les icônes */
+  try {
+    const m = await (await fetch('../manifest.json', { cache: 'no-store' })).json();
+    ligne('ok', 'Manifeste', 'lu — « ' + m.name +' », affichage « ' + m.display + ' »');
+    let bonnes = 0;
+    for (const ic of (m.icons || [])) {
+      try { const rep = await fetch('../' + ic.src, { method: 'GET', cache: 'no-store' });
+            if (rep.ok) bonnes++; } catch (e) {}
+    }
+    ligne(bonnes >= 2 ? 'ok' : 'no', 'Icônes', bonnes + ' sur ' + (m.icons || []).length + ' accessibles');
+    try { const s = await fetch('../' + m.start_url.replace(/^\.\//, ''), { method: 'GET', cache: 'no-store' });
+          ligne(s.ok ? 'ok' : 'no', 'Page de départ', s.ok ? 'accessible' : 'INTROUVABLE (' + s.status + ')'); }
+    catch (e) { ligne('no', 'Page de départ', 'erreur : ' + e.message); }
+  } catch (e) { ligne('no', 'Manifeste', 'ILLISIBLE : ' + e.message); }
+
+  /* 3. déjà installée ? */
+  if (navigator.getInstalledRelatedApps) {
+    try { const apps = await navigator.getInstalledRelatedApps();
+          ligne('ok', 'Déjà installée ?', apps.length ? 'OUI, ' + apps.length + ' trouvée(s)' : 'non'); }
+    catch (e) { ligne('at', 'Déjà installée ?', 'impossible à savoir'); }
+  }
+
+  /* 4. LE POINT CENTRAL : la proposition de Chrome */
+  const maj = () => {
+    const i = L.findIndex(x => x.titre === 'Proposition d\'installation');
+    const ok = !!window.__bip;
+    const x = { etat: ok ? 'ok' : 'at',
+                titre: 'Proposition d\'installation',
+                valeur: ok ? 'REÇUE au bout de ' + window.__bipMs + ' ms' : 'pas encore reçue',
+                note: ok ? 'Le bouton doré ci-dessous marche.'
+                         : 'Si elle n\'arrive jamais, Chrome refuse d\'installer ce site — ou l\'a déjà proposé et refusé récemment.' };
+    if (i < 0) L.push(x); else L[i] = x;
+    $('installer').disabled = !ok;
+    if (window.__installee){
+      const j = L.findIndex(y => y.titre === 'Résultat');
+      const y = { etat:'ok', titre:'Résultat', valeur:'INSTALLÉE ✓', note:'' };
+      if (j < 0) L.push(y); else L[j] = y;
+    }
+    dessiner();
+  };
+  window.__bipVu = maj;
+  maj();
+  /* on regarde pendant quinze secondes : elle arrive parfois tard */
+  let n = 0; const t = setInterval(() => { maj(); if (++n > 30) clearInterval(t); }, 500);
+})();
+
+$('installer').addEventListener('click', async () => {
+  if (!window.__bip) return;
+  window.__bip.prompt();
+  const c = await window.__bip.userChoice;
+  const i = L.findIndex(x => x.titre === 'Résultat');
+  const x = { etat: c && c.outcome === 'accepted' ? 'ok' : 'no', titre: 'Résultat',
+              valeur: c && c.outcome === 'accepted' ? 'ACCEPTÉE — l\'application s\'installe' : 'refusée (« ' + (c ? c.outcome : '?') + ' »)',
+              note: '' };
+  if (i < 0) L.push(x); else L[i] = x;
+  window.__bip = null; $('installer').disabled = true; dessiner();
+});
+
+$('copier').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('brut').value); $('copier').textContent = 'Copié ✓'; }
+  catch (e) { $('brut').select(); document.execCommand('copy'); $('copier').textContent = 'Copié ✓'; }
+});
+</script>
+</body>
+</html>
