@@ -326,8 +326,12 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
       L.push('navigateur : ' + (navigator.userAgent || '').slice(0, 150));
       L.push('mode : ' + (enApp ? 'DANS l\'application' : 'navigateur')
              + (dedans ? ' (dans une autre appli)' : ''));
-      L.push('proposition de Chrome : ' + (promesse ? 'REÇUE' : 'JAMAIS REÇUE')
-             + (window.__bipQuand ? ' (à ' + (window.__bipQuand - window.__depart) + ' ms)' : ''));
+      L.push('proposition de Chrome : '
+             + (window.__bip ? 'REÇUE et disponible'
+                : window.__bipQuand ? 'reçue mais PERDUE ou déjà utilisée'
+                : 'jamais reçue')
+             + (window.__bipQuand ? ' (arrivée à ' + (window.__bipQuand - window.__depart) + ' ms)' : '')
+             + ' · copie interne : ' + (promesse ? 'oui' : 'non'));
       L.push('depuis l\'ouverture : ' + (Date.now() - window.__depart) + ' ms');
       try {
         const r = await navigator.serviceWorker.getRegistration();
@@ -370,38 +374,60 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
        renvoyait l'utilisateur vers les trois points pour rien. On le lui dit. */
     if (navigator.getInstalledRelatedApps){
       navigator.getInstalledRelatedApps().then(apps => {
-        if (apps && apps.length && !promesse) montrer('e-deja');
+        if (apps && apps.length && !window.__bip) montrer('e-deja');
       }).catch(()=>{});
     }
-    /* le petit texte sous le bouton dit la vérité, seconde par seconde */
+    /* ═══ ON SURVEILLE LA SOURCE, PAS UNE COPIE (11 sept) ═══
+       Le rapport de Mickaël disait « JAMAIS REÇUE (à 571 ms) » : Chrome avait bien
+       envoyé sa proposition — la page l'avait horodatée — mais la variable qui devait
+       la garder était restée vide. C'est le défaut de fond : on recopiait la
+       proposition au chargement, et si la copie se faisait au mauvais instant elle
+       restait vide pour toujours. Désormais on relit « window.__bip » quatre fois par
+       seconde, et surtout AU MOMENT MÊME du geste. Plus aucune question d'instant. */
     const att = document.getElementById('attente');
     let s = 0;
     const tic = setInterval(() => {
-      if (promesse || !document.getElementById('e-android').classList.contains('la')){ clearInterval(tic); return; }
-      s += 1;
-      if (att && s >= 3) att.textContent = 'Chrome n\'a encore rien proposé (' + s + ' s). S\'il ne dit rien, c\'est qu\'elle est déjà installée.';
-      if (s > 20) clearInterval(tic);
-    }, 1000);
-    /* « automatique » : Chrome exige un geste de l'utilisateur pour lancer l'installation.
-       Alors le PREMIER geste, où qu'il soit sur l'écran, la lance — pas seulement le bouton. */
+      const ecran = document.getElementById('e-android').classList.contains('la')
+                 || document.getElementById('e-manuel').classList.contains('la');
+      if (!ecran){ clearInterval(tic); return; }
+      if (window.__bip){ proposition(window.__bip); clearInterval(tic); return; }
+      if (++s % 4 === 0 && att && s >= 12)
+        att.textContent = 'Chrome n\'a encore rien proposé (' + (s / 4 | 0) + ' s).';
+      if (s > 120) clearInterval(tic);
+    }, 250);
+    /* « automatique » : Chrome exige un geste de l'utilisateur pour ouvrir sa fenêtre
+       d'installation. Alors le PREMIER geste, où qu'il soit sur l'écran, la lance. */
     const lancer = async () => {
-      if (!promesse){ montrer('e-manuel'); return; }
-      const p = promesse; promesse = null;
-      p.prompt(); const c = await p.userChoice;
-      if (c && c.outcome === 'accepted') montrer('e-fait'); else promesse = p;
+      const p = window.__bip;                 /* la source, à l'instant du geste */
+      if (!p){ montrer('e-manuel'); return; }
+      window.__bip = null;                    /* une proposition ne se rejoue pas */
+      try { p.prompt(); } catch(x){ window.__bip = p; montrer('e-manuel'); return; }
+      const c = await p.userChoice;
+      if (c && c.outcome === 'accepted') montrer('e-fait'); else window.__bip = p;
     };
     document.getElementById('grosBouton').addEventListener('click', lancer);
-    document.getElementById('e-android').addEventListener('pointerdown', e => { if (promesse && !e.target.closest('a')) lancer(); }, { once:false });
-    /* Si Chrome n'a rien proposé, on montre le chemin manuel — mais PAS trop tôt :
-       sa proposition arrive parfois après plusieurs secondes, et l'écran manuel
-       la faisait passer pour un échec. Dix secondes, et si elle arrive quand même
-       après, « proposition() » nous ramène tout seul à l'installation en un geste. */
-    setTimeout(() => { if (!promesse && document.getElementById('e-android').classList.contains('la')) montrer('e-manuel'); }, 10000);
+    /* le geste marche aussi depuis l'écran manuel : si la proposition est arrivée
+       entre-temps, un doigt posé n'importe où ouvre quand même l'installation */
+    ['e-android','e-manuel'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('pointerdown', e => {
+        if (window.__bip && !e.target.closest('a,button,textarea')) lancer();
+      });
+    });
+    /* Si Chrome n'a vraiment rien proposé, on montre le chemin manuel — mais pas
+       trop tôt, et sans fermer la porte : la surveillance ci-dessus continue. */
+    setTimeout(() => { if (!window.__bip && document.getElementById('e-android').classList.contains('la')) montrer('e-manuel'); }, 10000);
     return;
   }
   montrer('e-ordi');
   const o = document.getElementById('grosBoutonOrdi');
-  o.addEventListener('click', async () => { if (!promesse) return; promesse.prompt(); const c = await promesse.userChoice; promesse = null; if (c && c.outcome === 'accepted') montrer('e-fait'); });
+  o.addEventListener('click', async () => {
+    const p = window.__bip; if (!p) return;
+    window.__bip = null;
+    try { p.prompt(); } catch(x){ window.__bip = p; return; }
+    const c = await p.userChoice;
+    if (c && c.outcome === 'accepted') montrer('e-fait'); else window.__bip = p;
+  });
 })();
 </script>
 </body>
