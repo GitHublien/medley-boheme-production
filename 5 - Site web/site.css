@@ -314,6 +314,11 @@ footer .liens a:hover{ color:var(--or2); }
 @media (max-width:700px) and (orientation:portrait){
   .ouverture.a-image .fond{ aspect-ratio:768/1376; max-height:none; width:100%; }
   .ouverture.a-image{ padding-top:calc(var(--nav) + .6rem); }
+  /* Mesure sur le telephone de Mickael (406x904), 10/09 au soir : l'image finit
+     a 798, la barre du bas commence a 799, et le paragraphe demarrait a 821 -
+     c'est-a-dire SOUS la barre. Le texte laisse maintenant la place de la barre :
+     au repos on voit l'image puis la barre, et le texte arrive en defilant. */
+  .ouverture.a-image .texte{ padding-top:7.5rem; }
 }
 
 /* LE MENU PLEIN ÉCRAN DÉFILE (7 sept) : en paysage, neuf entrées ne tiennent pas dans 390 px.
