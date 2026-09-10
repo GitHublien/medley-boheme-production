@@ -548,3 +548,13 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   .voile a{ padding:.38rem 0; font-size:1.2rem; }
   .voile a small{ font-size:.6rem; }
 }
+
+/* Vu sur la planche du 11/09 : « Qui chante quoi » se cassait sur deux lignes dans
+   le menu. Le titre ne se coupe jamais ; c'est le sous-titre qui plie, à droite. */
+.voile a{ align-items:flex-start; }
+.voile a span{ white-space:nowrap; }
+.voile a small{ text-align:right; max-width:44%; line-height:1.3; padding-top:.45em; }
+/* debout, dans un navigateur : « Installer », onzième entrée, passait sous la barre du bas */
+@media (max-width:700px) and (orientation:portrait){
+  .voile{ padding-bottom:calc(env(safe-area-inset-bottom) + 130px); }
+}
