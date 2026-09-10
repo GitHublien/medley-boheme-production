@@ -39,6 +39,54 @@
   const poser = () => {
     if (!document.body) return setTimeout(poser, 100);
     document.head.appendChild(css); document.body.appendChild(a);
+    /* ⚠️ Les rendez-vous d'ABORD, le premier essai ENSUITE : si le premier appel
+       échoue (page à moitié construite, commandes pas encore posées), les lignes
+       qui le suivent ne s'exécutent jamais — et le bouton ne se range plus du tout.
+       C'est ce qui s'est passé le 10 septembre : la logique était bonne, elle
+       n'était simplement jamais rappelée. */
+    addEventListener('resize', ranger, { passive:true });
+    addEventListener('orientationchange', () => setTimeout(ranger, 150), { passive:true });
+    /* les pages posent souvent leurs commandes après coup : on revérifie */
+    [0, 400, 1200, 2500].forEach(t => setTimeout(ranger, t));
+    if (document.readyState !== 'complete') addEventListener('load', () => setTimeout(ranger, 300));
   };
+  const ranger = () => { try { seRanger(); } catch(e){} };
+
+  /* ═══ IL NE DOIT RECOUVRIR AUCUN AUTRE BOUTON (10 septembre 2026) ═══
+     Mesuré sur le tutoriel, en 390×844 : « Le site » se posait EXACTEMENT sur
+     « ← Précédent » et, comme il est au premier plan, c'est lui qu'on touchait.
+     Le bouton « Précédent » du guide était donc inutilisable sur téléphone.
+     Mickaël : « il ne faut jamais qu'il y ait un bouton qui soit sur les autres. »
+     Désormais il regarde ce qu'il y a sous lui, et il monte tant qu'il gêne. */
+  function seRanger(){
+    a.style.top = ''; a.style.bottom = ''; a.style.transform = '';
+    const genants = [...document.querySelectorAll('a, button, .btn, [role="button"]')].filter(e => {
+      if (e === a || a.contains(e)) return false;
+      const st = getComputedStyle(e);
+      if (st.display === 'none' || st.visibility === 'hidden' || +st.opacity < .05) return false;
+      /* seuls comptent ceux qui flottent : le reste défile et ne gêne jamais */
+      let p = e, fixe = false;
+      for (let i = 0; i < 6 && p; i++, p = p.parentElement)
+        if (getComputedStyle(p).position === 'fixed'){ fixe = true; break; }
+      if (!fixe) return false;
+      const r = e.getBoundingClientRect();
+      return r.width > 10 && r.height > 10;
+    });
+    const chevauche = () => {
+      const r = a.getBoundingClientRect();
+      return genants.find(e => {
+        const c = e.getBoundingClientRect();
+        return !(r.right < c.left || r.left > c.right || r.bottom < c.top || r.top > c.bottom);
+      });
+    };
+    let obstacle = chevauche(), tours = 0;
+    while (obstacle && tours++ < 6){
+      const c = obstacle.getBoundingClientRect();
+      /* on se range juste AU-DESSUS de ce qui gêne, avec dix pixels de marge */
+      a.style.top = 'auto';
+      a.style.bottom = Math.round(innerHeight - c.top + 10) + 'px';
+      obstacle = chevauche();
+    }
+  }
   poser();
 })();
