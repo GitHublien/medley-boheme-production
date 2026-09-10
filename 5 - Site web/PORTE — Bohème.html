@@ -656,9 +656,16 @@ function partir(){
   invite.classList.remove('la');
   curseur.style.opacity = 0;
 
+  /* 10 sept — la chute à travers le visage d'Élie ne concerne qu'Élie : le film
+     d'accueil est maintenant pour les six, et voir la tête d'Élie à la sortie
+     n'a plus de sens pour les cinq autres. Eux ont la sortie sobre (le logo
+     s'approche et s'éclaire, 1,6 s), qui était déjà la sortie de secours. */
+  let pourQui = '';
+  try { pourQui = (new URLSearchParams(location.search).get('pour') || localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
+  const chuteElie = pourQui === 'elie' ? passage.play() : Promise.reject(new Error('pas Élie'));
   passage.muted = film.muted;
   passage.volume = 1;
-  passage.play().then(() => {
+  chuteElie.then(() => {
     passage.classList.add('la');
     halo.classList.remove('la'); pouss.classList.remove('la');
     passage.addEventListener('ended', () => allerAuKaraoke(), {once:true});
