@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '10/09/2026 · 18h40';
+const VERSION_SITE = '10/09/2026 · 19h25';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -207,4 +207,166 @@ const VERSION_SITE = '10/09/2026 · 18h40';
     recu.setAttribute('href', NUMERO ? 'https://wa.me/' + NUMERO + '?text=' + msg : 'https://wa.me/?text=' + msg);
     recu.setAttribute('target', '_blank'); recu.setAttribute('rel', 'noopener');
   }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     LA MUSIQUE DU SITE (10 septembre 2026)
+
+     Trois règles données par Mickaël, dans l'ordre où il les a dites :
+       1. « pas trop trop fort, assez bas pour ne pas gêner pendant qu'on
+          regarde le site » → volume 0,16, et jamais plus ;
+       2. « quand on regarde des vidéos, il faut ABSOLUMENT que ça s'arrête,
+          c'est très important » → toute lecture d'un son ou d'une vidéo, où
+          que ce soit dans la page, met la musique en pause immédiatement ;
+       3. « il faut que le lecteur soit adaptable pour les portables, je ne
+          veux en aucun cas que ça gêne » → un simple rond en bas à droite,
+          au-dessus de la barre du bas ; il ne se déplie que si on le touche,
+          et il se replie tout seul.
+
+     Pour ajouter un morceau : une ligne dans MUSIQUES, et c'est tout.
+     ═══════════════════════════════════════════════════════════════════════ */
+  (function musique(){
+    const MUSIQUES = [
+      { f:'media/site/air-sing-boheme.mp3',     t:'Air Sing Bohème' },
+      { f:'media/site/boheme-on-decolle-2.mp3', t:'Bohème, on décolle 2' },
+      { f:'media/site/boheme-on-decolle-3.mp3', t:'Bohème, on décolle 3' },
+    ];
+    if (!MUSIQUES.length) return;
+    const VOLUME = 0.16;          /* bas, volontairement */
+    const CLE = 'boheme-musique';  /* ce qu'on emporte de page en page */
+
+    let etat = { i:0, t:0, joue:false };
+    try { etat = Object.assign(etat, JSON.parse(sessionStorage.getItem(CLE) || '{}')); } catch(e){}
+    if (etat.i < 0 || etat.i >= MUSIQUES.length) etat.i = 0;
+    const garder = () => { try { sessionStorage.setItem(CLE, JSON.stringify(etat)); } catch(e){} };
+
+    /* ── le lecteur, minuscule ─────────────────────────────────────────── */
+    const boite = document.createElement('div');
+    boite.className = 'musique';
+    boite.innerHTML =
+        '<div class="mPan">'
+      +   '<button class="mNav" data-m="prec" aria-label="Morceau précédent">‹</button>'
+      +   '<span class="mTitre"></span>'
+      +   '<button class="mNav" data-m="suiv" aria-label="Morceau suivant">›</button>'
+      + '</div>'
+      + '<button class="mRond" aria-label="Musique du site"><span class="mIco">♪</span></button>';
+    document.body.appendChild(boite);
+
+    const rond   = boite.querySelector('.mRond');
+    const ico    = boite.querySelector('.mIco');
+    const titre  = boite.querySelector('.mTitre');
+    /* l'audio est DANS la page, et pas seulement en mémoire : sinon ses
+       événements ne remontent pas au document, et on ne peut plus rien
+       vérifier ni surveiller depuis l'extérieur. */
+    const son = document.createElement('audio');
+    son.preload = 'none'; son.volume = 0; son.style.display = 'none';
+    son.setAttribute('data-musique-du-site', '1');
+    document.body.appendChild(son);
+
+    let replier = null;
+    const deplier = () => {
+      boite.classList.add('ouvert');
+      clearTimeout(replier);
+      replier = setTimeout(() => boite.classList.remove('ouvert'), 4500);
+    };
+
+    function charger(i, jouer){
+      etat.i = ((i % MUSIQUES.length) + MUSIQUES.length) % MUSIQUES.length;
+      son.src = MUSIQUES[etat.i].f;
+      titre.textContent = MUSIQUES[etat.i].t;
+      etat.t = 0; garder();
+      if (jouer) lancer();
+    }
+
+    /* on monte et on descend en douceur : un son qui claque, c'est laid */
+    let fondu = null;
+    function versVolume(cible, apres){
+      clearInterval(fondu);
+      fondu = setInterval(() => {
+        const d = cible - son.volume;
+        if (Math.abs(d) < 0.012){ son.volume = cible; clearInterval(fondu); if (apres) apres(); return; }
+        son.volume = Math.max(0, Math.min(1, son.volume + d * 0.25));
+      }, 40);
+    }
+
+    function lancer(){
+      if (!son.src) charger(etat.i, false);
+      son.volume = 0;
+      son.play().then(() => {
+        etat.joue = true; garder();
+        boite.classList.add('joue'); ico.textContent = '♪';
+        versVolume(VOLUME);
+      }).catch(() => {
+        /* le navigateur refuse tant que personne n'a rien touché : on attend
+           le premier geste, où qu'il soit, et on repart de là */
+        etat.joue = false; garder(); boite.classList.remove('joue');
+        addEventListener('pointerdown', () => { if (etat.joue !== false) return; }, { once:true });
+      });
+    }
+    function stopper(garderEtat){
+      versVolume(0, () => son.pause());
+      if (garderEtat !== 'silencieux'){ etat.joue = false; garder(); }
+      boite.classList.remove('joue'); ico.textContent = '♪';
+    }
+
+    rond.addEventListener('click', e => {
+      e.stopPropagation();
+      if (son.paused) { deplier(); lancer(); }
+      else { stopper(); deplier(); }
+    });
+    boite.querySelectorAll('.mNav').forEach(b => b.addEventListener('click', e => {
+      e.stopPropagation(); deplier();
+      charger(etat.i + (b.dataset.m === 'suiv' ? 1 : -1), !son.paused || etat.joue);
+    }));
+    son.addEventListener('ended', () => charger(etat.i + 1, true));
+    son.addEventListener('timeupdate', () => {
+      if (son.currentTime - etat.t > 2){ etat.t = son.currentTime; garder(); }
+    });
+
+    /* ── LA RÈGLE ABSOLUE : un autre son démarre, la musique s'arrête ──── */
+    let repriseEnAttente = null;
+    const autresQuiJouent = () => [...document.querySelectorAll('audio, video')]
+      .filter(m => m !== son && !m.hasAttribute('data-musique-du-site') && !m.paused && !m.ended);
+
+    document.addEventListener('play', e => {
+      if (e.target === son || e.target.hasAttribute?.('data-musique-du-site')) return;
+      clearTimeout(repriseEnAttente);
+      if (!son.paused){ boite.classList.add('endormie'); stopper('silencieux'); }
+    }, true);
+
+    /* ⚠️ On ne peut PAS se fier au seul signal d'arrêt : si la vidéo est
+       retirée de la page (ce que font les lecteurs qui se referment), son
+       « pause » ne remonte jamais jusqu'ici — mesuré le 10 septembre, la
+       musique restait endormie pour toujours. Alors on regarde nous-mêmes,
+       trois fois toutes les cinq secondes : plus rien ne joue depuis trois
+       secondes, la musique revient. Trois secondes, pour qu'elle ne reparte
+       pas entre deux vidéos et ne hache pas tout. */
+    let silenceDepuis = 0;
+    setInterval(() => {
+      if (!etat.joue) return;
+      if (autresQuiJouent().length){ silenceDepuis = 0; return; }
+      if (!son.paused){ silenceDepuis = 0; boite.classList.remove('endormie'); return; }
+      silenceDepuis += 1;
+      if (silenceDepuis >= 2){          /* 2 × 1,5 s = 3 s de vrai silence */
+        silenceDepuis = 0;
+        boite.classList.remove('endormie');
+        lancer();
+      }
+    }, 1500);
+
+    /* ── on reprend là où on en était, de page en page ─────────────────── */
+    charger(etat.i, false);
+    if (etat.joue){
+      son.addEventListener('loadedmetadata', () => {
+        if (etat.t > 1 && etat.t < son.duration - 2) son.currentTime = etat.t;
+      }, { once:true });
+      son.preload = 'auto';
+      if (!autresQuiJouent().length) lancer();
+      /* si le navigateur a refusé, le premier geste de l'utilisateur relance */
+      addEventListener('pointerdown', function relance(){
+        if (etat.joue && son.paused && !autresQuiJouent().length){ lancer(); }
+        removeEventListener('pointerdown', relance);
+      }, { once:true, passive:true });
+    }
+    titre.textContent = MUSIQUES[etat.i].t;
+  })();
 })();

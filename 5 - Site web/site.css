@@ -346,3 +346,53 @@ footer .liens a:hover{ color:var(--or2); }
 .enTete.a-image h1{ display:none; }
 .enTete.a-image .texte{ justify-content:flex-end; }
 .enTete.a-image .lead{ margin-top:auto; }
+
+/* ═══ LA MUSIQUE DU SITE (10 septembre 2026) ═══════════════════════════════
+   « Je ne veux en aucun cas que ça gêne dans le site. » Alors : un rond de
+   42 px, en bas à droite, à peine visible tant qu'on ne s'en occupe pas.
+   Il ne se déplie qu'au toucher, et se replie tout seul au bout de 4,5 s.
+   Sur téléphone il se pose AU-DESSUS de la barre du bas, jamais dessus. */
+.musique{ position:fixed; right:16px; bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:38; display:flex; align-items:center; gap:.4rem; pointer-events:none; }
+.musique > *{ pointer-events:auto; }
+
+.musique .mRond{ width:42px; height:42px; flex:none; border-radius:50%; cursor:pointer;
+  border:1px solid rgba(212,175,55,.34); background:rgba(12,11,10,.72);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  color:var(--or2); display:grid; place-items:center; font-size:1rem; line-height:1;
+  opacity:.42; transition:opacity .5s var(--lent), transform .5s var(--lent), border-color .5s; }
+.musique .mRond:hover{ opacity:.95; }
+.musique .mRond:active{ transform:scale(.93); }
+.musique.joue .mRond{ opacity:.95; border-color:rgba(212,175,55,.7);
+  box-shadow:0 0 0 0 rgba(212,175,55,.32); animation:mPulse 3.6s ease-in-out infinite; }
+@keyframes mPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(212,175,55,.26) }
+                   50%{ box-shadow:0 0 0 7px rgba(212,175,55,0) } }
+/* pendant une vidéo, elle dort : on le voit, elle s'efface presque */
+.musique.endormie .mRond{ opacity:.2; animation:none; }
+
+/* le panneau des titres : replié par défaut, il ne prend aucune place */
+.musique .mPan{ display:flex; align-items:center; gap:.15rem; max-width:0; overflow:hidden;
+  opacity:0; transform:translateX(10px); white-space:nowrap;
+  border-radius:999px; background:rgba(12,11,10,.82);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(212,175,55,.2); padding:0;
+  transition:max-width .55s var(--lent), opacity .4s, transform .55s var(--lent), padding .55s; }
+.musique.ouvert .mPan{ max-width:min(64vw,20rem); opacity:1; transform:none; padding:.28rem .3rem; }
+.musique .mTitre{ font-size:.76rem; letter-spacing:.05em; color:var(--gris);
+  padding:0 .35rem; overflow:hidden; text-overflow:ellipsis; }
+.musique.joue .mTitre{ color:var(--or2); }
+.musique .mNav{ width:26px; height:26px; flex:none; border:0; border-radius:50%; cursor:pointer;
+  background:transparent; color:var(--or2); font-size:1.1rem; line-height:1; opacity:.75;
+  display:grid; place-items:center; }
+.musique .mNav:hover{ opacity:1; background:rgba(212,175,55,.14); }
+
+@media (max-width:820px){
+  /* la barre du bas fait ~62 px : on se pose au-dessus, jamais devant */
+  .musique{ right:14px; bottom:calc(86px + env(safe-area-inset-bottom)); }
+  .musique .mRond{ width:38px; height:38px; font-size:.92rem; }
+  .musique.ouvert .mPan{ max-width:min(58vw,15rem); }
+  .musique .mTitre{ font-size:.7rem; }
+}
+@media (prefers-reduced-motion: reduce){
+  .musique.joue .mRond{ animation:none; }
+}
