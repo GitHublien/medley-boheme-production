@@ -34,7 +34,16 @@ window.addEventListener('appinstalled', function(){ window.__installee = true; }
 <link rel="icon" href="icone-192.png">
 <link rel="apple-touch-icon" href="icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<!-- ⚠️ 11 septembre — LES POLICES NE BLOQUENT PLUS RIEN.
+     Un « rel=stylesheet » distant retient l'affichage de la page tant qu'il n'est pas
+     arrivé, et Chrome attend une page prête avant de décider s'il propose l'installation.
+     C'est la SEULE différence restante entre cette page (qui ne recevait jamais la
+     proposition) et /diagnostic/ (qui la recevait en 286 ms) : celle-là n'a aucune
+     police distante. Chargées ainsi — en « print » puis basculées sur « all » dès
+     qu'elles arrivent — elles ne retiennent plus rien. Le texte s'affiche tout de suite
+     dans la police du téléphone, puis se met en place. NE PAS remettre un lien bloquant. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ═══ LE LIEN GLOBAL (10 septembre 2026) ══════════════════════════════════════
    Un seul lien pour les six : la racine du site. Cette page ne fait qu'UNE chose :
