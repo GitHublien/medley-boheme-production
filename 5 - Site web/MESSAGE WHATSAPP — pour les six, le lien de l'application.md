@@ -19,6 +19,8 @@ Appuyez dessus, il vous explique quoi faire à l'écran. L'application s'install
 
 À la première ouverture, un film de trois minutes se lance. Prenez ce temps-là : il vous montre le monde dans lequel on va travailler. Tenez le téléphone en mode paysage, il vous le demandera. Vous ne le verrez qu'une fois, ensuite l'application s'ouvre directement — mais vous pourrez le revoir quand vous voulez, il a sa place dans le menu.
 
+⚠️ Sur Android, Chrome propose « Installer » ou « Créer un raccourci » : choisissez toujours **« Installer »**. Un raccourci n'est qu'un lien, ça rouvre le navigateur au lieu de l'application.
+
 Pour le son : une enceinte Bluetooth, et montez le volume. Ou un casque, à volume normal.
 
 Si vous bloquez quelque part, dites-le ici, même en une ligne ou avec une photo de l'écran : je vous guide.
@@ -35,6 +37,6 @@ Bonjour à tous, voici l'application Bohème pour le 4 octobre, chacun à son no
 
 https://githublien.github.io/medley-boheme-production/
 
-Appuyez sur le lien, il vous dit quoi faire. À la première ouverture, un film de trois minutes se lance, en mode paysage : prenez ce temps-là, c'est le monde dans lequel on va travailler. Enceinte Bluetooth à fond, ou casque à volume normal. Si ça bloque, dites-le ici, je vous guide.
+Appuyez sur le lien, il vous dit quoi faire. À la première ouverture, un film de trois minutes se lance, en mode paysage : prenez ce temps-là, c'est le monde dans lequel on va travailler. Sur Android, choisissez toujours « Installer », jamais « Créer un raccourci ». Enceinte Bluetooth à fond, ou casque à volume normal. Si ça bloque, dites-le ici, je vous guide.
 
 Mickaël
