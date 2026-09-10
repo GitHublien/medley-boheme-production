@@ -469,19 +469,82 @@ footer .liens a:hover{ color:var(--or2); }
 }
 
 
-/* ═══ LA BARRE DU HAUT S'EFFACE AU DÉFILEMENT (10 septembre, au soir) ══════════
-   Mickaël : « aucun logo ne doit manger un autre logo, aucun texte ne doit manger
-   un autre texte. » Mesuré en 844×390 : la barre flottait au milieu de l'écran et
-   recouvrait le titre des tuiles. Elle part vers le haut quand on descend. */
-.nav{ transition:transform .45s var(--lent), opacity .35s; }
-.nav.filante{ transform:translateX(-50%) translateY(-160%); opacity:0; pointer-events:none; }
-/* en colonne à gauche (paysage), elle part sur le côté et non vers le haut */
-@media (max-height:640px) and (orientation:landscape){
-  .nav.filante{ transform:translateX(-50%) translateY(-160%); }
+/* ═══════════════════════════════════════════════════════════════════════════
+   LA BARRE, LA COLONNE, LE MENU — refaits d'un seul tenant (11 septembre, 1 h)
+
+   Mickaël : « réfléchis comme un professionnel d'application. Pratique, beau,
+   rien de mangé par le système. Le paysage ne doit pas être la même chose que le
+   portrait. » Mesuré sur son téléphone (406×904 debout, 904×406 couché).
+
+   Trois idées, tirées des règles Android (Material 3) :
+   1. DEBOUT : une barre en haut — la marque (logo + « Bohème »), la musique, le
+      menu — tous à la même hauteur, au même bord d'or. Elle ne disparaît plus.
+   2. COUCHÉ : un vrai rail à gauche, dans la bande noire à côté de la photo —
+      la marque en tête, les sept pages avec leur pictogramme, en taille lisible,
+      et en bas la musique et le menu CÔTE À CÔTE pour gagner la hauteur.
+   3. LE MENU : la barre se retire quand il s'ouvre (plus rien par-dessus), une
+      croix pour fermer, les marges du système respectées (caméra, barre d'état),
+      et en paysage les entrées sur DEUX colonnes : tout visible d'un coup.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── la marque : une pastille, même hauteur et même bord que les ronds ─── */
+.nav .marque{ width:auto !important; padding:0 .95rem 0 .3rem !important; border-radius:999px !important;
+  display:flex !important; align-items:center; gap:.5rem; font-size:1.02rem; letter-spacing:.05em;
+  color:var(--encre); font-family:var(--disp); }
+.nav .marque img{ display:block; width:30px; height:30px; border-radius:50%; box-shadow:0 0 12px rgba(212,175,55,.35); }
+.nav .marque span{ display:inline; line-height:1; padding-bottom:.08em; }
+.nav a.l .ico{ display:none; }                 /* le pictogramme ne sert que dans la colonne */
+.nav{ transition:opacity .35s, transform .45s var(--lent); }
+
+/* ── debout : la barre reste, toujours ─────────────────────────────────── */
+@media (max-width:700px) and (orientation:portrait){
+  .nav{ gap:.45rem; padding:.3rem .3rem; }
+  .nav .marque{ height:46px !important; padding:0 .9rem 0 .28rem !important; }
+  .nav .marque img{ width:34px; height:34px; }
+  .nav .marque span{ font-size:1.05rem; }
 }
-/* ═══ LE LOGO EST UN ROND COMME LES DEUX AUTRES (11 septembre, 0 h) ═══════════
-   Mesuré sur le téléphone de Mickaël : le logo faisait 34×34 sans bord, la musique
-   et le menu 46×46 avec le bord d'or. « Il faut que les ronds soient tous à la même
-   taille. » Le logo prend le même rond, le même bord, la même place. */
-.nav .marque{ font-size:0; }
-.nav .marque img{ display:block; width:30px; height:30px; border-radius:50%; }
+
+/* ── couché : le rail ───────────────────────────────────────────────────── */
+@media (max-height:520px) and (orientation:landscape) and (pointer:coarse){
+  .nav{ display:grid !important; grid-template-columns:1fr 1fr; align-items:center; column-gap:.4rem; row-gap:.2rem;
+    left:calc(10px + env(safe-area-inset-left)); width:214px; max-width:214px; padding:.55rem .55rem .6rem !important;
+    max-height:calc(100dvh - 20px); border-radius:1.5rem; }
+  .nav .marque{ grid-column:1 / -1; justify-content:center; height:42px !important; margin:0 0 .25rem !important;
+    padding:0 .8rem 0 .25rem !important; justify-self:center; }
+  .nav .marque img{ width:30px; height:30px; }
+  .nav .rond.maison{ display:none !important; }          /* la page Accueil est déjà dans la liste */
+  .nav a.l{ grid-column:1 / -1; display:flex !important; align-items:center; gap:.55rem; margin:0 !important;
+    font-size:.93rem; line-height:1.1; padding:.34rem .55rem; border-radius:.7rem; color:var(--gris); }
+  .nav a.l .ico{ display:inline-block; width:1.05em; height:1.05em; vertical-align:0; }
+  .nav a.l.ici{ color:var(--or2); background:rgba(212,175,55,.1); }
+  .nav a.l:nth-child(n+6){ display:flex !important; }
+  .nav .musique{ order:8; grid-column:1; justify-self:center; margin:.3rem 0 0 !important; }
+  .nav .burger{ order:9; grid-column:2; justify-self:center; margin:.3rem 0 0 !important; }
+  .nav .musique .mRond, .nav .burger{ width:42px !important; height:42px !important; }
+  .musique .mPan{ top:auto; bottom:calc(100% + 10px); left:0; transform:translateY(6px); }
+  .musique.ouvert .mPan{ transform:none; }
+  .page{ width:min(1380px, 100% - 254px); margin-left:236px; }
+}
+
+/* ── le menu : la barre se retire, une croix, les marges du système ───── */
+body.menu .nav{ opacity:0; pointer-events:none; }
+.voile{ padding:calc(env(safe-area-inset-top) + 5.2rem) calc(env(safe-area-inset-right) + 6vw) calc(env(safe-area-inset-bottom) + 2rem) calc(env(safe-area-inset-left) + 6vw); }
+.voile .fermer{ position:fixed; top:calc(env(safe-area-inset-top) + 14px); right:calc(env(safe-area-inset-right) + 14px);
+  width:46px; height:46px; border-radius:50%; border:1px solid rgba(212,175,55,.42); background:rgba(212,175,55,.08);
+  display:grid; place-items:center; cursor:pointer; z-index:2; }
+.voile .fermer i{ position:absolute; width:18px; height:1.5px; background:var(--or2); }
+.voile .fermer i:first-child{ transform:rotate(45deg); } .voile .fermer i:last-child{ transform:rotate(-45deg); }
+body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-child(11){ transition-delay:.55s }
+/* debout : les dix entrées tiennent sans défiler */
+@media (max-width:700px) and (orientation:portrait){
+  .voile{ padding-top:calc(env(safe-area-inset-top) + 4.6rem); }
+  .voile a{ font-size:1.45rem; padding:.5rem 0; }
+  .voile a small{ font-size:.62rem; letter-spacing:.12em; }
+}
+/* couché : deux colonnes, tout visible d'un coup, rien sous la caméra */
+@media (max-height:640px) and (orientation:landscape){
+  .voile{ align-items:center; padding:calc(env(safe-area-inset-top) + 1rem) calc(env(safe-area-inset-right) + 4.5rem) calc(env(safe-area-inset-bottom) + 1rem) calc(env(safe-area-inset-left) + 2.5rem); }
+  .voile nav{ grid-template-columns:1fr 1fr; column-gap:2.2rem; width:100%; }
+  .voile a{ padding:.38rem 0; font-size:1.2rem; }
+  .voile a small{ font-size:.6rem; }
+}

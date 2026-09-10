@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '10/09/2026 · 20h05';
+const VERSION_SITE = '11/09/2026 · 01h10';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -40,12 +40,15 @@ const VERSION_SITE = '10/09/2026 · 20h05';
      élégant de partout. » Dans la barre : l'accueil (⌂, caché quand on y est déjà),
      la musique (♪), le menu (≡). Même diamètre, même or, même espacement. */
   const surAccueil = /^ACCUEIL/i.test(ici) || ici === '' || ici === 'site.html';
-  nav.innerHTML = '<a class="marque" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><img src="icone-192.png" alt=""></a>'
+  /* 11 sept, 1 h — LA MARQUE RETROUVE SON NOM. Mickaël : « j'aimais bien aussi avec le
+     texte de Bohème, c'était pas mal. » Le logo et le mot, dans une pastille de la même
+     hauteur et du même bord que les ronds : rien ne se touche, tout est au même dessin. */
+  nav.innerHTML = '<a class="marque" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><img src="icone-192.png" alt=""><span>Bohème</span></a>'
     + (surAccueil ? '' : '<a class="rond maison" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><i class="ico ico-maison"></i></a>')
-    + PAGES.slice(0, 7).map(p => '<a class="l' + (p.f === ici ? ' ici' : '') + '" href="' + lien(p) + '">' + p.t + '</a>').join('')
+    + PAGES.slice(0, 7).map(p => '<a class="l' + (p.f === ici ? ' ici' : '') + '" href="' + lien(p) + '"><i class="ico ico-' + p.i + '"></i>' + p.t + '</a>').join('')
     + '<button class="burger rond" aria-label="Menu"><i></i><i></i></button>';
   const voile = document.createElement('div'); voile.className = 'voile';
-  voile.innerHTML = '<nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
+  voile.innerHTML = '<button class="fermer" aria-label="Fermer le menu"><i></i><i></i></button><nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
   const bas = document.createElement('div'); bas.className = 'bas';
   bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
     + '<a class="menuBas" href="#"><span>≡</span>Menu</a>';
@@ -54,6 +57,7 @@ const VERSION_SITE = '10/09/2026 · 20h05';
   nav.querySelector('.burger').addEventListener('click', basculer);
   bas.querySelector('.menuBas').addEventListener('click', e => { e.preventDefault(); basculer(); });
   voile.addEventListener('click', e => { if (e.target === voile) basculer(); });
+  voile.querySelector('.fermer').addEventListener('click', basculer);
   addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu')) basculer(); });
 
   /* ── le pied de page ───────────────────────────────────────────────── */
@@ -249,31 +253,6 @@ const VERSION_SITE = '10/09/2026 · 20h05';
 
      Pour ajouter un morceau : une ligne dans MUSIQUES, et c'est tout.
      ═══════════════════════════════════════════════════════════════════════ */
-  /* ═══ LA BARRE DU HAUT NE MANGE PLUS RIEN (10 septembre, au soir) ═══════════
-     Mesure en 844x390, telephone couche : l'ecran ne fait que 390 de haut et la
-     barre en occupait 77, posee en plein milieu du contenu. Elle recouvrait le
-     titre des tuiles. Elle s'efface maintenant des qu'on descend, et revient des
-     qu'on remonte d'un cheveu - ou des qu'on est en haut de la page. */
-  (function barreFilante(){
-    const nav = document.querySelector('.nav');
-    if (!nav) return;
-    let dernier = null, enAttente = false;
-    const juger = () => {
-      const y = window.scrollY;
-      /* vu sur le telephone : au rechargement, Chrome remet la page ou elle etait,
-         et ce saut comptait comme une descente - la barre partait avant tout geste.
-         Le premier signal ne fait que prendre ses marques. */
-      if (dernier === null){ dernier = y; enAttente = false; return; }
-      if (y < 80) nav.classList.remove('filante');            /* en haut : toujours visible */
-      else if (y > dernier + 6) nav.classList.add('filante');  /* on descend : elle s'efface */
-      else if (y < dernier - 6) nav.classList.remove('filante');/* on remonte : elle revient */
-      dernier = y; enAttente = false;
-    };
-    addEventListener('scroll', () => { if (!enAttente){ enAttente = true; requestAnimationFrame(juger); } }, { passive:true });
-    /* le menu ouvert la retient : on ne fait pas disparaitre ce qu'on manipule */
-    nav.addEventListener('click', () => nav.classList.remove('filante'));
-  })();
-
   (function musique(){
     const MUSIQUES = [
       { f:'media/site/air-sing-boheme.mp3',     t:'Air Sing Bohème' },
