@@ -47,19 +47,19 @@ qu'on parle — et on met **un grand point d'interrogation doré sur son écran*
 comprend d'un coup d'œil : c'est l'aide.
 
 **Dépose DEUX images :** `IMAGE 2 — le téléphone.jpg` **et** `LE LOGO — à déposer avec.png`
-· format **9:16** (vertical)
+· format **4:3** — comme les autres tuiles
 
 *(Le logo, c'est pour qu'il le recopie au lieu de le réinventer. C'est ce qui a raté
 partout ailleurs.)*
 
 ```
-Keep the first image almost exactly as it is: same deep black, same warm gold, same spotlight beams from above, same haze, same reflections on the dark stage floor, same vertical framing, same golden phone standing in the centre.
+Keep the first image almost exactly as it is: same deep black, same warm gold, same spotlight beams from above, same haze, same reflections on the dark stage floor, same framing, same golden phone standing in the centre.
 
 Change three things.
 
 First, the phone screen: instead of a plain golden screen, show a single large elegant golden question mark, centred, glowing softly, as if lit from within. Nothing else on the screen — no icons, no interface, no words.
 
-Second, the golden text on the left: replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "avant de commencer".
+Second, the golden text on the left: replace "INSTALLER" with "LES INFORMATIONS UTILES", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "ce qu'il faut savoir".
 
 Third, the small circular medallion at the bottom right: replace it with the medallion of the second image, reproduced exactly as it is — same shape, same lettering "Bohème Production", same golden ring. Do not redraw it, do not re-letter it, do not stylise it. Same size, same position, same soft glow.
 
@@ -68,12 +68,14 @@ Everything else stays strictly identical. Photorealistic, cinematic, warm gold o
 
 ---
 
-### Si « avant de commencer » ne te plaît pas non plus
+### Pourquoi 4:3 et pas vertical
 
-Remplace-le dans le prompt par l'un de ces deux-là, même longueur, même ton :
+Cette image est une **tuile** de l'accueil, un petit rectangle dans la grille : toutes
+ses voisines sont en 4:3. L'ancienne était verticale parce qu'elle servait de fond
+pleine page à l'ancienne page « Installer » — ce n'est plus le cas.
 
-- `"le mode d'emploi"` — le plus clair, le plus direct
-- `"à lire une fois"` — c'est exactement ce que dit la page
+**Une seule version suffit pour les tuiles.** Seul le grand fond du haut de l'accueil a
+besoin d'une version verticale en plus, et il l'a déjà.
 
 ---
 
