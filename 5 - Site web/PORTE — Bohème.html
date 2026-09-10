@@ -62,14 +62,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 /* le film et la photo : même cadrage, donc même calage à l'écran */
 #film,#photo,#passage{position:fixed;inset:0;width:100%;height:100%;
                       object-fit:contain;background:#000;z-index:2}
-/* EN PAYSAGE, LE FILM ET LA PHOTO COUVRENT TOUT L'ÉCRAN (10 sept, demandé par
-   Mickaël : « je veux vraiment qu'elle couvre tout »). Un téléphone est plus large
-   que le film (19,5:9 contre 16:9) : en gardant l'image entière il restait deux
-   bandes noires sur les côtés. Recadrée pour remplir, elle perd 9 % en haut et
-   9 % en bas — le logo, au centre, n'est pas touché. Le film ET la photo changent
-   ensemble, même cadrage : le raccord au pixel près tient toujours. En portrait on
-   garde l'image entière, sinon un film large serait zoomé cinq fois. */
-@media (orientation: landscape){ #film,#photo{ object-fit:cover } }
+/* ⚠️ 10 septembre, au soir — ON NE RECADRE PLUS : LES TITRES DISPARAISSAIENT.
+   J'avais fait remplir l'écran en paysage, comme demandé (« je veux vraiment qu'elle
+   couvre tout »). J'avais vérifié que le logo, au centre, n'était pas touché — et
+   j'ai oublié les TITRES du film, qui sont en bas. Mesuré : le film est en 16:9
+   (1,778) et un téléphone moderne en 19,5:9 (2,167), donc remplir coupait **18 % de
+   la hauteur**, 9 % en haut et 9 % en bas. Mickaël : « je ne vois plus les titres,
+   et elle est vachement grossie ».
+
+   On ne peut pas avoir les deux : ou l'image entière avec deux bandes sur les côtés,
+   ou l'écran rempli en coupant le haut et le bas. Le film est monté avec des titres :
+   c'est l'image entière qui gagne. Sur un écran vraiment 16:9, « contain » remplit
+   déjà tout l'écran sans rien couper — on ne perd donc rien là où c'était bon.
+   NE PAS remettre « cover » sans avoir vérifié ce que ça coupe. */
 #fondNoir{position:fixed;inset:-10vmax;background:#000;z-index:-1}
 #photo{opacity:0;transition:opacity .4s ease;z-index:3}
 /* le logo posé n'est pas une image morte : il balance doucement de
