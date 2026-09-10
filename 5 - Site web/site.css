@@ -334,7 +334,10 @@ footer .liens a:hover{ color:var(--or2); }
    dessous. Sur téléphone, le texte défile maintenant avec la page, tout simplement. */
 @media (max-width:820px){
   .ouverture .texte{ transform:none !important; }
-  .ouverture{ padding-bottom:clamp(3rem,9vw,5rem); }
+  /* Mesure du 10/09 : ce clamp donnait 48px sur un telephone de 390 de large,
+     alors que la barre du bas occupe 95px + 10 de marge. Le dernier paragraphe
+     de l'ouverture passait donc DESSOUS. 7.5rem = 120px, elle ne mange plus rien. */
+  .ouverture{ padding-bottom:7.5rem; }
 }
 /* LE MENU (les trois traits), plus grand en portrait — il était plus petit que les autres */
 @media (max-width:700px) and (orientation:portrait){
