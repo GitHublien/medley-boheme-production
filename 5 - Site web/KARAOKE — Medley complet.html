@@ -6876,12 +6876,21 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
     barre.appendChild(b);
   })();
 
-  /* PREMIÈRE OUVERTURE : on montre toujours la liste des six, même si le lien porte
-     déjà un prénom. C'est le moment où l'on comprend que l'atelier sait qui on est,
-     et qu'on peut en changer. Ensuite elle ne revient plus (bouton « Qui es-tu »). */
-  let dejaDemande = null, sansNom = null;
-  try { dejaDemande = localStorage.getItem('boheme-nom-demande'); sansNom = localStorage.getItem('boheme-sans-nom'); } catch(e){}
-  if (dejaDemande !== '1' && sansNom !== '1'){
+  /* ⚠️ 10 septembre — ON NE REDEMANDE PLUS LE PRÉNOM ICI.
+     Avant, on montrait la liste des six à la première ouverture même quand le prénom
+     était déjà connu : c'était le moment où l'on comprenait que l'atelier savait qui
+     on était. Ça n'a plus de sens depuis que le prénom se choisit AVANT le film, à
+     l'entrée de l'application — Mickaël : « à partir du moment où tu as choisi ton
+     prénom, pourquoi dans l'atelier redemandes-tu de choisir ton prénom ? »
+     On ne demande donc plus QUE si personne ne sait qui on est. Pour en changer :
+     le bouton « Qui es-tu » du tiroir, ou « Mon prénom » dans le menu du site. */
+  let dejaDemande = null, sansNom = null, dejaConnu = null;
+  try {
+    dejaDemande = localStorage.getItem('boheme-nom-demande');
+    sansNom     = localStorage.getItem('boheme-sans-nom');
+    dejaConnu   = localStorage.getItem('boheme-pour');
+  } catch(e){}
+  if (dejaDemande !== '1' && sansNom !== '1' && !dejaConnu && !actuel){
     try { localStorage.setItem('boheme-nom-demande', '1'); } catch(e){}
     setTimeout(ouvrir, 300);
   }

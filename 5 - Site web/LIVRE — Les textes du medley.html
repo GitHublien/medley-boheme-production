@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Le livre des textes — Medley Bohème</title>
+<title>Le livre des textes — Le Medley des Légendes</title>
 <style>
   :root{ --fond:#0d0b0a; --or:#d4af37; --encre:#f2ede1; --gris:#8a8272; --bleu:#8fb0d8;
          --adrien:#d4af37; --stephanie:#f2a3c7; --candice:#c9a2ea; --mickael:#6fd0bb; --bry:#f0955c; --elie:#a9d97f;
@@ -20,6 +20,28 @@
   .btn{ font:inherit; font-size:15px; color:var(--or); background:transparent; border:1px solid rgba(212,175,55,.5); border-radius:999px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
   .btn:hover{ background:rgba(212,175,55,.12); }
   .btn.actif{ background:rgba(212,175,55,.22); }
+  /* le retour au site : toujours le premier, toujours visible, jamais recouvert */
+  .btn.maison{ text-decoration:none; display:inline-flex; align-items:center; gap:6px; flex:none;
+               background:rgba(212,175,55,.16); border-color:rgba(212,175,55,.75); font-size:17px; }
+  .btn.aide{ flex:none; }
+  /* l'explication du premier passage */
+  .expli{ position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+          background:rgba(5,5,5,.9); backdrop-filter:blur(14px); padding:24px; }
+  .expli.la{ display:flex; }
+  .expli .carte{ max-width:34rem; width:100%; background:rgba(20,18,16,.96); border:1px solid rgba(212,175,55,.35);
+                 border-radius:22px; padding:26px 24px; max-height:86vh; overflow:auto; }
+  .expli h2{ font-family:"Palatino Linotype",Palatino,Georgia,serif; color:var(--or); font-size:24px;
+             margin:0 0 4px; font-weight:600; }
+  .expli .quoi{ color:var(--gris); font-size:15px; line-height:1.6; margin:0 0 18px; }
+  .expli .pas{ display:grid; gap:10px; margin-bottom:18px; }
+  .expli .pas div{ display:grid; grid-template-columns:34px 1fr; gap:12px; align-items:start;
+                   background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.2);
+                   border-radius:14px; padding:12px 14px; font-size:15px; line-height:1.45; }
+  .expli .pas b{ display:grid; place-items:center; width:34px; height:34px; border-radius:50%;
+                 background:rgba(212,175,55,.16); color:var(--or); font-size:17px; }
+  .expli .pas span b{ background:none; width:auto; height:auto; display:inline; color:var(--or); }
+  .expli .ferme{ width:100%; padding:14px; border-radius:999px; border:0; cursor:pointer; font:inherit;
+                 font-size:16px; font-weight:600; background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
   .bande{ display:flex; gap:4px; }
   /* la couverture et le sommaire */
   .couverture{ min-height:60vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:140px 20px 40px; }
@@ -112,16 +134,41 @@
 </head>
 <body>
 <div class="barre">
-  <span class="titre">Medley Bohème · le livre des textes</span>
+  <!-- 10 sept : on était ENFERMÉ ici. Aucun lien ne ramenait au site. -->
+  <a class="btn maison" id="versSite" href="ACCUEIL — Bohème.html" title="Revenir au site">⌂<span> Le site</span></a>
+  <span class="titre">Le Medley des Légendes · le livre des textes</span>
   <span class="courant" id="courant"></span>
   <a class="btn" href="#sommaire">Sommaire</a>
   <button class="btn" id="prec" title="Bloc précédent">◀</button>
   <button class="btn" id="suiv" title="Bloc suivant">▶</button>
+  <button class="btn aide" id="btnAide" title="À quoi sert cette page">?</button>
+</div>
+
+<!-- L'EXPLICATION (10 septembre). Mickael : « il faut que tu expliques comme tu le
+     ferais pour la premiere fois. Ce sont vos textes, mais d'une autre maniere :
+     c'est par blocs, ce n'est pas l'atelier qui est en continu. » Elle s'ouvre
+     toute seule la premiere fois, et le « ? » la rappelle quand on veut. -->
+<div class="expli" id="expli">
+  <div class="carte">
+    <h2>Vos textes, bloc par bloc</h2>
+    <p class="quoi">Ce sont les mêmes mots que dans l'atelier, présentés autrement :
+      <b>ici on lit</b>, on ne suit pas la musique en continu. Chaque bloc du medley a sa
+      page, en très gros, avec sa ponctuation — pour apprendre, dans le métro ou au lit.</p>
+    <div class="pas">
+      <div><b>♪</b><span>Sous chaque titre de bloc, un <b>lecteur</b> : il joue <b>ce bloc-là seulement</b>. Clique ou glisse n'importe où sur la grande règle pour te déplacer dedans.</span></div>
+      <div><b>◀▶</b><span>Les deux flèches en haut passent au <b>bloc précédent ou suivant</b>. Le nom du bloc où tu es s'affiche à côté.</span></div>
+      <div><b>≡</b><span><b>Sommaire</b> : les vingt blocs d'un coup d'œil, pour sauter direct au tien.</span></div>
+      <div><b>↺</b><span><b>Boucle</b> : le passage tourne en rond, autant de fois qu'il faut. C'est comme ça qu'on apprend.</span></div>
+      <div><b>●</b><span>Le choix de la <b>bande</b> : la voix témoin pour entendre la mélodie, l'instrumental quand tu la connais.</span></div>
+      <div><b>⌂</b><span><b>Le site</b>, en haut à gauche : pour revenir au reste — l'atelier, la mise en scène, les documents.</span></div>
+    </div>
+    <button class="ferme" id="fermeExpli">J'ai compris</button>
+  </div>
 </div>
 <audio id="au" preload="metadata" src="media/bande-voix-temoins.mp3"></audio>
 
 <div class="couverture" id="haut">
-  <h1>Medley Bohème</h1>
+  <h1>Le Medley des Légendes</h1>
   <div class="sous">Starmania · Notre-Dame de Paris · Les Dix Commandements · Aimer</div>
   <div class="quoi">Les textes, du premier mot au dernier,<br>avec les voix qui les portent</div>
   <div class="ou">Palais des Festivals · Cannes · 4 octobre 2026</div>
@@ -1482,6 +1529,29 @@ function majBarre(){ const i = blocVisible(); document.getElementById('courant')
 addEventListener('scroll', majBarre, {passive:true}); majBarre();
 document.getElementById('prec').onclick = () => { const i = Math.max(0, blocVisible() - 1); location.hash = '#bloc' + D[i].num; };
 document.getElementById('suiv').onclick = () => { const i = Math.min(D.length - 1, blocVisible() + 1); location.hash = '#bloc' + D[i].num; };
+
+/* ═══ LE RETOUR AU SITE, ET L'AIDE (10 septembre) ═══
+   Le lien personnel (?pour=elie) doit suivre jusqu'ici, sinon on revient au site
+   sans prenom et il redemande qui on est. */
+(function(){
+  const q = new URLSearchParams(location.search);
+  let pour = q.get('pour');
+  try { if (pour) localStorage.setItem('boheme-pour', pour); else pour = localStorage.getItem('boheme-pour'); } catch(e){}
+  const vers = document.getElementById('versSite');
+  if (vers && pour) vers.setAttribute('href', vers.getAttribute('href') + '?pour=' + encodeURIComponent(pour));
+
+  const boite = document.getElementById('expli');
+  const CLE = 'boheme-livre-explique';
+  const montrer = () => boite.classList.add('la');
+  const cacher = () => { boite.classList.remove('la'); try { localStorage.setItem(CLE, '1'); } catch(e){} };
+  document.getElementById('btnAide').onclick = montrer;
+  document.getElementById('fermeExpli').onclick = cacher;
+  boite.addEventListener('click', e => { if (e.target === boite) cacher(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') cacher(); });
+  let deja = false;
+  try { deja = localStorage.getItem(CLE) === '1'; } catch(e){}
+  if (!deja) setTimeout(montrer, 700);   /* la premiere fois, elle s'ouvre seule */
+})();
 document.getElementById('btnHaut').onclick = () => scrollTo({top:0, behavior:'smooth'});
 /* ═══ VOIX TÉMOIN / INSTRUMENTAL, SANS AUCUN SAUT — la méthode de l'atelier ═══
    Les deux bandes jouent EN MÊME TEMPS, l'une muette. Le bouton ne fait que croiser

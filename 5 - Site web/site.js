@@ -184,6 +184,19 @@ const VERSION_SITE = '10/09/2026 · 19h25';
 
   /* la pastille rouge sur ce qui a changé, dans le menu et dans la barre du bas */
   /* une page « nouvelle » qu'on a OUVERTE dans cette version n'a plus de pastille : on note qu'on l'a vue */
+  /* ⚠️ 10 septembre — PAS DE PASTILLE À LA TOUTE PREMIÈRE VISITE.
+     Mickaël : « si on donne pour la première fois le lien, mettre un truc rouge,
+     c'est débile : il n'y a pas de raison, ils viennent de l'avoir. » Une pastille
+     dit « ça a changé DEPUIS LA DERNIÈRE FOIS » — encore faut-il une dernière fois.
+     Au tout premier passage, on note simplement la version et on n'allume rien. */
+  let premiereVisite = false;
+  try {
+    if (!localStorage.getItem('boheme-site-connu')){
+      premiereVisite = true;
+      localStorage.setItem('boheme-site-connu', VERSION_SITE);
+      NOUVEAU.forEach(p => localStorage.setItem('boheme-vu-' + p, VERSION_SITE));
+    }
+  } catch(e){}
   const vu = p => { try { return localStorage.getItem('boheme-vu-' + p) === VERSION_SITE; } catch(e){ return false; } };
   try { if (NOUVEAU.includes(ici)) localStorage.setItem('boheme-vu-' + ici, VERSION_SITE); } catch(e){}
   /* et quand tout a été vu, plus une seule pastille nulle part */
@@ -234,9 +247,12 @@ const VERSION_SITE = '10/09/2026 · 19h25';
     const VOLUME = 0.16;          /* bas, volontairement */
     const CLE = 'boheme-musique';  /* ce qu'on emporte de page en page */
 
-    let etat = { i:0, t:0, joue:false };
+    /* AU HASARD (10 sept) : « je ne veux pas que ce soit toujours la même chose
+       quand on allume la musique. » Le premier morceau est tiré au sort ; ensuite
+       c'est celui qu'on écoutait qui reprend, de page en page. */
+    let etat = { i: Math.floor(Math.random() * MUSIQUES.length), t:0, joue:null };
     try { etat = Object.assign(etat, JSON.parse(sessionStorage.getItem(CLE) || '{}')); } catch(e){}
-    if (etat.i < 0 || etat.i >= MUSIQUES.length) etat.i = 0;
+    if (etat.i < 0 || etat.i >= MUSIQUES.length) etat.i = Math.floor(Math.random() * MUSIQUES.length);
     const garder = () => { try { sessionStorage.setItem(CLE, JSON.stringify(etat)); } catch(e){} };
 
     /* ── le lecteur, minuscule ─────────────────────────────────────────── */
@@ -269,12 +285,21 @@ const VERSION_SITE = '10/09/2026 · 19h25';
       replier = setTimeout(() => boite.classList.remove('ouvert'), 4500);
     };
 
+    /* CHANGER DE MORCEAU SANS COUPURE (10 sept) : « il faudrait avoir la possibilité
+       de la changer et que l'autre musique se mette en marche, sans que ça fasse un
+       arrêt ». On descend le son de l'un, on charge l'autre, on remonte : l'oreille
+       n'entend pas de trou, juste un passage. */
     function charger(i, jouer){
-      etat.i = ((i % MUSIQUES.length) + MUSIQUES.length) % MUSIQUES.length;
-      son.src = MUSIQUES[etat.i].f;
-      titre.textContent = MUSIQUES[etat.i].t;
-      etat.t = 0; garder();
-      if (jouer) lancer();
+      const suivant = ((i % MUSIQUES.length) + MUSIQUES.length) % MUSIQUES.length;
+      const enDouceur = jouer && !son.paused;
+      const poser = () => {
+        etat.i = suivant;
+        son.src = MUSIQUES[etat.i].f;
+        titre.textContent = MUSIQUES[etat.i].t;
+        etat.t = 0; garder();
+        if (jouer) lancer();
+      };
+      if (enDouceur) versVolume(0, poser); else poser();
     }
 
     /* on monte et on descend en douceur : un son qui claque, c'est laid */
@@ -355,17 +380,35 @@ const VERSION_SITE = '10/09/2026 · 19h25';
 
     /* ── on reprend là où on en était, de page en page ─────────────────── */
     charger(etat.i, false);
-    if (etat.joue){
-      son.addEventListener('loadedmetadata', () => {
-        if (etat.t > 1 && etat.t < son.duration - 2) son.currentTime = etat.t;
-      }, { once:true });
+    son.addEventListener('loadedmetadata', () => {
+      if (etat.t > 1 && etat.t < son.duration - 2) son.currentTime = etat.t;
+    }, { once:true });
+
+    /* ELLE PART TOUTE SEULE AU PREMIER GESTE (10 sept) : « dès qu'on clique, ça fait
+       démarrer la musique. Après, s'ils veulent l'arrêter, c'est eux qui l'arrêtent. »
+       Trois états, et c'est ce qui fait toute la différence :
+         null  → personne n'a encore rien décidé : le premier geste la lance ;
+         true  → on l'a voulue : elle reprend de page en page ;
+         false → on l'a ÉTEINTE : on n'y revient plus jamais tout seul.
+       Les navigateurs interdisent de démarrer un son sans geste : on attend donc
+       le premier toucher, où qu'il soit — jamais avant. */
+    if (etat.joue === true){
       son.preload = 'auto';
       if (!autresQuiJouent().length) lancer();
-      /* si le navigateur a refusé, le premier geste de l'utilisateur relance */
-      addEventListener('pointerdown', function relance(){
-        if (etat.joue && son.paused && !autresQuiJouent().length){ lancer(); }
-        removeEventListener('pointerdown', relance);
-      }, { once:true, passive:true });
+    }
+    if (etat.joue !== false){
+      const auPremierGeste = e => {
+        if (e && e.target && e.target.closest && e.target.closest('.musique')) return;  /* le rond se gère seul */
+        if (etat.joue === false) return;
+        if (son.paused && !autresQuiJouent().length) lancer();
+        retirer();
+      };
+      const retirer = () => {
+        removeEventListener('pointerdown', auPremierGeste, true);
+        removeEventListener('keydown', auPremierGeste, true);
+      };
+      addEventListener('pointerdown', auPremierGeste, { capture:true, passive:true });
+      addEventListener('keydown', auPremierGeste, true);
     }
     titre.textContent = MUSIQUES[etat.i].t;
   })();
