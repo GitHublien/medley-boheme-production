@@ -163,6 +163,15 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
 
 <noscript><div class="ecran la"><h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1><p>Sur iPhone : dans Safari, appuie sur <b>Partager</b> puis <b>« Sur l'écran d'accueil »</b>. Sur Android : dans Chrome, les trois points puis <b>« Installer l'application »</b>.</p><p><a class="btn" href="PORTE — Bohème.html">Entrer</a></p></div></noscript>
 <script>
+/* ═══ LE SERVICE WORKER, EN PREMIER ═══
+   Sans lui, Chrome et Edge REFUSENT de proposer « Installer l'application » : ils
+   ne montrent que « Ajouter un raccourci », qui ne fait qu'un marque-page. C'est
+   la panne trouvée le 10 septembre au soir — cette page était la seule à ne pas
+   l'enregistrer, alors que c'est ELLE qui installe. Il doit partir le plus tôt
+   possible : l'installation ne peut être proposée qu'une fois qu'il est actif. */
+if ('serviceWorker' in navigator){
+  try { navigator.serviceWorker.register('sw.js'); } catch(e){}
+}
 /* filet : si quoi que ce soit casse dans le script, on montre quand même un écran complet */
 window.addEventListener('error', function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } });
 setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } }, 1500);
