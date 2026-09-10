@@ -17,6 +17,7 @@
    page : plus rien ne peut passer avant nous. */
 window.__bip = null;
 window.__bipQuand = null;
+window.__depart = Date.now();   /* pour mesurer en combien de temps elle arrive */
 window.addEventListener('beforeinstallprompt', function(e){
   e.preventDefault();
   window.__bip = e;
@@ -146,6 +147,11 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
   </div>
   <div class="sur" style="background:rgba(255,200,20,.07);border-color:rgba(255,200,20,.42)"><i style="background:rgba(255,200,20,.2);color:#ffc814">!</i><span><b>Surtout pas « Créer un raccourci ».</b> C'est Chrome qui te le propose, et ça ne fait qu'un lien : la page rouvrirait dans le navigateur, avec la barre d'adresse. Ce n'est pas l'application. <b>Il faut « Installer ».</b></span></div>
   <div class="sur"><i>✓</i><span><b>Aucun risque.</b> Rien ne se télécharge d'un magasin, aucune permission n'est demandée : c'est le site, posé sur ton écran d'accueil. Pas de virus, pas de suivi.</span></div>
+  <!-- 11 sept : quand on arrive ici alors qu'on ne devrait pas, il faut pouvoir dire
+       POURQUOI. Ce petit lien relève l'état de CETTE page-ci, celle qui échoue. -->
+  <a class="discret" id="pourquoi" href="#">Pourquoi je vois cet écran ?</a>
+  <textarea id="rapport" readonly style="display:none;width:100%;height:8rem;margin-top:.6rem;padding:.7rem;border-radius:.7rem;background:rgba(255,255,255,.05);color:#bcb4a2;border:1px solid rgba(212,175,55,.3);font-family:ui-monospace,monospace;font-size:.76rem"></textarea>
+  <button class="btn doux" id="copierRapport" style="display:none;margin-top:.4rem">Copier et l'envoyer à Mickaël</button>
   <i class="fleche hautDroite">⤴</i>
 </div>
 
@@ -293,6 +299,51 @@ setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = docume
   window.__bipArrivee = proposition;
   if (promesse) proposition(promesse);
   window.addEventListener('appinstalled', () => montrer('e-fait'));
+
+  /* ═══ LE RAPPORT DE CETTE PAGE-CI (11 sept) ═══
+     Le diagnostic reçoit la proposition de Chrome, et cette page-ci ne la reçoit
+     pas — même site, même téléphone, à quelques secondes d'écart. Tant qu'on ne
+     sait pas pourquoi, on ne peut pas réparer. Alors la page se raconte. */
+  (function(){
+    const lien = document.getElementById('pourquoi');
+    const zone = document.getElementById('rapport');
+    const bout = document.getElementById('copierRapport');
+    if (!lien || !zone || !bout) return;
+    lien.addEventListener('click', async e => {
+      e.preventDefault();
+      const L = [];
+      L.push('RAPPORT PAGE D\'INSTALLATION — ' + new Date().toLocaleString('fr-FR'));
+      L.push('adresse : ' + location.href);
+      L.push('navigateur : ' + (navigator.userAgent || '').slice(0, 150));
+      L.push('mode : ' + (enApp ? 'DANS l\'application' : 'navigateur')
+             + (dedans ? ' (dans une autre appli)' : ''));
+      L.push('proposition de Chrome : ' + (promesse ? 'REÇUE' : 'JAMAIS REÇUE')
+             + (window.__bipQuand ? ' (à ' + (window.__bipQuand - window.__depart) + ' ms)' : ''));
+      L.push('depuis l\'ouverture : ' + (Date.now() - window.__depart) + ' ms');
+      try {
+        const r = await navigator.serviceWorker.getRegistration();
+        L.push('service worker : ' + (r ? (r.active ? 'actif' : 'enregistré, pas actif') : 'AUCUN')
+               + ' · pilote la page : ' + (navigator.serviceWorker.controller ? 'oui' : 'NON')
+               + (r && r.scope ? ' · portée ' + r.scope : ''));
+      } catch (x) { L.push('service worker : erreur ' + x.message); }
+      try {
+        const rep = await fetch('manifest.json', { cache: 'no-store' });
+        L.push('manifeste : ' + (rep.ok ? 'lu (' + rep.status + ')' : 'ÉCHEC ' + rep.status));
+      } catch (x) { L.push('manifeste : ERREUR ' + x.message); }
+      if (navigator.getInstalledRelatedApps){
+        try { const a = await navigator.getInstalledRelatedApps();
+              L.push('déjà installée : ' + (a && a.length ? 'OUI (' + a.length + ')' : 'non')); }
+        catch (x) { L.push('déjà installée : impossible à savoir'); }
+      } else L.push('déjà installée : ce navigateur ne sait pas le dire');
+      L.push('écran affiché : ' + (document.querySelector('.ecran.la') || {}).id);
+      zone.value = L.join('\n');
+      zone.style.display = 'block'; bout.style.display = 'inline-flex'; lien.style.display = 'none';
+    });
+    bout.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(zone.value); bout.textContent = 'Copié ✓'; }
+      catch (x) { zone.select(); document.execCommand('copy'); bout.textContent = 'Copié ✓'; }
+    });
+  })();
 
   if (enApp){ montrer('e-app'); return; }
   if (dedans){
