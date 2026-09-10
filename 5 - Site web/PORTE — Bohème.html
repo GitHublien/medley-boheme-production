@@ -777,7 +777,15 @@ function allerAuKaraoke(){
      en dépend, pas seulement l'atelier. Un lien personnel (?pour=) a déjà le
      prénom : il entre directement dans le hall. Les explications (BIENVENUE)
      ne sont plus sur le chemin : elles sont devenues une tuile de l'accueil. */
-  const ou = nom ? R.destination : 'PRENOM — Bohème.html';
+  /* 10 septembre, au soir — LES INFOS SE LISENT ICI, A L'ARRIVEE.
+     Elles parlent de toute l'application (le site, le telephone, la salle
+     d'entrainement), pas de l'atelier : leur place est apres le film, avant
+     l'accueil, une seule fois. Ensuite le logo mene droit au hall. */
+  let lues = false;
+  try { lues = localStorage.getItem('boheme-bienvenue') === '1'; } catch(e){}
+  const ou = !nom ? 'PRENOM — Bohème.html'
+           : !lues ? 'BIENVENUE — Bohème.html'
+           : R.destination;
   const suite = q2.toString();
   location.href = ou + (suite ? '?' + suite : '');
 }

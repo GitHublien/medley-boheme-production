@@ -108,7 +108,44 @@
      « Mise à jour » te préviendra.</p>
 
   <div class="corps">
-  <h2>Ce que tu as dès maintenant</h2>
+  <h2>À quoi sert chaque porte</h2>
+  <p class="legende">Huit portes, et une seule chose derrière chacune. Tu retrouveras
+     cette liste à tout moment : c'est l'accueil de l'application.</p>
+
+  <div class="carte">
+    <ul>
+      <li><b>01 · L'atelier.</b> La salle de travail. La musique joue, tes paroles
+          s'allument au fil des phrases, dans ta couleur. C'est là que tu passes le
+          plus de temps, et c'est là qu'on apprend.</li>
+      <li><b>02 · Les textes.</b> Le même medley, mais <b>pour lire</b> : bloc par bloc,
+          en très gros, avec la ponctuation. Chaque bloc a son petit lecteur, pour
+          l'écouter en boucle. Parfait dans le métro, ou au lit.</li>
+      <li><b>03 · Qui chante quoi.</b> La répartition, bloc par bloc, chacun dans sa
+          couleur : où tu chantes seul, où vous êtes deux, où c'est à six.
+          <b>C'est cette page qui fait foi</b> quand un passage est redistribué.</li>
+      <li><b>03 · La mise en scène.</b> Où tu es sur le plateau, quand tu entres, de
+          quel côté tu sors — bloc par bloc, écrit pour toi.</li>
+      <li><b>04 · Les documents.</b> La fiche technique du Palais, le plan de plateau :
+          à lire ici, ou à garder sur ton téléphone.</li>
+      <li><b>05 · Les vidéos.</b> Les explications filmées de la mise en scène. Elles
+          arriveront au fur et à mesure — c'est encore vide aujourd'hui.</li>
+      <li><b>06 · Le film.</b> Les trois minutes d'ouverture, à revoir autant de fois
+          que tu veux.</li>
+      <li><b>07 · Le rendez-vous.</b> La répétition, le concert, le lieu, les horaires.</li>
+    </ul>
+  </div>
+
+  <div class="carte">
+    <h3>Et deux choses qui suivent partout</h3>
+    <p><b>Ton prénom</b> — l'application sait qui tu es, et tout s'écrit pour toi. Tu
+       peux en changer à tout moment : « Mon prénom », dans le menu.</p>
+    <p><b>La musique</b> — la petite note en haut, à côté de Bohème. Elle t'accompagne
+       pendant que tu lis, doucement, et <b>elle s'arrête toute seule</b> dès qu'une
+       vidéo ou une bande démarre. Si tu n'en veux pas, tu l'éteins : elle ne revient
+       plus jamais toute seule.</p>
+  </div>
+
+  <h2>Ce que tu as dès maintenant, dans l'atelier</h2>
 
   <div class="carte mienne">
     <ul>
@@ -205,7 +242,7 @@
 
   </div><!-- fin du corps -->
 
-  <button class="entrer" id="entrer">Entrer dans l'atelier</button>
+  <button class="entrer" id="entrer">Entrer dans l'application</button>
   <p class="apres">Tu retrouveras le logo de Bohème à chaque ouverture : c'est par lui
      qu'on entre.</p>
 
@@ -248,7 +285,9 @@ document.getElementById('entrer').addEventListener('click', () => {
   const q2 = new URLSearchParams(location.search);
   q2.delete('premiere');          /* la remise a zero est deja faite : sinon, boucle */
   const suite = q2.toString();
-  location.href = 'KARAOKE — Medley complet.html' + (suite ? '?' + suite : '');
+  /* 10 sept : cette page se lit a l'ARRIVEE, avant l'accueil. On entre donc dans
+     le hall, pas directement dans l'atelier — c'est l'accueil qui distribue. */
+  location.href = 'ACCUEIL — Bohème.html' + (suite ? '?' + suite : '');
 });
 </script>
 <script src="retour.js"></script>

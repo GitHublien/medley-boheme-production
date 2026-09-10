@@ -6743,22 +6743,13 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
   const params = new URLSearchParams(location.search);
   const forcee = params.get('bienvenue') === '1';
 
-  /* ⚠️ 10 septembre — LES EXPLICATIONS SE LISENT AVANT D'ENTRER.
-     Elles étaient derrière un bouton facultatif (« voir les explications en entier »),
-     et Mickaël : « il n'y a même pas besoin de le proposer, il faut qu'il les VOIE en
-     entier avant de rentrer ». À la toute première ouverture de l'atelier, on l'envoie
-     donc lire la page complète ; son bouton « Entrer dans l'atelier » le ramène ici,
-     et cette carte-ci ne sert plus que de rappel (le « i » des commandes). */
-  if (deja !== '1' && !forcee){
-    let lue = null;
-    try { lue = localStorage.getItem('boheme-bienvenue'); } catch(e){}
-    if (lue !== '1'){
-      const p = new URLSearchParams(location.search);
-      p.delete('bienvenue');
-      location.replace('BIENVENUE — Bohème.html' + (p.toString() ? '?' + p.toString() : ''));
-      return;
-    }
-  }
+  /* ⚠️ 10 septembre, au soir — L'ATELIER N'EXPLIQUE QUE L'ATELIER.
+     J'avais fait passer la première ouverture par la page d'infos complète. Mickaël :
+     « pourquoi, quand je rentre dans l'atelier, la première chose que je vois, c'est
+     les infos ? » — il a raison, cette page parle de TOUTE l'application, pas de la
+     salle de travail. Elle se lit maintenant à l'arrivée, après le film. Ici, on ne
+     montre plus que la carte de l'atelier : ses cinq commandes, et rien d'autre.
+     NE PAS y remettre un détour vers les infos. */
   if (deja === '1' && !forcee) return;
 
   function fermer(){
