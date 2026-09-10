@@ -278,6 +278,22 @@ const VERSION_SITE = '10/09/2026 · 19h25';
     son.setAttribute('data-musique-du-site', '1');
     document.body.appendChild(son);
 
+    /* ═══ IL NE DOIT JAMAIS TOUCHER LA BARRE DU BAS ═══
+       « Il ne faut jamais qu'il y ait un bouton qui soit sur les autres. »
+       J'avais estimé la hauteur de la barre à 62 px, puis à 94. Mesurée : 95 px.
+       On arrête de deviner : on demande sa hauteur à la barre elle-même, et on se
+       pose 14 px au-dessus. Recalculé à chaque rotation, sur tous les téléphones. */
+    function seRanger(){
+      const barre = document.querySelector('.bas');
+      const visible = barre && getComputedStyle(barre).display !== 'none';
+      if (!visible){ boite.style.bottom = ''; return; }
+      const r = barre.getBoundingClientRect();
+      boite.style.bottom = Math.round(innerHeight - r.top + 14) + 'px';
+    }
+    seRanger();
+    addEventListener('resize', seRanger, { passive:true });
+    addEventListener('orientationchange', () => setTimeout(seRanger, 120), { passive:true });
+
     let replier = null;
     const deplier = () => {
       boite.classList.add('ouvert');
