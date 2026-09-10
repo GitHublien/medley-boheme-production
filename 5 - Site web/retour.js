@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    LE RETOUR AU SITE (7 septembre 2026, demandé par Mickaël)
-   Sur toutes les pages qui ne sont pas le hall — le karaoké, le livre des textes,
+   Sur toutes les pages qui ne sont pas le hall — l’atelier, le livre des textes,
    la fiche technique — un bouton discret et toujours visible ramène à l'accueil,
    en gardant le prénom. Sur téléphone, il se met en bas à gauche, sous le pouce,
    au-dessus de tout le reste. Rien d'autre n'est touché.
@@ -8,7 +8,7 @@
 (function(){
   if (window.__retourBoheme) return; window.__retourBoheme = true;
   const ici = decodeURIComponent(location.pathname.split('/').pop() || '');
-  /* le hall a sa navigation ; le karaoké a déjà son bouton « Le site » dans la barre,
+  /* le hall a sa navigation ; l’atelier a déjà son bouton « Le site » dans la barre,
      et un bouton flottant y masquerait les commandes de lecture */
   if (/^ACCUEIL|^MISE EN|^DOCUMENTS|^VID|^CALENDRIER|^NOUVEAUT|^INSTALLER|^site\.html$|^KARAOKE/i.test(ici)) return;
   if (document.getElementById('btnSite')) return;

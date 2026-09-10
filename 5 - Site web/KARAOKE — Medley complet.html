@@ -6,7 +6,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
    Quelqu'un reçoit son lien et arrive ici directement : on l'envoie
    d'abord voir le film, une seule fois. La porte note son passage
    (boheme-intro-vue-2), et toutes les visites suivantes viennent
-   droit au karaoké. En local, sur l'ordinateur de travail, jamais
+   droit à l'atelier. En local, sur l'ordinateur de travail, jamais
    de détour. Placé tout en haut : la redirection part avant même
    que la page ne se charge. */
 (function(){
@@ -26,7 +26,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 <meta name="theme-color" content="#000000">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Karaoké — Medley complet</title>
+<title>Atelier — Medley complet</title>
 <style>
   :root{ --or:#d4af37; --blanc:#f2ede1; --bleu:#8fb0d8; --noir: #000000; --eteint:#464239; }
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -497,7 +497,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 
 
 /* ─── SUR TÉLÉPHONE : on épure ─────────────────────────────────
-   Les réglages servent à fabriquer le karaoké, pas à le suivre.
+   Les réglages servent à fabriquer l'atelier, pas à le suivre.
    Sur un petit écran, on ne garde que l'essentiel : la présence,
    le plein écran, revoir l'intro, et la navigation. */
 @media (pointer: coarse) and (max-width: 1100px){
@@ -516,7 +516,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 <!-- ═══ LE STYLE DU TÉLÉPHONE, CONNU AVANT LE PREMIER AFFICHAGE (7 sept) ═══
      Ces blocs étaient tout en bas de la page : le navigateur montrait les boutons
      avec leurs mots, puis les masquait d'un coup en arrivant en bas. C'était le
-     clignotement blanc à chaque entrée dans le karaoké. -->
+     clignotement blanc à chaque entrée dans l'atelier. -->
 
 <!-- ═══ LA BARRE SUR TÉLÉPHONE (7 septembre 2026) ═══
      Une rangée de pastilles rondes avec les pictogrammes en or, et un tiroir
@@ -604,7 +604,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 
 <style>
 /* ═══ LES PICTOGRAMMES, EN CSS PUR (7 septembre 2026) ═══
-   Le karaoké réécrit le texte de certains boutons : si le pictogramme était posé en
+   L'atelier réécrit le texte de certains boutons : si le pictogramme était posé en
    JavaScript, le mot revenait par-dessus. Ici c'est le CSS qui le dessine, donc il reste. */
 @media (pointer: coarse) and (max-width: 1100px){
   .barre .btn-reg, .tiroir .btn-reg{ position:relative; }
@@ -612,7 +612,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
   .barre .btn-reg{ font-size:0 !important; color:transparent !important; overflow:visible !important; text-indent:0 !important; }
   /* d'anciennes règles nommaient ces boutons un par un et leur rendaient une taille de
      texte : on les neutralise avec la même force, sinon le mot repasse par-dessus le
-     pictogramme quand le karaoké réécrit le bouton (Voix témoins ⇄ Instrumental). */
+     pictogramme quand l'atelier réécrit le bouton (Voix témoins ⇄ Instrumental). */
   .barre #btnMaj, .barre #btnStyle, .barre #btnPlein, .barre #btnBlocs, .barre #btnTuto,
   .barre #btnAide, .barre #btnIntro, .barre #btnBande, .barre #btnPresence, .barre #btnSite,
   .barre #btnInfos, .barre #btnPlus, .barre .b-aller{
@@ -3158,7 +3158,7 @@ function allerBloc(i){
   if (au.paused) au.play();
   menuB.classList.remove('vu');
 }
-/* le site peut ouvrir le karaoké pile sur un bloc : ?bloc=07 (7 sept) */
+/* le site peut ouvrir l'atelier pile sur un bloc : ?bloc=07 (7 sept) */
 try {
   const _b = new URLSearchParams(location.search).get('bloc');
   if (_b){ const _i = BLOCS.findIndex(x => x.num === _b.padStart(2, '0'));
@@ -3429,7 +3429,7 @@ addEventListener('keydown', e => {
    La porte a laissé un petit mot dans la mémoire du navigateur.
    On ne peut pas remettre le plein écran sans un geste, alors on
    attend le premier clic ou la première touche — ce qui arrive de
-   toute façon dans les deux secondes sur une page de karaoké. */
+   toute façon dans les deux secondes sur une page d'atelier. */
 (function(){
   try { sessionStorage.removeItem('boheme-plein-ecran'); } catch(e){}
   if (document.fullscreenElement) return;
@@ -3773,7 +3773,7 @@ window.PRESENCE = Object.assign({}, AVEC);
 </style>
 <script>
 /* ─── 4. EN LIGNE, PAS DE RÉGLAGES ───────────────────────────────
-   Les réglages servent à FABRIQUER le karaoké. La fabrication se
+   Les réglages servent à FABRIQUER l'atelier. La fabrication se
    fait en local, sur l ordinateur ; la version en ligne, elle, est
    pour les six. Alors : si la page est servie par github.io, les
    boutons d atelier disparaissent. En local, tout reste. */
@@ -3827,7 +3827,7 @@ if (SUR_MOBILE){
 })();
 
 /* ═══════════════════════════════════════════════════════════════
-   5. LE LIEN PERSONNEL — un karaoké par chanteur
+   5. LE LIEN PERSONNEL — un atelier par chanteur
 
    On ajoute « ?pour=elie » à l'adresse, et la page ne dit
    « À toi » qu'à Élie. Les autres noms restent affichés, mais
@@ -4707,7 +4707,7 @@ body[data-pour] #bandeau{ display:flex; }
         texte:"Mickaël crie « Mon frère ! », seul. Sur « l'amour sera toujours… », les mains reprises en haut, micros vers l'extérieur. Puis sur le grand « Mon frère » (22'35), vous vous prenez dans les bras : ATTENTION AUX MICROS, jamais entre les torses." },
       { de:1366, a:1380,
         titre:"★ COMPTE 1-2-3-4, l'arrachement, l'arrêt sur image",
-        texte:"Les chœurs entrent : COMPTE 1-2-3-4, ton « Mon frère, mon frère » sur le 4 (le compte est dans le karaoké). Sur ce même 4, Élie te saisit par les bras et t'emmène à cour. Tu chantes en te débattant. Dernier « Mon frère ! » de Mickaël : tout se fige." },
+        texte:"Les chœurs entrent : COMPTE 1-2-3-4, ton « Mon frère, mon frère » sur le 4 (le compte est dans l'atelier). Sur ce même 4, Élie te saisit par les bras et t'emmène à cour. Tu chantes en te débattant. Dernier « Mon frère ! » de Mickaël : tout se fige." },
       { de:1380, a:1400,
         titre:"★ ARRÊT SUR IMAGE · emmené à cour par Élie",
         texte:"Sur le dernier « Mon frère ! » de Mickaël, ARRÊT SUR IMAGE : plus personne ne bouge. La voix machine dit « Le temps s'arrête, trois mille ans passent ». Tu tiens ta position, stable, pendant toute la voix." },
@@ -5182,8 +5182,8 @@ body[data-pour] #bandeau{ display:flex; }
       document.body.classList.toggle('aideAllumee', !!on);
       ba.style.background = on ? 'rgba(157,255,53,.16)' : 'rgba(212,175,55,.10)';
       ba.style.color = on ? '#9dff35' : '';
-      ba.title = on ? 'les annonces personnelles sont allumées — cliquer pour revenir au karaoké normal'
-                    : 'karaoké normal — cliquer pour allumer les annonces personnelles';
+      ba.title = on ? 'les annonces personnelles sont allumées — cliquer pour revenir à l\'atelier normal'
+                    : 'atelier normal — cliquer pour allumer les annonces personnelles';
     };
     peindre(aideActive());
     ba.addEventListener('click', () => peindre(window.basculerAide()));
@@ -5235,7 +5235,7 @@ body[data-pour] #bandeau{ display:flex; }
   /* et tout ce qui s'affichait en bas remonte au-dessus de lui */
   #tuto{ bottom:calc(132px + env(safe-area-inset-bottom)) !important; }
 }
-/* couché, le karaoké devient une salle de cinéma : marges larges,
+/* couché, l'atelier devient une salle de cinéma : marges larges,
    texte calibré sur la hauteur, commandes escamotées pareil */
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
   .dedans{ padding-left:9vw !important; padding-right:9vw !important; }
@@ -5281,7 +5281,7 @@ body[data-pour] #bandeau{ display:flex; }
 </div>
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   LE TUTORIEL — la visite guidée du karaoké
+   LE TUTORIEL — la visite guidée de l'atelier
 
    À la première visite : « veux-tu la visite ? oui / non ».
    Oui → chaque commande s'illumine à tour de rôle, avec son
@@ -5298,7 +5298,7 @@ body[data-pour] #bandeau{ display:flex; }
 
   const ETAPES = [
     { id:'b',        t:'Lecture',
-      x:'Lance le karaoké, et le met en pause. La musique part, les paroles s\'allument en rythme.' },
+      x:'Lance l\'atelier, et le met en pause. La musique part, les paroles s\'allument en rythme.' },
     { id:'rail',     t:'La barre de temps',
       x:'La position dans le medley. Un appui n\'importe où : on saute à cet endroit.' },
     { id:'bNext',    t:'Les flèches — essaie',
@@ -5320,7 +5320,7 @@ body[data-pour] #bandeau{ display:flex; }
       essai:{ zone:'.ligne' },
       bravo:'La musique a filé pile sur cette phrase. On remet tout en place.' },
     { id:'btnPlein', t:'Plein écran — essaie',
-      x:'Le karaoké seul à l\'écran, rien d\'autre. Appuie dessus pour voir la différence.',
+      x:'L\'atelier seul à l\'écran, rien d\'autre. Appuie dessus pour voir la différence.',
       essai:{ zone:'#btnPlein' },
       bravo:'Voilà la différence. Le même bouton (ou Échap) pour revenir.' },
     { id:'btnIntro', t:'Revoir l\'intro',
@@ -5537,7 +5537,7 @@ body[data-pour] #bandeau{ display:flex; }
     if (qui && NOMS_B[qui]){
       titre.textContent = 'Bienvenue, ' + NOMS_B[qui] + ' !';
       texte.innerHTML =
-        'Ce karaoké est le tien. Trois conseils pour bien travailler :<br>'
+        'Cet atelier est le tien. Trois conseils pour bien travailler :<br>'
         + '🎧 mets des écouteurs · ⛶ passe en plein écran · 📱 garde le téléphone à la verticale.<br><br>'
         + 'Ton <b>aide personnelle est déjà allumée</b> : elle t\'annonce « prépare-toi », '
         + '« à toi », et tes chœurs s\'affichent dans ta couleur. '
@@ -5545,7 +5545,7 @@ body[data-pour] #bandeau{ display:flex; }
         + 'Veux-tu passer par la salle d\'entraînement ? Tu y essaies toutes les commandes, sans risque.';
     } else {
       titre.textContent = 'Première fois ici ?';
-      texte.textContent = 'Veux-tu passer par la salle d\'entraînement ? Une copie du karaoké où tu essaies chaque commande, sans risque — cinq minutes, et tu sauras tout faire.';
+      texte.textContent = 'Veux-tu passer par la salle d\'entraînement ? Une copie de l\'atelier où tu essaies chaque commande, sans risque — cinq minutes, et tu sauras tout faire.';
     }
     boutons.innerHTML = '';
     const oui = document.createElement('button');
@@ -5777,7 +5777,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '10/09/2026 · 15h48';
+const VERSION_APPLI = '10/09/2026 · 23h10';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -5842,7 +5842,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
 </script>
 
 <script>
-/* ═══ PAS DE MISE EN VEILLE PENDANT LE KARAOKÉ ═══
+/* ═══ PAS DE MISE EN VEILLE PENDANT L'ATELIER ═══
    Le « verrou d'éveil » demande au téléphone de garder l'écran
    allumé tant que la musique joue. Dès la pause, on le relâche :
    la batterie reprend ses droits. Si le téléphone est trop vieux
@@ -6021,7 +6021,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
   document.addEventListener('pointerdown', montrer);
 
   /* ─── LA PRÉSENCE OBÉIT À PLAY ET PAUSE ──────────────────────
-     Règle absolue, sur tous les appareils : dès que le karaoké
+     Règle absolue, sur tous les appareils : dès que l'atelier
      joue, elle s'efface progressivement et ne revient pas. Le noir
      et le texte, rien d'autre. Elle n'a le droit d'exister que
      pendant les pauses. */
@@ -6489,7 +6489,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
     btnPlein:   ['Plein écran', 'Cache tout ce qui n\'est pas le medley.'],
     btnPresence:['La présence', 'Le visage qui accompagne l\'ouverture.'],
     btnPlus:    ['Les autres commandes', 'Le style, le guide, la mise à jour, le film, le plein écran.'],
-    btnQui:     ['Qui es-tu', 'Dis au karaoké qui tu es : il allume tes lignes dans ta couleur. Tu peux en changer quand tu veux.']
+    btnQui:     ['Qui es-tu', 'Dis à l\'atelier qui tu es : il allume tes lignes dans ta couleur. Tu peux en changer quand tu veux.']
   };
   const ALLER = ['Aller à ton passage', 'Un appui, et la musique va directement là où TU chantes. C\'est le bouton doré.'];
 
@@ -6708,11 +6708,11 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
 </style>
 
 <div id="bienvenueCarte"><div class="dedans">
-  <h2>Bienvenue dans le karaoké</h2>
+  <h2>Bienvenue dans l'atelier</h2>
   <p class="sous">Vingt-six minutes cinquante, les vingt blocs, tes paroles en gros. Voilà ce que tu as sous la main.</p>
   <ul>
     <li><i style="background-image:url(site-images/icones-karaoke/etoile2.png)"></i>
-        <span><b>L'étoile, ton aide.</b> Allumée, elle est <b style="color:#9dff35">verte</b> : tes lignes s'allument dans ta couleur et un mot te dit où tu es. Éteinte, c'est le karaoké normal.</span></li>
+        <span><b>L'étoile, ton aide.</b> Allumée, elle est <b style="color:#9dff35">verte</b> : tes lignes s'allument dans ta couleur et un mot te dit où tu es. Éteinte, c'est l'atelier normal.</span></li>
     <li><i style="background-image:url(site-images/icones-karaoke/passage2.png)"></i>
         <span><b>La double flèche</b> t'emmène directement là où <b>tu</b> chantes. Elle n'apparaît que si l'étoile est allumée, et seulement quand ton passage est loin.</span></li>
     <li><i style="background-image:url(site-images/icones-karaoke/micro.png)"></i>
@@ -6724,7 +6724,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
   </ul>
   <p class="astuce"><b>Une chose à retenir :</b> si un dessin ne te dit rien, <b>garde le doigt appuyé dessus</b> une seconde. Une explication apparaît, sans rien déclencher. Et la visite guidée complète reste à ta disposition : le <b>point d'interrogation</b>, dans les autres commandes.</p>
   <div class="gestes">
-    <button id="bvEntrer">Entrer dans le karaoké</button>
+    <button id="bvEntrer">Entrer dans l'atelier</button>
     <button class="doux" id="bvTout">Voir les explications en entier</button>
   </div>
 </div></div>
@@ -6818,7 +6818,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
 
 <div id="quiEsTu"><div class="dedans">
   <h2>Qui es-tu ?</h2>
-  <p>Touche ton prénom. Le karaoké allumera <b>tes</b> lignes dans <b>ta</b> couleur, et te préviendra avant chacune de tes entrées. Tu pourras en changer quand tu veux.</p>
+  <p>Touche ton prénom. L'atelier allumera <b>tes</b> lignes dans <b>ta</b> couleur, et te préviendra avant chacune de tes entrées. Tu pourras en changer quand tu veux.</p>
   <div class="noms">
     <button class="n" data-qui="adrien"    style="--c:#ffc814">Adrien</button>
     <button class="n" data-qui="stephanie" style="--c:#ff4fa8">Stéphanie</button>
@@ -6853,7 +6853,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
   carte.querySelectorAll('button.n').forEach(b => b.addEventListener('click', () => {
     const q = b.dataset.qui;
     try { localStorage.setItem('boheme-pour', q); } catch(e){}
-    /* on recharge avec le bon prénom : tout le karaoké se règle dessus */
+    /* on recharge avec le bon prénom : tout l'atelier se règle dessus */
     const p = new URLSearchParams(location.search);
     p.set('pour', q); p.delete('bienvenue');
     location.replace(location.pathname + '?' + p.toString());
@@ -6877,7 +6877,7 @@ const VERSION_APPLI = '10/09/2026 · 15h48';
   })();
 
   /* PREMIÈRE OUVERTURE : on montre toujours la liste des six, même si le lien porte
-     déjà un prénom. C'est le moment où l'on comprend que le karaoké sait qui on est,
+     déjà un prénom. C'est le moment où l'on comprend que l'atelier sait qui on est,
      et qu'on peut en changer. Ensuite elle ne revient plus (bouton « Qui es-tu »). */
   let dejaDemande = null, sansNom = null;
   try { dejaDemande = localStorage.getItem('boheme-nom-demande'); sansNom = localStorage.getItem('boheme-sans-nom'); } catch(e){}

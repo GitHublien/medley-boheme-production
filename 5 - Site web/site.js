@@ -9,7 +9,7 @@ const VERSION_SITE = '10/09/2026 · 18h40';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
-    { f:'KARAOKE — Medley complet.html', t:'Karaoké',        g:'♪', i:'note', s:'la salle de travail' },
+    { f:'KARAOKE — Medley complet.html', t:'Atelier',        g:'♪', i:'note', s:'la salle de travail' },
     { f:'LIVRE — Les textes du medley.html', t:'Textes',     g:'¶', i:'livre', s:'le livre, avec la musique' },
     { f:'QUI CHANTE QUOI — Bohème.html', t:'Qui chante quoi', g:'♪', i:'note', s:'bloc par bloc, qui prend la parole' },
     { f:'MISE EN SCÈNE — Bohème.html',  t:'Mise en scène',  g:'◎', i:'scene', s:'qui est où, quand' },
@@ -132,7 +132,7 @@ const VERSION_SITE = '10/09/2026 · 18h40';
     navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
   }
 
-  /* ── LA MISE À JOUR, comme dans le karaoké : un petit mot qui répond ──
+  /* ── LA MISE À JOUR, comme dans l'atelier : un petit mot qui répond ──
      Elle vérifie à l'ouverture, sans déranger, et dit toujours où on en est.
      Les nouveautés du jour allument une pastille sur les pages concernées. */
   const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html'];   /* ce qui a changé aujourd'hui */

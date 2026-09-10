@@ -91,6 +91,10 @@ document.getElementById('retour').setAttribute('href', RETOUR);
 
 let deja = '';
 try { deja = (localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
+/* 10 sept : cette page est maintenant la PREMIÈRE après le film. Sans prénom
+   connu, on ne peut pas « revenir au site » : on doit choisir. Le lien de retour
+   ne s'affiche que si l'on vient du menu, ou si un prénom est déjà enregistré. */
+if (!deja && !q.get('retour')) document.getElementById('retour').style.display = 'none';
 
 function choisir(id){
   try { localStorage.setItem('boheme-pour', id); } catch(e){}

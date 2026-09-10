@@ -32,7 +32,7 @@
    avec leurs noirs écrasés à zéro absolu. Plus de rectangle, et
    aucun masque n'est nécessaire.
 
-   Enfin, un léger flou la met DERRIÈRE : le texte du karaoké reste
+   Enfin, un léger flou la met DERRIÈRE : le texte de l’atelier reste
    net devant, et on peut lire.
 
    INSTALLATION — une ligne à la fin de la page :

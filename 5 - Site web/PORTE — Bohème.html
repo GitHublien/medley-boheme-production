@@ -22,7 +22,7 @@
        leur nom pour que les téléphones ne resservent jamais l'ancien film)
    4.  à la dernière image, une PHOTO prend le relais au pixel près
    5.  le logo respire, la présence rôde
-   6.  au clic : la chute à travers les visages, puis le karaoké
+   6.  au clic : la chute à travers les visages, puis l'atelier
    ═══════════════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
@@ -237,7 +237,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <img src="media/porte/logo-plein.png" alt="" style="width:min(30vmin,180px);margin-top:2vh">
   <div style="font-size:clamp(20px,5.4vw,27px);font-weight:800;color:#ffc814;
     letter-spacing:.04em;line-height:1.3;">Bohème Production<br>
-    <span style="font-size:.72em;color:#e8e2d2;font-weight:600;">le karaoké du medley — Cannes, 4 octobre 2026</span></div>
+    <span style="font-size:.72em;color:#e8e2d2;font-weight:600;">l'atelier du medley — Cannes, 4 octobre 2026</span></div>
 
   <div style="display:flex;gap:10px;justify-content:center;max-width:560px;width:100%;">
     <img src="media/porte/apercu-film-2026-09-10.jpg" alt="" style="width:48%;border-radius:12px;
@@ -251,7 +251,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
     Cette application, créée pour nous six, contient :<br>
     🎬 &nbsp;<b>le film d'introduction</b> — tu le verras une fois à l'ouverture,
     puis seulement si tu veux le revoir<br>
-    🎤 &nbsp;<b>le karaoké complet</b> — la bande, les paroles en couleurs,
+    🎤 &nbsp;<b>l'atelier complet</b> — la bande, les paroles en couleurs,
     chacun la sienne<br>
     ✦ &nbsp;<b>ton guide personnel</b> — « prépare-toi », « à toi »,
     tes chœurs dans ta couleur<br>
@@ -292,7 +292,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
   <source src="media/porte/attente.mp3" type="audio/mpeg">
 </audio>
 
-<div id="invite"><div class="couche dessus">Clique maintenant sur le logo pour entrer dans le karaoké</div></div>
+<div id="invite"><div class="couche dessus">Clique maintenant sur le logo pour entrer dans l'atelier</div></div>
 
 <div class="btn" id="bPlein" title="plein écran">
   <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
@@ -431,7 +431,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
    ═══════════════════════════════════════════════════════════════ */
 /* ═══ LE FILM NE SE MONTRE QU'UNE FOIS ═══
    L'application s'ouvre toujours ici. Si le film a déjà été vu,
-   on file DIRECTEMENT au karaoké — sauf :
+   on file DIRECTEMENT à l'atelier — sauf :
      ?revoir=1   : le bouton « Revoir l'intro »
      ?premiere=1 : le passage de test, qui efface tout */
 (function(){
@@ -460,7 +460,7 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
 })();
 
 const R = {
-  destination     : 'ACCUEIL — Bohème.html',   /* le hall du site (7 sept) ; le karaoké est sa première porte */
+  destination     : 'ACCUEIL — Bohème.html',   /* le hall du site (7 sept) ; l'atelier est sa première porte */
 
   presenceDebut   : 3.0,    // elle est là presque tout de suite
   presencePendant : 0.30,   // pendant le film : on la voit vraiment
@@ -702,23 +702,27 @@ function partir(){
   });
 }
 
-/* on emporte le plein écran avec soi : le karaoké le remettra
+/* on emporte le plein écran avec soi : l'atelier le remettra
    tout seul en lisant ce petit mot laissé dans la mémoire du
    navigateur */
 function allerAuKaraoke(){
-  let lue = false;
+  let nom = '';
   try {
     sessionStorage.setItem('boheme-plein-ecran', '1');
     localStorage.setItem('boheme-intro-vue-2', '1');   /* l'intro est vue : plus de détour */
-    lue = localStorage.getItem('boheme-bienvenue') === '1';
+    nom = localStorage.getItem('boheme-pour') || '';
   } catch(e){}
-  /* la premiere fois, le logo mene aux explications (la video, ce que contient
-     l'application, ce qui arrive) ; ensuite il mene droit au karaoke */
-  const ou = lue ? R.destination : 'BIENVENUE — Bohème.html';
   /* le ?pour=… du lien personnel suit jusqu'au bout ; premiere=1 a fait son
-     travail ici et ne doit plus voyager, sinon le karaoke renvoie a la porte */
+     travail ici et ne doit plus voyager, sinon l'atelier renvoie a la porte */
   const q2 = new URLSearchParams(location.search);
   q2.delete('premiere');
+  if (q2.get('pour')) nom = q2.get('pour');
+  /* 10 sept (décision de Mickaël) : après le film, la PREMIÈRE page est celle
+     des prénoms — on choisit le sien avant d'entrer, c'est tout le système qui
+     en dépend, pas seulement l'atelier. Un lien personnel (?pour=) a déjà le
+     prénom : il entre directement dans le hall. Les explications (BIENVENUE)
+     ne sont plus sur le chemin : elles sont devenues une tuile de l'accueil. */
+  const ou = nom ? R.destination : 'PRENOM — Bohème.html';
   const suite = q2.toString();
   location.href = ou + (suite ? '?' + suite : '');
 }

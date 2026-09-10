@@ -1483,7 +1483,7 @@ addEventListener('scroll', majBarre, {passive:true}); majBarre();
 document.getElementById('prec').onclick = () => { const i = Math.max(0, blocVisible() - 1); location.hash = '#bloc' + D[i].num; };
 document.getElementById('suiv').onclick = () => { const i = Math.min(D.length - 1, blocVisible() + 1); location.hash = '#bloc' + D[i].num; };
 document.getElementById('btnHaut').onclick = () => scrollTo({top:0, behavior:'smooth'});
-/* ═══ VOIX TÉMOIN / INSTRUMENTAL, SANS AUCUN SAUT — la méthode du karaoké ═══
+/* ═══ VOIX TÉMOIN / INSTRUMENTAL, SANS AUCUN SAUT — la méthode de l'atelier ═══
    Les deux bandes jouent EN MÊME TEMPS, l'une muette. Le bouton ne fait que croiser
    les volumes en un quart de seconde : on ne change jamais de fichier, donc rien ne
    saute. Seule la bande muette se recale discrètement sur celle qu'on entend. */
@@ -1502,7 +1502,7 @@ function croiser(versInstru){
     if (p >= 1) clearInterval(fondu);
   }, 16);
 }
-/* ═══ RETIRÉ le 7 sept à la demande de Mickaël : on revient au suiveur d'origine du karaoké ═══ */
+/* ═══ RETIRÉ le 7 sept à la demande de Mickaël : on revient au suiveur d'origine de l'atelier ═══ */
 let sautInterne = false;
 if (!QUATRE){   /* la méthode d'avant, seulement si le fichier à quatre canaux n'est pas lisible */
 setInterval(() => {
