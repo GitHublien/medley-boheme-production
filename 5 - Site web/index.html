@@ -94,6 +94,7 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
   </div>
   <p class="petit">Si tu ne trouves pas, copie le lien et colle-le dans <span id="navNom2">Chrome</span> :</p>
   <div class="lien"><input id="champLien" readonly><button class="btn doux" id="copier" style="width:auto;padding:.8rem 1.1rem">Copier</button></div>
+  <a class="discret" href="PORTE — Bohème.html">Ou entrer sans installer</a>
   <i class="fleche hautDroite">⤴</i>
 </div>
 
@@ -144,6 +145,7 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
     <div><b class="n">2</b><span>Ouvre <b>Safari</b>, colle-le dans la barre d'adresse, et reviens ici.</span></div>
   </div>
   <div class="lien"><input id="champLien2" readonly><button class="btn doux" id="copier2" style="width:auto;padding:.8rem 1.1rem">Copier</button></div>
+  <a class="discret" href="PORTE — Bohème.html">Ou entrer sans installer</a>
 </div>
 
 <!-- ordinateur -->
@@ -170,7 +172,25 @@ a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-
    l'enregistrer, alors que c'est ELLE qui installe. Il doit partir le plus tôt
    possible : l'installation ne peut être proposée qu'une fois qu'il est actif. */
 if ('serviceWorker' in navigator){
-  try { navigator.serviceWorker.register('sw.js'); } catch(e){}
+  try {
+    navigator.serviceWorker.register('sw.js');
+    /* AU TOUT PREMIER PASSAGE, l'ouvrier n'est pas encore aux commandes quand la
+       page s'affiche — et Chrome ne propose l'installation QUE s'il l'est déjà.
+       C'est pour ça que « ça ne partait pas tout seul » : il aurait fallu ouvrir
+       le lien une deuxième fois. Alors on recharge nous-mêmes, UNE seule fois,
+       dès qu'il prend les commandes. Deux verrous contre la boucle : le drapeau
+       de session, et le fait qu'au retour l'ouvrier est déjà là. */
+    if (!navigator.serviceWorker.controller){
+      let dejaFait = false;
+      try { dejaFait = sessionStorage.getItem('boheme-sw-relance') === '1'; } catch(e){}
+      if (!dejaFait){
+        navigator.serviceWorker.addEventListener('controllerchange', function(){
+          try { sessionStorage.setItem('boheme-sw-relance', '1'); } catch(e){}
+          location.reload();
+        });
+      }
+    }
+  } catch(e){}
 }
 /* filet : si quoi que ce soit casse dans le script, on montre quand même un écran complet */
 window.addEventListener('error', function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } });
