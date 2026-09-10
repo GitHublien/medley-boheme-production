@@ -259,9 +259,17 @@ footer .liens a:hover{ color:var(--or2); }
   .nav{ top:auto; bottom:auto; left:12px; transform:none; top:50%; translate:0 -50%; flex-direction:column; align-items:stretch; padding:.5rem; border-radius:1.4rem; max-width:150px; white-space:normal; }
   .nav .marque{ border-right:0; border-bottom:1px solid rgba(255,255,255,.1); padding:0 0 .5rem; margin:0 0 .3rem; justify-content:center; }
   .nav .marque span{ display:none; }
-  .nav a.l{ display:block; font-size:.78rem; padding:.45rem .7rem; }
-  .nav a.l:nth-child(n+6){ display:block; }
+  /* Vu sur le telephone de Mickael le 10/09 au soir (Xiaomi, 407x904 en CSS,
+     couche = 904x407) : la colonne empilait dix choses - logo, musique, sept
+     liens, menu - dans 390px de haut. Le logo etait coupe en haut, le menu coupe
+     en bas. Elle ne garde plus que les trois ronds, comme la barre en portrait :
+     les pages sont dans le menu. */
+  .nav a.l{ display:none !important; }
   .nav .burger{ margin:.3rem auto 0; }
+  .nav .marque{ padding-bottom:.4rem !important; }
+  .nav .rond, .nav .musique{ margin:.25rem auto !important; }
+  /* la colonne est sur le cote, elle ne recouvre rien : elle ne s'efface jamais */
+  .nav.filante{ transform:none !important; translate:0 -50%; opacity:1 !important; pointer-events:auto !important; }
   .page{ width:min(1380px, 100% - 190px); margin-left:172px; }
   .ouverture{ min-height:100dvh; padding-top:1.5rem; }
   h1{ font-size:clamp(2rem,6vh,3.2rem); } .lead{ font-size:.95rem; }
