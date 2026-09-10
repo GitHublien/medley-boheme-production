@@ -91,15 +91,21 @@ document.getElementById('retour').setAttribute('href', RETOUR);
 
 let deja = '';
 try { deja = (localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
-/* 10 sept : cette page est maintenant la PREMIÈRE après le film. Sans prénom
-   connu, on ne peut pas « revenir au site » : on doit choisir. Le lien de retour
-   ne s'affiche que si l'on vient du menu, ou si un prénom est déjà enregistré. */
-if (!deja && !q.get('retour')) document.getElementById('retour').style.display = 'none';
+/* 10 sept : cette page est la PREMIÈRE de l'application, avant même le film.
+   ⚠️ Tant qu'aucun prénom n'est enregistré, PAS DE LIEN DE RETOUR — et ce n'est
+   pas qu'une question de principe : la porte renvoie ici quand elle ne connaît
+   personne, donc un retour ferait une BOUCLE SANS FIN entre les deux pages.
+   Le lien ne réapparaît que pour celui qui vient changer de prénom depuis le menu. */
+if (!deja) document.getElementById('retour').style.display = 'none';
 
 function choisir(id){
   try { localStorage.setItem('boheme-pour', id); } catch(e){}
+  /* on emporte les autres paramètres de l'adresse — surtout ?test=1, sinon le
+     parcours de test perdrait son bouton « passer le film » à cette étape */
+  const suite = new URLSearchParams(location.search);
+  suite.delete('retour'); suite.set('pour', id);
   const sep = RETOUR.includes('?') ? '&' : '?';
-  location.href = RETOUR + sep + 'pour=' + id;
+  location.href = RETOUR + sep + suite.toString();
 }
 const zone = document.getElementById('noms');
 for (const g of GENS){

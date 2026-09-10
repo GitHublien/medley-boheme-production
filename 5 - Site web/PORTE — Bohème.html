@@ -213,6 +213,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 .btn svg{width:15px;height:15px;fill:rgba(226,196,132,.9)}
 #bSon{right:max(16px,env(safe-area-inset-right))}
 #bPlein{right:calc(max(16px,env(safe-area-inset-right)) + 46px)}
+/* LE BOUTON DE TEST (10 sept) — n'existe QUE si l'adresse contient ?test=1.
+   Mickaël refait le parcours de la première fois pour vérifier chaque écran :
+   il connaît le film par cœur, il doit pouvoir le passer sans attendre 3 min.
+   Il saute à la dernière seconde, donc le raccord film → logo se voit quand même. */
+#bVite{position:fixed;left:max(16px,env(safe-area-inset-left));
+       top:max(16px,env(safe-area-inset-top));z-index:60;display:none;
+       padding:9px 15px;border-radius:999px;cursor:pointer;
+       background:rgba(255,200,20,.16);border:1px solid rgba(255,200,20,.6);
+       color:#ffc814;font-size:14px;font-weight:600;letter-spacing:.02em}
+#bVite.la{display:block}
 
 #voile{position:fixed;inset:0;background:#000;opacity:0;
        pointer-events:none;z-index:35;transition:opacity .55s}
@@ -300,6 +310,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 <div class="btn" id="bSon" title="son">
   <svg id="icoSon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
 </div>
+<div id="bVite" title="mode test">⏩ passer le film</div>
 
 <div id="curseur"></div>
 <div id="voile"></div>
@@ -455,6 +466,26 @@ window.EN_APPLI = matchMedia('(display-mode: fullscreen), (display-mode: standal
   try {
     if (localStorage.getItem('boheme-intro-vue-2') === '1'){
       location.replace('ACCUEIL — Bohème.html' + location.search);   /* le hall (7 sept) : le site est l'application */
+      return;
+    }
+  } catch(e){}
+
+  /* ═══ LE PRÉNOM SE CHOISIT AVANT LE FILM (10 sept, décidé par Mickaël) ═══
+     Deux raisons, et la seconde est décisive :
+       1. « quand on rentre pour la première fois, je veux tout de suite choisir
+          le nom » — c'est tout le système qui en dépend, pas seulement l'atelier ;
+       2. LA CHUTE D'ÉLIE. À la fin du film, Élie tombe à travers son visage, les
+          cinq autres ont la sortie sobre. La page ne le sait que par le prénom.
+          Or le lien envoyé aux six est le lien GLOBAL, qui ne connaît personne :
+          sans ce détour, la chute d'Élie ne se déclencherait JAMAIS.
+     On ne détourne qu'au tout premier passage, et seulement si le prénom est
+     inconnu : un lien personnel (?pour=…) l'a déjà gravé deux lignes plus haut. */
+  try {
+    const dit = (localStorage.getItem('boheme-pour') || '').toLowerCase();
+    if (!VALIDES.includes(dit)){
+      const suite = new URLSearchParams(location.search);
+      suite.set('retour', 'PORTE — Bohème.html');
+      location.replace('PRENOM — Bohème.html?' + suite.toString());
     }
   } catch(e){}
 })();
@@ -541,6 +572,25 @@ film.addEventListener('timeupdate', () => {
   if (film.currentTime >= film.duration - 0.45){ relais = true; poser(); }
 });
 film.addEventListener('ended', () => { if (!relais){ relais = true; poser(); } });
+
+/* ═══ LE MODE TEST (10 sept) ═══
+   ?test=1 fait apparaître un bouton « passer le film » : il pousse la lecture à
+   une seconde de la fin, si bien que le relais film → logo se déclenche
+   normalement, comme en vrai. Rien de tout ça n'existe sans le paramètre. */
+(function(){
+  if (new URLSearchParams(location.search).get('test') !== '1') return;
+  const b = document.getElementById('bVite'); if (!b) return;
+  b.classList.add('la');
+  b.addEventListener('click', e => {
+    e.stopPropagation();
+    try {
+      if (film.duration && film.currentTime < film.duration - 1.2){
+        film.currentTime = film.duration - 1.0;
+        if (film.paused) film.play().catch(()=>{});
+      } else if (!relais){ relais = true; poser(); }
+    } catch(x){ if (!relais){ relais = true; poser(); } }
+  });
+})();
 
 /* UN APPEL PENDANT LE FILM (10 sept, vécu par Mickaël) : le téléphone met la vidéo
    en pause tout seul, et au retour elle restait figée sur une image, sans rien pour

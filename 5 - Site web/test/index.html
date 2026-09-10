@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bohème — parcours de test</title>
+<meta name="theme-color" content="#050505">
+<link rel="icon" href="../icone-192.png">
+<style>
+  :root{ --or:#d4af37; --or2:#f1d27a; --encre:#f2ede1; --gris:#bcb4a2; --fond:#050505;
+         --vert:#9dff35; --orange:#ffc814; }
+  *{ box-sizing:border-box }
+  html,body{ margin:0; background:var(--fond); color:var(--encre);
+             font-family:system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased }
+  body{ padding:calc(1.5rem + env(safe-area-inset-top)) 1.1rem calc(2.5rem + env(safe-area-inset-bottom));
+        max-width:38rem; margin:0 auto }
+  h1{ font-family:Georgia,serif; font-size:1.5rem; margin:0 0 .25rem; color:var(--or2); font-weight:600 }
+  .sous{ color:var(--gris); font-size:.94rem; line-height:1.5; margin:0 0 1.5rem }
+  h2{ font-size:.82rem; color:var(--or2); margin:1.9rem 0 .7rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:.1em }
+  .btn{ display:block; width:100%; padding:1rem 1.3rem; margin-bottom:.55rem; border:0; border-radius:999px;
+        font:inherit; font-size:1.02rem; font-weight:600; text-align:center; text-decoration:none; cursor:pointer;
+        background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408 }
+  .btn.doux{ background:rgba(212,175,55,.1); color:var(--or2);
+             border:1px solid rgba(212,175,55,.45); font-weight:400 }
+  .btn small{ display:block; font-weight:400; font-size:.82rem; opacity:.75; margin-top:.15rem }
+  .etape{ display:flex; gap:.75rem; align-items:flex-start; padding:.7rem .9rem; margin-bottom:.4rem;
+          border-radius:.85rem; background:rgba(255,255,255,.035);
+          border:1px solid rgba(212,175,55,.18); font-size:.92rem; line-height:1.45;
+          color:var(--encre); text-decoration:none }
+  .etape b.n{ flex:none; width:1.7rem; height:1.7rem; border-radius:50%; display:grid; place-items:center;
+              background:rgba(212,175,55,.15); color:var(--or2); font-size:.85rem }
+  .etape em{ display:block; color:var(--gris); font-style:normal; font-size:.84rem; margin-top:.1rem }
+  table{ width:100%; border-collapse:collapse; font-size:.88rem }
+  td{ padding:.45rem .3rem; border-bottom:1px solid rgba(212,175,55,.14); vertical-align:top }
+  td:first-child{ color:var(--gris); width:52% }
+  td:last-child{ text-align:right; font-weight:600 }
+  .v{ color:var(--vert) } .r{ color:var(--gris) } .o{ color:var(--orange) }
+</style>
+</head>
+<body>
+
+<h1>Parcours de test</h1>
+<p class="sous">Pour refaire l'entrée <b>comme la toute première fois</b>, et regarder chaque
+écran au passage. Un bouton <b>« ⏩ passer le film »</b> apparaît en haut à gauche pendant les
+trois minutes : le raccord vers le logo se joue quand même, comme en vrai.
+<br><b>Cette page ne sert qu'à toi</b> : elle n'est reliée à rien.</p>
+
+<h2>Recommencer</h2>
+<button class="btn" id="tout">Tout effacer et recommencer
+  <small>comme quelqu'un qui ouvre l'application pour la première fois</small></button>
+<button class="btn doux" id="garde">Recommencer en gardant mon prénom
+  <small>le film et les explications repartent à zéro, pas le prénom</small></button>
+
+<h2>Le parcours, étape par étape</h2>
+<a class="etape" href="../PRENOM — Bohème.html?test=1&amp;retour=PORTE%20%E2%80%94%20Boh%C3%A8me.html"><b class="n">1</b><div>Choisir son prénom<em>La toute première page. Sans retour possible : on doit choisir.</em></div></a>
+<a class="etape" href="../PORTE — Bohème.html?test=1&amp;revoir=1"><b class="n">2</b><div>Le film, puis le logo<em>Trois minutes, en paysage. Bouton « passer le film » en haut à gauche.</em></div></a>
+<a class="etape" href="../ACCUEIL — Bohème.html?test=1"><b class="n">3</b><div>L'accueil<em>Les huit tuiles, dont « Le film » et « Comment ça marche ».</em></div></a>
+<a class="etape" href="../BIENVENUE — Bohème.html?test=1"><b class="n">4</b><div>Comment ça marche<em>Les explications, devenues la tuile 08.</em></div></a>
+<a class="etape" href="../KARAOKE — Medley complet.html?test=1"><b class="n">5</b><div>L'atelier<em>La salle de travail, avec le tutoriel de la première fois.</em></div></a>
+
+<h2>Vérifier autre chose</h2>
+<a class="btn doux" href="../index.html?v=test">La page d'installation</a>
+<a class="btn doux" href="../diagnostic/">Le diagnostic de l'installation</a>
+
+<h2>Ce que ton téléphone a retenu</h2>
+<table id="etat"></table>
+<p class="sous" style="margin-top:.9rem">Ces traces restent même si l'application est
+désinstallée : c'est pour ça qu'un simple « désinstaller » ne suffit pas à refaire une
+vraie première fois. Les boutons ci-dessus, si.</p>
+
+<script>
+/* Toutes les traces laissées dans le téléphone, relevées une par une dans le site.
+   Celles qui portent un tiret final sont des familles : boheme-vu-01, boheme-su-03… */
+const EXACTES = ['boheme-intro-vue-2','boheme-pour','boheme-tuto','boheme-bienvenue',
+  'boheme-bienvenue-vue','boheme-qui-vu','boheme-nom-demande','boheme-sans-nom',
+  'boheme-bande','boheme-bande-titre','boheme-bandeau-replie','boheme-histo','boheme-lier',
+  'boheme-main','boheme-maj-tentee','boheme-medley-v3','boheme-presence','boheme-refaire',
+  'boheme-reprise','boheme-sans-plein-ecran','boheme-theme-v3','boheme-plein-ecran'];
+const FAMILLES = ['boheme-aide-','boheme-prevenu-','boheme-su-','boheme-vu-'];
+
+const LISIBLE = {
+  'boheme-pour'         : 'Le prénom choisi',
+  'boheme-intro-vue-2'  : 'Le film a été vu',
+  'boheme-tuto'         : 'Le tutoriel de l’atelier a été vu',
+  'boheme-bienvenue'    : 'Les explications ont été lues',
+  'boheme-theme-v3'     : 'Réglages d’affichage',
+  'boheme-bande'        : 'Bande choisie (voix témoin / instrumental)'
+};
+
+function toutes(){
+  const out = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (!k || k.indexOf('boheme-') !== 0) continue;
+      if (EXACTES.includes(k) || FAMILLES.some(f => k.indexOf(f) === 0)) out.push(k);
+      else out.push(k);   /* une clé qu'on ne connaît pas : on l'efface quand même */
+    }
+  } catch(e){}
+  return out;
+}
+
+function etat(){
+  const t = document.getElementById('etat');
+  const cles = toutes().sort();
+  const compte = {};
+  FAMILLES.forEach(f => compte[f] = cles.filter(k => k.indexOf(f) === 0).length);
+  const lignes = [];
+  const nom = (() => { try { return localStorage.getItem('boheme-pour'); } catch(e){ return null; } })();
+  lignes.push(['Prénom enregistré', nom ? nom : 'aucun', nom ? 'v' : 'r']);
+  const vue = (() => { try { return localStorage.getItem('boheme-intro-vue-2') === '1'; } catch(e){ return false; } })();
+  lignes.push(['Le film a déjà été vu', vue ? 'oui' : 'non', vue ? 'o' : 'r']);
+  const enApp = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches;
+  lignes.push(['On est dans l’application', enApp ? 'oui' : 'non (navigateur)', enApp ? 'v' : 'r']);
+  FAMILLES.forEach(f => { if (compte[f]) lignes.push(['Traces « ' + f + '… »', compte[f], 'o']); });
+  lignes.push(['Total des traces', cles.length, cles.length ? 'o' : 'r']);
+  t.innerHTML = lignes.map(l => '<tr><td>' + l[0] + '</td><td class="' + l[2] + '">' + l[1] + '</td></tr>').join('');
+}
+
+function effacer(garderPrenom){
+  let nom = null;
+  try { nom = localStorage.getItem('boheme-pour'); } catch(e){}
+  try { toutes().forEach(k => localStorage.removeItem(k)); } catch(e){}
+  try { sessionStorage.clear(); } catch(e){}
+  if (garderPrenom && nom){ try { localStorage.setItem('boheme-pour', nom); } catch(e){} }
+  etat();
+  /* On repart par la porte SANS « revoir » : ce paramètre saute justement la
+     demande du prénom, et on veut refaire le parcours entier, prénom compris.
+     La porte enverra donc choisir le prénom si elle ne connaît personne. */
+  location.href = '../PORTE — Bohème.html?test=1';
+}
+document.getElementById('tout').addEventListener('click', () => effacer(false));
+document.getElementById('garde').addEventListener('click', () => effacer(true));
+etat();
+</script>
+</body>
+</html>
