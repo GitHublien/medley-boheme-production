@@ -38,25 +38,29 @@ Do not touch anything else. The small circular golden medallion at the bottom ri
 
 # IMAGE 2 · le téléphone
 
-**Ce qui ne va pas :** elle dit « INSTALLER · l'application sur ton téléphone ». Or cette
-image est maintenant le fond de la page **« Comment ça marche »** — celle qu'on lit en
-arrivant, qui explique ce qu'il y a dans l'application. Elle n'installe plus rien.
+**Ce qui ne va pas — et tu as vu juste :** un téléphone doré, ça veut dire « installe-moi ».
+Or cette page ne dit plus ça. Elle est devenue **« Comment ça marche »** : ce qu'il y a
+dans l'application, à quoi sert chaque porte, le bandeau, la salle d'entraînement. Un mode
+d'emploi. L'image annonçait autre chose que ce qu'il y avait derrière.
 
-**Et son logo est déjà faux** : il dit « Bukins Production ». Autant le corriger aussi.
+**Ce qui correspond :** un **programme de spectacle** posé sur un fauteuil de velours.
+C'est exactement l'objet qu'on ouvre avant la représentation pour savoir ce qu'il y a
+dedans. On garde le décor de scène, on remplace le téléphone.
 
-*Le téléphone doré reste : on parle bien de l'application sur le téléphone. Seul le texte
-change.*
+*(Son logo était déjà faux, d'ailleurs : il dit « Bukins Production ».)*
 
 **Dépose : `IMAGE 2 — le téléphone.jpg`** · format **9:16** (vertical)
 
 ```
-Keep this exact image, unchanged. Change TWO things only.
+Keep the atmosphere, the framing and the lighting of this image exactly: same deep black, same warm gold, same spotlight beams from above, same haze, same reflections on the dark stage floor, same vertical composition.
 
-First, the golden text on the left. Replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold colour, same soft glow, same position — slightly smaller if needed so it fits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the two small lines below it, "l'application sur ton téléphone", with a single line in the same thin widely spaced golden lowercase letters: "tout ce qu'il y a dedans".
+Replace the golden phone in the centre with a theatre programme: a slim printed booklet standing slightly open on a dark red velvet theatre seat, its cover deep black with a thin golden border, catching the warm light from above. Fine golden dust floats in the beams. The booklet is closed enough that no text is readable on it.
 
-Second, the small circular golden medallion at the bottom right: its lettering must read exactly "Bohème Production", correctly spelled, in the same elegant golden serif — keep its shape, its size, its position and its glow unchanged.
+Change the golden text on the left: replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "tout ce qu'il y a dedans".
 
-Do not touch anything else: the golden phone in the centre, the spotlights, the haze, the reflections on the stage floor, the framing and the colours all stay strictly identical. Photorealistic, cinematic, warm gold on deep black.
+The small circular golden medallion at the bottom right stays in place, same shape, same size, same glow, and its lettering must read exactly "Bohème Production", correctly spelled.
+
+Photorealistic, cinematic, warm gold on deep black. No people, no phone, no screen.
 ```
 
 ---
