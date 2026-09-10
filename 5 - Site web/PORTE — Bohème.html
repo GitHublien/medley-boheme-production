@@ -181,10 +181,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
 
 /* ─── L'INVITATION, après le film ──────────────────────────────── */
 /* ─── L'INVITATION, après le film ──────────────────────────────── */
-#invite{position:fixed;left:50%;bottom:7vh;transform:translateX(-50%);
+/* 10 septembre, au soir — L'INVITE NE DOIT PAS TOUCHER LE LOGO.
+   Mickael : « je n'aime pas que les trucs se touchent, il faudrait une sorte de
+   separateur ». Elle descend donc plus bas, et un voile sombre monte du bas de
+   l'ecran : le texte se detache, le logo respire, et rien ne se chevauche. */
+#invite{position:fixed;left:50%;bottom:max(4.2vh,30px);transform:translateX(-50%);
         z-index:11;pointer-events:none;text-align:center;
         width:min(96vw,1020px);
         opacity:0;transition:opacity 1.8s ease}
+#invite::before{content:"";position:fixed;left:0;right:0;bottom:0;height:26vh;
+        z-index:-1;pointer-events:none;
+        background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.5) 42%,transparent 100%)}
 #invite.la{opacity:1;animation:inviteBat 3.6s cubic-bezier(0.32,0.72,0,1) infinite}
 #invite .couche{position:absolute;left:0;right:0;top:0;
         font-size:clamp(14px,2.1vw,21px);font-weight:800;line-height:1.34;

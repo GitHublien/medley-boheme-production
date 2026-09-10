@@ -19,7 +19,7 @@
      salle d'entraînement porte « ✕ Aller à l'atelier » dans son en-tête, toujours
      visible. On ne s'y enferme donc jamais, et plus rien ne recouvre rien.
      NE PAS le remettre ici. */
-  if (/^ACCUEIL|^MISE EN|^DOCUMENTS|^VID|^CALENDRIER|^NOUVEAUT|^INSTALLER|^site\.html$|^KARAOKE|^TUTORIEL/i.test(ici)) return;
+  if (/^ACCUEIL|^MISE EN|^DOCUMENTS|^VID|^CALENDRIER|^NOUVEAUT|^INSTALLER|^site\.html$|^KARAOKE|^TUTORIEL|^BIENVENUE/i.test(ici)) return;
   if (document.getElementById('btnSite')) return;
   const pour = new URLSearchParams(location.search).get('pour');
   const a = document.createElement('a');
