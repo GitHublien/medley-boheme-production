@@ -59,12 +59,21 @@ Change three things.
 
 First, the phone screen: instead of a plain golden screen, show a single large elegant golden question mark, centred, glowing softly, as if lit from within. Nothing else on the screen — no icons, no interface, no words.
 
-Second, the golden text on the left: replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "tout ce qu'il y a dedans".
+Second, the golden text on the left: replace "INSTALLER" with "COMMENT ÇA MARCHE", in the same elegant golden serif capitals, same warm gold, same soft glow, slightly smaller if needed so it sits comfortably on one or two lines. Keep the cedilla on ÇA. Replace the small lines below it with a single line, in the same thin widely spaced golden lowercase letters: "avant de commencer".
 
 Third, the small circular medallion at the bottom right: replace it with the medallion of the second image, reproduced exactly as it is — same shape, same lettering "Bohème Production", same golden ring. Do not redraw it, do not re-letter it, do not stylise it. Same size, same position, same soft glow.
 
 Everything else stays strictly identical. Photorealistic, cinematic, warm gold on deep black. No people.
 ```
+
+---
+
+### Si « avant de commencer » ne te plaît pas non plus
+
+Remplace-le dans le prompt par l'un de ces deux-là, même longueur, même ton :
+
+- `"le mode d'emploi"` — le plus clair, le plus direct
+- `"à lire une fois"` — c'est exactement ce que dit la page
 
 ---
 
