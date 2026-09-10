@@ -1,148 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Le Medley des Légendes — choisis ton prénom</title>
+<title>Bohème — l'application</title>
+<meta name="theme-color" content="#050505">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bohème">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  :root{ --or:#d4af37; --or-pale:#e8d9a0; --noir:#0b0b0c; --gris:#8f8674 }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent }
-  html,body{ margin:0; min-height:100%; background:var(--noir); color:#e9e3d5;
-    font-family:"Segoe UI",system-ui,-apple-system,sans-serif; line-height:1.6 }
-  body{ background-image:
-      radial-gradient(1100px 620px at 50% -12%, rgba(212,175,55,.13), transparent 62%),
-      radial-gradient(760px 480px at 50% 118%, rgba(212,175,55,.07), transparent 60%);
-    background-attachment:fixed }
-
-  .page{ max-width:560px; margin:0 auto; padding:34px 20px 64px }
-  .logo{ display:block; width:min(30vmin,132px); margin:8px auto 20px; opacity:.94 }
-
-  h1{ font-size:clamp(25px,6.6vw,34px); margin:0 0 6px; text-align:center;
-      color:var(--or-pale); letter-spacing:-.5px; line-height:1.18 }
-  .lieu{ text-align:center; color:var(--gris); font-size:14.5px; margin-bottom:4px }
-  .beta{ display:block; width:fit-content; margin:16px auto 30px;
-    border:1px solid rgba(212,175,55,.42); border-radius:999px; padding:6px 17px;
-    font-size:12.5px; letter-spacing:2.4px; text-transform:uppercase; color:var(--or) }
-
-  .intro{ text-align:center; font-size:16px; margin:0 0 6px }
-  .intro b{ color:var(--or-pale) }
-  .sous{ text-align:center; color:var(--gris); font-size:14px; margin:0 0 28px }
-
-  .invite{ text-align:center; font-size:13px; letter-spacing:2.6px; text-transform:uppercase;
-    color:var(--or); font-weight:700; margin:0 0 14px }
-
-  .noms{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
-  @media (max-width:380px){ .noms{ grid-template-columns:1fr } }
-
-  .nom{ display:block; text-decoration:none; text-align:center;
-    padding:20px 12px; border-radius:16px; font-size:20px; font-weight:800;
-    letter-spacing:.3px; color:#0a0908; background:var(--c);
-    border:none; cursor:pointer; font-family:inherit;
-    box-shadow:0 8px 22px rgba(0,0,0,.45); transition:transform .12s ease, filter .12s ease }
-  .nom:hover{ filter:brightness(1.08) }
-  .nom:active{ transform:translateY(2px) }
-  .nom small{ display:block; font-size:11.5px; font-weight:600; letter-spacing:1.8px;
-    text-transform:uppercase; opacity:.62; margin-top:3px }
-
-  .reprise{ border:1px solid rgba(212,175,55,.38); background:rgba(212,175,55,.07);
-    border-radius:16px; padding:15px 17px; margin:0 0 26px; text-align:center }
-  .reprise .qui{ font-size:17px; font-weight:800; color:var(--c2) }
-  .reprise button{ display:block; width:100%; margin-top:11px; padding:14px;
-    border:none; border-radius:12px; background:var(--c2); color:#0a0908;
-    font-size:16px; font-weight:800; font-family:inherit; cursor:pointer }
-  .reprise .autre{ display:block; margin-top:10px; color:var(--gris); font-size:13.5px;
-    background:none; border:none; text-decoration:underline; cursor:pointer;
-    font-family:inherit; width:100% }
-
-  .note{ color:var(--gris); font-size:13.5px; text-align:center; margin-top:26px;
-    line-height:1.7 }
-  footer{ margin-top:34px; padding-top:18px; border-top:1px solid rgba(212,175,55,.18);
-    color:var(--gris); font-size:12.5px; text-align:center }
+/* ═══ LE LIEN GLOBAL (10 septembre 2026) ══════════════════════════════════════
+   Un seul lien pour les six : la racine du site. Cette page ne fait qu'UNE chose :
+   installer l'application, puis la faire entrer par le film.
+     · déjà dans l'application → le film, tout de suite (la porte sait si on l'a vu) ;
+     · Android dans Chrome → l'installation part au premier geste, un seul bouton ;
+     · iPhone dans Safari → Partager, « Sur l'écran d'accueil » (Apple n'autorise rien
+       d'automatique : on montre le geste, avec la flèche) ;
+     · dans WhatsApp / Messenger → on explique comment ouvrir dans le vrai navigateur.
+   Le PRÉNOM ne se choisit plus ici : il se choisit dans le site (PRENOM — Bohème.html).
+   Aucune page ne doit ressembler à un mur noir : il y a toujours une sortie. */
+:root{ --or:#d4af37; --or2:#f1d27a; --encre:#f2ede1; --gris:#bcb4a2; --fond:#050505; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--fond); color:var(--encre); font-family:'Outfit',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+body{ min-height:100dvh; display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding:calc(2.2rem + env(safe-area-inset-top)) 1.4rem calc(2.4rem + env(safe-area-inset-bottom)); gap:1.1rem;
+  background-image:radial-gradient(900px 520px at 50% -10%, rgba(212,175,55,.14), transparent 62%); }
+.logo{ width:min(34vw,150px); margin-top:.6rem; filter:drop-shadow(0 0 30px rgba(212,175,55,.35)); }
+.titre{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; letter-spacing:.06em; color:var(--or2);
+  font-size:clamp(1.15rem,4.6vw,1.5rem); margin:-.4rem 0 0; text-transform:uppercase; }
+h1{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; font-size:clamp(1.9rem,7.5vw,2.8rem); line-height:1.08; margin:.2rem 0 0; }
+h1 .it{ font-style:italic; color:var(--or2); }
+p{ margin:0; max-width:34rem; line-height:1.55; color:var(--gris); font-size:clamp(1rem,4vw,1.12rem); }
+p b{ color:var(--encre); font-weight:600; }
+.ecran{ display:none; flex-direction:column; align-items:center; gap:1rem; width:100%; max-width:36rem; }
+.ecran.la{ display:flex; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:.7rem; padding:1.05rem 1.9rem; border-radius:999px;
+  background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; font-weight:600; font-size:clamp(1.05rem,4.6vw,1.25rem);
+  letter-spacing:.02em; text-decoration:none; border:0; cursor:pointer; box-shadow:0 14px 40px rgba(212,175,55,.28), inset 0 1px 0 rgba(255,255,255,.55);
+  width:100%; max-width:24rem; transition:transform .35s cubic-bezier(.32,.72,0,1), box-shadow .35s; }
+.btn:active{ transform:scale(.97); }
+.btn.doux{ background:rgba(212,175,55,.12); color:var(--or2); border:1px solid rgba(212,175,55,.55); box-shadow:none; font-weight:400; }
+.btn .ico{ width:1.2em; height:1.2em; background:center/contain no-repeat; filter:brightness(.22); }
+.btn.doux .ico{ filter:none; }
+.pas{ display:grid; gap:.8rem; width:100%; text-align:left; }
+.pas div{ display:grid; grid-template-columns:2.3rem 1fr; gap:.8rem; align-items:start; padding:.95rem 1rem; border-radius:1.1rem;
+  background:rgba(255,255,255,.035); border:1px solid rgba(212,175,55,.22); }
+.pas b.n{ display:grid; place-items:center; width:2.3rem; height:2.3rem; border-radius:50%; background:rgba(212,175,55,.16); color:var(--or2);
+  font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:600; }
+.pas span{ line-height:1.45; }
+.pas span b{ color:var(--or2); }
+.fleche{ position:fixed; z-index:5; font-size:2.6rem; color:var(--or2); animation:pointe 1.4s ease-in-out infinite; text-shadow:0 0 18px rgba(212,175,55,.8); pointer-events:none; }
+.fleche.bas{ left:50%; bottom:calc(10px + env(safe-area-inset-bottom)); --tx:-50%; }
+.fleche.hautDroite{ right:14px; top:calc(6px + env(safe-area-inset-top)); }
+@keyframes pointe{ 0%,100%{ transform:translate(var(--tx,0), 0) } 50%{ transform:translate(var(--tx,0), 10px) } }
+.lien{ display:flex; gap:.5rem; width:100%; max-width:24rem; }
+.lien input{ flex:1; min-width:0; padding:.8rem 1rem; border-radius:999px; border:1px solid rgba(212,175,55,.35); background:rgba(255,255,255,.04); color:var(--encre); font:inherit; font-size:.9rem; }
+.petit{ font-size:.9rem; opacity:.75; }
+/* la ligne qui rassure : pas de magasin, pas de virus, rien d'installé au sens du téléphone */
+.sur{ display:flex; gap:.6rem; align-items:flex-start; text-align:left; max-width:30rem; padding:.85rem 1rem; border-radius:1rem;
+  background:rgba(157,255,53,.06); border:1px solid rgba(157,255,53,.28); font-size:.92rem; line-height:1.5; color:var(--gris); }
+.sur i{ flex:none; width:1.4rem; height:1.4rem; border-radius:50%; background:rgba(157,255,53,.18); color:#9dff35; font-style:normal;
+  display:grid; place-items:center; font-weight:700; font-size:.9rem; margin-top:.1rem; }
+.sur b{ color:var(--encre); }
+a.discret{ color:var(--gris); font-size:.95rem; text-decoration:underline; text-underline-offset:.2em; margin-top:.4rem; }
+.ok{ font-size:clamp(1.4rem,6vw,2rem); color:#9dff35; font-family:'Cormorant Garamond',serif; font-weight:600; }
 </style>
 </head>
 <body>
-<div class="page">
+<img class="logo" src="site-assets/logo-512.png" alt="">
+<div class="titre">Le Medley des Légendes</div>
 
-  <img class="logo" src="media/porte/logo-plein.png" alt="Bohème Production">
-
-  <h1>Le Medley des Légendes</h1>
-  <div class="lieu">Théâtre Claude Debussy, Palais des Festivals, Cannes</div>
-  <div class="lieu">dimanche 4 octobre 2026</div>
-  <span class="beta">version d'essai</span>
-
-  <div id="reprise" class="reprise" style="display:none">
-    <div>Tu es <span class="qui" id="repriseNom"></span></div>
-    <button id="repriseOk">Continuer</button>
-    <button class="autre" id="repriseAutre">Ce n'est pas moi, changer de prénom</button>
-  </div>
-
-  <div id="choix">
-    <p class="intro">Chacun a <b>sa propre version</b> de l'application.</p>
-    <p class="sous">Tes parties s'allument dans ta couleur, et une bande te dit,
-       seconde par seconde, ce que tu fais sur scène : où tu es, quand tu entres,
-       de quel côté tu sors.</p>
-
-    <p class="invite">Choisis ton prénom</p>
-    <div class="noms" id="noms"></div>
-
-    <p class="note">L'application se souvient de toi : tu ne repasseras plus par cette
-       page. Si tu te trompes, reviens ici et choisis à nouveau.</p>
-  </div>
-
-  <footer>Bohème Production · Direction artistique Mickaël Guedj &amp; Richard Ritelman</footer>
+<!-- déjà dans l'application -->
+<div class="ecran" id="e-app">
+  <h1>Tu es dans <span class="it">l'application.</span></h1>
+  <p>Bohème est sur ton écran d'accueil. Entre : le film t'attend.</p>
+  <a class="btn" href="PORTE — Bohème.html">Entrer <span class="ico" style="background-image:url(site-images/icones/fleche.png)"></span></a>
 </div>
 
+<!-- dans le navigateur de WhatsApp, Messenger, Instagram… -->
+<div class="ecran" id="e-dedans">
+  <h1>Un dernier geste, <span class="it">et c'est chez toi.</span></h1>
+  <p>Tu as ouvert le lien <b>dans WhatsApp</b>, et le navigateur de WhatsApp ne sait pas installer d'application. Il faut l'ouvrir dans <b id="navNom">Chrome</b>. C'est simple :</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Appuie sur les <b id="troisPoints">trois points ⋮</b>, <b id="ouCa">en haut à droite</b>.</span></div>
+    <div><b class="n">2</b><span>Choisis <b id="ouvrirDans">« Ouvrir dans Chrome »</b>, ou « Ouvrir dans le navigateur ».</span></div>
+    <div><b class="n">3</b><span>Cette page se rouvre, et l'installation <b>part toute seule</b>.</span></div>
+  </div>
+  <p class="petit">Si tu ne trouves pas, copie le lien et colle-le dans <span id="navNom2">Chrome</span> :</p>
+  <div class="lien"><input id="champLien" readonly><button class="btn doux" id="copier" style="width:auto;padding:.8rem 1.1rem">Copier</button></div>
+  <i class="fleche hautDroite">⤴</i>
+</div>
+
+<!-- Android dans Chrome : l'installation part au premier geste -->
+<div class="ecran" id="e-android">
+  <h1>Installe <span class="it">l'application.</span></h1>
+  <p>Bohème est une application : <b>plein écran</b>, sans barre d'adresse, une icône sur ton téléphone. Appuie, et c'est fait.</p>
+  <button class="btn" id="grosBouton">Installer Bohème <span class="ico" style="background-image:url(site-images/icones/telecharger.png)"></span></button>
+  <p class="petit" id="attente">Je prépare l'installation…</p>
+  <div class="sur"><i>✓</i><span><b>Aucun risque.</b> Rien ne se télécharge d'un magasin, aucune permission n'est demandée : c'est le site lui-même, posé sur ton écran d'accueil avec son icône. Pas de virus, pas de suivi.</span></div>
+  <a class="discret" href="PORTE — Bohème.html">Continuer sans installer, pour l'instant</a>
+</div>
+
+<!-- Android sans proposition automatique : le chemin manuel -->
+<div class="ecran" id="e-manuel">
+  <h1>Installe <span class="it">l'application.</span></h1>
+  <p>Ton téléphone ne me laisse pas la lancer tout seul : voici le chemin, trois gestes.</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Appuie sur les <b>trois points ⋮</b>, en haut à droite de Chrome.</span></div>
+    <div><b class="n">2</b><span>Choisis <b>« Installer l'application »</b>, ou « Ajouter à l'écran d'accueil ».</span></div>
+    <div><b class="n">3</b><span>Confirme. L'icône <b>Bohème</b> apparaît sur ton écran.</span></div>
+  </div>
+  <div class="sur"><i>✓</i><span><b>Aucun risque.</b> Rien ne se télécharge d'un magasin, aucune permission n'est demandée : c'est le site, posé sur ton écran d'accueil. Pas de virus, pas de suivi.</span></div>
+  <a class="discret" href="PORTE — Bohème.html">Ou entrer sans installer</a>
+  <i class="fleche hautDroite">⤴</i>
+</div>
+
+<!-- iPhone dans Safari -->
+<div class="ecran" id="e-iphone">
+  <h1>Installe <span class="it">l'application.</span></h1>
+  <p>Sur iPhone, c'est Safari qui installe, en deux gestes. <b>Si tu as ouvert ce lien depuis WhatsApp</b>, appuie d'abord sur la petite <b>boussole</b> en bas à droite : elle ouvre la page dans Safari. Puis :</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Appuie sur <b>Partager</b>, le carré avec une flèche vers le haut, en bas au milieu de l'écran.</span></div>
+    <div><b class="n">2</b><span>Fais défiler la liste et choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</span></div>
+  </div>
+  <div class="sur"><i>✓</i><span><b>Aucun risque.</b> Apple ne te demandera rien : ce n'est pas une application de l'App Store, c'est le site, posé sur ton écran d'accueil avec l'icône dorée. Pas de virus, pas de permission, pas de suivi.</span></div>
+  <p class="petit">C'est l'icône qui donne le <b>plein écran</b> : c'est par elle qu'il faut entrer.</p>
+  <a class="discret" href="PORTE — Bohème.html">Ou entrer sans installer</a>
+  <i class="fleche bas">⤵</i>
+</div>
+
+<!-- iPhone mais pas dans Safari -->
+<div class="ecran" id="e-iphone-autre">
+  <h1>Il faut <span class="it">Safari.</span></h1>
+  <p>Sur iPhone, seul <b>Safari</b> sait installer une application. Tu es dans un autre navigateur.</p>
+  <div class="pas">
+    <div><b class="n">1</b><span>Copie le lien ci-dessous.</span></div>
+    <div><b class="n">2</b><span>Ouvre <b>Safari</b>, colle-le dans la barre d'adresse, et reviens ici.</span></div>
+  </div>
+  <div class="lien"><input id="champLien2" readonly><button class="btn doux" id="copier2" style="width:auto;padding:.8rem 1.1rem">Copier</button></div>
+</div>
+
+<!-- ordinateur -->
+<div class="ecran" id="e-ordi">
+  <h1>Sur l'ordinateur, <span class="it">tout marche dans le navigateur.</span></h1>
+  <p>Ce lien est fait pour le téléphone. Sur ordinateur, entre simplement. Et si tu veux l'icône : dans Chrome ou Edge, clique sur le petit bouton <b>« Installer »</b> à droite de la barre d'adresse.</p>
+  <a class="btn" href="PORTE — Bohème.html">Entrer <span class="ico" style="background-image:url(site-images/icones/fleche.png)"></span></a>
+  <button class="btn doux" id="grosBoutonOrdi" style="display:none">Installer l'application</button>
+</div>
+
+<!-- c'est fait -->
+<div class="ecran" id="e-fait">
+  <div class="ok">C'est installé !</div>
+  <p><b>Bohème</b> est sur ton écran d'accueil, avec le logo doré. Ferme cette page et entre par l'icône : c'est par là que tout se passe, désormais.</p>
+  <a class="btn doux" href="PORTE — Bohème.html">Ou entrer tout de suite</a>
+</div>
+
+<noscript><div class="ecran la"><h1>Deux gestes, <span class="it">et c'est chez toi.</span></h1><p>Sur iPhone : dans Safari, appuie sur <b>Partager</b> puis <b>« Sur l'écran d'accueil »</b>. Sur Android : dans Chrome, les trois points puis <b>« Installer l'application »</b>.</p><p><a class="btn" href="PORTE — Bohème.html">Entrer</a></p></div></noscript>
 <script>
-const GENS = [
-  { id:'adrien',    nom:'Adrien',    c:'#d4af37' },
-  { id:'stephanie', nom:'Stéphanie', c:'#f2a3c7' },
-  { id:'candice',   nom:'Candice',   c:'#c9a2ea' },
-  { id:'mickael',   nom:'Mickaël',   c:'#6fd0bb' },
-  { id:'bry',       nom:'Bry',       c:'#f0955c' },
-  { id:'elie',      nom:'Élie',      c:'#a9d97f' }
-];
-const PORTE = 'PORTE — Bohème.html';
-const BIENVENUE = 'BIENVENUE — Bohème.html';
+/* filet : si quoi que ce soit casse dans le script, on montre quand même un écran complet */
+window.addEventListener('error', function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } });
+setTimeout(function(){ if (!document.querySelector('.ecran.la')){ var e = document.getElementById('e-iphone'); if (e) e.classList.add('la'); } }, 1500);
+(function(){
+  const par = new URLSearchParams(location.search);
+  const pour = (par.get('pour') || '').toLowerCase();
+  /* un lien personnel (…/bry/) garde le prénom ; le lien global n'en a pas, et c'est voulu */
+  try { if (pour) localStorage.setItem('boheme-pour', pour); } catch(e){}
+  const suite = pour ? '?pour=' + encodeURIComponent(pour) : '';
+  document.querySelectorAll('a[href$=".html"]').forEach(a => a.setAttribute('href', a.getAttribute('href') + suite));
 
-function aller(id){
-  let lue = false;
-  try {
-    localStorage.setItem('boheme-pour', id);
-    lue = localStorage.getItem('boheme-bienvenue') === '1';
-  } catch(e){}
-  /* on passe toujours par le logo ; c'est lui qui mene a l'aide la premiere fois */
-  location.href = PORTE + '?pour=' + id;
-}
+  const ua = navigator.userAgent || '';
+  const enApp = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  const iOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const android = /Android/i.test(ua);
+  const tactile = matchMedia('(pointer: coarse)').matches;
+  const dedans = /WhatsApp|FBAN|FBAV|FB_IAB|Messenger|Instagram|Line\/|Snapchat|GSA\/|Twitter|MicroMessenger|; wv\)/i.test(ua);
+  const safari = iOS && /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo/i.test(ua) && !dedans;
 
-/* les six prénoms, chacun dans sa couleur */
-const zone = document.getElementById('noms');
-for (const g of GENS){
-  const b = document.createElement('button');
-  b.className = 'nom';
-  b.style.setProperty('--c', g.c);
-  b.innerHTML = g.nom + '<small>mes parties</small>';
-  b.addEventListener('click', () => aller(g.id));
-  zone.appendChild(b);
-}
+  /* ═══ PRÉVENIR MICKAËL ═══════════════════════════════════════════════════
+     Il veut savoir qui a ouvert le lien, et si l'installation a marché. Le site
+     n'a pas de serveur : on envoie un petit message à ntfy.sh, un service de
+     notifications gratuit, sur un sujet secret que seul son téléphone écoute
+     (application ntfy, abonnée à ce sujet). Ce qui part : le prénom s'il est
+     connu, le type de téléphone, et l'événement. Rien d'autre. */
+  const SUJET = 'boheme-f5185c6bbed275c0a0';
+  const appareil = iOS ? 'iPhone' : android ? 'Android' : (tactile ? 'téléphone' : 'ordinateur');
+  const ou = dedans ? ' (dans WhatsApp)' : enApp ? ' (dans l\'application)' : '';
+  const NOMS = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice', mickael:'Mickaël', bry:'Bry', elie:'Élie' };
+  const qui = NOMS[pour] || (() => { try { return NOMS[(localStorage.getItem('boheme-pour')||'').toLowerCase()]; } catch(e){ return null; } })() || 'Quelqu\'un';
+  function prevenir(quoi, titre){
+    try {
+      const h = new Date(); const heure = h.getHours() + 'h' + String(h.getMinutes()).padStart(2,'0');
+      fetch('https://ntfy.sh/' + SUJET, { method:'POST', mode:'no-cors',
+        headers:{ 'Title': titre, 'Tags': quoi === 'installe' ? 'white_check_mark' : 'door' },
+        body: qui + ' — ' + appareil + ou + ' — ' + heure });
+    } catch(e){}
+  }
+  /* une seule fois par téléphone et par événement, sinon Mickaël est noyé */
+  function unique(cle, quoi, titre){
+    try { if (localStorage.getItem('boheme-prevenu-' + cle) === '1') return; localStorage.setItem('boheme-prevenu-' + cle, '1'); } catch(e){}
+    prevenir(quoi, titre);
+  }
+  if (!enApp) unique('ouvert', 'ouvert', qui + ' a ouvert le lien');
+  window.addEventListener('appinstalled', () => unique('installe', 'installe', qui + ' a installé Bohème'));
+  /* sur iPhone, Apple ne dit jamais « installé » : c'est la première ouverture EN application qui le dit */
+  if (enApp) unique('installe', 'installe', qui + ' a installé Bohème');
 
-/* déjà venu : on lui propose de continuer sans rechoisir */
-let deja = '';
-try { deja = (localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
-const moi = GENS.find(g => g.id === deja);
-if (moi){
-  const r = document.getElementById('reprise');
-  r.style.setProperty('--c2', moi.c);
-  document.getElementById('repriseNom').textContent = moi.nom;
-  r.style.display = 'block';
-  document.getElementById('choix').style.display = 'none';
-  document.getElementById('repriseOk').addEventListener('click', () => aller(moi.id));
-  document.getElementById('repriseAutre').addEventListener('click', () => {
-    r.style.display = 'none';
-    document.getElementById('choix').style.display = 'block';
+  const montrer = id => { document.querySelectorAll('.ecran').forEach(e => e.classList.remove('la')); document.getElementById(id).classList.add('la'); };
+  const lienPropre = location.origin + location.pathname;
+  document.querySelectorAll('#champLien, #champLien2').forEach(i => i.value = lienPropre);
+  const copier = (btn, champ) => btn && btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(champ.value); btn.textContent = 'Copié ✓'; }
+    catch(e){ champ.select(); document.execCommand('copy'); btn.textContent = 'Copié ✓'; }
   });
-}
+  copier(document.getElementById('copier'), document.getElementById('champLien'));
+  copier(document.getElementById('copier2'), document.getElementById('champLien2'));
+
+  let promesse = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promesse = e;
+    const a = document.getElementById('attente'); if (a) a.textContent = 'Prêt. Appuie sur le bouton — ou n\'importe où.';
+    const o = document.getElementById('grosBoutonOrdi'); if (o) o.style.display = 'inline-flex';
+  });
+  window.addEventListener('appinstalled', () => montrer('e-fait'));
+
+  if (enApp){ montrer('e-app'); return; }
+  if (dedans){
+    if (iOS){ document.getElementById('navNom').textContent = 'Safari'; document.getElementById('navNom2').textContent = 'Safari';
+      document.getElementById('troisPoints').textContent = 'trois points ⋯'; document.getElementById('ouCa').textContent = 'en bas ou en haut à droite';
+      document.getElementById('ouvrirDans').textContent = '« Ouvrir dans Safari »'; }
+    montrer('e-dedans'); return;
+  }
+  if (iOS){ montrer(safari ? 'e-iphone' : 'e-iphone-autre'); return; }
+  if (android || tactile){
+    montrer('e-android');
+    /* « automatique » : Chrome exige un geste de l'utilisateur pour lancer l'installation.
+       Alors le PREMIER geste, où qu'il soit sur l'écran, la lance — pas seulement le bouton. */
+    const lancer = async () => {
+      if (!promesse){ montrer('e-manuel'); return; }
+      const p = promesse; promesse = null;
+      p.prompt(); const c = await p.userChoice;
+      if (c && c.outcome === 'accepted') montrer('e-fait'); else promesse = p;
+    };
+    document.getElementById('grosBouton').addEventListener('click', lancer);
+    document.getElementById('e-android').addEventListener('pointerdown', e => { if (promesse && !e.target.closest('a')) lancer(); }, { once:false });
+    /* si Chrome n'a rien proposé au bout de 4 s, on montre le chemin manuel, sans mur */
+    setTimeout(() => { if (!promesse && document.getElementById('e-android').classList.contains('la')) montrer('e-manuel'); }, 4000);
+    return;
+  }
+  montrer('e-ordi');
+  const o = document.getElementById('grosBoutonOrdi');
+  o.addEventListener('click', async () => { if (!promesse) return; promesse.prompt(); const c = await promesse.userChoice; promesse = null; if (c && c.outcome === 'accepted') montrer('e-fait'); });
+})();
 </script>
 </body>
 </html>

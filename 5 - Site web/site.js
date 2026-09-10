@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '07/09/2026 · 22h57';
+const VERSION_SITE = '10/09/2026 · 18h40';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -17,7 +17,8 @@ const VERSION_SITE = '07/09/2026 · 22h57';
     { f:'VIDÉOS — Bohème.html',         t:'Vidéos',         g:'▶', i:'lecture', s:'à regarder' },
     { f:'CALENDRIER — Bohème.html',     t:'Calendrier',     g:'✦', i:'etoile', s:'le rendez-vous' },
     { f:'NOUVEAUTÉS — Bohème.html',     t:'Nouveautés',     g:'◌', i:'nouveau', s:'ce qui a changé' },
-    { f:'installer.html',               t:'Installer',      g:'⇩', i:'telecharger', s:'l\'application sur ton téléphone' },
+    { f:'PRENOM — Bohème.html',         t:'Mon prénom',     g:'●', i:'coche', s:'choisir, ou en changer' },
+    { f:'index.html',                   t:'Installer',      g:'⇩', i:'telecharger', s:'l\'application sur ton téléphone' },
   ];
   /* le prénom : dans le lien, sinon celui qu'on a gardé (application installée) */
   let pour = new URLSearchParams(location.search).get('pour');
