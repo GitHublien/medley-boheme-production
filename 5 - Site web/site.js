@@ -20,6 +20,12 @@ const VERSION_SITE = '10/09/2026 · 20h05';
     { f:'PRENOM — Bohème.html',         t:'Mon prénom',     g:'●', i:'coche', s:'choisir, ou en changer' },
     { f:'index.html',                   t:'Installer',      g:'⇩', i:'telecharger', s:'l\'application sur ton téléphone' },
   ];
+  /* ⚠️ 10 sept, au soir — DANS L'APPLICATION, ON NE PROPOSE PLUS D'INSTALLER.
+     Mickaël : « à partir du moment où la personne est à l'intérieur de l'application,
+     pas besoin de lui dire d'installer : s'il l'a fait, c'est déjà installé ». L'entrée
+     « Installer » du menu ne s'affiche donc que dans un navigateur. */
+  const enAppli = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  if (enAppli){ const k = PAGES.findIndex(p => p.f === 'index.html'); if (k >= 0) PAGES.splice(k, 1); }
   /* le prénom : dans le lien, sinon celui qu'on a gardé (application installée) */
   let pour = new URLSearchParams(location.search).get('pour');
   try { if (pour) localStorage.setItem('boheme-pour', pour); else pour = localStorage.getItem('boheme-pour') || null; } catch(e){}
@@ -29,9 +35,15 @@ const VERSION_SITE = '10/09/2026 · 20h05';
 
   /* ── la navigation ─────────────────────────────────────────────────── */
   const nav = document.createElement('div'); nav.className = 'nav';
+  /* ⚠️ 10 sept, au soir — TROIS RONDS, TOUS DE LA MÊME TAILLE. Mickaël : « il faut que
+     les ronds soient tous à la même taille, c'est important. Il faut que ce soit beau,
+     élégant de partout. » Dans la barre : l'accueil (⌂, caché quand on y est déjà),
+     la musique (♪), le menu (≡). Même diamètre, même or, même espacement. */
+  const surAccueil = /^ACCUEIL/i.test(ici) || ici === '' || ici === 'site.html';
   nav.innerHTML = '<a class="marque" href="' + lien(PAGES[0]) + '"><img src="icone-192.png" alt=""><span>Bohème</span></a>'
+    + (surAccueil ? '' : '<a class="rond maison" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><i class="ico ico-maison"></i></a>')
     + PAGES.slice(0, 7).map(p => '<a class="l' + (p.f === ici ? ' ici' : '') + '" href="' + lien(p) + '">' + p.t + '</a>').join('')
-    + '<button class="burger" aria-label="Menu"><i></i><i></i></button>';
+    + '<button class="burger rond" aria-label="Menu"><i></i><i></i></button>';
   const voile = document.createElement('div'); voile.className = 'voile';
   voile.innerHTML = '<nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
   const bas = document.createElement('div'); bas.className = 'bas';
@@ -271,8 +283,9 @@ const VERSION_SITE = '10/09/2026 · 20h05';
        bas et du menu. Dans la barre du haut, il ne peut recouvrir personne — et il se
        trouve du premier coup d'œil, sur les trois dispositions (barre horizontale sur
        ordinateur, réduite sur téléphone debout, colonne à gauche en paysage). */
-    const marque = nav.querySelector('.marque');
-    if (marque && marque.parentNode === nav) marque.insertAdjacentElement('afterend', boite);
+    /* ordre voulu : ⌂ accueil · ♪ musique · … · ≡ menu */
+    const apres = nav.querySelector('.rond.maison') || nav.querySelector('.marque');
+    if (apres && apres.parentNode === nav) apres.insertAdjacentElement('afterend', boite);
     else nav.appendChild(boite);
 
     const rond   = boite.querySelector('.mRond');
@@ -299,14 +312,20 @@ const VERSION_SITE = '10/09/2026 · 20h05';
        de la changer et que l'autre musique se mette en marche, sans que ça fasse un
        arrêt ». On descend le son de l'un, on charge l'autre, on remonte : l'oreille
        n'entend pas de trou, juste un passage. */
-    function charger(i, jouer){
+    function charger(i, jouer, reprise){
       const suivant = ((i % MUSIQUES.length) + MUSIQUES.length) % MUSIQUES.length;
       const enDouceur = jouer && !son.paused;
       const poser = () => {
         etat.i = suivant;
         son.src = MUSIQUES[etat.i].f;
         titre.textContent = MUSIQUES[etat.i].t;
-        etat.t = 0; garder();
+        /* ⚠️ 10 sept, au soir — ON NE REMET PAS LA POSITION À ZÉRO QUAND ON CHANGE DE PAGE.
+           Mickaël : « quand on change de page, la musique doit continuer ». Elle
+           repartait du début à chaque page : cette ligne effaçait la position
+           mémorisée AVANT que le lecteur ait pu la reprendre. Elle ne s'efface plus
+           que lorsqu'on change vraiment de morceau. */
+        if (!reprise) etat.t = 0;
+        garder();
         if (jouer) lancer();
       };
       if (enDouceur) versVolume(0, poser); else poser();
@@ -324,17 +343,26 @@ const VERSION_SITE = '10/09/2026 · 20h05';
     }
 
     function lancer(){
-      if (!son.src) charger(etat.i, false);
+      if (!son.src) charger(etat.i, false, true);   /* reprise : on garde la position d'une page à l'autre */
       son.volume = 0;
       son.play().then(() => {
         etat.joue = true; garder();
         boite.classList.add('joue'); ico.textContent = '♪';
         versVolume(VOLUME);
       }).catch(() => {
-        /* le navigateur refuse tant que personne n'a rien touché : on attend
-           le premier geste, où qu'il soit, et on repart de là */
-        etat.joue = false; garder(); boite.classList.remove('joue');
-        addEventListener('pointerdown', () => { if (etat.joue !== false) return; }, { once:true });
+        /* ⚠️ 10 sept, au soir — UN REFUS N'EST PAS UNE DÉCISION.
+           Ici on écrivait « joue = false » : un simple refus passager du navigateur
+           (la page vient de s'ouvrir, le son n'est pas encore prêt) se transformait
+           en « l'utilisateur l'a éteinte », et la musique ne revenait plus jamais
+           d'elle-même en changeant de page. Mesuré : elle continuait sa position
+           mais restait en pause. On garde le souhait tel quel, on réessaie dès que
+           le son est prêt, et le premier geste la relance de toute façon. */
+        boite.classList.remove('joue');
+        son.addEventListener('canplay', () => {
+          if (etat.joue !== false && son.paused && !autresQuiJouent().length) son.play().then(() => {
+            boite.classList.add('joue'); versVolume(VOLUME);
+          }).catch(()=>{});
+        }, { once:true });
       });
     }
     function stopper(garderEtat){
@@ -389,7 +417,7 @@ const VERSION_SITE = '10/09/2026 · 20h05';
     }, 1500);
 
     /* ── on reprend là où on en était, de page en page ─────────────────── */
-    charger(etat.i, false);
+    charger(etat.i, false, true);   /* reprise : on garde la position d'une page à l'autre */
     son.addEventListener('loadedmetadata', () => {
       if (etat.t > 1 && etat.t < son.duration - 2) son.currentTime = etat.t;
     }, { once:true });
