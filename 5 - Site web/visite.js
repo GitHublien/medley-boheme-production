@@ -48,7 +48,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12092';
+  const VOIX_VERSION = '12093';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -66,12 +66,14 @@
     { son: sonPerso('02-le-bouton-rouge'),
       vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
       sauterSiAbsent: true,
-      /* ⚠️ 12 septembre — Mickael : « meme quand c'est valide, il y a le bouton
-         "j'ai un souci". Il faudrait que tu parles aussi de ce bouton. Le bouton
-         juste en dessous. » La voix en parle maintenant a la fin de la phrase :
-         la lumiere descend donc dessus au meme instant, sinon elle nommerait une
-         chose en montrant une autre. */
-      pendant: [ { part: 0.72, geste: 'rien', vise: '.carteEssentiel .souci' } ],
+      /* ⚠️ 12 septembre, plus tard — LA LUMIERE NE MONTRE PLUS « J'AI UN SOUCI ».
+         J'avais mis la voix a en parler ici, et Mickael m'a reprise : « le fait
+         de dire "j'ai un souci" et apres de dire... ce n'est pas le bon moment
+         de le mettre. » Il a raison : cette phrase atteignait 59 secondes, un
+         tiers de la visite pour un seul arret, et le message le plus important
+         se noyait. Le bouton du souci retrouvera sa place ailleurs — mais la
+         lumiere ne le designe plus ici, car la voix ne le nomme plus. Une
+         lumiere qui montre ce dont on ne parle pas est pire qu'aucune lumiere. */
       /* « demande » vient APRES la phrase : on ne coupe jamais la voix pour poser
          une question. C'est la deuxieme des trois exceptions — c'est lui qui
          decide, maintenant ou plus tard. */
@@ -79,6 +81,12 @@
                  oui: 'Je le fais maintenant', non: 'Plus tard',
                  fait: '.carteEssentiel .ceLigne:first-child a[data-recu]' } },
     { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour' },
+    /* ⚠️ 12 septembre — Mickael : « les infos, on les garde et on en parlera
+       dans l'aide, mais on ne les met pas au debut. » Elles ne barrent donc
+       plus le chemin apres le film ; c'est ici qu'on les annonce, au moment ou
+       ca a du sens, et la lumiere va se poser sur leur tuile. */
+    { son: sonCommun('02e-les-infos'), nom: 'Les informations utiles',
+      vise: 'a[href*="BIENVENUE"].tuile', sauterSiAbsent: true },
     /* La phrase dure une vingtaine de secondes : « cette note, c'est la musique
        du hall… un appui montre son titre et te laisse en changer… un second
        appui l'eteint. » Les gestes tombent au moment ou elle les nomme. */
@@ -250,6 +258,24 @@
       font:600 .95rem system-ui; border:1px solid rgba(212,175,55,.5); }
     #vDemande .oui, #vPause .oui, #vDepart .oui{ background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
     #vDemande .non, #vPause .non{ background:rgba(212,175,55,.08); color:#f1d27a; }
+    /* l'ecran de bienvenue : un visage, un prenom, sa couleur */
+    #vBonjour{ position:fixed; inset:0; z-index:165; display:grid; place-items:center;
+      background:#060505; opacity:0; transition:opacity .9s ease; }
+    #vBonjour.la{ opacity:1; }
+    #vBonjour .bCarte{ text-align:center; display:grid; gap:.9rem; justify-items:center;
+      transform:translateY(14px) scale(.97); transition:transform 1.1s cubic-bezier(.22,.8,.2,1); }
+    #vBonjour.la .bCarte{ transform:none; }
+    #vBonjour .bCadre{ position:relative; width:min(52vw,15rem); aspect-ratio:1;
+      border-radius:50%; overflow:hidden;
+      box-shadow:0 0 0 2px color-mix(in srgb, var(--c) 70%, transparent),
+                 0 0 58px color-mix(in srgb, var(--c) 45%, transparent); }
+    #vBonjour .bCadre img{ width:100%; height:100%; object-fit:cover; display:block; }
+    #vBonjour .bCadre i{ position:absolute; inset:0;
+      background:radial-gradient(circle at 50% 120%, color-mix(in srgb, var(--c) 30%, transparent), transparent 62%); }
+    #vBonjour .bMot{ font:400 1rem/1 system-ui, sans-serif; letter-spacing:.32em;
+      text-transform:uppercase; color:#b9b09c; }
+    #vBonjour .bNom{ font-family:var(--disp, Georgia, serif); font-size:clamp(2rem,11vw,3.4rem);
+      line-height:1; color:var(--c); }
     body.enVisite{ overflow:hidden; }`;
   document.head.appendChild(style);
 
@@ -261,7 +287,19 @@
   const voile = el('vVoile');
   const proj  = el('vProjecteur');
   const puces = el('vPuces');
-  const barre = el('vBarre', '<button class="vPasser">Passer la visite</button>');
+  /* ⚠️ 12 septembre — PLUS DE « PASSER LA VISITE ».
+     Mickael : « on ne peut pas passer outre, il faut qu'il voie l'aide
+     automatique. C'est obligatoire, en fait. »
+
+     J'avais plaide contre, et pour une raison que je maintiens : une porte
+     fermee peut enfermer quelqu'un dehors. Il a tranche, et c'est sa decision.
+     Alors je la rends sans danger plutot que de la discuter : la visite ne dure
+     que deux minutes, elle ne se montre qu'UNE fois, elle reprend ou elle s'est
+     arretee si le telephone sonne — et si le son est refuse, un bouton unique
+     la demarre au lieu de la laisser muette. Ce sont ces trois filets qui
+     remplacent la sortie, et ils sont plus surs qu'elle.
+     La barre reste en place : le mode essai s'y accroche pour ses commandes. */
+  const barre = el('vBarre', '');
   const tourne = el('vTourne',
     '<div><div class="tel">📱</div><div style="color:#f1d27a;font:600 20px system-ui;margin-top:14px">Tourne ton téléphone</div></div>');
 
@@ -768,6 +806,40 @@
     else apres(suite, d);
   }
 
+  /* ── BIENVENUE, AVEC SON VISAGE ─────────────────────────────────────────
+     ⚠️ 12 septembre — Mickael : « je pense mettre la photo avec "Bienvenue",
+     des le debut, ce n'est deja pas mal. Bienvenue Stephanie, bienvenue
+     Mickael, avec la photo de chaque personne. Et on commence l'aide juste
+     apres. »
+
+     Ca remplace la page d'informations qui arrivait la avant, et qui arrivait
+     mal : apres trois minutes de film, une page dense ne se lit pas, elle se
+     traverse. Un visage et un prenom, deux secondes, et la voix prend la suite.
+     Chacun dans sa couleur, celle de ses lignes dans l'atelier. */
+  const PORTRAITS = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
+                      mickael:'Mickaël', bry:'Bry', elie:'Élie' };
+  let bonjour = null;
+  function montrerLeBonjour(alors){
+    const nom = PORTRAITS[qui];
+    if (!nom) return alors();              /* on ne sait pas qui c'est : on passe */
+    bonjour = document.createElement('div');
+    bonjour.id = 'vBonjour'; bonjour.className = 'visiteGarde';
+    bonjour.style.setProperty('--c', 'var(--' + qui + ')');
+    bonjour.innerHTML = '<div class="bCarte">'
+      + '<div class="bCadre"><img src="site-assets/' + qui + '-2.jpg" alt=""><i></i></div>'
+      + '<div class="bMot">Bienvenue</div>'
+      + '<div class="bNom">' + nom + '</div></div>';
+    document.body.appendChild(bonjour);
+    /* si la photo manque, le prenom reste, seul : jamais de cadre vide */
+    const img = bonjour.querySelector('img');
+    img.addEventListener('error', () => { const c = img.closest('.bCadre'); if (c) c.style.display = 'none'; });
+    apres(() => bonjour.classList.add('la'), 60);
+    apres(() => {
+      bonjour.classList.remove('la');
+      apres(() => { if (bonjour) bonjour.remove(); bonjour = null; alors(); }, 900);
+    }, 3400);
+  }
+
   /* ── la carte d'entrée ────────────────────────────────────────────────── */
   const entree = el('vEntree',
     '<div class="carte">'
@@ -796,7 +868,6 @@
     entree.classList.remove('la');
     try { localStorage.setItem(CLE_VUE, '1'); localStorage.removeItem(CLE_OU); } catch(e){}
   });
-  barre.querySelector('.vPasser').addEventListener('click', finir);
   voile.addEventListener('click', e => e.stopPropagation());
 
   /* ── LE MODE ESSAI SE CHARGE-T-IL ? ─────────────────────────────────────
@@ -875,7 +946,7 @@
        Elle part donc d'elle-meme, comme une vidéo qui commence. « Passer la
        visite » reste en bas, petit, du debut a la fin : on ne retient personne,
        mais on ne demande plus la permission de l'accueillir. */
-    if (!vue && surAccueil) apres(lancer, 1200);
+    if (!vue && surAccueil) apres(() => montrerLeBonjour(lancer), 700);
   }
   proposer();
 

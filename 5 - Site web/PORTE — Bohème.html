@@ -785,15 +785,20 @@ function allerAuKaraoke(){
      en dépend, pas seulement l'atelier. Un lien personnel (?pour=) a déjà le
      prénom : il entre directement dans le hall. Les explications (BIENVENUE)
      ne sont plus sur le chemin : elles sont devenues une tuile de l'accueil. */
-  /* 10 septembre, au soir — LES INFOS SE LISENT ICI, A L'ARRIVEE.
-     Elles parlent de toute l'application (le site, le telephone, la salle
-     d'entrainement), pas de l'atelier : leur place est apres le film, avant
-     l'accueil, une seule fois. Ensuite le logo mene droit au hall. */
-  let lues = false;
-  try { lues = localStorage.getItem('boheme-bienvenue') === '1'; } catch(e){}
-  const ou = !nom ? 'PRENOM — Bohème.html'
-           : !lues ? 'BIENVENUE — Bohème.html'
-           : R.destination;
+  /* ⚠️ 12 septembre — LES INFOS NE SONT PLUS SUR LE CHEMIN D'ENTREE.
+     Mickael : « quand on commence le medley, il y a la bienvenue avec les
+     infos. Je pense qu'on ne met pas la bienvenue a ce moment-la, parce que ca
+     fait trop. Ils viennent de voir la video. »
+
+     Il a raison, et c'est une question de dose, pas de contenu : apres trois
+     minutes de film, une page de texte dense arrive au pire moment — on la
+     saute, et ce qu'elle contient est perdu. Les infos restent entieres, a leur
+     place, derriere « Les informations utiles » sur l'accueil ; et c'est la
+     visite guidee qui dira d'y aller, au moment ou ca aura du sens.
+     (Le 10 septembre au soir, je les avais mises ici pour la raison inverse :
+     qu'elles soient lues une fois. Elles ne l'etaient pas — elles etaient
+     traversees.) */
+  const ou = !nom ? 'PRENOM — Bohème.html' : R.destination;
   const suite = q2.toString();
   location.href = ou + (suite ? '?' + suite : '');
 }
