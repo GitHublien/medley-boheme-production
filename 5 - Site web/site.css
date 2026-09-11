@@ -1086,3 +1086,80 @@ input, textarea, [contenteditable="true"], .copiable, .copiable *{
 /* le toucher ne sert qu'à toucher : pas de double-tap pour agrandir, pas de
    geste de sélection — c'est ce geste-là qu'Android accompagne du vibreur */
 html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:manipulation; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LA COULEUR DU NOUVEAU : UN BLEU CLAIR (11 septembre 2026, 19 h)
+
+   Mickaël : « je ne veux pas ce violet, ça ne fait pas mise à jour. Une mise à
+   jour, c'est de quelle couleur, tu penses ? »
+
+   Voilà mon raisonnement. Dans notre application, trois couleurs portent déjà
+   un sens, et il ne faut jamais en donner deux au même signe :
+     ROUGE = j'attends quelque chose de toi · VERT = c'est fait.
+   Il reste le BLEU, et c'est précisément celui que le monde entier lit comme
+   « voici une information nouvelle » — la pastille bleue d'une application qui
+   vient d'être mise à jour, le point bleu d'un message non lu. Sur notre noir
+   et or, il tranche sans agresser : on le voit, on ne le craint pas.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.duNeuf::before{
+  background:linear-gradient(90deg, rgba(120,190,255,.26) 0%, rgba(120,190,255,.13) 38%,
+    rgba(120,190,255,.04) 68%, rgba(120,190,255,0) 100%) !important;
+  border-left-color:rgba(150,205,255,.95) !important;
+  box-shadow:-6px 0 18px -6px rgba(120,190,255,.7) !important;
+}
+.bas a.duNeuf::before{
+  background:linear-gradient(180deg, rgba(120,190,255,.24), rgba(120,190,255,0) 75%) !important;
+  box-shadow:inset 0 2px 0 rgba(150,205,255,.9) !important;
+}
+
+/* ── la légende, au pied du menu ─────────────────────────────────────────── */
+.voile .legendeMenu{
+  display:flex; align-items:flex-start; gap:.9rem; width:min(720px,100%);
+  margin:1.4rem auto 0; padding-top:1rem;
+  border-top:1px solid rgba(255,255,255,.09);
+}
+.voile .legendeMenu .ex{
+  position:relative; flex:none; padding:.3rem .7rem; border-radius:.5rem;
+  font-family:var(--disp); font-size:.95rem; color:var(--encre); isolation:isolate;
+}
+.voile .legendeMenu .ex::before{
+  content:''; position:absolute; inset:-.1rem -.35rem; z-index:-1; border-radius:inherit;
+  background:linear-gradient(90deg, rgba(120,190,255,.26), rgba(120,190,255,.06) 60%, rgba(120,190,255,0));
+  border-left:2px solid rgba(150,205,255,.95);
+  box-shadow:-6px 0 18px -6px rgba(120,190,255,.7);
+  animation:souffleNeuf 3.4s ease-in-out infinite;
+}
+.voile .legendeMenu .dit{ color:var(--gris2); font-size:.8rem; line-height:1.55; }
+@media (max-height:640px) and (orientation:landscape){
+  .voile .legendeMenu{ grid-column:1 / -1; margin-top:.9rem; padding-top:.7rem; }
+  .voile .legendeMenu .dit{ font-size:.72rem; }
+}
+/* et la légende de l'accueil prend le même bleu */
+.legendeNeuf .ex::before{
+  background:linear-gradient(90deg, rgba(120,190,255,.26), rgba(120,190,255,.06) 60%, rgba(120,190,255,0)) !important;
+  border-left-color:rgba(150,205,255,.95) !important;
+  box-shadow:-6px 0 18px -6px rgba(120,190,255,.7) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LES SIX, CHACUN DANS SA COULEUR (11 septembre 2026)
+
+   Mickaël : « mets-moi les photos avec les couleurs de chacun. »
+   Chaque portrait porte déjà sa couleur dans le trait du bas et dans son nom.
+   Elle monte maintenant sur la photo elle-même : un cerne coloré, une lueur qui
+   naît du bas, et la couleur qui se pose doucement sur l'image. On reconnaît
+   chacun à sa teinte avant même d'avoir lu son nom.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.six .cadre{ box-shadow:0 0 0 1px color-mix(in srgb, var(--c) 45%, transparent),
+                       0 10px 30px -12px color-mix(in srgb, var(--c) 55%, transparent); }
+.six .cadre::before{
+  content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:linear-gradient(180deg, transparent 45%,
+    color-mix(in srgb, var(--c) 30%, transparent) 100%);
+  mix-blend-mode:screen; opacity:.85;
+  transition:opacity 1s var(--lent);
+}
+.six .cadre i{ height:4px; box-shadow:0 0 22px var(--c), 0 0 44px color-mix(in srgb, var(--c) 60%, transparent); }
+.six .qui:hover .cadre::before{ opacity:1; }
+.six .nom{ text-shadow:0 0 18px color-mix(in srgb, var(--c) 45%, transparent); }

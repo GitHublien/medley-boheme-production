@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 18h07';
+const VERSION_SITE = '11/09/2026 · 18h33';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -61,7 +61,14 @@ const VERSION_SITE = '11/09/2026 · 18h07';
        range simplement à droite ; couché, elle se pose au pied de la colonne. */
     + '<div class="basNav"><button class="burger rond" aria-label="Menu"><i></i><i></i></button></div>';
   const voile = document.createElement('div'); voile.className = 'voile';
-  voile.innerHTML = '<button class="fermer" aria-label="Fermer le menu"><i></i><i></i></button><nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
+  /* 11 septembre — Mickaël : « j'aimerais qu'en bas du menu, un petit carré très
+     joli marque la légende : si vous voyez cette couleur, c'est une mise à jour.
+     C'est le bon endroit, parce que c'est là qu'on les voit. » */
+  voile.innerHTML = '<button class="fermer" aria-label="Fermer le menu"><i></i><i></i></button><nav>'
+    + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('')
+    + '</nav><div class="legendeMenu"><span class="ex">Une page</span>'
+    + '<span class="dit">Ce halo veut dire <b>du nouveau depuis ta dernière visite</b>.'
+    + ' Tu ouvres la page, il s\u2019éteint.</span></div>';
   const bas = document.createElement('div'); bas.className = 'bas';
   bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
     + '<a class="menuBas" href="#"><span>≡</span>Menu</a>';
@@ -234,6 +241,16 @@ const VERSION_SITE = '11/09/2026 · 18h07';
   window.reveillerLaPage = function(){
     poserImages();
     reveler();
+    /* ⚠️ 11 septembre, 19 h — LE HALO NE S'ÉTEIGNAIT PLUS.
+       Mickaël : « je clique sur les trucs et ça ne part pas. Ça ne veut rien
+       dire d'avoir cette couleur si, après l'avoir regardé, elle ne disparaît
+       pas. » C'était juste : on marquait la page « vue » UNE SEULE FOIS au
+       chargement — or la page ne se recharge plus. On la marque donc à chaque
+       arrivée, et le halo s'éteint sous ses yeux. */
+    try {
+      const ouJeSuis = decodeURIComponent(location.pathname.split('/').pop() || '');
+      if (NOUVEAU.includes(ouJeSuis)) localStorage.setItem('boheme-vu-' + ouJeSuis, VERSION_SITE);
+    } catch(e){}
     if (typeof pastiller === 'function') pastiller();
     /* les liens de la page neuve doivent porter le prénom, comme les autres */
     if (suite) document.querySelectorAll('a[href$=".html"]').forEach(a => {
