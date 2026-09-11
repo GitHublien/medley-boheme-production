@@ -65,8 +65,11 @@ const VERSION_SITE = '11/09/2026 · 01h10';
      quelle page, et il déplace les choses au doigt. Le fichier n'est chargé que
      dans ce cas : le site normal n'en porte pas une ligne. */
   if (new URLSearchParams(location.search).get('reglage') === '1'){
-    const r = document.createElement('script'); r.src = 'reglage.js'; r.defer = true;
-    addEventListener('load', () => document.body.appendChild(r));
+    /* on le pose tout de suite : le corps existe déjà (la barre vient d'y être
+       ajoutée). Passer par l'événement « load » arrivait trop tard, il était
+       parfois déjà tiré, et le script n'était jamais posé. */
+    const r = document.createElement('script'); r.src = 'reglage.js';
+    (document.body || document.documentElement).appendChild(r);
   }
 
   /* ── le pied de page ───────────────────────────────────────────────── */
