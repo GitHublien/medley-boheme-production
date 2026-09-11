@@ -905,8 +905,8 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   position:fixed; inset:0; z-index:120; display:none;
   background:#050505; opacity:0; transition:opacity .32s var(--lent);
   align-items:center; justify-content:center;
-  padding:calc(env(safe-area-inset-top) + 58px) calc(env(safe-area-inset-right) + 10px)
-          calc(env(safe-area-inset-bottom) + 86px) calc(env(safe-area-inset-left) + 10px);
+  padding:calc(env(safe-area-inset-top) + 54px) calc(env(safe-area-inset-right) + 6px)
+          calc(env(safe-area-inset-bottom) + 78px) calc(env(safe-area-inset-left) + 6px);
 }
 .vScene.la{ display:flex; opacity:1; }
 body.vOuvert{ overflow:hidden; }
@@ -941,16 +941,21 @@ body.vOuvert{ overflow:hidden; }
   width:42px; height:42px; flex:none; border-radius:50%; cursor:pointer; position:relative;
   border:1px solid rgba(212,175,55,.45); background:rgba(212,175,55,.12);
 }
-/* le triangle de lecture, dessiné — il devient deux barres quand ça joue */
+/* le triangle de lecture, dessiné — il devient deux barres quand ça joue.
+   (Le dégradé à trois bandes rendait un bloc plein : deux vraies barres, donc.) */
 .vScene .vJouer::before{
   content:''; position:absolute; inset:0; margin:auto; width:0; height:0;
   border-left:13px solid var(--or2); border-top:8px solid transparent;
   border-bottom:8px solid transparent; transform:translateX(2px);
 }
+.vScene .vJouer::after{ content:''; position:absolute; inset:0; margin:auto;
+  width:4px; height:15px; border-radius:1px; background:var(--or2);
+  transform:translateX(4px); display:none; }
 .vScene.joue .vJouer::before{
-  width:12px; height:15px; border:0; transform:none;
-  background:linear-gradient(90deg, var(--or2) 0 4px, transparent 4px 8px, var(--or2) 8px 12px);
+  width:4px; height:15px; border:0; border-radius:1px;
+  background:var(--or2); transform:translateX(-4px);
 }
+.vScene.joue .vJouer::after{ display:block; }
 .vScene .vTemps, .vScene .vFin{ font:500 .78rem system-ui; color:var(--gris); flex:none; min-width:2.4rem; }
 .vScene .vFin{ text-align:right; }
 .vScene .vRail{
@@ -985,3 +990,7 @@ body.vOuvert{ overflow:hidden; }
   border-bottom:12px solid transparent; transform:translateX(3px);
 }
 .vAppel:hover{ background:rgba(212,175,55,.2); transform:scale(1.06); }
+
+/* la vidéo prend toute la largeur qu'elle peut : c'est elle qu'on est venu voir */
+.vScene .vFilm{ width:100%; height:auto; }
+@media (orientation:landscape){ .vScene .vFilm{ width:auto; height:100%; } }
