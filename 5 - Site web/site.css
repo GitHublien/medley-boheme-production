@@ -1210,3 +1210,10 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
     border-left:0; border-top:1px solid rgba(255,255,255,.08);
   }
 }
+
+/* « C'est noté » : un vert tranquille, pas une fanfare */
+.cestNote{ color:#a9e6a0; font-weight:600; }
+.btn.souci:not(.doux){
+  background:linear-gradient(180deg,#f4d97f,#c9a13a) !important; color:#1a1408 !important;
+  opacity:1; font-size:1rem;
+}

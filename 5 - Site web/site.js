@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 18h52';
+const VERSION_SITE = '11/09/2026 · 19h30';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -67,7 +67,7 @@ const VERSION_SITE = '11/09/2026 · 18h52';
   voile.innerHTML = '<button class="fermer" aria-label="Fermer le menu"><i></i><i></i></button><nav>'
     + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('')
     + '</nav><div class="legendeMenu"><span class="ex">Une page</span>'
-    + '<span class="dit">Ce halo veut dire <b>du nouveau depuis ta dernière visite</b>.'
+    + '<span class="dit">Ce <b>halo bleu</b> veut dire <b>du nouveau depuis ta dernière visite</b>.'
     + ' Tu ouvres la page, il s\u2019éteint.</span></div>';
   const bas = document.createElement('div'); bas.className = 'bas';
   bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
@@ -298,7 +298,18 @@ const VERSION_SITE = '11/09/2026 · 18h52';
      Ce qui mérite le halo, ce sont les changements qu'il décide : un texte
      modifié dans le medley, une répartition, une mise en scène écrite, un
      document ajouté, une date. Jamais une retouche de mon côté. */
-  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html'];
+  /* ⚠️ 11 septembre, 19 h 30 — LA LISTE EST VIDE, ET C'EST VOLONTAIRE.
+     Mickaël : « qui chante quoi, il n'y a pas eu de changement. Il faut faire
+     attention dans les mises à jour, il ne faut pas faire n'importe quoi. »
+
+     Il a raison, et deux fois plutôt qu'une : le halo ne vaut que s'il dit la
+     vérité. Un halo posé sur une page qui n'a pas bougé, c'est une promesse
+     qu'on ne tient pas — et au troisième mensonge, plus personne ne le regarde.
+
+     Cette liste ne se remplit donc QUE sur sa parole, quand il a vraiment changé
+     quelque chose : un texte du medley, une répartition, une mise en scène
+     écrite, un document, une date. Jamais une retouche de mon côté. */
+  const NOUVEAU = [];
   const mot = document.createElement('div'); mot.className = 'mot';
   document.body.appendChild(mot);
   let motMinuteur = null;
