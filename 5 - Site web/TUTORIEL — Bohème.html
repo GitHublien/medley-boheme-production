@@ -291,9 +291,19 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   transition:transform .4s cubic-bezier(0.32,0.72,0,1), opacity .4s; }
 #pied button:active{ transform:scale(.97); }
 /* les ronds du guide : le dessin exact de l'atelier */
-.rond-sim{ width:52px; height:52px; flex:none; border-radius:50%; cursor:pointer;
-  border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.07) center/24px 24px no-repeat;
-  position:relative; transition:opacity .35s, border-color .35s, box-shadow .35s, transform .35s; }
+/* Les mesures EXACTES de l'atelier. Mickaël : « le machin est tout petit, il
+   faut qu'il soit plus gros et plus au centre, dans le rond. » Là-bas la
+   pastille fait 48 et le pictogramme 25 ; « aller à ton passage » grossit même
+   à 60 quand il sert, parce que c'est le geste le plus utile. */
+.rond-sim{ width:56px; height:56px; flex:none; border-radius:50%; cursor:pointer; padding:0;
+  border:1px solid rgba(212,175,55,.5);
+  background-color:rgba(212,175,55,.07);
+  background-position:center center; background-repeat:no-repeat; background-size:30px 30px;
+  position:relative; display:grid; place-items:center;
+  transition:opacity .35s, border-color .35s, box-shadow .35s, transform .35s, background-size .35s; }
+#simPassage{ width:70px; height:70px; background-size:38px 38px; }
+#simPassage.allume{ border-color:rgba(157,255,53,.7); background-color:rgba(157,255,53,.14);
+  box-shadow:0 0 18px rgba(157,255,53,.4); }
 .rond-sim.allume{ border-color:rgba(157,255,53,.7); background-color:rgba(157,255,53,.14);
   box-shadow:0 0 14px rgba(157,255,53,.3); }
 .rond-sim.eteint{ opacity:.4; border-color:rgba(212,175,55,.24); background-color:rgba(212,175,55,.04); }
@@ -1348,15 +1358,23 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
     e.classList.toggle('allume', allumee);
     e.classList.toggle('eteint', !allumee);
     r.classList.toggle('parti', !allumee);
+    /* Mickaël : « il faut que le bandeau disparaisse quand tu éteins l'étoile. »
+       C'est exactement ce que fait l'atelier — le guide doit le montrer. */
+    const bd = document.getElementById('bandeauDemo');
+    if (bd){
+      bd.style.transition = 'opacity .45s ease, transform .45s ease';
+      bd.style.opacity = allumee ? '1' : '0';
+      bd.style.transform = allumee ? 'none' : 'translateY(-10px)';
+    }
     if (!allumee){
       eteinteUneFois = true;
-      if (d) d.innerHTML = 'Éteinte : l\u2019étoile est <b style="color:#d4af37">grise et barrée</b>, '
-        + 'le bandeau ne t\u2019annonce plus rien — et tu vois que <b style="color:#f1d27a">l\u2019autre rond a disparu avec elle</b>. '
-        + 'L\u2019atelier redevient un atelier nu.';
+      if (d) d.innerHTML = 'Éteinte : l’étoile est <b style="color:#d4af37">grise et barrée</b>. '
+        + 'Regarde ce qui vient de partir : <b style="color:#f1d27a">le bandeau du haut</b>, et '
+        + '<b style="color:#f1d27a">l’autre rond</b>. L’atelier redevient un atelier nu — rien que les paroles.';
     } else {
-      if (d) d.innerHTML = 'Rallumée. L\u2019étoile est <b style="color:#c8ff8a">verte</b>, et '
-        + '<b style="color:#f1d27a">le rond « aller à ton passage » revient avec elle</b> — '
-        + 'je t\u2019expliquerai ce dernier un peu plus loin dans le guide.';
+      if (d) d.innerHTML = 'Rallumée. L’étoile est <b style="color:#c8ff8a">verte</b> : '
+        + 'le bandeau revient, et <b style="color:#f1d27a">le rond « aller à ton passage » aussi</b> — '
+        + 'je t’expliquerai ce dernier un peu plus loin dans le guide.';
       if (eteinteUneFois){
         reussir('cEtoile', 'Tu as vu les deux états. Ton aide est allumée d\u2019office : tu n\u2019as rien à faire. '
           + 'Le jour où tu connaîtras tes passages par cœur, ce bouton éteindra tout — et le rond partira avec.');
