@@ -864,10 +864,15 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── rouge : j'attends de toi ───────────────────────────────────────────── */
+/* ⚠️ 12 septembre — Mickael : « il n'est pas assez rouge, c'est un peu rose.
+   Il faut qu'il soit plus rouge que ca. » Il avait raison : le haut du degrade
+   partait sur du #ff7b6e, un corail. Un bouton qui doit dire « il reste quelque
+   chose a faire » doit etre franchement rouge, sans hesitation. Le texte passe
+   en blanc casse : sur ce rouge-la, le brun ne se lisait plus. */
 .btn.aFaireRouge{
-  background:linear-gradient(180deg,#ff7b6e,#d8453a) !important; color:#2a0c08 !important;
-  border-color:rgba(255,123,110,.6) !important;
-  box-shadow:0 0 22px rgba(255,77,77,.35);
+  background:linear-gradient(180deg,#f5382b,#bf1108) !important; color:#fff4f0 !important;
+  border-color:rgba(255,60,45,.75) !important;
+  box-shadow:0 0 24px rgba(230,30,20,.45);
   animation:battementRouge 2.6s ease-in-out infinite;
 }
 @keyframes battementRouge{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,77,77,.45) } 50%{ box-shadow:0 0 0 9px rgba(255,77,77,0) } }

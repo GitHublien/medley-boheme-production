@@ -51,7 +51,13 @@
      corrige ; « ca ne va pas » ne se corrige pas. */
   const ARRETS = [
     { son: sonPerso('01-bonjour'),        vise: null, nom: "L’accueil" },
-    { son: sonPerso('02-le-bouton-rouge'), vise: '.carteEssentiel .ceLigne:first-child', nom: 'Le bouton rouge',
+    /* ⚠️ 12 septembre — Mickael : « quand on montre le bouton rouge, il ne faut
+       vraiment montrer QUE le bouton rouge. Il faut resserrer et zoomer un peu
+       pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
+       Je designais toute la ligne de la carte : le titre, le texte, les deux
+       boutons. Quand on montre tout, on ne montre rien. */
+    { son: sonPerso('02-le-bouton-rouge'),
+      vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
       /* « demande » vient APRES la phrase : on ne coupe jamais la voix pour poser
          une question. C'est la deuxieme des trois exceptions — c'est lui qui
          decide, maintenant ou plus tard. */
@@ -327,14 +333,18 @@
     /* La lumiere doit serrer l'objet, pas inonder le voisinage : une premiere
        version debordait sur le menu et sur la carte rouge. Le clair s'arrete a
        55 % du rayon — on divise donc par 0,55 — et la marge reste petite. */
-    const rx = Math.max(44, (r.width  / 2 + 16)) / 0.55;
-    const ry = Math.max(38, (r.height / 2 + 14)) / 0.55;
+    /* ⚠️ 12 septembre — « resserrer et zoomer un peu pour qu'on le voie
+       vraiment, et qu'on ne voie pas autour. » La marge tombe a six pixels, et
+       le clair tient jusqu'a 70 % du rayon : la lumiere epouse l'objet au lieu
+       d'eclairer son quartier. */
+    const rx = Math.max(28, (r.width  / 2 + 6)) / 0.70;
+    const ry = Math.max(24, (r.height / 2 + 6)) / 0.70;
     voile.style.background =
       'radial-gradient(ellipse ' + Math.round(rx) + 'px ' + Math.round(ry) + 'px at '
       + Math.round(cx) + 'px ' + Math.round(cy) + 'px, '
-      + 'rgba(4,4,4,0) 0%, rgba(4,4,4,0) 55%, '
-      + 'rgba(241,210,122,.18) 64%, '
-      + 'rgba(4,4,4,.62) 78%, rgba(4,4,4,.9) 100%)';
+      + 'rgba(4,4,4,0) 0%, rgba(4,4,4,0) 70%, '
+      + 'rgba(241,210,122,.26) 77%, '
+      + 'rgba(4,4,4,.80) 88%, rgba(4,4,4,.94) 100%)';
     return r;
   }
   function eteindreLaLumiere(){ voile.style.background = 'rgba(4,4,4,.86)'; }
