@@ -498,7 +498,7 @@ footer .liens a:hover{ color:var(--or2); }
 
 /* ── debout : la barre reste, toujours ─────────────────────────────────── */
 @media (max-width:700px) and (orientation:portrait){
-  .nav{ gap:.45rem; padding:.3rem .3rem; }
+  .nav{ gap:.45rem; padding:.3rem .3rem; width:max-content; max-width:calc(100% - 20px); }   /* mesure du 11/09 : le fond faisait 203px pour 255 de contenu, le menu sortait */
   .nav .marque{ height:46px !important; padding:0 .9rem 0 .28rem !important; }
   .nav .marque img{ width:34px; height:34px; }
   .nav .marque span{ font-size:1.05rem; }
@@ -523,11 +523,12 @@ footer .liens a:hover{ color:var(--or2); }
   .nav .musique .mRond, .nav .burger{ width:42px !important; height:42px !important; }
   .musique .mPan{ top:auto; bottom:calc(100% + 10px); left:0; transform:translateY(6px); }
   .musique.ouvert .mPan{ transform:none; }
-  .page{ width:min(1380px, 100% - 254px); margin-left:236px; }
+  .page{ width:min(1380px, 100% - 254px - env(safe-area-inset-left)); margin-left:calc(236px + env(safe-area-inset-left)); }   /* la camera reserve 39px : la colonne se decalait, pas le contenu */
 }
 
 /* ── le menu : la barre se retire, une croix, les marges du système ───── */
-body.menu .nav{ opacity:0; pointer-events:none; }
+body.menu .nav{ opacity:1; pointer-events:auto; }   /* 11/09, 5 h : « je n'ai pas envie qu'on ne puisse plus voir l'atelier, les textes… » la colonne reste, le burger devient la croix */
+.voile .fermer{ display:none !important; }
 .voile{ padding:calc(env(safe-area-inset-top) + 5.2rem) calc(env(safe-area-inset-right) + 6vw) calc(env(safe-area-inset-bottom) + 2rem) calc(env(safe-area-inset-left) + 6vw); }
 .voile .fermer{ position:fixed; top:calc(env(safe-area-inset-top) + 14px); right:calc(env(safe-area-inset-right) + 14px);
   width:46px; height:46px; border-radius:50%; border:1px solid rgba(212,175,55,.42); background:rgba(212,175,55,.08);
@@ -543,7 +544,7 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
 }
 /* couché : deux colonnes, tout visible d'un coup, rien sous la caméra */
 @media (max-height:640px) and (orientation:landscape){
-  .voile{ align-items:center; padding:calc(env(safe-area-inset-top) + 1rem) calc(env(safe-area-inset-right) + 4.5rem) calc(env(safe-area-inset-bottom) + 1rem) calc(env(safe-area-inset-left) + 2.5rem); }
+  .voile{ align-items:center; padding:calc(env(safe-area-inset-top) + 1rem) calc(env(safe-area-inset-right) + 2rem) calc(env(safe-area-inset-bottom) + 1rem) calc(env(safe-area-inset-left) + 248px); }
   .voile nav{ grid-template-columns:1fr 1fr; column-gap:2.2rem; width:100%; }
   .voile a{ padding:.38rem 0; font-size:1.2rem; }
   .voile a small{ font-size:.6rem; }
