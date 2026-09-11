@@ -991,6 +991,7 @@ body.vOuvert{ overflow:hidden; }
 }
 .vAppel:hover{ background:rgba(212,175,55,.2); transform:scale(1.06); }
 
-/* la vidéo prend toute la largeur qu'elle peut : c'est elle qu'on est venu voir */
-.vScene .vFilm{ width:100%; height:auto; }
-@media (orientation:landscape){ .vScene .vFilm{ width:auto; height:100%; } }
+/* Mesuré sur son téléphone : la vidéo faisait 853×480 dans un écran de 904×406.
+   Elle débordait donc de 74 px et se faisait rogner en haut et en bas. Elle
+   occupe maintenant exactement le cadre, posée dedans en entier — jamais coupée. */
+.vScene .vFilm{ width:100%; height:100%; object-fit:contain; }
