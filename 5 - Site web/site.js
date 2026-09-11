@@ -424,10 +424,18 @@ const VERSION_SITE = '11/09/2026 · 19h31';
     pb.href = lien(souci); pb.target = '_blank'; pb.rel = 'noopener';
     pb.title = 'préparer un message pour dire ce qui ne va pas';
 
+    /* ═══ UNE FOIS ENVOYÉ, LE BOUTON S'EFFACE (11 septembre 2026, 19 h 45) ═══
+       Mickaël : « voir "C'est envoyé, merci" à chaque fois et que ça reste comme
+       ça, c'est un petit peu nul. Si ça a été envoyé, c'est terminé. »
+       Sa proposition — le garder quinze secondes — demandait de deviner quand il
+       regarde l'écran. Plus simple : le gros bouton disparaît pour de bon dès
+       que c'est envoyé, et « J'ai un souci » devient le bouton principal. À la
+       visite suivante, il n'y a même plus le constat. */
     const peindre = () => {
       const v = dit();
       recu.classList.toggle('faitVert', v);
       recu.classList.toggle('aFaireRouge', !v);
+      if (v && !recu.dataset.vientDeLEnvoyer){ recu.style.display = 'none'; pb.classList.remove('doux'); }
       recu.innerHTML = v
         ? 'C\u2019est envoyé, merci <b><i class="ico ico-coche"></i></b>'
         : 'Dis-moi que tout s\u2019ouvre <b><i class="ico ico-coche"></i></b>';
@@ -438,18 +446,27 @@ const VERSION_SITE = '11/09/2026 · 19h31';
     recu.insertAdjacentElement('afterend', pb);
 
     recu.addEventListener('click', () => {
+      recu.dataset.vientDeLEnvoyer = '1';
       /* on note APRÈS un instant : le temps que WhatsApp s'ouvre pour de bon */
       setTimeout(() => { try { localStorage.setItem(CLE, '1'); } catch(e){} peindre(); }, 1500);
+      /* puis le constat s'efface doucement, et « J'ai un souci » prend sa place */
+      setTimeout(() => {
+        recu.style.transition = 'opacity .8s ease, max-height .8s ease, margin .8s ease, padding .8s ease';
+        recu.style.opacity = '0'; recu.style.maxHeight = '0';
+        recu.style.margin = '0'; recu.style.paddingTop = '0'; recu.style.paddingBottom = '0';
+        setTimeout(() => { recu.style.display = 'none'; }, 900);
+        pb.classList.remove('doux');
+      }, 10000);
     });
 
     /* le mot d'explication, juste en dessous — il change avec la couleur */
     const mot = document.createElement('p');
     mot.className = 'motRecu';
     const direMot = () => {
-      mot.textContent = dit()
-        ? 'C\u2019est noté. S\u2019il t\u2019arrive quoi que ce soit, la porte « J\u2019ai un souci » reste ouverte.'
-        : 'Tant que ce bouton est rouge, c\u2019est que je ne sais pas encore si tout s\u2019ouvre chez toi. '
-        + 'Un appui prépare le message : tu n\u2019as plus qu\u2019à choisir le groupe et envoyer.';
+      mot.innerHTML = dit()
+        ? '<span class="cestNote">C’est noté, merci.</span> S’il t’arrive quoi que ce soit ensuite, la porte ci-dessous reste ouverte.'
+        : 'Tant que ce bouton est rouge, c’est que je ne sais pas encore si tout s’ouvre chez toi. '
+        + 'Un appui prépare le message : tu n’as plus qu’à choisir le groupe et envoyer.';
     };
     direMot(); pb.insertAdjacentElement('afterend', mot);
     recu.addEventListener('click', () => setTimeout(direMot, 1600));
