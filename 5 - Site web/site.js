@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '12/09/2026 · 01h25';
+const VERSION_SITE = '12/09/2026 · 01h50';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -76,10 +76,27 @@ const VERSION_SITE = '12/09/2026 · 01h25';
   const bas = document.createElement('div'); bas.className = 'bas';
   bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
     + '<a class="menuBas" href="#"><span>≡</span>Menu</a>';
-  voile.querySelector('.revoirVisite').addEventListener('click', () => {
-    document.body.classList.remove('menu');
-    if (typeof window.revoirLaVisite === 'function') window.revoirLaVisite();
-  });
+  {
+    const b = voile.querySelector('.revoirVisite');
+    b.addEventListener('click', () => {
+      document.body.classList.remove('menu');
+      if (typeof window.revoirLaVisite === 'function') window.revoirLaVisite();
+    });
+    /* 12 septembre — un appui LONG bascule le mode essai (la barre ◀ ⏸ ↻ ✎ ▶).
+       Mickael n'a ainsi jamais a retaper une adresse sur son telephone. Il faut
+       tenir une seconde et demie : personne ne tombe dessus par hasard. */
+    let minuteur = null;
+    const debut = () => { minuteur = setTimeout(() => {
+      minuteur = null;
+      if (typeof window.basculerModeEssai === 'function'){
+        b.textContent = window.basculerModeEssai();
+        setTimeout(() => location.reload(), 900);
+      }
+    }, 1500); };
+    const fin = () => { if (minuteur){ clearTimeout(minuteur); minuteur = null; } };
+    b.addEventListener('pointerdown', debut);
+    ['pointerup','pointercancel','pointerleave'].forEach(n => b.addEventListener(n, fin));
+  }
   document.body.prepend(nav, voile, bas);
   const basculer = () => document.body.classList.toggle('menu');
   nav.querySelector('.burger').addEventListener('click', basculer);

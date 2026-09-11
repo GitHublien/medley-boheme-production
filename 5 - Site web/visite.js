@@ -46,26 +46,29 @@
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3';
 
   /* ── les douze arrêts ─────────────────────────────────────────────────── */
+  /* Chaque arret porte un nom : c'est ce que Mickael verra dans le mode essai,
+     et c'est ce qui rendra ses notes utilisables. « Arret 7, le menu » se
+     corrige ; « ca ne va pas » ne se corrige pas. */
   const ARRETS = [
-    { son: sonPerso('01-bonjour'),        vise: null },
-    { son: sonPerso('02-le-bouton-rouge'), vise: '.carteEssentiel .ceLigne:first-child',
+    { son: sonPerso('01-bonjour'),        vise: null, nom: "L’accueil" },
+    { son: sonPerso('02-le-bouton-rouge'), vise: '.carteEssentiel .ceLigne:first-child', nom: 'Le bouton rouge',
       /* « demande » vient APRES la phrase : on ne coupe jamais la voix pour poser
          une question. C'est la deuxieme des trois exceptions — c'est lui qui
          decide, maintenant ou plus tard. */
       demande: { texte: 'Tu veux le faire maintenant ?',
                  oui: 'Je le fais maintenant', non: 'Plus tard',
                  fait: '.carteEssentiel .ceLigne:first-child a, .carteEssentiel .ceLigne:first-child button' } },
-    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child' },
-    { son: sonCommun('03-musique'),       vise: '.nav .musique' },
-    { son: sonCommun('04-barre-du-bas'),  vise: '.bas' },
-    { son: sonCommun('05-atelier'),       vise: 'a[href*="KARAOKE"].tuile' },
-    { son: sonCommun('06-textes'),        vise: 'a[href*="LIVRE"].tuile' },
-    { son: sonCommun('07-menu'),          vise: '.voile nav', avant: 'ouvrirMenu' },
-    { son: sonCommun('08-halo'),          vise: '.voile .legendeMenu' },
-    { son: sonCommun('09-retour'),        vise: '.nav .marque', avant: 'fermerMenu' },
-    { son: sonCommun('10-exemple'),       vise: null, avant: 'montrerCalendrier' },
-    { son: sonCommun('11-paysage'),       vise: null, attend: 'paysage' },
-    { son: sonPerso('12-la-fin'),         vise: null, avant: 'revenirAccueil' },
+    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour' },
+    { son: sonCommun('03-musique'),       vise: '.nav .musique', nom: 'La musique' },
+    { son: sonCommun('04-barre-du-bas'),  vise: '.bas', nom: 'La barre du bas' },
+    { son: sonCommun('05-atelier'),       vise: 'a[href*="KARAOKE"].tuile', nom: "L’atelier" },
+    { son: sonCommun('06-textes'),        vise: 'a[href*="LIVRE"].tuile', nom: 'Les textes' },
+    { son: sonCommun('07-menu'),          vise: '.voile nav', avant: 'ouvrirMenu', nom: 'Le menu' },
+    { son: sonCommun('08-halo'),          vise: '.voile .legendeMenu', nom: 'Le halo bleu' },
+    { son: sonCommun('09-retour'),        vise: '.nav .marque', avant: 'fermerMenu', nom: 'Le retour' },
+    { son: sonCommun('10-exemple'),       vise: null, avant: 'montrerCalendrier', nom: 'Un exemple' },
+    { son: sonCommun('11-paysage'),       vise: null, attend: 'paysage', nom: 'Le paysage' },
+    { son: sonPerso('12-la-fin'),         vise: null, avant: 'revenirAccueil', nom: 'La fin' },
   ];
 
   /* ── les gestes que la visite fait elle-même ──────────────────────────── */
@@ -509,7 +512,7 @@
   }
   document.addEventListener('pointerdown', e => {
     if (!document.body.classList.contains('enVisite')) return;
-    if (e.target.closest('#vBarre, #vDemande, #vPause, #vEntree, #vTourne')) return;
+    if (e.target.closest('#vBarre, #vDemande, #vPause, #vEntree, #vTourne, #vEssai, #vNote')) return;
     pauser();
   }, true);
 
@@ -575,6 +578,31 @@
   barre.querySelector('.vPasser').addEventListener('click', finir);
   voile.addEventListener('click', e => e.stopPropagation());
 
+  /* ── LE MODE ESSAI SE CHARGE-T-IL ? ─────────────────────────────────────
+     ?essai=1 une seule fois, et c'est retenu : Mickael n'aura pas a retaper une
+     adresse sur un telephone. ?essai=0 l'eteint. Et un appui long sur « Revoir
+     la visite guidee », dans le menu, le bascule — c'est le chemin le plus
+     court depuis son doigt. */
+  const CLE_ESSAI = 'boheme-visite-essai';
+  try {
+    const d = new URLSearchParams(location.search).get('essai');
+    if (d === '1') localStorage.setItem(CLE_ESSAI, '1');
+    if (d === '0') localStorage.removeItem(CLE_ESSAI);
+  } catch(e){}
+  window.__modeEssai = () => { try { return localStorage.getItem(CLE_ESSAI) === '1'; } catch(e){ return false; } };
+  window.basculerModeEssai = () => {
+    let on = false;
+    try {
+      on = localStorage.getItem(CLE_ESSAI) !== '1';
+      if (on) localStorage.setItem(CLE_ESSAI, '1'); else localStorage.removeItem(CLE_ESSAI);
+    } catch(e){}
+    return on ? 'mode essai ALLUMÉ — recharge la page' : 'mode essai éteint';
+  };
+  if (window.__modeEssai() && !document.querySelector('script[src="visite-essai.js"]')){
+    const t = document.createElement('script'); t.src = 'visite-essai.js';
+    document.body.appendChild(t);
+  }
+
   /* on la propose à la toute première visite, sur l'accueil seulement */
   function proposer(){
     let vue = true;
@@ -583,6 +611,49 @@
     if (!vue && surAccueil) apres(() => entree.classList.add('la'), 1400);
   }
   proposer();
+
+  /* ── LA PORTE DU MODE ESSAI ─────────────────────────────────────────────
+     Mickael : « il faudrait un truc de test pour voir point par point, et
+     t'expliquer les choses au fur et a mesure. M'arreter, faire des pauses
+     quand je le desire. »
+
+     La visite n'a pas besoin de savoir qu'on l'examine : elle expose trois
+     gestes, et c'est tout. Le mode essai (visite-essai.js) s'en sert pour
+     dessiner sa barre. Rien de tout cela n'existe chez les chanteurs. */
+  window.__visite = {
+    ou(){
+      const a = ARRETS[ici] || {};
+      return { arret: Math.max(0, ici), total: ARRETS.length,
+               nom: a.nom || '—', enPause: enPause,
+               paysage: innerWidth > innerHeight };
+    },
+    /* aller droit a un arret : on ferme ce qui trainait, on remet le decor
+       dans l'etat ou cet arret le trouve, et on le joue depuis le debut. */
+    allerA(k){
+      k = Math.max(0, Math.min(ARRETS.length - 1, k));
+      fil++; arrete = false; enPause = false;
+      const p = document.querySelector('#vPause'); if (p) p.remove();
+      const d = document.querySelector('#vDemande'); if (d) d.remove();
+      try { son.pause(); son.onended = son.onerror = null; } catch(e){}
+      eteindreLesHorloges();
+      document.body.classList.add('enVisite');
+      /* le menu doit etre ouvert pour les arrets qui parlent de lui, ferme
+         pour les autres : sinon on eclaire quelque chose d'invisible. */
+      const dansLeMenu = /^(7|8)$/.test(String(k));
+      document.body.classList.toggle('menu', dansLeMenu);
+      const monFil = fil;
+      apres(() => jouer(k, monFil), dansLeMenu ? 450 : 120);
+    },
+    basculerPause(){
+      if (enPause){
+        const b = document.querySelector('#vPause'); if (b) b.remove();
+        enPause = false;
+        /* si l'arret n'a pas de son, on ne tente rien : sinon le navigateur se
+           plaint d'une bande sans source (vu en essai). */
+        if (son.src) son.play().catch(() => {});
+      } else { pauser(); }
+    },
+  };
 
   /* et on peut la redemander, à tout moment */
   window.revoirLaVisite = () => {
