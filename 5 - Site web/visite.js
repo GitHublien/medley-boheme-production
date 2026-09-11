@@ -506,11 +506,47 @@
       if (!ouvrir) return repondre('02d-plus-tard', alors);
       const c = document.querySelector(d.fait);
       if (c) c.click();
-      attendreSonRetour(() => repondre('02c-merci', alors));
+      /* ⚠️ 12 septembre — Mickael : « des que j'ai appuye sur le bouton, elle
+         dit ah super, tout de suite. Mais il faut qu'elle attende que je sois
+         sur WhatsApp, que j'envoie, et que je revienne. Et meme, il pourrait y
+         avoir une question quand il revient : ca y est, tu as envoye ? Parce
+         que meme s'il va sur WhatsApp, il peut revenir en arriere. »
+
+         Il a raison sur les deux points, et sa solution vaut mieux que la
+         mienne. Je m'appuyais sur un signal du telephone — « la page est
+         cachee, la page revient » — pour deviner qu'il avait envoye. Ce signal
+         ment : le partage d'Android s'ouvre parfois SANS cacher la page, et
+         surtout, revenir n'est pas envoyer. Il peut ouvrir WhatsApp et faire
+         demi-tour.
+         On ne devine plus : on demande. La question l'attend a son retour,
+         aussi longtemps qu'il faut, et c'est SA reponse qui decide laquelle des
+         deux phrases il entendra. */
+      demanderSiEnvoye(alors);
     };
     boite.querySelector('.oui').addEventListener('click', () => partir(true));
     boite.querySelector('.non').addEventListener('click', () => partir(false));
     /* et AUCUN compte a rebours : tant qu'il n'a pas repondu, rien ne bouge. */
+  }
+
+  /* ── « ÇA Y EST, TU AS ENVOYÉ ? » ───────────────────────────────────────
+     Elle s'affiche a l'instant ou il part, donc elle est deja la quand il
+     revient. Aucun compte a rebours, aucun signal a interpreter : elle attend.
+     C'est la troisieme des exceptions ou il a la main, et la derniere. */
+  function demanderSiEnvoye(alors){
+    const b = document.createElement('div');
+    b.className = 'visiteGarde'; b.id = 'vDemande';
+    b.innerHTML = '<div class="bulle">'
+      + '<p>Ça y est, tu as envoyé le message à Mickaël ?</p>'
+      + '<button class="oui">Oui, c’est envoyé</button>'
+      + '<button class="non">Non, finalement plus tard</button></div>';
+    document.body.appendChild(b);
+    /* elle nait pendant qu'il quitte l'application : on la rend sourde une
+       demi-seconde, pour qu'aucun geste en cours ne reponde a sa place. */
+    b.style.pointerEvents = 'none';
+    apres(() => { b.style.pointerEvents = ''; }, 600);
+    const partir = (envoye) => { b.remove(); repondre(envoye ? '02c-merci' : '02d-plus-tard', alors); };
+    b.querySelector('.oui').addEventListener('click', () => partir(true));
+    b.querySelector('.non').addEventListener('click', () => partir(false));
   }
 
   /* ── ON L'ATTEND VRAIMENT ───────────────────────────────────────────────
