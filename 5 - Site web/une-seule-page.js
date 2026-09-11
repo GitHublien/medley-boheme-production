@@ -34,7 +34,26 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 (function(){
   /* les pages qui gardent leur propre vie : on ne les coud pas */
-  const APART = /KARAOKE|LIVRE|TUTORIEL|PORTE|PRENOM|index\.html|installer|diagnostic|fiche-technique|BIENVENUE/i;
+  /* ⚠️ 11 septembre, 18 h 45 — Mickaël : « pourquoi les autres ne sont pas à la
+     même enseigne ? » Réponse mesurée, page par page :
+
+       Mon prénom ............   7 Ko ·  0 minuteur  → rejoint la famille
+       Informations utiles ...  17 Ko ·  0 minuteur  → rejoint la famille
+       Le guide .............. 125 Ko ·  8 minuteurs → reste à part
+       Le livre .............. 128 Ko ·  8 minuteurs → reste à part
+       La porte ..............  51 Ko · 14 minuteurs → reste à part
+       L'atelier ............. 668 Ko · 54 minuteurs → reste à part
+
+     Un « minuteur », c'est une horloge que la page lance et qui continue de
+     battre. Dans une page qu'on recharge, elle meurt avec elle. Ici, la page ne
+     meurt plus : ces horloges tourneraient donc POUR TOUJOURS, en plus de
+     celles de la page suivante. L'atelier en a cinquante-quatre.
+
+     Et surtout : ces quatre pages jouent toutes du son. La musique doit s'y
+     arrêter de toute façon — les coudre ici n'apporterait donc RIEN à la
+     musique, seulement du risque. Le garde-fou ci-dessous les rendra possibles
+     le jour où l'on voudra y aller. */
+  const APART = /KARAOKE|LIVRE|TUTORIEL|PORTE|index\.html|installer|diagnostic|fiche-technique/i;
 
   const estCousable = href => {
     try {
@@ -63,6 +82,21 @@
   document.head.appendChild(style);
   const fil = document.createElement('div'); fil.className = 'enRoute';
   document.body.appendChild(fil);
+
+  /* ═══ LE GARDE-FOU DES HORLOGES ═══════════════════════════════════════════
+     Quand une page lance une horloge (setInterval) ou un rendez-vous
+     (setTimeout), on note son numéro. En quittant la page, on les arrête tous.
+     Sans cela, une page visitée laisserait ses horloges battre à jamais dans la
+     page vivante — et au bout de dix pages, le téléphone ramerait sans qu'on
+     comprenne pourquoi. */
+  const horloges = new Set(), vraiInterval = window.setInterval, vraiTimeout = window.setTimeout;
+  let onRegarde = false;
+  window.setInterval = function(){ const id = vraiInterval.apply(window, arguments); if (onRegarde) horloges.add(['i', id]); return id; };
+  window.setTimeout  = function(){ const id = vraiTimeout.apply(window, arguments);  if (onRegarde) horloges.add(['t', id]); return id; };
+  function arreterLesHorloges(){
+    horloges.forEach(([quoi, id]) => { try { quoi === 'i' ? clearInterval(id) : clearTimeout(id); } catch(e){} });
+    horloges.clear();
+  }
 
   let enCours = null;
   /* le lecteur de musique demande : « est-ce que tu t'en occupes ? » Si oui, il
@@ -112,6 +146,8 @@
          On les rejoue maintenant — en les recopiant, car un script inséré tel
          quel ne s'exécute jamais. Ceux qui portent une adresse (src) sont
          ignorés : ils sont déjà chargés une fois pour toutes. */
+      /* on arrête les horloges de la page qu'on quitte, avant toute chose */
+      arreterLesHorloges();
       const scripts = [];
       [...corpsNeuf.children].forEach(e => {
         if (e.tagName === 'SCRIPT'){ scripts.push(e); return; }
@@ -120,6 +156,7 @@
         /* un script niché dans le contenu compte aussi */
         clone.querySelectorAll && clone.querySelectorAll('script').forEach(x => scripts.push(x));
       });
+      onRegarde = true;                 /* tout ce que la page lance est noté */
       scripts.forEach(vieux => {
         if (vieux.src) return;                        /* déjà chargé, une fois pour toutes */
         const neuf = document.createElement('script');
@@ -127,6 +164,7 @@
         neuf.dataset.deLaPage = '1';
         document.body.appendChild(neuf);
       });
+      setTimeout(() => { onRegarde = false; }, 3000);   /* le temps qu'elle s'installe */
       /* on nettoie les scripts de la page précédente : ils ont fait leur office */
       document.querySelectorAll('script[data-de-la-page]').forEach((x, i, l) => {
         if (i < l.length - scripts.length) x.remove();
