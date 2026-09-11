@@ -5297,6 +5297,8 @@ body[data-pour] #bandeau{ display:flex; }
   const boutons = boite.querySelector('.t-boutons');
 
   const ETAPES = [
+    { id:'btnAide',  t:'Un doigt posé, et j'explique',
+      x:'Sur n'importe quel bouton de l'atelier : garde le doigt appuyé une seconde, et je te dis à quoi il sert. Un appui normal, lui, fait le geste tout de suite — je ne t'interromps jamais.' },
     { id:'b',        t:'Lecture',
       x:'Lance l\'atelier, et le met en pause. La musique part, les paroles s\'allument en rythme.' },
     { id:'rail',     t:'La barre de temps',
@@ -6526,14 +6528,20 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
     const d = est === 'aller' ? ALLER : DIT[b.id];
     if (!d) return;
     b.dataset.explique = '1';
-    /* le premier appui explique d'abord, puis laisse faire */
+    /* ⚠️ 11 septembre 2026 — L'EXPLICATION NE SE MONTRE PLUS AU PREMIER APPUI.
+       Mickaël : « la première fois qu'on appuie une seule fois sur le truc, il y
+       a tout de suite l'exemple qui se montre. Je ne veux plus de cet exemple-là.
+       Je le veux toujours, mais seulement si on reste appuyé longuement. »
+       Un appui fait donc ce que le bouton doit faire, tout de suite, sans rien
+       expliquer. L'explication existe toujours — elle attend l'appui long, et
+       c'est le guide qui apprend ce geste. */
     b.addEventListener('click', e => {
       if (b.dataset.longEnCours === '1'){    /* c'était un appui long : on n'allume rien */
         e.preventDefault(); e.stopImmediatePropagation();
         b.dataset.longEnCours = '0';
         return;
       }
-      if (!vu(est)){ noter(est); montrer(b, d[0], d[1], 5200); }
+      noter(est);     /* on retient qu'il connaît le bouton, sans rien lui montrer */
     }, true);
     /* l'appui long redonne l'explication, à tout moment, SANS déclencher le bouton */
     let t = null;
