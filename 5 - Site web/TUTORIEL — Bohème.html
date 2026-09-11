@@ -624,7 +624,7 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <button class="btn-sim" id="simRejoueRampe">↻ Revoir la séquence</button>
     <button class="rond-sim allume" id="simEtoile" title="Ton aide personnelle"
       style="background-image:url(site-images/icones-karaoke/etoile2.png)"></button>
-    <button class="rond-sim suit" id="simRondPassage" title="Aller à ton passage"
+    <button class="rond-sim suit allume" id="simRondPassage" title="Aller à ton passage"
       style="background-image:url(site-images/icones-karaoke/passage2.png)"></button>
   </div>
   <p id="etoileDit" style="text-align:center;color:#8a8474;font-size:14px;margin:14px 0 0;line-height:1.6;">
@@ -1362,7 +1362,12 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
     allumee = !allumee;
     e.classList.toggle('allume', allumee);
     e.classList.toggle('eteint', !allumee);
+    /* 11 sept — Mickaël : « quand il y a l'étoile en vert, il faut aussi que
+       l'autre logo soit en vert. Fais pareil que dans l'atelier. » Là-bas, dès
+       que l'aide est allumée ET qu'il a un passage à proposer, il s'éclaire en
+       vert. Ici il fait exactement la même chose. */
     r.classList.toggle('parti', !allumee);
+    r.classList.toggle('allume', allumee);
     /* Mickaël : « il faut que le bandeau disparaisse quand tu éteins l'étoile. »
        C'est exactement ce que fait l'atelier — le guide doit le montrer. */
     const bd = document.getElementById('bandeauDemo');
