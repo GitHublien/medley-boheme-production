@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '12/09/2026 · 05h35';
+const VERSION_SITE = '12/09/2026 · 05h50';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -508,9 +508,15 @@ const VERSION_SITE = '12/09/2026 · 05h35';
 
     const demanderSiEnvoye = () => {
       if (document.querySelector('.boiteEnvoye')) return;
-      /* pendant la visite guidée, c'est elle qui pose la question : on ne la
-         double pas, il n'aurait pas à répondre deux fois à la même chose. */
-      if (document.body.classList.contains('enVisite')) return;
+      /* ⚠️ 12 septembre — Mickaël : « même s'il a mis "plus tard" sur le système
+         d'aide et qu'il est revenu, il y aura une question à chaque fois. »
+
+         Ma condition était trop large : je me taisais pendant TOUTE la visite.
+         Or « plus tard » dans la visite ne veut pas dire « plus jamais » : s'il
+         appuie ensuite sur le bouton de sa propre main, il faut lui demander,
+         visite en cours ou pas. Il n'y a qu'un seul cas à éviter, et c'est le
+         doublon au même instant : quand la visite a SA question à l'écran. */
+      if (document.querySelector('#vDemande')) return;
       const b = document.createElement('div');
       b.className = 'boiteEnvoye';
       b.innerHTML = '<div class="beBulle"><p>Tu as bien envoyé le message&nbsp;?</p>'
