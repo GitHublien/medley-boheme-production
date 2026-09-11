@@ -95,11 +95,13 @@
 
       /* le remplacement lui-même */
       const ici = zone();
+      /* ⚠️ CE QU'ON GARDE À TOUT PRIX. Oublier quelque chose ici, c'est le voir
+         disparaître au premier changement de page — c'est arrivé au lecteur
+         vidéo, dont la scène était effacée en silence. */
+      const GARDES = ['nav','voile','bas','musique','enRoute','mot','vScene','vuePlein'];
       const garde = [...ici.children].filter(e =>
-        e.classList && (e.classList.contains('nav') || e.classList.contains('voile')
-          || e.classList.contains('bas') || e.classList.contains('musique')
-          || e.classList.contains('enRoute') || e.classList.contains('mot')
-          || e.tagName === 'FOOTER' || e.tagName === 'SCRIPT' || e.tagName === 'AUDIO'));
+        (e.classList && GARDES.some(c => e.classList.contains(c)))
+          || e.tagName === 'FOOTER' || e.tagName === 'SCRIPT' || e.tagName === 'AUDIO');
       [...ici.children].forEach(e => { if (!garde.includes(e)) e.remove(); });
       [...corpsNeuf.children].forEach(e => {
         if (e.tagName === 'SCRIPT') return;            /* on ne rejoue pas les scripts */
