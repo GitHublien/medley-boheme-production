@@ -492,7 +492,9 @@ footer .liens a:hover{ color:var(--or2); }
   display:flex !important; align-items:center; gap:.5rem; font-size:1.02rem; letter-spacing:.05em;
   color:var(--encre); font-family:var(--disp); }
 .nav .marque img{ display:block; width:30px; height:30px; border-radius:50%; box-shadow:0 0 12px rgba(212,175,55,.35); }
-.nav .marque span{ display:inline; line-height:1; padding-bottom:.08em; }
+.nav .marque span{ display:inline; line-height:1.3; padding-bottom:.05em; overflow:visible; }
+/* Mickaël, 11/09 : « le Bohème, il est coupé en haut. » L'accent du È sortait de
+   sa ligne (line-height:1) et se faisait raboter. 1.3 lui laisse la place. */
 .nav a.l .ico{ display:none; }                 /* le pictogramme ne sert que dans la colonne */
 .nav{ transition:opacity .35s, transform .45s var(--lent); }
 
