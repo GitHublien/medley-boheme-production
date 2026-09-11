@@ -6940,7 +6940,10 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
 
 /* debout : la rangée de pastilles se pose SOUS l'objectif */
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: portrait){
-  .barre{ padding-top:calc(10px + env(safe-area-inset-top)) !important; position:relative; }
+  /* ⚠️ JAMAIS « position » ici : la barre est en « fixed », et une ligne écrite
+     plus bas dans le fichier l'écrasait — l'atelier devenait un écran noir.
+     Un élément fixé sert déjà d'ancrage à ses enfants placés en absolu. */
+  .barre{ padding-top:calc(10px + env(safe-area-inset-top)) !important; }
   .barre::before{
     content:''; position:absolute; left:16px; right:16px; top:env(safe-area-inset-top);
     height:1px; pointer-events:none;
@@ -6955,7 +6958,6 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
     padding-top:calc(10px + env(safe-area-inset-top)) !important;
     padding-left:calc(10px + env(safe-area-inset-left)) !important;
     align-content:center !important;      /* six ronds : ils se posent au milieu */
-    position:relative;
   }
   .barre::before{
     content:''; position:absolute; left:env(safe-area-inset-left); top:14px; bottom:14px;
