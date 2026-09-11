@@ -875,6 +875,15 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   box-shadow:0 0 24px rgba(230,30,20,.45);
   animation:battementRouge 2.6s ease-in-out infinite;
 }
+/* ⚠️ 12 septembre — Mickael : « ne me mets pas ce truc jaune avec le rouge.
+   Tu enleves le rond jaune, ca sert a rien, juste le systeme de validation. »
+   Sur le bouton rouge, la pastille doree ne dit rien : elle repete un geste qui
+   n'a pas encore ete fait, et elle brouille le seul message qui compte — « il
+   reste quelque chose a faire ». Elle disparait donc TANT QUE c'est a faire, et
+   elle revient en vert quand c'est fait : la, elle valide vraiment quelque
+   chose. */
+.btn.aFaireRouge b{ display:none; }
+
 @keyframes battementRouge{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,77,77,.45) } 50%{ box-shadow:0 0 0 9px rgba(255,77,77,0) } }
 
 /* ── vert : c'est fait ──────────────────────────────────────────────────── */
