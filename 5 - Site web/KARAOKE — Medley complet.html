@@ -5339,6 +5339,9 @@ body[data-pour] #bandeau{ display:flex; }
       x:'Deux bandes, la même seconde près : avec une voix pour te guider, ou sans. Appuie une fois pour passer à l\'instrumental — puis encore une fois pour revenir à la voix témoin.',
       essai:{ zone:'#btnBande' },
       bravo:'C\'est ce même bouton qui fait l\'aller-retour, sans jamais couper le son.' },
+    { cible:'.b-aller', t:"Aller à ton passage",
+      x:"Ce bouton-là n'est pas toujours visible, et c'est voulu : il n'apparaît que lorsque ton entrée est encore loin — plus de quarante-cinq secondes. Un appui, et tu sautes trois phrases avant la tienne : tu entends ce qui l'amène, puis tu chantes. Quand ton passage est tout proche, il s'efface : tu n'en as plus besoin.",
+      si:'perso' },
     { id:'btnPresence', t:"Le visage — regarde derrière",
       x:"Ce visage, c'est celui de l'ouverture. C'est une décoration, rien d'autre : il flotte en fond quand l'atelier est au repos, doucement, jamais deux fois au même endroit. Dès que l'atelier travaille — la musique, les paroles qui s'allument — il RECULE et te laisse la place. Ce bouton l'allume ou l'éteint : en or il est là, gris et barré il dort.",
       avant:'montrerVisage' },
@@ -7058,5 +7061,15 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
 <style>
 /* pendant l'étape du visage, le voile s'éclaircit : on le voit vraiment derrière */
 #tuto.voirDerriere .fond{ opacity:.22 !important; transition:opacity .8s ease; }
+</style>
+
+<style>
+/* ═══ LE ROND VIDE N'EXISTE QUE QUAND IL SERT (11 septembre 2026) ══════════
+   Mickaël : « quand on met l'étoile, avant il y a un rond… maintenant c'est
+   tout le temps en noir. » La règle qui le cachait ne valait qu'en paysage :
+   debout, le rond restait là, noir et muet. Elle vaut maintenant partout.
+   « Aller à ton passage » ne se montre que lorsqu'il a vraiment un passage à
+   rejoindre — et il porte alors son pictogramme. */
+.barre .b-aller:not(.la){ display:none !important; }
 </style>
 </body>
