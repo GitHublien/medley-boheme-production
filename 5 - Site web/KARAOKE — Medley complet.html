@@ -5372,6 +5372,13 @@ body[data-pour] #bandeau{ display:flex; }
   };
 
   let etape = -1, demoMinuteur = null, demoAvant = null;
+  /* ═══ LE GUIDE EST VERROUILLÉ (11 septembre 2026) ═══════════════════════
+     Mickaël : « je veux que ce soit un véritable guide. Tant qu'il n'a pas fait
+     le geste, il ne peut pas passer au suivant. Tu mets en vert quand c'est ok,
+     et en gris quand on ne peut pas y aller. Et si on revient en arrière, ce qui
+     était validé le reste. »
+     On retient donc les étapes réussies : y revenir ne les reverrouille pas. */
+  const valides = new Set();
 
   /* ─── LA MUSIQUE DE LA VISITE ─────────────────────────────────
      Une bossa douce, pas trop fort : elle habille, elle ne couvre
@@ -5425,6 +5432,34 @@ body[data-pour] #bandeau{ display:flex; }
   function trouver(e){
     return e.cible ? document.querySelector(e.cible) : document.getElementById(e.id);
   }
+  /* Le « Suivant » du guide : gris tant que le geste n'est pas fait, vert dès
+     qu'il l'est. « Passer » reste toujours là — on n'enferme personne. */
+  function poserBoutons(e, ouvert){
+    boutons.innerHTML = '';
+    const dernier = etape >= ETAPES.length - 1;
+    const suiv = document.createElement('button');
+    suiv.id = 't-suivant';
+    suiv.className = ouvert ? 't-oui t-pret' : 't-bloque';
+    suiv.textContent = dernier ? 'Terminer' : 'Suivant ⟶';
+    suiv.disabled = !ouvert;
+    suiv.title = ouvert ? '' : 'fais d\'abord le geste demandé';
+    suiv.onclick = () => {
+      if (suiv.disabled) return;
+      if (e && e.apres && GESTES[e.apres]) GESTES[e.apres]();
+      if (e && e.id !== 'btnStyle') toutRemettre();
+      dernier ? finir() : montrer(etape + 1);
+    };
+    const passer = document.createElement('button');
+    passer.textContent = 'Passer';
+    passer.onclick = () => { if (e && e.apres && GESTES[e.apres]) GESTES[e.apres](); montrer(etape + 1); };
+    boutons.appendChild(suiv); boutons.appendChild(passer);
+  }
+  function ouvrirLeSuivant(e){
+    const b = document.getElementById('t-suivant');
+    if (!b){ poserBoutons(e, true); return; }
+    b.disabled = false; b.className = 't-oui t-pret'; b.title = '';
+  }
+
   function montrer(i){
     stopDemo();
     if (essaiEnCours){ fond.removeEventListener('click', essaiEnCours, true); essaiEnCours = null; toutRemettre(); }
@@ -5467,14 +5502,11 @@ body[data-pour] #bandeau{ display:flex; }
         document.removeEventListener('boheme-appui-long', reussi);
         titre.textContent = 'Voilà !';
         texte.textContent = e.bravo;
-        boutons.innerHTML = '';
-        setTimeout(() => montrer(etape + 1), 2400);
+        valides.add(etape);
+        ouvrirLeSuivant(e);
       };
       document.addEventListener('boheme-appui-long', reussi);
-      const passer = document.createElement('button');
-      passer.textContent = 'Passer';
-      passer.onclick = () => { document.removeEventListener('boheme-appui-long', reussi); montrer(etape + 1); };
-      boutons.appendChild(passer);
+      poserBoutons(e, valides.has(i));
       return;
     }
     if (e.essai){
@@ -5505,27 +5537,16 @@ body[data-pour] #bandeau{ display:flex; }
         titre.textContent = 'Voilà !';
         texte.textContent = e.bravo || 'C\'est aussi simple que ça.';
         boutons.innerHTML = '';
-        setTimeout(() => {
-          if (e.apres && GESTES[e.apres]) GESTES[e.apres]();
-          /* le Style se garde ; tout le reste se remet en place */
-          if (e.id !== 'btnStyle' && e.id !== 'btnPlein') toutRemettre();
-          montrer(etape + 1);
-        }, 2100);
+        valides.add(etape);
+        /* on n'enchaîne plus tout seul : c'est LUI qui appuie sur Suivant,
+           maintenant qu'il est vert. Le guide attend, comme un vrai guide. */
+        ouvrirLeSuivant(e);
       };
       fond.addEventListener('click', essaiEnCours, true);
-      const passer = document.createElement('button');
-      passer.textContent = 'Passer';
-      passer.onclick = () => { if (e.apres && GESTES[e.apres]) GESTES[e.apres](); montrer(etape + 1); };
-      boutons.appendChild(passer);
+      poserBoutons(e, valides.has(i));
     } else {
-      const suiv = document.createElement('button');
-      suiv.className = 't-oui';
-      suiv.textContent = (i >= ETAPES.length - 1) ? 'Terminer' : 'Suivant ⟶';
-      suiv.onclick = () => montrer(etape + 1);
-      const passer = document.createElement('button');
-      passer.textContent = 'Passer la visite';
-      passer.onclick = finir;
-      boutons.appendChild(suiv); boutons.appendChild(passer);
+      valides.add(i);                 /* une étape qu'on lit seulement est acquise */
+      poserBoutons(e, true);
     }
 
     if (e.demo){
@@ -7071,5 +7092,27 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
    « Aller à ton passage » ne se montre que lorsqu'il a vraiment un passage à
    rejoindre — et il porte alors son pictogramme. */
 .barre .b-aller:not(.la){ display:none !important; }
+</style>
+
+<style>
+/* ═══ SANS L'ÉTOILE, PAS DE « TON PASSAGE » (11 septembre 2026) ════════════
+   Mickaël : « si tu enlèves l'étoile, il disparaît, le petit logo. Quand on ne
+   met pas l'étoile, ça ne sert à rien d'avoir ce truc. » C'est juste : sans
+   l'aide personnelle, le medley ne sait plus qui tu es — « ton passage » n'a
+   plus de sens. Et la colonne reste centrée quoi qu'il arrive. */
+body:not(.aideAllumee) .barre .b-aller{ display:none !important; }
+.barre{ justify-content:center !important; }
+
+/* ═══ LE SUIVANT DU GUIDE : GRIS OU VERT ═══════════════════════════════════ */
+#tuto button.t-bloque{
+  background:rgba(255,255,255,.05) !important; color:rgba(255,255,255,.3) !important;
+  border-color:rgba(255,255,255,.12) !important; cursor:not-allowed;
+}
+#tuto button.t-pret{
+  background:rgba(157,255,53,.2) !important; color:#c8ff8a !important;
+  border-color:rgba(157,255,53,.6) !important;
+  animation:tPret 2.4s ease-in-out infinite;
+}
+@keyframes tPret{ 0%,100%{ box-shadow:0 0 0 0 rgba(157,255,53,.4) } 50%{ box-shadow:0 0 0 7px rgba(157,255,53,0) } }
 </style>
 </body>
