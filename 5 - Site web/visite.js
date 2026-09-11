@@ -90,17 +90,46 @@
   /* ── le décor : le voile, le projecteur, la barre de passage ──────────── */
   const style = document.createElement('style');
   style.textContent = `
-    #vVoile{ position:fixed; inset:0; z-index:150; background:rgba(4,4,4,.72);
-      backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
-      opacity:0; pointer-events:none; transition:opacity .6s ease; }
+    /* ⚠️ 11 septembre au soir — Mickael : « tout est flou, tout est en noir,
+       il n'y a rien qu'on voie. » Il avait raison, et le defaut etait grossier :
+       je peignais DEUX couches de noir. Le voile assombrissait toute la page —
+       y compris la chose que je voulais montrer — et le projecteur en rajoutait
+       une seconde par-dessus.
+
+       Le bon dessin n'en a qu'une : le projecteur porte son propre noir, peint
+       tout AUTOUR de lui par une ombre demesuree. L'interieur du cadre reste
+       donc a sa vraie lumiere, sans que j'aie rien a toucher a la page. Le voile
+       ne sert plus qu'a une chose, et il est transparent : arreter les doigts.
+       Et plus aucun flou : on regarde la vraie application, pas une photo
+       depolie. */
+    /* ⚠️ 11 septembre au soir — L'IDEE DE MICKAEL, et elle est meilleure que la
+       mienne : « pourquoi ne fais-tu pas avec des couleurs en degrade ? Tu
+       eclaires vraiment ce qui represente. Ce n'est pas plus facile que de
+       faire des carres ? »
+
+       Si. C'est plus simple ET plus juste. Un cadre rectangulaire, c'est un
+       objet de plus pose par-dessus la page — avec ses bords durs, ses coins
+       qui ne collent a rien, et sa maniere de decouper de travers ce qui n'est
+       pas un carre. Un projecteur, lui, ne pose rien : il eclaire. La lumiere
+       s'eteint en douceur vers les bords, exactement comme une douche de scene,
+       et l'or ne fait plus un trait mais une lueur.
+
+       Une seule couche, donc, et c'est ce voile : un degre de noir partout,
+       perce d'un halo doux la ou il faut regarder. Le centre et la taille du
+       halo sont poses par la visite, en direct. */
+    #vVoile{ position:fixed; inset:0; z-index:150;
+      background:rgba(4,4,4,.86);
+      opacity:0; pointer-events:none;
+      transition:opacity .5s ease, background-position .6s cubic-bezier(.32,.72,0,1); }
     body.enVisite #vVoile{ opacity:1; pointer-events:auto; }
-    #vProjecteur{ position:fixed; z-index:151; border-radius:1rem; pointer-events:none;
-      box-shadow:0 0 0 3px rgba(241,210,122,.9), 0 0 0 9999px rgba(4,4,4,.72),
-                 0 0 44px rgba(241,210,122,.55);
-      opacity:0; transition:opacity .5s ease, all .75s cubic-bezier(.32,.72,0,1); }
-    #vProjecteur.la{ opacity:1; }
+    #vProjecteur{ display:none; }
+    /* ⚠️ « Aucun texte ne doit manger un autre texte. » Ce bouton se posait
+       PILE sur la barre du bas et mangeait ATELIER et TEXTES (vu en image le
+       11 septembre au soir). Il se tient maintenant AU-DESSUS d'elle — et pas
+       a une hauteur devinee : on mesure la vraie barre et on se range dessus
+       (--hBas, pose par la visite au demarrage et a chaque rotation). */
     #vBarre{ position:fixed; z-index:153; left:0; right:0;
-      bottom:calc(env(safe-area-inset-bottom) + 14px);
+      bottom:calc(env(safe-area-inset-bottom) + var(--hBas, 92px) + 14px);
       display:flex; align-items:center; justify-content:center; gap:12px;
       opacity:0; transition:opacity .5s ease; pointer-events:none; }
     body.enVisite #vBarre{ opacity:1; pointer-events:auto; }
@@ -172,6 +201,22 @@
 
   let ici = -1, arrete = false;
 
+  /* ── UN SEUL FIL, ET PAS DEUX ───────────────────────────────────────────
+     ⚠️ 11 septembre au soir — Mickael : « des fois il y a deux fois la voix
+     qui apparait. »
+
+     Je n'ai pas cherche d'ou venait le doublon : je l'ai rendu impossible. Un
+     double appui sur « oui », un « revoir la visite » pendant qu'elle tourne
+     deja, une page qui revient — et deux deroules se mettaient a avancer en
+     meme temps sur la meme bande, chacun poussant l'autre. On entendait des
+     phrases qui se coupaient et se recouvraient.
+
+     Desormais chaque depart porte un numero. Tout ce qui revient d'un depart
+     perime — la fin d'une phrase, un minuteur, une reponse — est jete sans
+     rien faire. Comme dans Reaper : une seule piste armee a la fois, et c'est
+     vrai par construction, pas par correction. */
+  let fil = 0;
+
   /* ── LES HORLOGES DE LA VISITE ──────────────────────────────────────────
      Elle traverse les pages, donc elle ne peut pas se servir des minuteurs
      ordinaires : une-seule-page.js les fauche a chaque changement de page pour
@@ -180,18 +225,124 @@
   const H = window.__horlogeHorsSurveillance || window;
   const apres = (f, ms) => H.setTimeout.call(window, f, ms);
 
+  /* ── OU SE POSE LA LUMIERE ──────────────────────────────────────────────
+     ⚠️ 11 septembre au soir — Mickael : « je n'ai pas l'impression que ce soit
+     au bon endroit que tu montres les choses. »
+
+     C'etait vrai, et la cause etait bete : je mesurais la position de l'objet
+     420 millisecondes apres avoir lance le defilement — alors qu'un defilement
+     doux dure bien plus longtemps que ca, et davantage encore sur un telephone.
+     Je mesurais donc une chose EN TRAIN DE BOUGER, et je posais le cadre la ou
+     elle etait au passage, pas la ou elle s'arretait.
+
+     Maintenant je ne devine plus : je regarde l'objet jusqu'a ce qu'il ne bouge
+     plus (deux mesures identiques de suite), et c'est seulement la que je pose
+     le cadre. Puis je continue a le suivre pendant qu'on parle de lui : si la
+     page remue encore pour une raison quelconque, le cadre reste dessus. */
+  /* ⚠️ DEUX HORLOGES A ETEINDRE, PAS UNE. La premiere guette l'objet jusqu'a
+     ce qu'il s'immobilise ; la seconde le suit ensuite. Je n'eteignais que la
+     seconde — la premiere de l'arret precedent continuait donc a tourner, se
+     stabilisait en retard, et reposait le cadre sur l'ANCIEN objet. Tous les
+     arrets finissaient par montrer la meme chose. */
+  const estAncre = (e) => {
+    for (let n = e; n && n !== document.body; n = n.parentElement)
+      if (getComputedStyle(n).position === 'fixed') return true;
+    return false;
+  };
+  let suivi = null, guette = null;
+  function eteindreLesHorloges(){
+    if (suivi){ clearInterval(suivi); suivi = null; }
+    if (guette){ clearInterval(guette); guette = null; }
+  }
+  /* La douche de lumiere. On centre l'ellipse sur l'objet, on lui donne la
+     taille de l'objet plus une marge, et on la laisse s'eteindre vers le noir.
+     La fine bande d'or a 70 % fait l'ourlet chaud d'une vraie poursuite. */
+  function poserSur(c){
+    const r = c.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    /* le clair doit couvrir l'objet : il s'arrete a 62 % du rayon, donc on
+       divise par 0,62 pour que l'objet tienne tout entier dans la lumiere */
+    /* La lumiere doit serrer l'objet, pas inonder le voisinage : une premiere
+       version debordait sur le menu et sur la carte rouge. Le clair s'arrete a
+       55 % du rayon — on divise donc par 0,55 — et la marge reste petite. */
+    const rx = Math.max(44, (r.width  / 2 + 16)) / 0.55;
+    const ry = Math.max(38, (r.height / 2 + 14)) / 0.55;
+    voile.style.background =
+      'radial-gradient(ellipse ' + Math.round(rx) + 'px ' + Math.round(ry) + 'px at '
+      + Math.round(cx) + 'px ' + Math.round(cy) + 'px, '
+      + 'rgba(4,4,4,0) 0%, rgba(4,4,4,0) 55%, '
+      + 'rgba(241,210,122,.18) 64%, '
+      + 'rgba(4,4,4,.62) 78%, rgba(4,4,4,.9) 100%)';
+    return r;
+  }
+  function eteindreLaLumiere(){ voile.style.background = 'rgba(4,4,4,.86)'; }
   function eclairer(selecteur){
+    eteindreLesHorloges();
     const c = selecteur && document.querySelector(selecteur);
-    if (!c){ proj.classList.remove('la'); return; }
-    c.scrollIntoView({ behavior:'smooth', block:'center' });
-    apres(() => {
+    /* rien a designer : on n'assombrit rien non plus. On regarde la vraie
+       application, en pleine lumiere, pendant que la voix parle. */
+    if (!c){ voile.style.background = 'transparent'; rangerLePasser(null); return; }
+    /* ⚠️ UNE BARRE ANCREE NE DEFILE PAS. Le logo, la barre du bas, la note de
+       la musique sont fixes a l'ecran : les « amener au centre » ne les bouge
+       pas d'un pixel, mais ca fait defiler toute la page derriere — et la barre
+       du haut se compacte au passage, ce qui deplace le logo APRES ma mesure.
+       Le cadre tombait donc a cote. On ne defile que pour ce qui defile. */
+    if (!estAncre(c)) c.scrollIntoView({ behavior:'smooth', block:'center' });
+    let avant = null, stable = 0, tours = 0;
+    const H2 = (window.__horlogeHorsSurveillance || window).setInterval;
+    const montre = guette = H2.call(window, () => {
       const r = c.getBoundingClientRect();
-      proj.style.left = Math.max(6, r.left - 8) + 'px';
-      proj.style.top = Math.max(6, r.top - 8) + 'px';
-      proj.style.width = Math.min(innerWidth - 12, r.width + 16) + 'px';
-      proj.style.height = Math.min(innerHeight - 12, r.height + 16) + 'px';
-      proj.classList.add('la');
-    }, 420);
+      const ou = [r.left|0, r.top|0, r.width|0, r.height|0].join(',');
+      stable = (ou === avant) ? stable + 1 : 0;
+      avant = ou;
+      tours++;
+      /* deux mesures identiques : l'objet s'est arrete, on peut poser la lumiere.
+         Et au bout de trois secondes on la pose de toute facon : on ne reste
+         jamais bloque a attendre quelque chose qui ne s'immobilise pas. */
+      if (stable >= 2 || tours > 30){
+        clearInterval(montre); guette = null;
+        const r2 = poserSur(c);
+        rangerLePasser(r2);
+        /* on continue a le suivre, doucement, tant qu'on parle de lui */
+        suivi = H2.call(window, () => { if (c.isConnected) poserSur(c); else { clearInterval(suivi); suivi = null; } }, 250);
+      }
+    }, 100);
+  }
+
+  /* ⚠️ « Aucun texte ne doit manger un autre texte. » Le bouton « Passer la
+     visite » vit en bas de l'ecran — et quand on montre la barre du bas, il se
+     posait pile dessus et mangeait les mots ATELIER et TEXTES (vu en image le
+     11 septembre). Des que la lumiere descend dans le bas de l'ecran, il monte
+     en haut. Il ne disparait jamais : on ne retient personne. */
+  /* on mesure la barre du bas pour se ranger au-dessus d'elle. En paysage il
+     n'y en a pas (une colonne a gauche a la place) : la mesure vaut alors zero,
+     et le bouton redescend naturellement. */
+  function mesurerLaBarreDuBas(){
+    const b = document.querySelector('.bas');
+    const h = (b && getComputedStyle(b).display !== 'none') ? Math.round(b.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--hBas', h + 'px');
+  }
+  addEventListener('resize', mesurerLaBarreDuBas);
+
+  /* ⚠️ « Aucun texte ne doit manger un autre texte. » Ce bouton a mange trois
+     choses avant de trouver sa place, et chaque fois c'est l'image qui me l'a
+     appris, jamais le code :
+       · la barre du bas et ses mots ATELIER, TEXTES ;
+       · la carte rouge, quand je le faisais sauter en haut de l'ecran ;
+       · la legende du halo bleu — celle qu'on etait justement en train de
+         montrer, ce qui est le pire des trois.
+     La regle est donc simple et generale : sa place ordinaire est au-dessus de
+     la barre du bas ; et s'il touche ce que la lumiere designe, il se range
+     juste AU-DESSUS de ce cadre. Jamais dedans, jamais par-dessus. */
+  function rangerLePasser(r){
+    barre.style.bottom = '';
+    if (!r) return;
+    const b = barre.getBoundingClientRect();
+    const seTouchent = !(b.bottom < r.top - 6 || b.top > r.bottom + 6);
+    if (seTouchent){
+      const hautDuCadre = Math.max(0, r.top);
+      barre.style.bottom = Math.max(12, innerHeight - hautDuCadre + 12) + 'px';
+    }
   }
 
   function marquer(){
@@ -202,10 +353,12 @@
   }
 
   function finir(){
-    arrete = true;
+    arrete = true; fil++;   /* tout ce qui revient d'avant est desormais perime */
+    try { son.onended = son.onerror = null; } catch(e){}
     try { son.pause(); } catch(e){}
     document.body.classList.remove('enVisite', 'menu');
-    proj.classList.remove('la');
+    voile.style.background = 'transparent';
+    eteindreLesHorloges();
     tourne.classList.remove('la');
     try { localStorage.setItem(CLE_VUE, '1'); } catch(e){}
     rendreLaMusique();
@@ -299,12 +452,13 @@
     pauser();
   }, true);
 
-  function jouer(k){
-    if (arrete) return;
+  function jouer(k, monFil){
+    if (arrete || monFil !== fil) return;   /* un depart perime ne joue rien */
     ici = k; marquer();
     if (k >= ARRETS.length) return finir();
     const a = ARRETS[k];
     const suite = () => {
+      if (monFil !== fil) return;
       baisserLaMusique();   /* elle peut etre repartie apres un changement de page */
       eclairer(a.vise);
       son.src = a.son;
@@ -314,9 +468,9 @@
          Vu en essai le 11 septembre. Un arret ne passe la main qu'une fois. */
       let passe = false;
       const suivant = () => {
-        if (arrete || passe) return;
+        if (arrete || passe || monFil !== fil) return;
         passe = true;
-        const aller = () => apres(() => jouer(k + 1), 900);
+        const aller = () => apres(() => jouer(k + 1, monFil), 900);
         if (a.demande) demander(a.demande, aller); else aller();
       };
       son.onended = suivant;
@@ -342,10 +496,14 @@
     + '</div></div>');
 
   function lancer(){
+    /* un depart neuf annule tout ce qui pouvait encore tourner */
+    fil++; arrete = false;
+    try { son.pause(); son.onended = son.onerror = null; } catch(e){}
+    mesurerLaBarreDuBas();
     entree.classList.remove('la');
     document.body.classList.add('enVisite');
     baisserLaMusique();
-    jouer(0);
+    jouer(0, fil);
   }
 
   entree.querySelector('.oui').addEventListener('click', lancer);
@@ -366,6 +524,13 @@
   proposer();
 
   /* et on peut la redemander, à tout moment */
-  window.revoirLaVisite = () => { try { localStorage.removeItem(CLE_VUE); } catch(e){}
-    arrete = false; entree.classList.add('la'); };
+  window.revoirLaVisite = () => {
+    try { localStorage.removeItem(CLE_VUE); } catch(e){}
+    /* on coupe net ce qui tournait peut-etre encore avant de reproposer */
+    fil++; arrete = false;
+    try { son.pause(); son.onended = son.onerror = null; } catch(e){}
+    document.body.classList.remove('enVisite');
+    eteindreLaLumiere();
+    entree.classList.add('la');
+  };
 })();
