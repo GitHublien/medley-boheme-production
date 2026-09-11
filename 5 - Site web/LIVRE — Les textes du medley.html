@@ -116,9 +116,18 @@
   /* le lecteur façon Reaper */
   .lecteur{ position:sticky; top:58px; z-index:10; display:grid; grid-template-columns:auto 1fr auto; grid-template-rows:auto auto; gap:8px 12px; align-items:center;
             background:rgba(20,18,16,.97); border:1px solid rgba(212,175,55,.35); border-radius:14px; padding:12px 14px; margin:8px 0 22px; box-shadow:0 10px 30px rgba(0,0,0,.5); }
-  .lecteur .lire{ grid-row:1/3; width:64px; height:64px; border-radius:50%; border:2px solid var(--or); background:rgba(212,175,55,.12); color:var(--or); font-size:26px; cursor:pointer; }
+  /* 11 septembre 2026 — Mickaël : « le truc de lecture n'est pas bien centré. »
+     Le triangle venait d'une police : sa chasse le décalait toujours un peu à
+     gauche. C'est maintenant un vrai pictogramme d'or, posé au centre exact du
+     rond par la grille. Le cercle, lui, ne change pas de taille. */
+  .lecteur .lire{ grid-row:1/3; width:64px; height:64px; border-radius:50%;
+                  border:2px solid var(--or); background:rgba(212,175,55,.12);
+                  cursor:pointer; display:grid; place-items:center; padding:0; }
   .lecteur .lire:hover{ background:rgba(212,175,55,.25); }
-  .lecteur.joue .lire .ico::before{ content:"❚❚"; font-size:20px; } .lecteur.joue .lire .ico{ font-size:0; }
+  .lecteur .lire .ico{ display:block; width:28px; height:28px;
+    background:center/contain no-repeat url(site-images/icones-karaoke/lecture3.png);
+    filter:drop-shadow(0 0 6px rgba(212,175,55,.4)); }
+  .lecteur.joue .lire .ico{ background-image:url(site-images/icones-karaoke/pause2.png); }
   .regle{ position:relative; height:44px; cursor:pointer; touch-action:none; user-select:none; }
   .regle .fond{ position:absolute; left:0; right:0; top:14px; height:16px; background:#2a2622; border-radius:8px; }
   .regle .joue{ position:absolute; left:0; top:14px; height:16px; width:0; background:linear-gradient(90deg,#8a6d1c,var(--or)); border-radius:8px; }
@@ -203,6 +212,7 @@
     html{ scroll-padding-top:96px; }
     .lecteur{ top:88px; grid-template-columns:auto 1fr; padding:10px; }
     .lecteur .lire{ width:54px; height:54px; }
+    .lecteur .lire .ico{ width:24px; height:24px; }
     .temps{ grid-column:2; } .outils{ grid-column:1/3; flex-wrap:wrap; }
     .outils .bande{ flex:1 1 100%; margin-left:0; } .outils .bande button{ flex:1; }
     .bloc{ padding:22px 12px 40px; }
@@ -312,7 +322,7 @@
 <div class="entete"><span class="num">01</span><h2>Narration d&#x27;ouverture</h2></div>
 <p class="place"><b>En place</b> Rideau fermé · Adrien, Mickaël, Bry, Candice et Élie déjà en place · Stéphanie en coulisse</p>
 <div class="lecteur" data-i="0">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -340,7 +350,7 @@
 <div class="entete"><span class="num">02</span><h2>Quand on arrive en ville</h2></div>
 <p class="place"><b>En place</b> Adrien, Mickaël, Bry, Candice et Élie · Stéphanie n&#x27;entre pas encore</p>
 <div class="lecteur" data-i="1">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -391,7 +401,7 @@
 <div class="entete"><span class="num">03</span><h2>Explosion, flash radio</h2></div>
 <p class="place"><b>En place</b> Mickaël et Candice sortent à jardin, Élie, Bry et Adrien à cour · Stéphanie entre à jardin</p>
 <div class="lecteur" data-i="2">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -416,7 +426,7 @@
 <div class="entete"><span class="num">04</span><h2>Ziggy</h2></div>
 <p class="place"><b>En place</b> Stéphanie seule en scène</p>
 <div class="lecteur" data-i="3">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -456,7 +466,7 @@
 <div class="entete"><span class="num">05</span><h2>La chanson de Ziggy</h2></div>
 <p class="place"><b>En place</b> Adrien et Stéphanie, eux seuls</p>
 <div class="lecteur" data-i="4">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -534,7 +544,7 @@
 <div class="entete"><span class="num">06</span><h2>Radio Monopolis, le duplex</h2></div>
 <p class="place"><b>En place</b> Plateau noir pendant la voix off · les quatre hommes se mettent en place dans l&#x27;obscurité</p>
 <div class="lecteur" data-i="5">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -572,7 +582,7 @@
 <div class="entete"><span class="num">07</span><h2>Le Blues du Businessman</h2></div>
 <p class="place"><b>En place</b> Les quatre hommes en ligne, lumière froide et verticale · Stéphanie et Candice en retrait dans l&#x27;ombre, elles n&#x27;apparaissent que sur leurs questions</p>
 <div class="lecteur" data-i="6">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -683,7 +693,7 @@
 <div class="entete"><span class="num">08</span><h2>Retour d&#x27;antenne</h2></div>
 <p class="place"><b>En place</b> Tout le monde encore en place, comme à la fin du Blues</p>
 <div class="lecteur" data-i="7">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -708,7 +718,7 @@
 <div class="entete"><span class="num">09</span><h2>Les uns contre les autres</h2></div>
 <p class="place"><b>En place</b> Bry et Élie sortent pendant la transition chantée · Stéphanie, Mickaël, Candice et Adrien se placent dans le noir, chacun sous sa douche</p>
 <div class="lecteur" data-i="8">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -758,7 +768,7 @@
 <div class="entete"><span class="num">10</span><h2>Cloches, narration</h2></div>
 <p class="place"><b>En place</b> Noir · une cloche de cathédrale · les néons de Monopolis ont disparu</p>
 <div class="lecteur" data-i="9">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -783,7 +793,7 @@
 <div class="entete"><span class="num">11</span><h2>Le Temps des Cathédrales</h2></div>
 <p class="place"><b>En place</b> Mickaël au centre, lumière chaude couleur pierre · les cinq autres le rejoignent pour le refrain final, chacun à sa place</p>
 <div class="lecteur" data-i="10">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -886,7 +896,7 @@
 <div class="entete"><span class="num">12</span><h2>Bataille, appel crié</h2></div>
 <p class="place"><b>En place</b> La bataille · à la fin du Temps des Cathédrales, tout le monde tombe à terre</p>
 <div class="lecteur" data-i="11">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -909,7 +919,7 @@
 <div class="entete"><span class="num">13</span><h2>Les Sans-papiers</h2></div>
 <p class="place"><b>En place</b> Tous à terre, les chœurs le bras droit levé · Bry se relève seul et chante</p>
 <div class="lecteur" data-i="12">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -975,7 +985,7 @@
 <div class="entete"><span class="num">14</span><h2>Bohémienne</h2></div>
 <p class="place"><b>En place</b> Candice au centre, Mickaël sur le côté jardin · les quatre autres sont sortis sous la question</p>
 <div class="lecteur" data-i="13">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -1015,7 +1025,7 @@
 <div class="entete"><span class="num">15</span><h2>Belle</h2></div>
 <p class="place"><b>En place</b> Candice au sol, centre-avant · Élie à jardin, Mickaël au centre en arrière, Bry à cour · personne ne la touche</p>
 <div class="lecteur" data-i="14">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -1080,7 +1090,7 @@
 <div class="entete"><span class="num">16</span><h2>Le Dilemme</h2></div>
 <p class="place"><b>En place</b> Candice debout au centre, Néfertari · Mickaël (Ramsès) à cour, Bry (Moïse) à jardin · Élie est sorti à jardin</p>
 <div class="lecteur" data-i="15">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -1217,7 +1227,7 @@
 <div class="entete"><span class="num">17</span><h2>Mon Frère</h2></div>
 <p class="place"><b>En place</b> Mickaël (Ramsès) et Bry (Moïse) au centre, côte à côte · Candice est sortie à cour · Adrien et Élie entrent par jardin à la fin</p>
 <div class="lecteur" data-i="16">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -1322,7 +1332,7 @@
 <div class="entete"><span class="num">18</span><h2>L&#x27;arrêt du temps</h2></div>
 <p class="place"><b>En place</b> Arrêt sur image : Ramsès retenu à jardin par Adrien, Moïse emmené à cour par Élie · personne ne bouge</p>
 <div class="lecteur" data-i="17">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -1348,7 +1358,7 @@
 <div class="entete"><span class="num">19</span><h2>Stone</h2></div>
 <p class="place"><b>En place</b> Stéphanie entre à jardin et vient au milieu, devant · les autres restent figés</p>
 <div class="lecteur" data-i="18">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
@@ -1379,7 +1389,7 @@
 <div class="entete"><span class="num">20</span><h2>Aimer</h2></div>
 <p class="place"><b>En place</b> Tout le monde est figé pendant la narration · Élie ouvre Aimer à 24&#x27;21, seul · puis les deux femmes, puis les deux couples, puis les six</p>
 <div class="lecteur" data-i="19">
-  <button class="lire" title="Lecture / pause (Espace)"><span class="ico">▶</span></button>
+  <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
   <div class="temps"><span class="ecoule">0:00</span><span class="sep">/</span><span class="duree">0:00</span></div>
   <div class="outils">
