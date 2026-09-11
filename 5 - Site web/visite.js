@@ -32,6 +32,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 (function(){
   const CLE_VUE = 'boheme-visite-vue';
+  const CLE_OU  = 'boheme-visite-ou';      /* ou il en etait, s'il a ete interrompu */
   const DOSSIER = 'media/visite/';
 
   /* qui est là, et donc quelle voix lui parle */
@@ -267,7 +268,7 @@
   son.setAttribute('data-musique-du-site', 'visite');
   document.body.appendChild(son);
 
-  let ici = -1, arrete = false;
+  let ici = -1, arrete = false, departA = 0;
 
   /* ── UN SEUL FIL, ET PAS DEUX ───────────────────────────────────────────
      ⚠️ 11 septembre au soir — Mickael : « des fois il y a deux fois la voix
@@ -432,7 +433,7 @@
     voile.style.background = 'transparent';
     eteindreLesHorloges();
     tourne.classList.remove('la');
-    try { localStorage.setItem(CLE_VUE, '1'); } catch(e){}
+    try { localStorage.setItem(CLE_VUE, '1'); localStorage.removeItem(CLE_OU); } catch(e){}
     rendreLaMusique();
   }
 
@@ -527,6 +528,23 @@
     boite.querySelector('.non').addEventListener('click', () => partir(false));
     /* et AUCUN compte a rebours : tant qu'il n'a pas repondu, rien ne bouge. */
   }
+
+  /* ── UN APPEL ARRIVE ────────────────────────────────────────────────────
+     Le telephone sonne, il sort de l'application : la voix se tait a l'instant.
+     Elle ne s'arrete pas, elle ne recommence pas — elle attend exactement la ou
+     elle en etait, et elle repart quand il revient. C'est la meme regle que la
+     musique du hall, qui s'efface quand quelqu'un appelle. */
+  let sorti = false;
+  addEventListener('visibilitychange', () => {
+    if (!document.body.classList.contains('enVisite') || arrete) return;
+    if (document.visibilityState === 'hidden'){
+      sorti = !son.paused;              /* on ne note que si elle parlait */
+      try { son.pause(); } catch(e){}
+    } else if (sorti && !enPause){
+      sorti = false;
+      apres(() => { if (son.src && !enPause && !arrete) son.play().catch(() => {}); }, 700);
+    }
+  });
 
   /* ── « ÇA Y EST, TU AS ENVOYÉ ? » ───────────────────────────────────────
      Elle s'affiche a l'instant ou il part, donc elle est deja la quand il
@@ -624,6 +642,15 @@
   function jouer(k, monFil){
     if (arrete || monFil !== fil) return;   /* un depart perime ne joue rien */
     ici = k; marquer();
+    /* ⚠️ 12 septembre — Mickael : « s'il y a un appel au telephone, il ne faut
+       pas que ca revienne au tout debut du tutoriel. Il faut que quand il
+       revient dans l'application, ca se soit arrete, pour qu'il puisse
+       reprendre. »
+       C'est capital, et ca ne vaut pas que pour les appels : Android peut fermer
+       une page laissee de cote, et l'application repart alors de zero. Deux
+       minutes et demie a reecouter pour un coup de fil, personne ne le ferait
+       deux fois. On note donc l'arret en cours a chaque pas. */
+    try { localStorage.setItem(CLE_OU, JSON.stringify({ k: k, quand: Date.now() })); } catch(e){}
     if (k >= ARRETS.length) return finir();
     const a = ARRETS[k];
     /* ── LES GESTES PENDANT LA PHRASE ───────────────────────────────────
@@ -696,13 +723,14 @@
     entree.classList.remove('la');
     document.body.classList.add('enVisite');
     baisserLaMusique();
-    jouer(0, fil);
+    jouer(departA, fil);
+    departA = 0;
   }
 
   entree.querySelector('.oui').addEventListener('click', lancer);
   entree.querySelector('.non').addEventListener('click', () => {
     entree.classList.remove('la');
-    try { localStorage.setItem(CLE_VUE, '1'); } catch(e){}
+    try { localStorage.setItem(CLE_VUE, '1'); localStorage.removeItem(CLE_OU); } catch(e){}
   });
   barre.querySelector('.vPasser').addEventListener('click', finir);
   voile.addEventListener('click', e => e.stopPropagation());
@@ -733,9 +761,36 @@
   }
 
   /* on la propose à la toute première visite, sur l'accueil seulement */
+  /* ── REPRENDRE LA OU IL EN ETAIT ────────────────────────────────────────
+     Si l'application a ete fermee en cours de visite — un appel qui dure, le
+     telephone qui range la page pour faire de la place — on ne recommence pas
+     au debut. On propose de reprendre, et c'est lui qui decide. Passe deux
+     heures, on considere que c'est une autre journee. */
+  function ouIlEnEtait(){
+    try {
+      const r = JSON.parse(localStorage.getItem(CLE_OU) || 'null');
+      if (r && typeof r.k === 'number' && r.k > 0 && Date.now() - r.quand < 7200000) return r.k;
+    } catch(e){}
+    return 0;
+  }
+
   function proposer(){
     let vue = true;
     try { vue = localStorage.getItem(CLE_VUE) === '1'; } catch(e){}
+    /* une visite interrompue passe avant tout : meme s'il l'a deja vue, on lui
+       propose de finir celle qu'il avait commencee. */
+    const reste = ouIlEnEtait();
+    if (reste){
+      entree.querySelector('h2').textContent = 'On reprend ?';
+      entree.querySelector('.oui').textContent = 'Reprendre là où j’en étais';
+      entree.querySelector('.non').textContent = 'Non, une autre fois';
+      entree.querySelector('p').innerHTML =
+        'Ta visite s’est arrêtée à l’étape <b>' + (reste + 1) + ' sur ' + ARRETS.length
+        + '</b> — <b>' + (ARRETS[reste].nom || '') + '</b>.';
+      departA = reste;
+      apres(() => entree.classList.add('la'), 900);
+      return;
+    }
     const surAccueil = /ACCUEIL/i.test(decodeURIComponent(location.pathname)) || location.pathname.endsWith('/');
     if (!vue && surAccueil) apres(() => entree.classList.add('la'), 1400);
   }
