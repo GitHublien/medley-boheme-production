@@ -160,7 +160,12 @@
       scripts.forEach(vieux => {
         if (vieux.src) return;                        /* déjà chargé, une fois pour toutes */
         const neuf = document.createElement('script');
-        neuf.textContent = vieux.textContent;
+        /* ⚠️ CHAQUE SCRIPT DANS SA BULLE. Sans cela, deux pages qui nomment la
+           même chose — « q », « COUL » — se heurtent dès qu'on les rejoue dans
+           la même page vivante, et la seconde refuse de démarrer. En les
+           enfermant chacun dans sa parenthèse, leurs mots ne sortent plus. */
+        neuf.textContent = '(function(){' + String.fromCharCode(10)
+                         + vieux.textContent + String.fromCharCode(10) + '})();';
         neuf.dataset.deLaPage = '1';
         document.body.appendChild(neuf);
       });
