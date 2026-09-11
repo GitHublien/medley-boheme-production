@@ -332,12 +332,13 @@ const VERSION_SITE = '11/09/2026 · 01h10';
 
     /* Il vit maintenant DANS la barre du haut : plus rien à esquiver, plus aucun
        calcul de position. C'est la barre qui le place, comme les autres boutons. */
-    let replier = null;
-    const deplier = () => {
-      boite.classList.add('ouvert');
-      clearTimeout(replier);
-      replier = setTimeout(() => boite.classList.remove('ouvert'), 4500);
-    };
+    /* 11 sept, 10 h — Mickaël : « quand on appuie, il faut qu'on ait la possibilité
+       d'avoir le texte, et quand on rappuie dessus, qu'il s'éteigne. » Le panneau ne
+       se referme donc plus tout seul au bout de quatre secondes : c'est lui qui décide.
+       Il se replie seulement quand on touche ailleurs dans la page. */
+    const deplier = () => boite.classList.add('ouvert');
+    const replierPan = () => boite.classList.remove('ouvert');
+    document.addEventListener('click', e => { if (!boite.contains(e.target)) replierPan(); }, true);
 
     /* CHANGER DE MORCEAU SANS COUPURE (10 sept) : « il faudrait avoir la possibilité
        de la changer et que l'autre musique se mette en marche, sans que ça fasse un
@@ -378,7 +379,7 @@ const VERSION_SITE = '11/09/2026 · 01h10';
       son.volume = 0;
       son.play().then(() => {
         etat.joue = true; garder();
-        boite.classList.add('joue'); ico.textContent = '♪';
+        boite.classList.add('joue'); boite.classList.remove('eteint'); ico.textContent = '♪';
         versVolume(VOLUME);
       }).catch(() => {
         /* ⚠️ 10 sept, au soir — UN REFUS N'EST PAS UNE DÉCISION.
@@ -391,7 +392,7 @@ const VERSION_SITE = '11/09/2026 · 01h10';
         boite.classList.remove('joue');
         son.addEventListener('canplay', () => {
           if (etat.joue !== false && son.paused && !autresQuiJouent().length) son.play().then(() => {
-            boite.classList.add('joue'); versVolume(VOLUME);
+            boite.classList.add('joue'); boite.classList.remove('eteint'); versVolume(VOLUME);
           }).catch(()=>{});
         }, { once:true });
       });
@@ -399,18 +400,35 @@ const VERSION_SITE = '11/09/2026 · 01h10';
     function stopper(garderEtat){
       versVolume(0, () => son.pause());
       if (garderEtat !== 'silencieux'){ etat.joue = false; garder(); }
-      boite.classList.remove('joue'); ico.textContent = '♪';
+      boite.classList.remove('joue'); boite.classList.add('eteint'); ico.textContent = '♪';
     }
 
     rond.addEventListener('click', e => {
       e.stopPropagation();
       if (son.paused) { deplier(); lancer(); }
-      else { stopper(); deplier(); }
+      else if (!boite.classList.contains('ouvert')) { deplier(); }  /* 1er appui : le titre */
+      else { stopper(); replierPan(); }                              /* 2e appui : on éteint */
     });
     boite.querySelectorAll('.mNav').forEach(b => b.addEventListener('click', e => {
       e.stopPropagation(); deplier();
       charger(etat.i + (b.dataset.m === 'suiv' ? 1 : -1), !son.paused || etat.joue);
     }));
+    /* ─── UN APPEL ARRIVE : LA MUSIQUE S'EFFACE ────────────────────────────
+       Mickaël : « quand il y a quelqu'un qui nous appelle, il ne faut pas que la
+       musique continue, il faut qu'elle baisse en fondu, que la personne puisse
+       téléphoner tranquillement, et ensuite si vous revenez, la musique se remet
+       en marche. » On ne coupe pas : on descend le son, on met en pause, et au
+       retour on remonte doucement — mais seulement si elle jouait vraiment. */
+    let enPause = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden){
+        if (!son.paused){ enPause = true; versVolume(0, () => son.pause()); }
+      } else if (enPause){
+        enPause = false;
+        if (etat.joue !== false){ son.play().then(() => versVolume(VOLUME)).catch(()=>{}); }
+      }
+    });
+
     son.addEventListener('ended', () => charger(etat.i + 1, true));
     son.addEventListener('timeupdate', () => {
       if (son.currentTime - etat.t > 2){ etat.t = son.currentTime; garder(); }

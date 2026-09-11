@@ -761,3 +761,60 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   .ouverture .actions{ margin-top:1.5rem; margin-bottom:1.8rem; }
   .ouverture{ padding-bottom:2.2rem !important; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LE LECTEUR : SON TITRE EN ENTIER, ET SON EXTINCTION VISIBLE (11 sept, 10 h)
+
+   Mickaël : « dans le lecteur, quand je suis sur Bohème on décolle, il y a le
+   texte qui est coupé. Il faudrait lui reléguer une petite case exprès, qu'on
+   puisse tout voir. Et quand il s'éteint, mettre une petite barre pour montrer
+   que ça s'est éteint, et le griser. »
+
+   Le titre était coupé parce que son panneau est enfermé dans la colonne, qui
+   coupe ce qui dépasse. Il est maintenant posé PAR-DESSUS la page, libre de
+   toute boîte : il ne peut plus être rogné nulle part.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* le panneau ne sera plus jamais coupé : il flotte au-dessus de tout */
+.musique .mPan{ z-index:60; max-width:calc(100vw - 28px); }
+.musique .mTitre{ max-width:none !important; overflow:visible; text-overflow:clip; }
+
+/* éteint : le rond se grise et porte sa barre — on voit qu'il dort */
+.musique .mRond{ position:relative; overflow:visible; }
+.musique.eteint .mRond{ opacity:.45; border-color:rgba(212,175,55,.28) !important; }
+.musique.eteint .mRond::after{
+  content:''; position:absolute; left:14%; right:14%; top:50%;
+  height:1.5px; background:var(--or2); opacity:.75;
+  transform:rotate(-38deg); transform-origin:center; border-radius:2px;
+}
+/* en marche : le battement se voit franchement */
+.musique.joue .mRond{ animation:mPulse 2.6s ease-in-out infinite; }
+@keyframes mPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(212,175,55,.45) }
+  50%    { box-shadow:0 0 0 7px rgba(212,175,55,0) }
+}
+
+/* ═══ DEBOUT : la case se pose sous la bande, entière, décalée à jardin ═══ */
+@media (max-width:700px) and (orientation:portrait){
+  .musique .mPan{
+    position:fixed; top:calc(var(--nav) + 8px);
+    left:12px; right:12px; transform:translateY(-6px);
+    justify-content:center; padding:.42rem .5rem;
+  }
+  .musique.ouvert .mPan{ transform:none; }
+  .musique .mTitre{ font-size:.84rem; text-align:center; }
+  .musique .mNav{ width:34px !important; height:34px !important; font-size:1.3rem; }
+}
+
+/* ═══ COUCHÉ : la case sort de la colonne, jamais rognée ══════════════════ */
+@media (max-height:520px) and (orientation:landscape) and (pointer:coarse){
+  .musique .mPan{
+    position:fixed; left:calc(var(--rail) + 14px); right:auto;
+    bottom:calc(14px + env(safe-area-inset-bottom)); top:auto;
+    transform:translateX(-8px); padding:.42rem .55rem;
+  }
+  .musique.ouvert .mPan{ transform:none; }
+  .musique .mTitre{ font-size:.86rem; }
+  .musique .mNav{ width:32px !important; height:32px !important; font-size:1.25rem; }
+}
