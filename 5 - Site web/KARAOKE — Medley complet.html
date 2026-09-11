@@ -3536,10 +3536,18 @@ window.PRESENCE = Object.assign({}, AVEC);
     localStorage.setItem('boheme-presence', mode);
     const b = document.getElementById('btnPresence');
     if (b){
-      b.textContent = mode === 'avec' ? '◉ Présence' : '○ Présence';
-      b.title = mode === 'avec' ? "la présence est là — cliquer pour l'éteindre"
-                                : "aucune présence — cliquer pour l'allumer";
-      b.style.color = mode === 'avec' ? '' : 'rgba(255,255,255,.35)';
+      /* 11 septembre 2026 — Mickaël : « les gens ne vont pas comprendre ce que
+         veut dire "présence". Et ce n'est pas clair, on ne sait pas si c'est
+         allumé : c'est toujours en doré. » C'est un VISAGE, celui de l'ouverture,
+         qui flotte en fond. On l'appelle donc par son nom, et on voit d'un coup
+         d'œil s'il est là : allumé en or, éteint en gris barré — comme la note
+         de musique du site. */
+      b.textContent = mode === 'avec' ? 'Le visage' : 'Le visage';
+      b.title = mode === 'avec' ? "le visage est là — appuyer pour l'éteindre"
+                                : "le visage dort — appuyer pour l'allumer";
+      b.classList.toggle('allume', mode === 'avec');
+      b.classList.toggle('endormi', mode !== 'avec');
+      b.style.color = '';
     }
   }
 
@@ -5297,8 +5305,10 @@ body[data-pour] #bandeau{ display:flex; }
   const boutons = boite.querySelector('.t-boutons');
 
   const ETAPES = [
-    { id:'btnAide',  t:'Un doigt posé, et j'explique',
-      x:'Sur n'importe quel bouton de l'atelier : garde le doigt appuyé une seconde, et je te dis à quoi il sert. Un appui normal, lui, fait le geste tout de suite — je ne t'interromps jamais.' },
+    { id:'btnAide',  t:"Un doigt posé — essaie",
+      x:"Voilà tes commandes. Sur n'importe laquelle : garde le doigt appuyé une seconde, et je te dis à quoi elle sert. Vas-y, choisis-en une et reste appuyé.",
+      lumiere:'.barre', essaiLong:true,
+      bravo:"C'est ça. Ce geste marche sur tous les boutons, à tout moment. Et un appui normal, lui, fait le geste tout de suite — je ne t'interromps jamais." },
     { id:'b',        t:'Lecture',
       x:'Lance l\'atelier, et le met en pause. La musique part, les paroles s\'allument en rythme.' },
     { id:'rail',     t:'La barre de temps',
@@ -5430,6 +5440,25 @@ body[data-pour] #bandeau{ display:flex; }
           window.__tutoDoigt.style.top = Math.min(innerHeight - 40, rm.bottom + 10) + 'px';
         }
       }, 150);
+    }
+    if (e.essaiLong){
+      /* ÉTAPE « DOIGT POSÉ » : on n'attend pas un clic mais un appui long.
+         La bulle d'explication prévient le guide quand elle s'ouvre pour de bon. */
+      fond.style.pointerEvents = 'none';           /* le doigt doit atteindre les boutons */
+      if (window.__tutoDoigt) window.__tutoDoigt.style.display = 'none';
+      const reussi = () => {
+        document.removeEventListener('boheme-appui-long', reussi);
+        titre.textContent = 'Voilà !';
+        texte.textContent = e.bravo;
+        boutons.innerHTML = '';
+        setTimeout(() => montrer(etape + 1), 2400);
+      };
+      document.addEventListener('boheme-appui-long', reussi);
+      const passer = document.createElement('button');
+      passer.textContent = 'Passer';
+      passer.onclick = () => { document.removeEventListener('boheme-appui-long', reussi); montrer(etape + 1); };
+      boutons.appendChild(passer);
+      return;
     }
     if (e.essai){
       /* étape d'ESSAI : le voile RESTE maître de l'écran. C'est lui
@@ -6491,7 +6520,7 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
     btnMaj:     ['Mise à jour', 'Va voir s\'il y a du nouveau et l\'installe. Rien à réinstaller à la main.'],
     btnIntro:   ['Revoir le film', 'Le film d\'ouverture, autant de fois que tu veux.'],
     btnPlein:   ['Plein écran', 'Cache tout ce qui n\'est pas le medley.'],
-    btnPresence:['La présence', 'Le visage qui accompagne l\'ouverture.'],
+    btnPresence:['Le visage', 'Celui de l\'ouverture. Il flotte en fond pendant que tu travailles, doucement, et il recule dès que tu chantes. Un appui l\'allume ou l\'éteint.'],
     btnPlus:    ['Les autres commandes', 'Le style, le guide, la mise à jour, le film, le plein écran.'],
     btnQui:     ['Qui es-tu', 'Dis à l\'atelier qui tu es : il allume tes lignes dans ta couleur. Tu peux en changer quand tu veux.']
   };
@@ -6547,11 +6576,13 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
     let t = null;
     b.addEventListener('touchstart', () => {
       b.dataset.longEnCours = '0';
-      t = setTimeout(() => { b.dataset.longEnCours = '1'; montrer(b, d[0], d[1], 6000); }, 460);
+      t = setTimeout(() => { b.dataset.longEnCours = '1'; montrer(b, d[0], d[1], 6000);
+        document.dispatchEvent(new CustomEvent('boheme-appui-long')); }, 460);
     }, { passive: true });
     ['touchend', 'touchmove', 'touchcancel'].forEach(ev => b.addEventListener(ev, () => clearTimeout(t), { passive: true }));
     /* à la souris aussi, pour l'ordinateur */
-    b.addEventListener('contextmenu', e => { e.preventDefault(); montrer(b, d[0], d[1], 6000); });
+    b.addEventListener('contextmenu', e => { e.preventDefault(); montrer(b, d[0], d[1], 6000);
+      document.dispatchEvent(new CustomEvent('boheme-appui-long')); });
   }
 
   function passer(){ document.querySelectorAll('.barre .btn-reg, .tiroir .btn-reg, .barre .b-aller').forEach(equiper); }
@@ -6986,5 +7017,27 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
    Ils restent dans le code : si l'un d'eux redevient utile un jour, une ligne
    suffit à le rallumer — rien n'a été arraché. */
 #btnMaj, #btnIntro, #btnPlein, #btnInfos{ display:none !important; }
+</style>
+
+<style>
+/* ═══ LE VISAGE : ALLUMÉ OU ENDORMI, ÇA SE VOIT (11 septembre 2026) ═════════
+   Mickaël : « on ne sait pas pour la présence, c'est toujours en doré. Il faut
+   que tout soit bien clair. » Allumé : l'or franc et un halo. Endormi : gris,
+   et barré en diagonale — exactement comme la note de musique du site. */
+#btnPresence{ position:relative; overflow:visible; transition:opacity .4s, border-color .4s, background .4s; }
+#btnPresence.allume{
+  opacity:1 !important; border-color:rgba(212,175,55,.8) !important;
+  background:rgba(212,175,55,.18) !important;
+  box-shadow:0 0 14px rgba(212,175,55,.35);
+}
+#btnPresence.endormi{
+  opacity:.45 !important; border-color:rgba(212,175,55,.26) !important;
+  background:rgba(212,175,55,.05) !important; box-shadow:none;
+}
+#btnPresence.endormi::after{
+  content:''; position:absolute; left:14%; right:14%; top:50%;
+  height:1.5px; background:var(--or,#d4af37); opacity:.8; border-radius:2px;
+  transform:rotate(-38deg); transform-origin:center; z-index:2;
+}
 </style>
 </body>
