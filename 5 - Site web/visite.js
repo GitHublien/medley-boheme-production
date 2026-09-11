@@ -59,13 +59,25 @@
                  oui: 'Je le fais maintenant', non: 'Plus tard',
                  fait: '.carteEssentiel .ceLigne:first-child a, .carteEssentiel .ceLigne:first-child button' } },
     { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour' },
-    { son: sonCommun('03-musique'),       vise: '.nav .musique', nom: 'La musique' },
+    /* La phrase dure une vingtaine de secondes : « cette note, c'est la musique
+       du hall… un appui montre son titre et te laisse en changer… un second
+       appui l'eteint. » Les gestes tombent au moment ou elle les nomme. */
+    { son: sonCommun('03-musique'),       vise: '.nav .musique', nom: 'La musique',
+      pendant: [ { a: 1.5,  geste: 'musiqueAllumer' },
+                 { a: 8.5,  geste: 'musiqueMorceauSuivant' },
+                 { a: 12.0, geste: 'musiqueMorceauSuivant' },
+                 { a: 16.5, geste: 'musiqueEteindre' } ] },
     { son: sonCommun('04-barre-du-bas'),  vise: '.bas', nom: 'La barre du bas' },
     { son: sonCommun('05-atelier'),       vise: 'a[href*="KARAOKE"].tuile', nom: "L’atelier" },
     { son: sonCommun('06-textes'),        vise: 'a[href*="LIVRE"].tuile', nom: 'Les textes' },
-    { son: sonCommun('07-menu'),          vise: '.voile nav', avant: 'ouvrirMenu', nom: 'Le menu' },
+    /* « Et voici tout le reste. Je t'ouvre le menu. » — il s'ouvre a « je
+       t'ouvre », pas trois secondes avant dans le silence. */
+    { son: sonCommun('07-menu'),          vise: null, nom: 'Le menu',
+      pendant: [ { a: 2.2, geste: 'ouvrirMenu', vise: '.voile nav' } ] },
     { son: sonCommun('08-halo'),          vise: '.voile .legendeMenu', nom: 'Le halo bleu' },
-    { son: sonCommun('09-retour'),        vise: '.nav .marque', avant: 'fermerMenu', nom: 'Le retour' },
+    /* « Je referme. » — elle referme en le disant. */
+    { son: sonCommun('09-retour'),        vise: null, nom: 'Le retour',
+      pendant: [ { a: 1.2, geste: 'fermerMenu', vise: '.nav .marque' } ] },
     { son: sonCommun('10-exemple'),       vise: null, avant: 'montrerCalendrier', nom: 'Un exemple' },
     { son: sonCommun('11-paysage'),       vise: null, attend: 'paysage', nom: 'Le paysage' },
     { son: sonPerso('12-la-fin'),         vise: null, avant: 'revenirAccueil', nom: 'La fin' },
@@ -74,6 +86,43 @@
   /* ── les gestes que la visite fait elle-même ──────────────────────────── */
   const GESTES = {
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
+
+    /* ── LA MUSIQUE, POUR DE VRAI ────────────────────────────────────────
+       ⚠️ 12 septembre — Mickael : « pour la musique, j'aurais aime que tu
+       allumes la musique, qu'on entende la musique. Qu'il y ait aussi la
+       possibilite de choisir les morceaux, de montrer comment tu choisis les
+       morceaux, et d'eteindre la musique. Et il faudrait que ca se fasse
+       automatiquement. »
+
+       Je me contentais d'eclairer la note en parlant d'elle. C'est une brochure,
+       pas une demonstration. Maintenant la visite appuie sur ses vrais boutons,
+       a elle : on entend la musique demarrer, on voit le titre s'afficher, on
+       voit le morceau changer, et on l'entend s'eteindre.
+
+       On n'imite rien : on clique sur les memes boutons que son doigt. Le
+       lecteur ne sait pas qu'on n'est pas lui. */
+    musiqueAllumer(){
+      const b = document.querySelector('.musique .mRond');
+      const s2 = [...document.querySelectorAll('audio')].find(x => x !== son && !x.dataset.visite);
+      if (b && (!s2 || s2.paused)) b.click();      /* eteinte : un appui l'allume */
+      volumeGarde = null;                          /* on la laisse s'entendre */
+      return 400;
+    },
+    musiqueMorceauSuivant(){
+      const b = document.querySelector('.musique .mNav[data-m="suiv"]');
+      if (b) b.click();
+      return 400;
+    },
+    musiqueEteindre(){
+      const b = document.querySelector('.musique .mRond');
+      const boite = document.querySelector('.musique');
+      if (!b || !boite) return 0;
+      /* le premier appui montre le titre, le second eteint : on refait donc
+         exactement le geste qu'il ferait, dans le meme ordre. */
+      if (!boite.classList.contains('ouvert')) b.click();
+      apres(() => b.click(), 500);
+      return 900;
+    },
     fermerMenu(){ document.body.classList.remove('menu'); return 500; },
     montrerCalendrier(){
       const a = [...document.querySelectorAll('a[href]')]
@@ -200,6 +249,16 @@
   const son = document.createElement('audio');
   son.preload = 'auto';
   son.setAttribute('data-visite', '1');
+  /* ⚠️ 12 septembre — LA VOIX NE DOIT PAS TUER LA MUSIQUE DU HALL.
+     Le site a une regle absolue, et elle est bonne : des qu'un autre son
+     demarre, la musique s'arrete. Mais la voix de la visite n'est pas « un
+     autre son » — c'est la visite elle-meme, et c'est elle qui s'occupe deja
+     du volume du hall (elle le baisse, elle le rend). En la laissant declencher
+     la regle, la musique s'eteignait au moment meme ou la voix disait « ecoute
+     cette musique ». Cette marque la fait reconnaitre comme faisant partie de
+     la maison : la regle continue de valoir pour les videos et les bandes de
+     l'atelier, qui sont les vrais cas qu'elle vise. */
+  son.setAttribute('data-musique-du-site', 'visite');
   document.body.appendChild(son);
 
   let ici = -1, arrete = false;
@@ -521,6 +580,29 @@
     ici = k; marquer();
     if (k >= ARRETS.length) return finir();
     const a = ARRETS[k];
+    /* ── LES GESTES PENDANT LA PHRASE ───────────────────────────────────
+       ⚠️ 12 septembre — Mickael : « pour le menu, il ne s'est pas ouvert
+       automatiquement. Elle a voulu montrer des choses mais je n'ai rien vu,
+       j'ai vu la fin juste. Il faut que ca glisse rapidement, automatiquement,
+       pour pouvoir vraiment voir. »
+
+       Le defaut etait dans l'ordre des choses : je faisais le geste AVANT de
+       parler. Le menu s'ouvrait donc dans le silence, avant que la voix ne dise
+       « je t'ouvre le menu » — et quand elle le disait, c'etait deja fait.
+
+       Un arret peut maintenant porter une suite de gestes DATES : a telle
+       seconde de la phrase, tel geste. La voix et la main travaillent ensemble,
+       comme quelqu'un qui montre en parlant. */
+    const posterLesGestes = () => {
+      (a.pendant || []).forEach(g => {
+        apres(() => {
+          if (monFil !== fil || arrete || enPause) return;
+          if (GESTES[g.geste]) GESTES[g.geste]();
+          if (g.vise !== undefined) eclairer(g.vise);
+        }, Math.round(g.a * 1000));
+      });
+    };
+
     const suite = () => {
       if (monFil !== fil) return;
       baisserLaMusique();   /* elle peut etre repartie apres un changement de page */
@@ -541,6 +623,7 @@
       /* si le son manque — fichier absent, réseau coupé — on n'attend pas : on
          laisse le temps de lire l'écran et on continue. La visite ne bloque jamais. */
       son.onerror = () => apres(suivant, 3500);
+      posterLesGestes();
       son.play().catch(() => apres(suivant, 3500));
     };
     const d = a.avant && GESTES[a.avant] ? GESTES[a.avant]() : 0;
