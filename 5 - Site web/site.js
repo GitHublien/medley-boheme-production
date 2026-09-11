@@ -241,9 +241,17 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   /* et quand tout a été vu, plus une seule pastille nulle part */
   window.toutEstVu = () => NOUVEAU.every(vu);
   function pastiller(){
+    document.querySelectorAll('.duNeuf').forEach(e => { const h = (e.getAttribute('href')||'').split('?')[0];
+      if (!NOUVEAU.includes(decodeURIComponent(h)) || vu(decodeURIComponent(h))) e.classList.remove('duNeuf'); });
     document.querySelectorAll('.nav a.l, .voile a, .bas a').forEach(a => {
       const h = decodeURIComponent((a.getAttribute('href') || '').split('?')[0]);
       if (NOUVEAU.includes(h) && !vu(h) && !a.querySelector('.pastille')){
+        /* 11 sept — Mickaël : « au lieu d'un petit point rouge, pourquoi ne pas
+           mettre un dégradé de couleur sur toute la partie où il y a du nouveau ?
+           Comme ça ils savent exactement, et en même temps c'est joli. » La ligne
+           entière s'éclaire donc d'un souffle rouge ; le point reste, minuscule,
+           pour ceux qui ne distinguent pas bien les couleurs. */
+        a.classList.add('duNeuf');
         const i = document.createElement('i'); i.className = 'pastille'; i.title = 'du nouveau ici'; a.appendChild(i);
       }
     });

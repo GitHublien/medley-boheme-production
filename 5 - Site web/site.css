@@ -818,3 +818,33 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   .musique .mTitre{ font-size:.86rem; }
   .musique .mNav{ width:32px !important; height:32px !important; font-size:1.25rem; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DU NOUVEAU ICI : UN SOUFFLE ROUGE, PLUS UN POINT (11 septembre 2026, 10 h)
+
+   Mickaël : « au lieu d'avoir un petit point rouge, pourquoi ne mettrais-tu pas
+   un truc plus beau ? Une sorte de dégradé de couleur rouge dans toute la partie
+   où il y a des nouveautés. Comme ça ils savent exactement, et en même temps
+   c'est joli. »
+
+   La ligne entière s'éclaire donc d'un souffle qui monte du bord gauche et
+   s'éteint vers la droite, avec un liseré rouge sur la tranche. Dès qu'on ouvre
+   la page, le souffle disparaît : il ne reste que ce qu'on n'a pas encore vu.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.duNeuf{ position:relative; isolation:isolate; border-radius:.6rem; }
+.duNeuf::before{
+  content:''; position:absolute; inset:-.15rem -.5rem; z-index:-1; border-radius:inherit;
+  background:linear-gradient(90deg, rgba(255,77,77,.22) 0%, rgba(255,77,77,.11) 38%,
+    rgba(255,77,77,.03) 68%, rgba(255,77,77,0) 100%);
+  border-left:2px solid rgba(255,90,90,.85);
+  box-shadow:-6px 0 16px -6px rgba(255,77,77,.55);
+  animation:souffleNeuf 3.4s ease-in-out infinite;
+}
+@keyframes souffleNeuf{ 0%,100%{ opacity:.95 } 50%{ opacity:.55 } }
+/* le point garde sa place, tout petit : il dit la même chose sans la couleur */
+.duNeuf .pastille{ width:.34rem !important; height:.34rem !important; animation:none; opacity:.9; }
+/* dans la barre du bas, le souffle épouse la pastille ronde du bouton */
+.bas a.duNeuf::before{ inset:0; border-radius:999px; border-left:0;
+  background:linear-gradient(180deg, rgba(255,77,77,.20), rgba(255,77,77,0) 75%);
+  box-shadow:inset 0 2px 0 rgba(255,90,90,.75); }
