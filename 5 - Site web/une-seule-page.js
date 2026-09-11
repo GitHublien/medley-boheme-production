@@ -91,6 +91,13 @@
      comprenne pourquoi. */
   const horloges = new Set(), vraiInterval = window.setInterval, vraiTimeout = window.setTimeout;
   let onRegarde = false;
+  /* ⚠️ 11 sept — LA VISITE GUIDEE A DROIT AUX VRAIES HORLOGES.
+     Le balayage ci-dessus tue les minuteurs de la page qu'on quitte. C'est
+     exactement ce qu'il faut... sauf pour la visite, qui traverse les pages :
+     ses minuteurs a elle etaient fauches au premier changement de page, et
+     elle restait figee sur le calendrier (vu en essai). On lui prete donc les
+     horloges d'origine, celles que personne ne surveille. */
+  window.__horlogeHorsSurveillance = { setTimeout: vraiTimeout, setInterval: vraiInterval };
   window.setInterval = function(){ const id = vraiInterval.apply(window, arguments); if (onRegarde) horloges.add(['i', id]); return id; };
   window.setTimeout  = function(){ const id = vraiTimeout.apply(window, arguments);  if (onRegarde) horloges.add(['t', id]); return id; };
   function arreterLesHorloges(){
@@ -132,7 +139,7 @@
       /* ⚠️ CE QU'ON GARDE À TOUT PRIX. Oublier quelque chose ici, c'est le voir
          disparaître au premier changement de page — c'est arrivé au lecteur
          vidéo, dont la scène était effacée en silence. */
-      const GARDES = ['nav','voile','bas','musique','enRoute','mot','vScene','vuePlein'];
+      const GARDES = ['nav','voile','bas','musique','enRoute','mot','vScene','vuePlein','visiteGarde'];
       const garde = [...ici.children].filter(e =>
         (e.classList && GARDES.some(c => e.classList.contains(c)))
           || e.tagName === 'FOOTER' || e.tagName === 'SCRIPT' || e.tagName === 'AUDIO');
@@ -176,7 +183,12 @@
       });
 
       document.title = neuve.title || document.title;
+      /* ⚠️ 11 sept — la visite guidee traverse les pages : sa marque doit
+         survivre a la releve du corps, sinon elle s'eteint au premier
+         changement de page (vu en essai). On la remet aussitot. */
+      const enVisite = document.body.classList.contains('enVisite');
       document.body.className = neuve.body.className || '';
+      if (enVisite) document.body.classList.add('enVisite');
       if (!viaHistorique) history.pushState({ cousu:1 }, '', href);
 
       /* la page d'arrivée doit revivre : images, apparitions, boutons */

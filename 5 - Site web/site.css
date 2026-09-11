@@ -1217,3 +1217,16 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
   background:linear-gradient(180deg,#f4d97f,#c9a13a) !important; color:#1a1408 !important;
   opacity:1; font-size:1rem;
 }
+
+/* ── REVOIR LA VISITE GUIDÉE ─────────────────────────────────────────────
+   Au pied du menu, sous la légende du halo. Discrète : elle se propose
+   d'elle-même le premier jour, après elle attend ici sans se faire voir. */
+.voile .legendeMenu .revoirVisite{
+  margin-top:.85rem; width:100%;
+  padding:.7rem 1rem; border-radius:999px; cursor:pointer;
+  font:600 .82rem/1 system-ui, sans-serif; letter-spacing:.02em;
+  color:#f1d27a; background:rgba(212,175,55,.07);
+  border:1px solid rgba(212,175,55,.32);
+  -webkit-tap-highlight-color:transparent;
+}
+.voile .legendeMenu .revoirVisite:active{ background:rgba(212,175,55,.16); }

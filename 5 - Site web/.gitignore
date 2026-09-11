@@ -1,2 +1,7 @@
 site-images/originaux/
 site-images/propositions/
+
+# Les voix de la visite : on ne publie que les MP3 (5 Mo).
+# Les WAV d' origine (77 Mo) restent sur le disque, jamais en ligne.
+media/visite/*.wav
+media/visite/essai-*

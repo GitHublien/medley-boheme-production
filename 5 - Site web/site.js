@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 19h31';
+const VERSION_SITE = '11/09/2026 · 23h10';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -68,10 +68,18 @@ const VERSION_SITE = '11/09/2026 · 19h31';
     + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('')
     + '</nav><div class="legendeMenu"><span class="ex">Une page</span>'
     + '<span class="dit">Ce <b>halo bleu</b> veut dire <b>du nouveau depuis ta dernière visite</b>.'
-    + ' Tu ouvres la page, il s\u2019éteint.</span></div>';
+    + ' Tu ouvres la page, il s\u2019éteint.</span>'
+    /* 11 septembre — on peut redemander la visite guidee a tout moment. Elle ne
+       se propose d'elle-meme qu'une fois, le tout premier jour ; apres, elle est
+       ici, en petit, et personne ne tombe dessus par hasard. */
+    + '<button class="revoirVisite" type="button">Revoir la visite guidée</button></div>';
   const bas = document.createElement('div'); bas.className = 'bas';
   bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
     + '<a class="menuBas" href="#"><span>≡</span>Menu</a>';
+  voile.querySelector('.revoirVisite').addEventListener('click', () => {
+    document.body.classList.remove('menu');
+    if (typeof window.revoirLaVisite === 'function') window.revoirLaVisite();
+  });
   document.body.prepend(nav, voile, bas);
   const basculer = () => document.body.classList.toggle('menu');
   nav.querySelector('.burger').addEventListener('click', basculer);
@@ -143,6 +151,19 @@ const VERSION_SITE = '11/09/2026 · 19h31';
   {
     const v = document.createElement('script'); v.src = 'video.js';
     (document.body || document.documentElement).appendChild(v);
+  }
+
+  /* ── LA VISITE GUIDÉE (11 sept) ───────────────────────────────
+     Mickaël : « il faut qu'elle fasse les choses automatiquement. Il faut qu'il
+     voie et qu'il ait juste à regarder, comme si c'était une vidéo. »
+
+     Elle ne se propose qu'une fois, et seulement sur l'accueil — mais le fichier
+     est là partout, pour qu'on puisse la redemander depuis le menu à tout moment
+     (window.revoirLaVisite). Elle pèse peu et ne fait rien tant qu'on ne
+     l'appelle pas. */
+  {
+    const g = document.createElement('script'); g.src = 'visite.js';
+    (document.body || document.documentElement).appendChild(g);
   }
 
   /* ── LE MODE RÉGLAGE (11 sept) ────────────────────────────────────────
