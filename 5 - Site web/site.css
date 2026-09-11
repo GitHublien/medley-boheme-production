@@ -1021,8 +1021,13 @@ body.vOuvert{ overflow:hidden; }
 /* couché : la vidéo prend TOUT, la barre flotte dessus puis s'efface */
 @media (orientation:landscape){
   .vScene{ padding:0 !important; }
-  .vScene .vCadre{ width:100%; height:100%; }
-  .vScene .vFilm{ width:100%; height:100%; object-fit:contain; border-radius:0; box-shadow:none; }
+  /* Mesuré sur son téléphone : la vidéo faisait encore 904×509 dans un écran de
+     904×406. « height:100% » ne donnait rien parce que le cadre n'avait pas de
+     hauteur ferme. On le cloue donc aux quatre bords : la vidéo ne peut plus
+     déborder, elle se pose dedans en entier. */
+  .vScene .vCadre{ position:absolute; inset:0; width:auto; height:auto; }
+  .vScene .vFilm{ position:absolute; inset:0; width:100%; height:100%;
+    max-width:100%; max-height:100%; object-fit:contain; border-radius:0; box-shadow:none; }
   .vScene .vRetour, .vScene .vBarre{
     transition:opacity .45s var(--lent), transform .45s var(--lent);
   }
