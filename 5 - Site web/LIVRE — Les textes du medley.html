@@ -13,8 +13,24 @@
   body{ margin:0; background:var(--fond); color:var(--encre); font-family:Garamond,"EB Garamond",Georgia,serif; }
   a{ color:inherit; text-decoration:none; }
   /* la barre du haut */
-  .barre{ position:fixed; top:0; left:0; right:0; z-index:20; display:flex; align-items:center; gap:10px; padding:10px 16px;
-          background:rgba(13,11,10,.94); border-bottom:1px solid rgba(212,175,55,.25); backdrop-filter:blur(8px); }
+  /* LA BARRE DU LIVRE (refaite le 11 septembre 2026)
+     Mickaël : « c'est placé sur le truc de l'appareil photo. Je voudrais un truc
+     comme l'atelier en paysage, avec une barre en haut, jolie, en or — et plus or
+     que ça. » Elle descend donc sous la zone que le téléphone réserve, elle est
+     opaque, et elle se ferme par un filet d'or dégradé, comme sur tout le site. */
+  .barre{ position:fixed; top:0; left:0; right:0; z-index:20; display:flex; align-items:center;
+          justify-content:center; gap:10px;
+          padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+          background:#0b0a09; border-bottom:0; }
+  .barre::after{ content:''; position:absolute; left:0; right:0; bottom:-1px; height:1.5px; pointer-events:none;
+    background:linear-gradient(90deg, rgba(212,175,55,0) 0%, rgba(212,175,55,.55) 12%,
+      rgba(241,210,122,.95) 50%, rgba(212,175,55,.55) 88%, rgba(212,175,55,0) 100%);
+    box-shadow:0 0 10px rgba(212,175,55,.45); }
+  /* le filet qui marque la frontière du téléphone, au-dessus des ronds */
+  .barre::before{ content:''; position:absolute; left:14px; right:14px; top:env(safe-area-inset-top);
+    height:1px; pointer-events:none;
+    background:linear-gradient(90deg, rgba(212,175,55,0), rgba(212,175,55,.35) 18%,
+      rgba(241,210,122,.7) 50%, rgba(212,175,55,.35) 82%, rgba(212,175,55,0)); }
   .barre .titre{ font-family:"Palatino Linotype",Palatino,Georgia,serif; color:var(--or); letter-spacing:3px; text-transform:uppercase; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .barre .courant{ color:var(--gris); font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:40vw; }
   .btn{ font:inherit; font-size:15px; color:var(--or); background:transparent; border:1px solid rgba(212,175,55,.5); border-radius:999px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
@@ -27,7 +43,12 @@
   /* les pictogrammes de l'atelier, en rond, tous de la même taille (10 sept) */
   .btn.rond{ width:42px; height:42px; padding:0; display:inline-flex; align-items:center;
              justify-content:center; flex:none; border-radius:50%; }
-  .btn.rond .pic{ width:22px; height:22px; display:block; background:center/contain no-repeat; }
+  .btn.rond .pic{ width:22px; height:22px; display:block; background:center/contain no-repeat;
+                  filter:drop-shadow(0 0 6px rgba(212,175,55,.4)); }
+  /* Mickaël : « la flèche est toute petite par rapport aux autres dans le rond. »
+     Elle avait raison de l'être : son dessin porte beaucoup de blanc autour.
+     On la grossit pour qu'elle pèse comme ses voisines. */
+  .btn.maison .pic{ width:26px; height:26px; }
   .btn.maison{ background:rgba(212,175,55,.16); border-color:rgba(212,175,55,.75); font-size:inherit; gap:0; }
   @media (max-width:700px){ .btn.rond{ width:40px; height:40px; } .btn.rond .pic{ width:20px; height:20px; } }
   /* l'explication du premier passage */
@@ -124,8 +145,23 @@
   .fin .mf-sign{ color:var(--or); text-align:right; font-style:italic; font-size:1.3rem; }
   @media (max-width:700px){
     :root{ --taille:1.75rem; }
-    .barre{ flex-wrap:wrap; gap:6px; padding:8px 10px; }
-    .barre .titre{ display:none; } .barre .courant{ max-width:none; flex:1 1 100%; order:-1; text-align:center; font-size:13px; }
+    /* Mickaël, 11 sept : « le texte "Narration d'ouverture" est placé sur le truc
+       de l'appareil photo. Il faut que ce soit écrit ailleurs, peut-être en bas. »
+       Il descend donc au pied de l'écran, dans sa propre pastille d'or, et la
+       barre du haut ne garde que ses ronds, centrés comme dans l'atelier. */
+    .barre{ flex-wrap:nowrap; gap:9px;
+            padding:calc(8px + env(safe-area-inset-top)) 10px 9px; justify-content:center; }
+    .barre .titre{ display:none; }
+    .barre .courant{
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom:calc(12px + env(safe-area-inset-bottom)); z-index:21;
+      max-width:calc(100vw - 40px); text-align:center; font-size:13px;
+      font-family:"Palatino Linotype",Palatino,Georgia,serif;
+      letter-spacing:2px; text-transform:uppercase; color:var(--or);
+      background:rgba(11,10,9,.92); border:1px solid rgba(212,175,55,.35);
+      border-radius:999px; padding:7px 16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.6);
+    }
     .btn{ font-size:14px; padding:7px 11px; flex:1; text-align:center; }
     .bande{ flex:1; }
     html{ scroll-padding-top:96px; }
