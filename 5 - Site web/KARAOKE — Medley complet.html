@@ -5339,6 +5339,9 @@ body[data-pour] #bandeau{ display:flex; }
       x:'Deux bandes, la même seconde près : avec une voix pour te guider, ou sans. Appuie une fois pour passer à l\'instrumental — puis encore une fois pour revenir à la voix témoin.',
       essai:{ zone:'#btnBande' },
       bravo:'C\'est ce même bouton qui fait l\'aller-retour, sans jamais couper le son.' },
+    { id:'btnPresence', t:"Le visage — regarde derrière",
+      x:"Ce visage, c'est celui de l'ouverture. Il flotte en fond pendant que tu lis, doucement, et il n'est jamais deux fois au même endroit. C'est une décoration, rien d'autre : dès que la musique part et que tu chantes, il RECULE pour ne pas te gêner. Ce bouton l'allume ou l'éteint — en or il est là, gris et barré il dort.",
+      avant:'montrerVisage' },
     { id:'btnAide',  t:'Ton aide personnelle',
       x:'Allumée d\'office : « prépare-toi », « à toi », tes chœurs dans ta couleur. Quand tu connaîtras tes passages, éteins-la ici — le réglage est retenu.',
       si:'perso' },
@@ -5346,6 +5349,17 @@ body[data-pour] #bandeau{ display:flex; }
 
   /* les gestes que l'aide fait elle-même, pour montrer */
   const GESTES = {
+    /* 11 sept — Mickaël : « tu montres carrément le visage, parce que personne
+       ne comprend. » On l'allume donc pour de vrai pendant cette étape, et on
+       éclaircit le voile quelques secondes pour qu'on le voie derrière. */
+    montrerVisage(){
+      try {
+        const b = document.getElementById('btnPresence');
+        if (b && b.classList.contains('endormi')) b.click();
+        const f = document.getElementById('tuto');
+        if (f){ f.classList.add('voirDerriere'); setTimeout(() => f.classList.remove('voirDerriere'), 5200); }
+      } catch(e){}
+    },
     ouvrirBlocs(){ setTimeout(() => { try { const m = document.getElementById('menuB');
       if (m && !m.classList.contains('vu')) document.getElementById('btnBlocs').click(); } catch(e){} }, 0); },
     fermerBlocs(){ try { document.getElementById('menuB').classList.remove('vu'); } catch(e){} },
@@ -7039,5 +7053,10 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
   height:1.5px; background:var(--or,#d4af37); opacity:.8; border-radius:2px;
   transform:rotate(-38deg); transform-origin:center; z-index:2;
 }
+</style>
+
+<style>
+/* pendant l'étape du visage, le voile s'éclaircit : on le voit vraiment derrière */
+#tuto.voirDerriere .fond{ opacity:.22 !important; transition:opacity .8s ease; }
 </style>
 </body>
