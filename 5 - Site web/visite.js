@@ -232,15 +232,15 @@
     #vTourne .tel{ font-size:64px; animation:vTourner 2s ease-in-out infinite; }
     @keyframes vTourner{ 0%,100%{ transform:rotate(0) } 50%{ transform:rotate(90deg) } }
     /* les deux petites boites : la question du bouton rouge, et la pause */
-    #vDemande, #vPause{ position:fixed; inset:0; z-index:159; display:grid; place-items:center;
+    #vDemande, #vPause, #vDepart{ position:fixed; inset:0; z-index:159; display:grid; place-items:center;
       background:rgba(4,4,4,.82); backdrop-filter:blur(10px); padding:8vw; }
-    #vDemande .bulle, #vPause .bulle{ display:grid; gap:.7rem; text-align:center; max-width:22rem;
+    #vDemande .bulle, #vPause .bulle, #vDepart .bulle{ display:grid; gap:.7rem; text-align:center; max-width:22rem;
       background:rgba(12,11,10,.96); border:1px solid rgba(212,175,55,.4);
       border-radius:1.1rem; padding:1.4rem 1.3rem; box-shadow:0 20px 60px rgba(0,0,0,.7); }
-    #vDemande p, #vPause p{ margin:0 0 .3rem; color:#f1d27a; font:600 1.05rem system-ui; }
-    #vDemande button, #vPause button{ padding:.85rem 1.1rem; border-radius:999px; cursor:pointer;
+    #vDemande p, #vPause p, #vDepart p{ margin:0 0 .3rem; color:#f1d27a; font:600 1.05rem system-ui; }
+    #vDemande button, #vPause button, #vDepart button{ padding:.85rem 1.1rem; border-radius:999px; cursor:pointer;
       font:600 .95rem system-ui; border:1px solid rgba(212,175,55,.5); }
-    #vDemande .oui, #vPause .oui{ background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
+    #vDemande .oui, #vPause .oui, #vDepart .oui{ background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
     #vDemande .non, #vPause .non{ background:rgba(212,175,55,.08); color:#f1d27a; }
     body.enVisite{ overflow:hidden; }`;
   document.head.appendChild(style);
@@ -536,6 +536,22 @@
     /* et AUCUN compte a rebours : tant qu'il n'a pas repondu, rien ne bouge. */
   }
 
+  /* ── « COMMENCER » : LA PORTE DE SECOURS DU SON ──────────────────────────
+     Elle ne s'ouvre que si le telephone a refuse de parler sans qu'on le touche.
+     Un seul bouton, aucune question, et la visite reprend au meme endroit. */
+  function demanderLePremierAppui(k, monFil){
+    if (document.querySelector('#vDepart')) return;
+    const b = document.createElement('div');
+    b.className = 'visiteGarde'; b.id = 'vDepart';
+    b.innerHTML = '<div class="bulle"><p>Monte le son, et touche pour commencer.</p>'
+      + '<button class="oui">Commencer la visite</button></div>';
+    document.body.appendChild(b);
+    b.querySelector('.oui').addEventListener('click', () => {
+      b.remove();
+      if (monFil === fil) jouer(k, monFil);
+    });
+  }
+
   /* ── UN APPEL ARRIVE ────────────────────────────────────────────────────
      Le telephone sonne, il sort de l'application : la voix se tait a l'instant.
      Elle ne s'arrete pas, elle ne recommence pas — elle attend exactement la ou
@@ -716,7 +732,18 @@
          laisse le temps de lire l'écran et on continue. La visite ne bloque jamais. */
       son.onerror = () => apres(suivant, 3500);
       posterLesGestes();
-      son.play().catch(() => apres(suivant, 3500));
+      /* ⚠️ LA SEULE RESERVE, ET ELLE EST REELLE : un telephone refuse de jouer
+         un son si personne n'a encore touche l'ecran. En demarrant d'elle-meme,
+         la visite risquait donc de se derouler MUETTE — des images qui defilent
+         sans la voix, ce qui est pire que rien.
+         On ne le devine pas : on essaie, et si le telephone refuse, on pose un
+         seul bouton — « Commencer » — qui n'apparait que dans ce cas-la, et qui
+         reprend exactement ou on etait. Un appui, et tout se debloque pour le
+         reste de la visite. */
+      son.play().catch(err => {
+        if (err && /NotAllowed/i.test(String(err.name || err))) demanderLePremierAppui(k, monFil);
+        else apres(suivant, 3500);
+      });
     };
     const d = a.avant && GESTES[a.avant] ? GESTES[a.avant]() : 0;
     if (a.attend) apres(() => attendre(a.attend, suite), d);
@@ -821,7 +848,16 @@
       return;
     }
     const surAccueil = /ACCUEIL/i.test(decodeURIComponent(location.pathname)) || location.pathname.endsWith('/');
-    if (!vue && surAccueil) apres(() => entree.classList.add('la'), 1400);
+    /* ⚠️ 12 septembre — ELLE DEMARRE SEULE.
+       Mickael : « je pense que la visite devrait demarrer des le depart, sans
+       demander l'autorisation. » Il a raison, et pour une raison qu'il n'a pas
+       eu besoin de dire : une porte qu'on doit pousser se referme sur les
+       distraits. « Non merci » etait un appui d'une seconde, et il coutait deux
+       minutes trente d'explications a quelqu'un qui en avait besoin.
+       Elle part donc d'elle-meme, comme une vidéo qui commence. « Passer la
+       visite » reste en bas, petit, du debut a la fin : on ne retient personne,
+       mais on ne demande plus la permission de l'accueillir. */
+    if (!vue && surAccueil) apres(lancer, 1200);
   }
   proposer();
 
