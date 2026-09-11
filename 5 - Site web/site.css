@@ -688,9 +688,11 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
 
   /* la case du bas : un trait d'or, puis la musique et le menu, centrés */
   .nav .basNav{
+    order:2;                       /* les pages sont au rang 1 : la case vient après */
     margin:auto 0 0 !important; justify-content:center; gap:14px;
     padding:.7rem 0 .2rem; position:relative;
   }
+  .nav a.l{ white-space:nowrap; }  /* « Qui chante quoi » tient sur une ligne */
   .nav .basNav::before{
     content:''; position:absolute; left:-4px; right:-4px; top:0; height:1px;
     background:linear-gradient(90deg, rgba(212,175,55,0), rgba(212,175,55,.6) 25%,
