@@ -5319,12 +5319,14 @@ body[data-pour] #bandeau{ display:flex; }
       x:'Chaque phrase est un raccourci : touche celle que tu veux, la musique va directement à cet endroit.',
       essai:{ zone:'.ligne' },
       bravo:'La musique a filé pile sur cette phrase. On remet tout en place.' },
-    { id:'btnPlein', t:'Plein écran — essaie',
-      x:'L\'atelier seul à l\'écran, rien d\'autre. Appuie dessus pour voir la différence.',
-      essai:{ zone:'#btnPlein' },
-      bravo:'Voilà la différence. Le même bouton (ou Échap) pour revenir.' },
-    { id:'btnIntro', t:'Revoir l\'intro',
-      x:'Le film d\'ouverture. Celui-là, je ne te le fais pas essayer — il dure cinquante secondes et tu viens de le voir. Mais il t\'attend ici, quand tu veux.' },
+    /* 11 septembre 2026 — Mickaël : « le plein écran, pas la peine, on y est déjà.
+       Revoir l'intro, ce n'est pas à cet endroit-là. La mise à jour est ailleurs
+       maintenant. L'info aussi. Et s'il y a ça dans le guide, tu l'enlèves. »
+       Les deux étapes qui les montraient sont donc retirées. */
+    { id:'btnBande', t:'Voix témoin ou instrumental — essaie',
+      x:'Deux bandes, la même seconde près : avec une voix pour te guider, ou sans. Appuie une fois pour passer à l\'instrumental — puis encore une fois pour revenir à la voix témoin.',
+      essai:{ zone:'#btnBande' },
+      bravo:'C\'est ce même bouton qui fait l\'aller-retour, sans jamais couper le son.' },
     { id:'btnAide',  t:'Ton aide personnelle',
       x:'Allumée d\'office : « prépare-toi », « à toi », tes chœurs dans ta couleur. Quand tu connaîtras tes passages, éteins-la ici — le réglage est retenu.',
       si:'perso' },
@@ -6966,5 +6968,15 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
       rgba(241,210,122,.7) 50%, rgba(212,175,55,.35) 82%, rgba(212,175,55,0));
   }
 }
+</style>
+
+<style>
+/* ═══ LE MÉNAGE DE L'ATELIER (11 septembre 2026) ═══════════════════════════
+   Mickaël : « la mise à jour, pas la peine — elle est ailleurs. Revoir l'intro,
+   pas la peine. Plein écran, pas la peine, on y est déjà. Info non plus. »
+   On ne les fabrique plus, et le guide n'en parle plus.
+   Ils restent dans le code : si l'un d'eux redevient utile un jour, une ligne
+   suffit à le rallumer — rien n'a été arraché. */
+#btnMaj, #btnIntro, #btnPlein, #btnInfos{ display:none !important; }
 </style>
 </body>
