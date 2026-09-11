@@ -5848,7 +5848,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '11/09/2026 · 10h38';
+const VERSION_APPLI = '11/09/2026 · 10h47';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -7004,7 +7004,20 @@ const VERSION_APPLI = '11/09/2026 · 10h38';
 
   /* le rond vide : le bouton « aller à ton passage » n'a rien à faire là tant qu'il
      n'y a pas de passage à rejoindre (sa règle display:none était écrasée) */
-  .barre .b-aller:not(.la){ display:none !important; }
+  /* ⚠️ CORRIGÉ le 11 septembre au matin. J'avais caché le rond dès qu'il n'y
+   avait pas de passage à rejoindre : il disparaissait donc presque tout le
+   temps. Mickaël : « je t'avais demandé de me l'enlever QUE s'il n'y a pas
+   l'étoile. Quand il y a l'étoile, le rond doit être là, sinon ça ne veut rien
+   dire. » C'est l'étoile qui commande, et elle seule. */
+body.aideAllumee .barre .b-aller{ display:grid !important; }
+body:not(.aideAllumee) .barre .b-aller{ display:none !important; }
+/* et il porte son pictogramme en permanence, pas seulement quand il propose */
+.barre .b-aller::before{ background-image:url(site-images/icones-karaoke/passage.png); }
+/* quand il a vraiment un passage à rejoindre, il s'éclaire */
+body.aideAllumee .barre .b-aller.la{
+  border-color:rgba(157,255,53,.7) !important;
+  background:rgba(157,255,53,.10) !important;
+}
 }
 </style>
 

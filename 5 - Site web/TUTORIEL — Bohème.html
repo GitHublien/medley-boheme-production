@@ -290,6 +290,13 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   font-size:16px; font-weight:700;
   transition:transform .4s cubic-bezier(0.32,0.72,0,1), opacity .4s; }
 #pied button:active{ transform:scale(.97); }
+/* le visage éteint, dans le guide : exactement l'allure de l'atelier */
+#simVisageBtn{ position:relative; overflow:visible; transition:opacity .35s, border-color .35s, background .35s; }
+#simVisageBtn.eteintSim{ opacity:.45; border-color:rgba(212,175,55,.26) !important;
+  background:rgba(212,175,55,.05) !important; }
+#simVisageBtn.eteintSim::after{ content:''; position:absolute; left:8%; right:8%; top:50%;
+  height:2px; background:#d4af37; opacity:.85; border-radius:2px;
+  transform:rotate(-14deg); transform-origin:center; }
 /* « Suivant » : gris tant que le geste n'est pas fait, vert dès qu'il l'est */
 #pied button.bloque{ background:rgba(255,255,255,.05) !important; color:rgba(255,255,255,.3) !important;
   border-color:rgba(255,255,255,.12) !important; cursor:not-allowed; }
@@ -1301,6 +1308,29 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
 /* ── LE DOIGT POSÉ : on attend un vrai appui long ─────────────────────── */
 (function(){
   const bulle = document.getElementById('bulleLong');
+  /* la bulle d'or : le même objet que dans l'atelier, au pixel près */
+  const bd = document.createElement('div');
+  bd.id = 'bulleDoigt';
+  bd.style.cssText = 'position:fixed;z-index:90;max-width:260px;padding:11px 14px;'
+    + 'border-radius:14px;background:rgba(12,11,10,.97);border:1px solid rgba(212,175,55,.55);'
+    + 'box-shadow:0 16px 44px rgba(0,0,0,.7);color:#e9e2d2;font-size:13.5px;line-height:1.5;'
+    + 'opacity:0;visibility:hidden;transition:opacity .25s ease;pointer-events:none;';
+  document.body.appendChild(bd);
+  let effacer = null;
+  function montrerBulle(b, nom, texte){
+    bd.innerHTML = '<b style="color:#f1d27a;display:block;margin-bottom:3px;">' + nom + '</b>' + texte;
+    bd.style.visibility = 'hidden'; bd.style.left = '0px'; bd.style.top = '0px';
+    requestAnimationFrame(() => {
+      const r = b.getBoundingClientRect(), bb = bd.getBoundingClientRect();
+      const x = Math.min(Math.max(8, r.left + r.width / 2 - bb.width / 2), innerWidth - bb.width - 8);
+      let y = r.bottom + 10;
+      if (y + bb.height > innerHeight - 70) y = Math.max(8, r.top - bb.height - 10);
+      bd.style.left = Math.round(x) + 'px'; bd.style.top = Math.round(y) + 'px';
+      bd.style.visibility = 'visible'; bd.style.opacity = '1';
+    });
+    clearTimeout(effacer);
+    effacer = setTimeout(() => { bd.style.opacity = '0'; bd.style.visibility = 'hidden'; }, 6000);
+  }
   const MOTS = {
     simLong1:['Blocs', 'la liste des titres du medley — tu choisis, tu y es.'],
     simLong2:['Voix témoins', 'la bande avec des voix pour te guider, ou sans.'],
@@ -1313,8 +1343,13 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
     const dire = () => {
       long = true;
       b.classList.remove('appelle');
-      if (bulle) bulle.innerHTML = '<b style="color:#f1d27a">' + MOTS[id][0] + '</b> — ' + MOTS[id][1];
-      reussir('cDoigt', 'C\u2019est exactement ça. Ce geste marche sur toutes les commandes de l\u2019atelier, à tout moment.');
+      /* 11 sept — Mickaël : « il faut qu'on VOIE l'explication, comme s'il y
+         était. » On pose donc la vraie bulle sur le bouton, exactement comme
+         l'atelier le fait — et non un mot dans un coin. */
+      montrerBulle(b, MOTS[id][0], MOTS[id][1]);
+      if (bulle) bulle.innerHTML = 'Tu vois ? L\u2019explication apparaît <b style="color:#f1d27a">parce que tu es resté appuyé</b>. '
+        + 'Essaie sur les autres : chacune a la sienne.';
+      reussir('cDoigt', 'Voilà l\u2019explication, posée sur la commande. Ce geste marche partout dans l\u2019atelier, à tout moment.');
     };
     b.addEventListener('touchstart', () => { long = false; t = setTimeout(dire, 600); }, { passive:true });
     ['touchend','touchmove','touchcancel'].forEach(ev =>
@@ -1347,6 +1382,7 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
         v.play().catch(()=>{});
       } catch(e){}
       v.style.opacity = '.55';
+      b.classList.remove('eteintSim');
       b.style.borderColor = 'rgba(212,175,55,.8)';
       b.style.background = 'rgba(212,175,55,.18)';
       if (d) d.innerHTML = 'Le voilà, derrière. Il bouge doucement, et il n\u2019est jamais deux fois au même endroit.';
@@ -1354,9 +1390,11 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
     } else {
       v.style.opacity = '0';
       setTimeout(() => { try { v.pause(); } catch(e){} }, 900);
-      b.style.borderColor = '';
-      b.style.background = '';
-      if (d) d.textContent = 'Il dort. Le bouton devient gris et barré dans l\u2019atelier.';
+      /* 11 sept — Mickaël : « quand on éteint le visage, il faut qu'on voie que
+         c'est barré, dans le guide aussi. » Le bouton d'essai prend donc
+         exactement l'allure qu'il aura dans l'atelier. */
+      b.classList.add('eteintSim');
+      if (d) d.innerHTML = 'Il dort — regarde le bouton : <b style="color:#f1d27a">gris et barré</b>. C\u2019est ce que tu verras dans l\u2019atelier.';
     }
   });
 })();
