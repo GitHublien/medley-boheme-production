@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '12/09/2026 · 05h10';
+const VERSION_SITE = '12/09/2026 · 05h35';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -483,18 +483,66 @@ const VERSION_SITE = '12/09/2026 · 05h10';
     peindre();
     recu.insertAdjacentElement('afterend', pb);
 
+    /* ═══ ON NE CROIT PLUS LE CLIC : ON DEMANDE (12 septembre 2026) ═══
+       Mickaël : « si Bry, ou n'importe qui, va sur WhatsApp et finalement change
+       d'avis, revient en arrière — ça va effacer le machin comme s'il avait été
+       envoyé, alors que ça n'a pas été envoyé. »
+
+       Il a raison, et c'était un vrai trou. Je notais « envoyé » une seconde et
+       demie après l'appui, c'est-à-dire au moment où WhatsApp s'ouvre — pas au
+       moment où le message part. Ouvrir n'est pas envoyer. Un chanteur qui
+       hésite et revient en arrière disparaissait de la liste sans avoir rien
+       dit, et Mickaël l'aurait compté comme prévenu.
+
+       Alors on demande, à son retour : « Tu as bien envoyé ? » Tant qu'il n'a
+       pas répondu oui, le bouton reste rouge. C'est la même règle que dans la
+       visite guidée, et pour la même raison : on ne devine pas un fait, on le
+       constate. */
+    const effacerLeBouton = () => {
+      recu.style.transition = 'opacity .8s ease, max-height .8s ease, margin .8s ease, padding .8s ease';
+      recu.style.opacity = '0'; recu.style.maxHeight = '0';
+      recu.style.margin = '0'; recu.style.paddingTop = '0'; recu.style.paddingBottom = '0';
+      setTimeout(() => { recu.style.display = 'none'; }, 900);
+      pb.classList.remove('doux');
+    };
+
+    const demanderSiEnvoye = () => {
+      if (document.querySelector('.boiteEnvoye')) return;
+      /* pendant la visite guidée, c'est elle qui pose la question : on ne la
+         double pas, il n'aurait pas à répondre deux fois à la même chose. */
+      if (document.body.classList.contains('enVisite')) return;
+      const b = document.createElement('div');
+      b.className = 'boiteEnvoye';
+      b.innerHTML = '<div class="beBulle"><p>Tu as bien envoyé le message&nbsp;?</p>'
+        + '<button class="beOui">Oui, c’est envoyé</button>'
+        + '<button class="beNon">Non, pas encore</button></div>';
+      document.body.appendChild(b);
+      /* elle naît sous son doigt au retour : sourde une demi-seconde */
+      b.style.pointerEvents = 'none';
+      setTimeout(() => { b.style.pointerEvents = ''; }, 600);
+      b.querySelector('.beOui').addEventListener('click', () => {
+        b.remove();
+        recu.dataset.vientDeLEnvoyer = '1';
+        try { localStorage.setItem(CLE, '1'); } catch(e){}
+        peindre(); direMot();
+        setTimeout(effacerLeBouton, 6000);
+      });
+      b.querySelector('.beNon').addEventListener('click', () => b.remove());
+    };
+
     recu.addEventListener('click', () => {
-      recu.dataset.vientDeLEnvoyer = '1';
-      /* on note APRÈS un instant : le temps que WhatsApp s'ouvre pour de bon */
-      setTimeout(() => { try { localStorage.setItem(CLE, '1'); } catch(e){} peindre(); }, 1500);
-      /* puis le constat s'efface doucement, et « J'ai un souci » prend sa place */
-      setTimeout(() => {
-        recu.style.transition = 'opacity .8s ease, max-height .8s ease, margin .8s ease, padding .8s ease';
-        recu.style.opacity = '0'; recu.style.maxHeight = '0';
-        recu.style.margin = '0'; recu.style.paddingTop = '0'; recu.style.paddingBottom = '0';
-        setTimeout(() => { recu.style.display = 'none'; }, 900);
-        pb.classList.remove('doux');
-      }, 10000);
+      attendLaReponse = true;
+      /* s'il n'a pas quitté la page du tout (le partage s'est ouvert par-dessus,
+         ou WhatsApp a refusé de s'ouvrir), on demande quand même au bout de
+         quelques secondes : il ne doit jamais rester sans qu'on lui demande. */
+      setTimeout(() => { if (attendLaReponse){ attendLaReponse = false; demanderSiEnvoye(); } }, 7000);
+    });
+    let attendLaReponse = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && attendLaReponse){
+        attendLaReponse = false;
+        setTimeout(demanderSiEnvoye, 600);
+      }
     });
 
     /* le mot d'explication, juste en dessous — il change avec la couleur */
