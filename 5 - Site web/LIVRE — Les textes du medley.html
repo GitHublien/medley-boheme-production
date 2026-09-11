@@ -49,36 +49,25 @@
      Elle avait raison de l'être : son dessin porte beaucoup de blanc autour.
      On la grossit pour qu'elle pèse comme ses voisines. */
   .btn.maison .pic{ width:26px; height:26px; }
+  /* les pictogrammes de l'aide : la même taille pour tous, centrés dans leur case */
+  .pas b{ display:grid; place-items:center; width:34px; height:34px; flex:none; }
+  .pas b .pic{ width:26px; height:26px; display:block;
+               background:center/contain no-repeat;
+               filter:drop-shadow(0 0 5px rgba(212,175,55,.35)); }
   /* La flèche « tout en haut », dessinée au trait : elle attend son vrai
      pictogramme d'or, mais elle porte déjà la même couleur et la même taille
      que ses voisines. Deux traits qui montent, et rien d'autre. */
-  /* « Où j'en suis » : une visée — un cercle et son point. Elle s'allume quand
-     la phrase chantée est sortie de l'écran, et s'éteint quand on y est. */
-  .pic-ici{ position:relative; background:none !important; }
-  .pic-ici::before{ content:''; position:absolute; inset:2px; border-radius:50%;
-    border:2px solid var(--or); opacity:.85; }
-  .pic-ici::after{ content:''; position:absolute; left:50%; top:50%;
-    width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
-    background:var(--or); box-shadow:0 0 7px rgba(212,175,55,.7); }
+  /* 11 septembre 2026 — les dessins au trait ont servi une heure : ils sont
+     remplacés par les VRAIS pictogrammes d'or, générés avec les autres.
+     Mickaël : « la flèche que tu as faite est horrible, mais je t'avais dit de
+     mettre une flèche comme ça, au hasard. Maintenant, ce sera une jolie. » */
   #btnIci{ opacity:.45; transition:opacity .4s, border-color .4s, box-shadow .4s; }
   #btnIci.utile{ opacity:1; border-color:rgba(212,175,55,.85);
     box-shadow:0 0 14px rgba(212,175,55,.35); }
-  /* la phrase retrouvée respire une seconde, pour qu'on la voie arriver */
   .ligne.viseur{ animation:viseurLigne 1.6s ease-out; }
   @keyframes viseurLigne{
     0%{ text-shadow:0 0 0 rgba(212,175,55,0) } 25%{ text-shadow:0 0 22px rgba(241,210,122,.9) }
     100%{ text-shadow:0 0 1px rgba(0,0,0,.8) } }
-
-  .pic-haut{ position:relative; background:none !important; }
-  .pic-haut::before{ content:''; position:absolute; left:50%; top:52%;
-    width:2px; height:15px; margin-left:-1px; margin-top:-7px;
-    background:var(--or); border-radius:2px;
-    box-shadow:0 0 6px rgba(212,175,55,.45); }
-  .pic-haut::after{ content:''; position:absolute; left:50%; top:34%;
-    width:10px; height:10px; margin-left:-5px;
-    border-left:2px solid var(--or); border-top:2px solid var(--or);
-    border-radius:2px; transform:rotate(45deg);
-    box-shadow:-2px -2px 6px rgba(212,175,55,.35); }
   .btn.maison{ background:rgba(212,175,55,.16); border-color:rgba(212,175,55,.75); font-size:inherit; gap:0; }
   @media (max-width:700px){ .btn.rond{ width:40px; height:40px; } .btn.rond .pic{ width:20px; height:20px; } }
   /* l'explication du premier passage */
@@ -227,8 +216,8 @@
   <a class="btn maison rond" id="versSite" href="ACCUEIL — Bohème.html" title="Revenir à l'accueil" aria-label="Accueil"><i class="pic" style="background-image:url(site-images/icones-karaoke/retour.png)"></i></a>
   <span class="titre">Le Medley des Légendes · le livre des textes</span>
   <span class="courant" id="courant"></span>
-  <button class="btn rond" id="btnHaut2" title="Revenir tout en haut" aria-label="Revenir tout en haut"><i class="pic pic-haut"></i></button>
-  <button class="btn rond" id="btnIci" title="Où j'en suis : revenir à la phrase qui se chante" aria-label="Où j'en suis"><i class="pic pic-ici"></i></button>
+  <button class="btn rond" id="btnHaut2" title="Revenir tout en haut" aria-label="Revenir tout en haut"><i class="pic" style="background-image:url(site-images/icones-karaoke/haut.png)"></i></button>
+  <button class="btn rond" id="btnIci" title="Où j'en suis : revenir à la phrase qui se chante" aria-label="Où j'en suis"><i class="pic" style="background-image:url(site-images/icones-karaoke/ici.png)"></i></button>
   <a class="btn rond" href="#sommaire" title="Le sommaire des vingt blocs" aria-label="Sommaire"><i class="pic" style="background-image:url(site-images/icones-karaoke/blocs.png)"></i></a>
   <button class="btn rond" id="prec" title="Bloc précédent" aria-label="Bloc précédent"><i class="pic" style="background-image:url(site-images/icones-karaoke/precedent.png)"></i></button>
   <button class="btn rond" id="suiv" title="Bloc suivant" aria-label="Bloc suivant"><i class="pic" style="background-image:url(site-images/icones-karaoke/suivant.png)"></i></button>
@@ -248,16 +237,21 @@
     <!-- Aide remise à jour le 11 septembre 2026. Mickaël : « mets les bons logos
          aussi dans l'aide, c'est complètement périmé. » Elle décrit maintenant
          les boutons tels qu'ils sont, dans l'ordre où ils apparaissent. -->
+    <!-- Aide refaite le 11 septembre 2026 avec les VRAIS pictogrammes.
+         Mickaël : « il faut que tu mettes les vrais logos, pas des logos
+         comme ça que tu mets au hasard. Quand on met les aides, il faut que
+         ce soit les mêmes logos, il faut que ce soit la même chose. » -->
     <div class="pas">
-      <div><b>↰</b><span><b>Le site</b>, tout à gauche : pour revenir au reste — l'atelier, la mise en scène, les documents.</span></div>
-      <div><b>↑</b><span><b>Tout en haut</b> : d'un appui, tu remontes à la couverture.</span></div>
-      <div><b>◎</b><span><b>Où j'en suis</b> : si tu as lancé la musique puis lu ailleurs, ce bouton te ramène à <b>la phrase qui se chante à cette seconde</b>. Il s'allume seulement quand il a quelque chose à te montrer.</span></div>
-      <div><b>≡</b><span><b>Sommaire</b> : les vingt blocs d'un coup d'œil, pour sauter droit au tien.</span></div>
-      <div><b>◀ ▶</b><span>Les deux flèches passent au <b>bloc précédent ou suivant</b>. Le nom du bloc où tu es s'affiche dans le bandeau, juste sous la barre.</span></div>
-      <div><b>?</b><span>Ce panneau-ci, à tout moment.</span></div>
-      <div><b>♪</b><span>Sous chaque titre de bloc, un <b>lecteur</b> : il joue <b>ce bloc-là seulement</b>. Appuie ou glisse n'importe où sur la grande règle pour te déplacer dedans.</span></div>
-      <div><b>↺</b><span><b>Boucle</b> : le passage tourne en rond, autant de fois qu'il faut. C'est comme ça qu'on apprend.</span></div>
-      <div><b>●</b><span>Le choix de la <b>bande</b> : la voix témoin pour entendre la mélodie, l'instrumental quand tu la connais.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/retour.png)"></i></b><span><b>Le site</b>, tout à gauche : pour revenir au reste — l'atelier, la mise en scène, les documents.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/haut.png)"></i></b><span><b>Tout en haut</b> : d'un appui, tu remontes à la couverture.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/ici.png)"></i></b><span><b>Où j'en suis</b> : si tu as lancé la musique puis lu ailleurs, ce bouton te ramène à <b>la phrase qui se chante à cette seconde</b>. Il s'allume seulement quand il a quelque chose à te montrer.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/blocs.png)"></i></b><span><b>Sommaire</b> : les vingt blocs d'un coup d'œil, pour sauter droit au tien.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/precedent.png)"></i></b><span><b>Bloc précédent</b> : le titre d'avant, depuis son premier mot.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/suivant.png)"></i></b><span><b>Bloc suivant</b> : le titre d'après. Le nom du bloc où tu es s'affiche dans le bandeau, juste sous la barre.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/question.png)"></i></b><span><b>Cette aide</b>, à tout moment.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/lecture3.png)"></i></b><span>Sous chaque titre de bloc, un <b>lecteur</b> : il joue <b>ce bloc-là seulement</b>. Appuie ou glisse n'importe où sur la grande règle pour te déplacer dedans.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/boucle.png)"></i></b><span><b>Boucle</b> : le passage tourne en rond, autant de fois qu'il faut. C'est comme ça qu'on apprend.</span></div>
+      <div><b><i class="pic" style="background-image:url(site-images/icones-karaoke/micro2.png)"></i></b><span>Le choix de la <b>bande</b> : la voix témoin pour entendre la mélodie, l'instrumental quand tu la connais.</span></div>
     </div>
     <p class="quoi" style="margin-top:14px;">Une chose à savoir : <b>la page ne défile jamais toute seule.</b>
       Tu peux lire un bloc pendant qu'un autre se joue — rien ne viendra te rattraper.
