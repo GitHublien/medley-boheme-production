@@ -665,6 +665,15 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
       </div>
       <p id="bandeDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
         Tu entends la bande de travail : les voix témoins te guident.</p>
+      <!-- 11 septembre 2026 — Mickaël : « tu peux montrer un exemple dans le
+           guide, s'il te plaît ? Qu'on voie le truc qui défile, avec la voix
+           témoin, et après avec l'instrumental. » Le MÊME passage, joué deux
+           fois, avec les paroles qui s'allument : on entend la différence au
+           lieu de la lire. -->
+      <div class="scene-sim" id="sceneBande" style="min-height:110px;margin-top:16px;"></div>
+      <div class="pupitre" style="padding:10px 0 0;">
+        <button class="btn-sim" id="simEcouteBande">▶ Écouter le même passage</button>
+      </div>
     </div>
   </div></div>
 
@@ -779,7 +788,8 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
           style="background-image:url(site-images/icones-karaoke/passage2.png)"></button>
       </div>
       <p id="passageDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
-        Appuie pour voir ce qu'il fait.</p>
+        Appuie : la musique saute pour de vrai, trois phrases avant ton entrée.</p>
+      <div class="scene-sim" id="scenePassage" style="min-height:110px;margin-top:14px;"></div>
     </div>
   </div></div>
   <div class="consigne" id="cPassage"><span class="rond">👆</span>
@@ -1333,6 +1343,81 @@ PREPARATIONS['aide'] = () => {
 };
 document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRampe);
 
+/* ── L'EXEMPLE DES DEUX BANDES : le même passage, deux fois ─────────────
+   On prend quatre phrases chantées — jamais de la narration — et on les joue
+   avec la bande choisie. L'écriture défile et les mots s'allument, comme dans
+   l'atelier. Changer de bande ne change QUE le fichier : même passage, même
+   seconde, même défilé. C'est exactement ce que fait l'atelier. */
+const VOIX_TEMOINS = 'media/bande-voix-temoins.mp3';
+const INSTRUMENTAL = 'media/bande-diffusee.mp3';
+function lignesChantees(n){
+  const out = [];
+  for (const b of BLOCS){
+    for (const l of (b.lignes || [])){
+      const q = (l.qui || '').toLowerCase();
+      if (q.includes('voix off') || q.includes('radio') || q.includes('pensée')) continue;
+      out.push(l);
+      if (out.length >= n) return out;
+    }
+  }
+  return out;
+}
+(function(){
+  const b = document.getElementById('simEcouteBande');
+  const zone = document.getElementById('sceneBande');
+  if (!b || !zone) return;
+  b.addEventListener('click', () => {
+    const bande = document.getElementById('simBande');
+    const instru = bande && /Instrumental/.test(bande.textContent);
+    const voulu = instru ? INSTRUMENTAL : VOIX_TEMOINS;
+    /* on ne recharge la bande que si elle change vraiment */
+    if (!extrait.src.endsWith(voulu.split('/').pop())){
+      const t = extrait.currentTime;
+      extrait.src = voulu; extrait.load();
+      try { extrait.currentTime = t; } catch(e){}
+    }
+    b.textContent = '⏸ On écoute…';
+    jouerExtrait(zone, lignesChantees(4), () => {
+      b.textContent = instru ? '▶ Réécouter (instrumental)' : '▶ Réécouter (voix témoins)';
+      reussir('cBande', instru
+        ? 'Tu viens d\u2019entendre l\u2019instrumental : la bande du concert, sans personne. Repasse aux voix témoins et réécoute : c\u2019est le MÊME passage, à la même seconde.'
+        : 'Tu viens d\u2019entendre les voix témoins. Maintenant appuie sur le bouton pour passer à l\u2019instrumental, puis réécoute : tu entendras la différence.');
+    });
+  });
+})();
+
+/* ── L'EXEMPLE DU SAUT : on va vraiment à son passage ───────────────────
+   Trois phrases avant son entrée, comme l'atelier le fait. Sans prénom, on
+   prend la première phrase chantée du medley : le geste reste le même. */
+(function(){
+  const b = document.getElementById('simPassage');
+  const zone = document.getElementById('scenePassage');
+  const d = document.getElementById('passageDit');
+  if (!b || !zone) return;
+  b.addEventListener('click', () => {
+    b.classList.remove('appelle'); b.classList.add('allume');
+    const plat = [];
+    BLOCS.forEach(bl => (bl.lignes || []).forEach(l => plat.push(l)));
+    plat.sort((x, y) => x.debut - y.debut);
+    const miennes = QUI ? plat.filter(l => (l.qui || '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(QUI)) : [];
+    const cible = miennes.length ? miennes[0] : plat.find(l => !/voix off|radio|pensée/i.test(l.qui || ''));
+    if (!cible){ reussir('cPassage', 'Voilà ce qu\u2019il fait : il t\u2019emmène juste avant ton entrée.'); return; }
+    const k = plat.indexOf(cible);
+    const avant = plat[Math.max(0, k - 3)];
+    const suite = plat.slice(Math.max(0, k - 3), Math.max(0, k - 3) + 5);
+    if (d) d.innerHTML = 'On y va : la musique saute à <b style="color:#f1d27a">'
+      + Math.floor(avant.debut / 60) + ' min ' + Math.round(avant.debut % 60) + ' s</b>'
+      + (miennes.length ? ', trois phrases avant ta première entrée.' : '.');
+    if (!extrait.src.endsWith('bande-voix-temoins.mp3')){ extrait.src = VOIX_TEMOINS; extrait.load(); }
+    jouerExtrait(zone, suite, () => {
+      reussir('cPassage', miennes.length
+        ? 'Voilà : tu as entendu ce qui amène ton entrée, puis ton entrée. C\u2019est tout ce que fait ce bouton — et c\u2019est précieux quand ton passage est à sept minutes.'
+        : 'Voilà le geste : il t\u2019emmène juste avant ton entrée, jamais pile dessus.');
+    });
+  });
+})();
+
 /* 8 · VOIX TÉMOINS OU INSTRUMENTAL (la réplique du bouton) */
 (function(){
   const b = document.getElementById('simBande');
@@ -1345,9 +1430,15 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
     document.getElementById('bandeDit').textContent = voix
       ? 'Tu entends la bande de travail : les voix témoins te guident.'
       : 'Tu entends l\'instrumental : la bande du concert, à toi de chanter.';
-    reussir('cBande', voix
-      ? 'Et te revoilà avec les voix témoins. C\'est aussi simple que ça.'
-      : 'Te voilà sur l\'instrumental — comme au concert. Réappuie pour retrouver les voix témoins.');
+    /* le bouton ne valide plus à lui seul : il faut avoir ÉCOUTÉ les deux.
+       C'est l'oreille qui apprend ici, pas le doigt. */
+    const c = document.getElementById('cBande');
+    if (c && !c.classList.contains('reussi')){
+      const t = c.querySelector('span:last-child');
+      if (t) t.innerHTML = voix
+        ? 'Te revoilà sur les <b>voix témoins</b>. Appuie sur « Écouter le même passage » pour entendre.'
+        : 'Te voilà sur l\'<b>instrumental</b> — comme au concert. Appuie sur « Écouter le même passage ».';
+    }
   });
 })();
 
@@ -1494,11 +1585,6 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
   if (!b) return;
   b.addEventListener('click', () => {
     b.classList.remove('appelle');
-    b.classList.add('allume');
-    if (d) d.innerHTML = 'La musique vient de sauter <b style="color:#f1d27a">trois phrases avant ton entrée</b> : '
-      + 'tu entends ce qui l\u2019amène, puis tu chantes. Dans l\u2019atelier, il s\u2019allume en vert '
-      + 'comme ici quand il a vraiment un passage à te proposer.';
-    reussir('cPassage', 'Voilà ce qu\u2019il fait. Dans l\u2019atelier, il n\u2019apparaît que lorsque ton entrée est encore loin.');
   });
 })();
 
