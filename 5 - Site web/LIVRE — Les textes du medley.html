@@ -49,6 +49,19 @@
      Elle avait raison de l'être : son dessin porte beaucoup de blanc autour.
      On la grossit pour qu'elle pèse comme ses voisines. */
   .btn.maison .pic{ width:26px; height:26px; }
+  /* La flèche « tout en haut », dessinée au trait : elle attend son vrai
+     pictogramme d'or, mais elle porte déjà la même couleur et la même taille
+     que ses voisines. Deux traits qui montent, et rien d'autre. */
+  .pic-haut{ position:relative; background:none !important; }
+  .pic-haut::before{ content:''; position:absolute; left:50%; top:52%;
+    width:2px; height:15px; margin-left:-1px; margin-top:-7px;
+    background:var(--or); border-radius:2px;
+    box-shadow:0 0 6px rgba(212,175,55,.45); }
+  .pic-haut::after{ content:''; position:absolute; left:50%; top:34%;
+    width:10px; height:10px; margin-left:-5px;
+    border-left:2px solid var(--or); border-top:2px solid var(--or);
+    border-radius:2px; transform:rotate(45deg);
+    box-shadow:-2px -2px 6px rgba(212,175,55,.35); }
   .btn.maison{ background:rgba(212,175,55,.16); border-color:rgba(212,175,55,.75); font-size:inherit; gap:0; }
   @media (max-width:700px){ .btn.rond{ width:40px; height:40px; } .btn.rond .pic{ width:20px; height:20px; } }
   /* l'explication du premier passage */
@@ -152,16 +165,33 @@
     .barre{ flex-wrap:nowrap; gap:9px;
             padding:calc(8px + env(safe-area-inset-top)) 10px 9px; justify-content:center; }
     .barre .titre{ display:none; }
+    /* 11 septembre 2026, la deuxième version. Mickaël : « pourquoi ne me fais-tu
+       pas une sorte de carré en dur en haut, où tu mets la narration d'ouverture,
+       et quand on passe au suivant ça fait le 02 ? Tu le mets juste en bas du
+       truc doré, tu fais une ligne en dur, et tu refais encore une ligne dorée
+       au-dessus. Et quand on passe le medley, ça passe derrière. »
+       Le titre devient donc un second bandeau, collé sous la barre, opaque,
+       fermé par son propre filet d'or. Le texte du medley glisse dessous, et le
+       titre change tout seul au fil des blocs. */
     .barre .courant{
-      position:fixed; left:50%; transform:translateX(-50%);
-      bottom:calc(12px + env(safe-area-inset-bottom)); z-index:21;
-      max-width:calc(100vw - 40px); text-align:center; font-size:13px;
+      position:fixed; left:0; right:0; z-index:19;
+      top:var(--hBarre, 84px);
+      transform:none; max-width:none; text-align:center; font-size:12.5px;
       font-family:"Palatino Linotype",Palatino,Georgia,serif;
-      letter-spacing:2px; text-transform:uppercase; color:var(--or);
-      background:rgba(11,10,9,.92); border:1px solid rgba(212,175,55,.35);
-      border-radius:999px; padding:7px 16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.6);
+      letter-spacing:3px; text-transform:uppercase; color:var(--or);
+      background:#0b0a09; border:0; border-radius:0;
+      padding:9px 14px 10px;
+      box-shadow:0 8px 20px rgba(0,0,0,.55);
     }
+    .barre .courant::after{
+      content:''; position:absolute; left:0; right:0; bottom:-1px; height:1.5px;
+      background:linear-gradient(90deg, rgba(212,175,55,0) 0%, rgba(212,175,55,.5) 14%,
+        rgba(241,210,122,.9) 50%, rgba(212,175,55,.5) 86%, rgba(212,175,55,0) 100%);
+      box-shadow:0 0 9px rgba(212,175,55,.4);
+    }
+    /* et la page commence sous les DEUX bandeaux */
+    html{ scroll-padding-top:calc(var(--hBarre, 84px) + 44px) !important; }
+    body{ padding-top:calc(var(--hBarre, 84px) + 38px); }
     .btn{ font-size:14px; padding:7px 11px; flex:1; text-align:center; }
     .bande{ flex:1; }
     html{ scroll-padding-top:96px; }
@@ -180,6 +210,7 @@
   <a class="btn maison rond" id="versSite" href="ACCUEIL — Bohème.html" title="Revenir à l'accueil" aria-label="Accueil"><i class="pic" style="background-image:url(site-images/icones-karaoke/retour.png)"></i></a>
   <span class="titre">Le Medley des Légendes · le livre des textes</span>
   <span class="courant" id="courant"></span>
+  <button class="btn rond" id="btnHaut2" title="Revenir tout en haut" aria-label="Revenir tout en haut"><i class="pic pic-haut"></i></button>
   <a class="btn rond" href="#sommaire" title="Le sommaire des vingt blocs" aria-label="Sommaire"><i class="pic" style="background-image:url(site-images/icones-karaoke/blocs.png)"></i></a>
   <button class="btn rond" id="prec" title="Bloc précédent" aria-label="Bloc précédent"><i class="pic" style="background-image:url(site-images/icones-karaoke/precedent.png)"></i></button>
   <button class="btn rond" id="suiv" title="Bloc suivant" aria-label="Bloc suivant"><i class="pic" style="background-image:url(site-images/icones-karaoke/suivant.png)"></i></button>
@@ -1435,7 +1466,11 @@
 </section>
 
 <div class="fin motfin"><div class="mf-titre">Le mot de la fin</div><p>Dernier mot, dernière note. Personne ne bouge : le noir tombe.</p><p>Après le noir, il est possible que nous saluions : on se retrouve en ligne, on se prend la main, et on salue ensemble. Ensuite, peut-être, un enregistrement nous présentera un par un. Ça reste à voir avec la production ; pour l'instant, les saluts suffiront. Mais je crois que ce serait bien qu'on nous présente.</p><p>Voilà. Vous avez tout, ici, pour retravailler autant de fois que vous le voulez. C'est votre application : avec les aides ou sans, à votre rythme, bloc par bloc ou d'un seul trait.</p><p>Il y aura sûrement encore des mises à jour. Un signal vous préviendra dans l'application : il suffira de cliquer sur « Mise à jour ». Sur le site, vous trouverez aussi plusieurs vidéos, elles aussi mises à jour au fil du travail.</p><p>Bon travail à chacun. On se retrouve sur scène.</p><div class="mf-sign">— Mickaël</div></div>
-<button class="haut" id="btnHaut" title="Retour en haut">↑</button>
+<!-- 11 septembre 2026 — Mickaël : « il y a une sorte de rond noir, on ne
+     comprend rien à quoi il sert. Pourquoi ne le mets-tu pas avec les autres
+     logos, avec une flèche en haut ? » Il est monté dans la barre, avec ses
+     voisins. Celui-ci ne sert plus qu'aux grands écrans. -->
+<button class="haut" id="btnHaut" title="Retour en haut" aria-hidden="true">↑</button>
 
 <script>
 const D = [{"num": "01", "titre": "Narration d'ouverture", "deb": 0.0, "fin": 29.99, "lignes": [["l01_0", 4.48, 5.26], ["l01_1", 9.03, 12.05], ["l01_2", 14.17, 18.27], ["l01_3", 19.67, 20.17], ["l01_4", 21.61, 23.09], ["l01_5", 24.53, 28.54]]}, {"num": "02", "titre": "Quand on arrive en ville", "deb": 30.0, "fin": 110.25, "lignes": [["l02_0", 31.02, 32.56], ["l02_1", 33.38, 34.68], ["l02_2", 35.84, 39.3], ["l02_3", 40.76, 44.8], ["l02_4", 45.64, 48.8], ["l02_5", 49.59, 52.51], ["l02_6", 53.37, 54.79], ["l02_7", 63.29, 64.31], ["l02_8", 65.45, 66.83], ["l02_9", 67.73, 70.47], ["l02_10", 72.07, 75.61], ["l02_11", 76.45, 79.15], ["l02_12", 79.77, 82.45], ["l02_13", 83.25, 84.87], ["l02_14", 92.56, 95.48], ["l02_15", 96.08, 97.72], ["l02_16", 99.28, 101.08], ["l02_17", 101.36, 104.46], ["l02_18", 104.86, 106.44], ["l02_19", 107.84, 109.62]]}, {"num": "03", "titre": "Explosion, flash radio", "deb": 108.87, "fin": 130.6, "lignes": [["l03_0", 112.56, 117.55], ["l03_1", 119.51, 126.86], ["l03_2", 127.52, 129.82]]}, {"num": "04", "titre": "Ziggy", "deb": 130.62, "fin": 212.6, "lignes": [["l04_0", 131.86, 132.42], ["l04_1", 134.84, 136.62], ["l04_2", 138.64, 140.36], ["l04_3", 142.12, 145.42], ["l04_4", 145.94, 149.87], ["l04_5", 150.56, 152.79], ["l04_6", 154.23, 158.19], ["l04_7", 159.29, 162.33], ["l04_8", 163.49, 165.77], ["l04_9", 166.81, 169.09], ["l04_10", 170.47, 173.53], ["l04_11", 174.57, 176.65], ["l04_12", 177.91, 180.13], ["l04_13", 180.95, 186.21], ["l04_14", 188.09, 189.95], ["l04_15", 191.62, 194.88], ["l04_16", 195.29, 199.3], ["l04_17", 200.1, 209.94]]}, {"num": "05", "titre": "La chanson de Ziggy", "deb": 212.62, "fin": 316.9, "lignes": [["l05_0", 214.94, 217.39], ["l05_1", 218.36, 219.93], ["l05_2", 219.92, 222.99], ["l05_3", 224.49, 228.09], ["l05_4", 229.86, 233.24], ["l05_5", 234.84, 236.81], ["l05_6", 237.12, 239.31], ["l05_7", 240.96, 242.98], ["l05_8", 244.11, 246.21], ["l05_9", 247.52, 250.08], ["l05_10", 256.8, 259.04], ["l05_11", 262.7, 266.17], ["l05_12", 268.95, 271.51], ["l05_13", 274.72, 277.98], ["l05_14", 279.1, 280.46], ["l05_15", 282.26, 283.64], ["l05_16", 283.52, 285.72], ["l05_17", 286.55, 289.15], ["l05_18", 289.74, 292.32], ["l05_19", 294.46, 296.54], ["l05_20", 296.7, 298.08], ["l05_21", 298.5, 301.31], ["l05_22", 300.47, 302.37], ["l05_23", 303.45, 305.61], ["l05_24", 307.14, 309.44], ["l05_25", 310.65, 314.58]]}, {"num": "06", "titre": "Radio Monopolis, le duplex", "deb": 314.71, "fin": 365.7, "lignes": [["l06_0", 318.2, 320.56], ["l06_1", 320.84, 322.61], ["l06_2", 322.94, 325.21], ["l06_3", 325.65, 327.89], ["l06_4", 329.17, 333.17], ["l06_5", 333.51, 336.77], ["l06_6", 337.09, 343.28], ["l06_7", 343.62, 345], ["l06_8", 345.14, 348.4], ["l06_9", 349.17, 351.71], ["l06_10", 352.89, 355.63], ["l06_11", 356.73, 359.41], ["l06_12", 360.44, 363.02]]}, {"num": "07", "titre": "Le Blues du Businessman", "deb": 365.72, "fin": 514.4, "lignes": [["l07_0", 370.42, 373.06], ["l07_1", 373.64, 376.24], ["l07_2", 376.62, 380.12], ["l07_3", 383.32, 385.92], ["l07_4", 386.48, 389.12], ["l07_5", 389.46, 393.2], ["l07_6", 396.18, 398.76], ["l07_7", 399.46, 402.02], ["l07_8", 402.06, 406.68], ["l07_9", 407.55, 410.66], ["l07_10", 410.76, 415.92], ["l07_11", 413.87, 416.45], ["l07_12", 417.05, 420.73], ["l07_13", 423.41, 425.97], ["l07_14", 426.15, 429.55], ["l07_15", 429.7, 432.63], ["l07_16", 434.79, 437.04], ["l07_17", 437.78, 440.01], ["l07_18", 441.52, 443.45], ["l07_19", 443.92, 449.53], ["l07_20", 451.04, 456.3], ["l07_21", 457.96, 462.66], ["l07_22", 464.6, 470.3], ["l07_23", 471.58, 476.54], ["l07_24", 477.6, 486.36], ["l07_25", 486.7, 490.16], ["l07_26", 491.7, 494.87], ["l07_27", 495.2, 497.41], ["l07_28", 498.7, 509.76]]}, {"num": "08", "titre": "Retour d'antenne", "deb": 514.42, "fin": 525.7, "lignes": [["l08_0", 514.86, 519.02], ["l08_1", 520.1, 521.46], ["l08_2", 522.36, 523.26]]}, {"num": "09", "titre": "Les uns contre les autres", "deb": 525.75, "fin": 620.2, "lignes": [["l09_0", 525.92, 529.74], ["l09_1", 532.64, 535.86], ["l09_2", 539.27, 542.43], ["l09_3", 544.29, 547.31], ["l09_4", 548.81, 552.75], ["l09_5", 553.35, 555.27], ["l09_6", 555.41, 560.42], ["l09_7", 562.09, 565.93], ["l09_8", 568.53, 572.51], ["l09_9", 575.25, 578.87], ["l09_10", 580.21, 583.71], ["l09_11", 584.79, 588.65], ["l09_12", 589.35, 590.85], ["l09_13", 591.53, 595.91], ["l09_14", 597.98, 602.68], ["l09_15", 602.7, 604.38], ["l09_16", 604.42, 607.87], ["l09_17", 609.4, 615.35]]}, {"num": "10", "titre": "Cloches, narration", "deb": 620.22, "fin": 628.8, "lignes": [["l10_0", 620.94, 623.74], ["l10_1", 624.06, 625.26], ["l10_2", 625.6, 628.54]]}, {"num": "11", "titre": "Le Temps des Cathédrales", "deb": 628.5, "fin": 735.2, "lignes": [["l11_0", 628.84, 630.66], ["l11_1", 631.16, 631.9], ["l11_2", 632.14, 633.88], ["l11_3", 634.14, 635.34], ["l11_4", 635.34, 637.24], ["l11_5", 637.32, 638.6], ["l11_6", 638.62, 640.64], ["l11_7", 640.64, 641.76], ["l11_8", 641.84, 643.75], ["l11_9", 643.88, 644.92], ["l11_10", 644.92, 646.95], ["l11_11", 647.0, 648.35], ["l11_12", 648.37, 650.21], ["l11_13", 650.21, 651.23], ["l11_14", 651.23, 653.25], ["l11_15", 653.31, 654.81], ["l11_16", 657.89, 665.31], ["l11_17", 665.47, 668.61], ["l11_18", 669.51, 672.31], ["l11_19", 672.73, 679.21], ["l11_20", 679.29, 680.79], ["l11_21", 683.31, 690.19], ["l11_22", 690.19, 698.33], ["l11_23", 698.35, 702.22], ["l11_24", 702.27, 704.82], ["l11_25", 705.03, 711.58], ["l11_26", 711.92, 716.15], ["l11_27", 716.2, 721.78], ["l11_28", 722.68, 733.44]]}, {"num": "12", "titre": "Bataille, appel crié", "deb": 733.5, "fin": 748.2, "lignes": [["l12_0", 737.67, 746.05]]}, {"num": "13", "titre": "Les Sans-papiers", "deb": 748.19, "fin": 838.5, "lignes": [["l13_0", 746.13, 748.7], ["l13_1", 748.49, 750.83], ["l13_2", 750.68, 753.0], ["l13_3", 753.87, 756.44], ["l13_4", 756.51, 759.41], ["l13_5", 759.45, 762.46], ["l13_6", 762.53, 765.22], ["l13_7", 765.3, 767.94], ["l13_8", 768.0, 770.85], ["l13_9", 770.89, 776.03], ["l13_10", 777.28, 779.61], ["l13_11", 781.61, 782.56], ["l13_12", 783.06, 785.46], ["l13_13", 785.97, 787], ["l13_14", 787.12, 789.09], ["l13_15", 789.29, 791.35], ["l13_16", 791.35, 794.01], ["l13_17", 794.01, 795.96], ["l13_18", 795.99, 798.46], ["l13_19", 798.46, 800.09], ["l13_20", 800.12, 801.67], ["l13_21", 801.75, 803.31], ["l13_22", 803.43, 805.66], ["lA_1788374435012", 805.21, 806.0], ["l13_23", 806.01, 808.45], ["l13_24", 808.68, 810.4], ["l13_25", 810.47, 813.08], ["l13_26", 813.12, 814.7], ["l13_27", 814.73, 815.99], ["l13_28", 816.01, 817.77], ["l13_29", 817.81, 821.34], ["l13_30", 821.46, 833.51]]}, {"num": "14", "titre": "Bohémienne", "deb": 838.5, "fin": 959.95, "lignes": [["l14_0", 840.0, 842.85], ["l14_1", 844.74, 848.2], ["l14_2", 849.66, 851.61], ["l14_3", 853.68, 862.69], ["l14_4", 868.9, 871.21], ["l14_5", 872.72, 875.13], ["l14_6", 876.58, 879.57], ["l14_7", 880.48, 882.13], ["l14_8", 884.2, 887.51], ["l14_9", 889.84, 895.51], ["l14_10", 898.88, 909.2], ["l14_11", 909.4, 925.12], ["l14_12", 925.46, 930.94], ["l14_13", 934.49, 941.28], ["l14_14", 942.08, 954.58]]}, {"num": "15", "titre": "Belle", "deb": 959.98, "fin": 1115.3, "lignes": [["l15_0", 960.3, 964.3], ["l15_1", 966.59, 968.52], ["l15_2", 968.61, 973.55], ["l15_3", 974.3, 979.11], ["l15_4", 979.24, 984.6], ["l15_5", 986.02, 991.2], ["l15_6", 991.96, 996.6], ["l15_7", 997.72, 1003.18], ["l15_8", 1003.25, 1010.46], ["l15_9", 1010.9, 1015.56], ["l15_10", 1016.88, 1021.34], ["l15_11", 1022.68, 1031.21], ["l15_12", 1038.31, 1039.12], ["l15_13", 1040.16, 1044.6], ["l15_14", 1046.04, 1050.7], ["l15_15", 1051.88, 1056.14], ["l15_16", 1057.7, 1062.44], ["l15_17", 1063.74, 1068.48], ["l15_18", 1069.82, 1074.38], ["l15_19", 1075.14, 1082.58], ["l15_20", 1082.82, 1088.1], ["l15_21", 1088.17, 1092.47], ["l15_22", 1094.28, 1101.06], ["l15_23", 1103.12, 1108.02]]}, {"num": "16", "titre": "Le Dilemme", "deb": 1114.4, "fin": 1255.2, "lignes": [["l16_0", 1115.6, 1122.24], ["l16_1", 1122.5, 1128.54], ["l16_2", 1130.42, 1134.12], ["l16_3", 1134.86, 1138.52], ["l16_4", 1139.13, 1147.56], ["l16_5", 1145.38, 1148.76], ["l16_6", 1149.25, 1151.29], ["l16_7", 1151.91, 1154.68], ["l16_8", 1155.09, 1159.91], ["l16_9", 1160.88, 1168.56], ["l16_10", 1169.66, 1174.26], ["l16_11", 1175.38, 1179.39], ["l16_12", 1180.07, 1182.59], ["l16_13", 1181.5, 1182.86], ["l16_14", 1182.68, 1184.98], ["l16_15", 1183.49, 1184.56], ["l16_16", 1186.11, 1187.74], ["l16_17", 1189.83, 1190.92], ["l16_18", 1190.88, 1192.96], ["l16_19", 1193, 1194.16], ["l16_20", 1193.91, 1195.62], ["l16_21", 1195.5, 1196.66], ["l16_22", 1196.16, 1199.28], ["l16_23", 1201.47, 1203.52], ["l16_24", 1203.76, 1206.7], ["l16_25", 1207.14, 1209.36], ["l16_26", 1209.32, 1212.62], ["l16_27", 1214.79, 1216.12], ["l16_28", 1216, 1217.16], ["l16_29", 1217.41, 1218.66], ["l16_30", 1218.7, 1220.35], ["l16_31", 1220.86, 1222.48], ["l16_32", 1223.89, 1225.6], ["l16_33", 1225.94, 1227.48], ["l16_34", 1227.6, 1228.76], ["l16_35", 1229.05, 1230.52], ["l16_36", 1230.72, 1231.96], ["l16_37", 1232.46, 1233.9], ["l16_38", 1236.11, 1238.12], ["l16_39", 1238.14, 1240.15], ["l16_40", 1242.41, 1247], ["l16_41", 1247.87, 1250.49], ["l16_42", 1250.66, 1254.07], ["l16_43", 1254.17, 1259.14]]}, {"num": "17", "titre": "Mon Frère", "deb": 1255.23, "fin": 1383.4, "lignes": [["l17_0", 1255.48, 1264.22], ["l17_1", 1263.67, 1268.66], ["l17_2", 1270.26, 1276.42], ["l17_3", 1276.62, 1277.48], ["l17_4", 1281.18, 1287.46], ["l17_5", 1288.18, 1294.62], ["l17_6", 1295.24, 1301.36], ["l17_7", 1301.8, 1304.97], ["l17_8", 1305.84, 1315.72], ["l17_9", 1316.28, 1325.73], ["l17_10", 1325.94, 1332.14], ["l17_11", 1333.19, 1333.8], ["l17_12", 1333.85, 1336.6], ["l17_13", 1336.98, 1337.59], ["l17_14", 1337.64, 1340.39], ["l17_15", 1339.8, 1343.97], ["l17_16", 1344.05, 1350.13], ["l17_17", 1350.6, 1352.59], ["l17_18", 1352.23, 1355.32], ["l17_19", 1355.45, 1362.58], ["lA_compte17_bry", 1362.4, 1364], ["l17_20", 1364.02, 1367.82], ["l17_21", 1366.56, 1368.15], ["lA_compte17_mickael", 1368.2, 1369.25], ["l17_22", 1369.32, 1371.61], ["l17_23", 1370.54, 1371.87], ["l17_24", 1371.68, 1373.01], ["l17_25", 1373.35, 1382.4], ["l17_26", 1380.3, 1384.66]]}, {"num": "18", "titre": "L'arrêt du temps", "deb": 1382.4, "fin": 1400.3, "lignes": [["l18_0", 1383.71, 1384.58], ["l18_1", 1385.18, 1388.28], ["l18_2", 1390.41, 1395.03], ["l18_3", 1395.14, 1400.28]]}, {"num": "19", "titre": "Stone", "deb": 1400.33, "fin": 1438.0, "lignes": [["l19_0", 1400.4, 1401.65], ["l19_1", 1402.71, 1405.92], ["l19_2", 1406.28, 1408.54], ["l19_3", 1410.64, 1412.76], ["l19_4", 1414.66, 1416.94], ["l19_5", 1418.9, 1420.93], ["l19_6", 1423.3, 1425.18], ["l19_7", 1427.24, 1430.04], ["l19_8", 1431.12, 1436.62]]}, {"num": "20", "titre": "Aimer", "deb": 1438.06, "fin": 1610.0, "lignes": [["l20_0", 1438.26, 1441.68], ["l20_1", 1442.8, 1445.88], ["l20_2", 1446.66, 1449.08], ["l20_3", 1450.06, 1452.44], ["l20_4", 1453.38, 1455.62], ["l20_5", 1456.6, 1459.18], ["l20_6", 1460.52, 1464.2], ["l20_7", 1465.82, 1470.46], ["l20_8", 1470.94, 1474.68], ["l20_9", 1475.04, 1479.48], ["l20_10", 1480.4, 1484.52], ["l20_11", 1485.84, 1490.06], ["l20_12", 1490.92, 1494.42], ["l20_13", 1495.2, 1499.26], ["l20_14", 1500.38, 1504.56], ["l20_15", 1505.68, 1511.29], ["l20_16", 1511.36, 1516.25], ["l20_17", 1516.48, 1521.36], ["l20_18", 1521.68, 1525.36], ["l20_19", 1526.98, 1531.92], ["l20_20", 1532.02, 1535.47], ["lA_1788765346719", 1536.15, 1541.65], ["l20_22", 1541.74, 1546.73], ["l20_23", 1546.92, 1551.84], ["l20_24", 1552.0, 1556.28], ["l20_25", 1556.34, 1561.41], ["l20_26", 1561.7, 1565.55], ["l20_27", 1564.85, 1569.49], ["l20_28", 1565.79, 1571.91], ["l20_29", 1569.87, 1574.87], ["l20_30", 1571.98, 1576.13], ["l20_31", 1576.28, 1581.72], ["lA_pont_femmes", 1576.29, 1581.72], ["l20_32", 1581.9, 1586.56], ["l20_33", 1585.05, 1588.73], ["l20_34", 1587.2, 1591.84], ["l20_35", 1590.03, 1597.73], ["l20_36", 1592.28, 1595.73], ["l20_37", 1596.38, 1600.82], ["l20_38", 1601.6, 1610.2]]}];
@@ -1568,6 +1603,18 @@ function blocVisible(){
   return best;
 }
 function majBarre(){ const i = blocVisible(); document.getElementById('courant').textContent = D[i].num + ' · ' + D[i].titre; }
+/* La barre n'a pas la même hauteur selon le téléphone (la marge de l'appareil
+   photo change tout). On la MESURE, et le bandeau du titre se pose dessous. */
+(function poserBandeau(){
+  const barre = document.querySelector('.barre');
+  if (!barre) return;
+  const mesurer = () => document.documentElement.style.setProperty(
+    '--hBarre', Math.round(barre.getBoundingClientRect().height) + 'px');
+  mesurer();
+  addEventListener('resize', mesurer);
+  addEventListener('orientationchange', () => setTimeout(mesurer, 220));
+  if (window.ResizeObserver) new ResizeObserver(mesurer).observe(barre);
+})();
 addEventListener('scroll', majBarre, {passive:true}); majBarre();
 document.getElementById('prec').onclick = () => { const i = Math.max(0, blocVisible() - 1); location.hash = '#bloc' + D[i].num; };
 document.getElementById('suiv').onclick = () => { const i = Math.min(D.length - 1, blocVisible() + 1); location.hash = '#bloc' + D[i].num; };
@@ -1595,6 +1642,8 @@ document.getElementById('suiv').onclick = () => { const i = Math.min(D.length - 
   if (!deja) setTimeout(montrer, 700);   /* la premiere fois, elle s'ouvre seule */
 })();
 document.getElementById('btnHaut').onclick = () => scrollTo({top:0, behavior:'smooth'});
+const bh2 = document.getElementById('btnHaut2');
+if (bh2) bh2.onclick = () => scrollTo({ top:0, behavior:'smooth' });
 /* ═══ VOIX TÉMOIN / INSTRUMENTAL, SANS AUCUN SAUT — la méthode de l'atelier ═══
    Les deux bandes jouent EN MÊME TEMPS, l'une muette. Le bouton ne fait que croiser
    les volumes en un quart de seconde : on ne change jamais de fichier, donc rien ne
