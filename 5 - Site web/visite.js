@@ -65,6 +65,7 @@
        boutons. Quand on montre tout, on ne montre rien. */
     { son: sonPerso('02-le-bouton-rouge'),
       vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
+      sauterSiAbsent: true,
       /* « demande » vient APRES la phrase : on ne coupe jamais la voix pour poser
          une question. C'est la deuxieme des trois exceptions — c'est lui qui
          decide, maintenant ou plus tard. */
@@ -659,6 +660,18 @@
     try { localStorage.setItem(CLE_OU, JSON.stringify({ k: k, quand: Date.now() })); } catch(e){}
     if (k >= ARRETS.length) return finir();
     const a = ARRETS[k];
+    /* ⚠️ 12 septembre — NE PAS PARLER DE CE QUI N'EST PLUS LA.
+       Mickael : « je ne vois meme plus le bouton rouge, pourquoi ca a disparu ? »
+       Rien n'etait casse : c'est sa regle du 11 septembre — une fois le message
+       envoye, le bouton s'effacait pour de bon, « si ca a ete envoye, c'est
+       termine ». Mais la visite, elle, continuait de consacrer un arret entier a
+       un bouton absent : une voix qui parle d'un objet invisible, et une lumiere
+       posee sur du vide.
+       Un arret marque « sauterSiAbsent » s'efface donc de lui-meme quand ce
+       qu'il montre n'est plus la. La visite a une etape de moins, et plus rien
+       de faux. */
+    if (a.sauterSiAbsent && a.vise && !document.querySelector(a.vise))
+      return jouer(k + 1, monFil);
     /* ── LES GESTES PENDANT LA PHRASE ───────────────────────────────────
        ⚠️ 12 septembre — Mickael : « pour le menu, il ne s'est pas ouvert
        automatiquement. Elle a voulu montrer des choses mais je n'ai rien vu,
@@ -752,6 +765,16 @@
     if (d === '1') localStorage.setItem(CLE_ESSAI, '1');
     if (d === '0') localStorage.removeItem(CLE_ESSAI);
   } catch(e){}
+  /* Pour ses essais : remettre le bouton rouge comme au premier jour. Il en a
+     besoin pour reecouter l'arret 2, qui disparait une fois le message envoye. */
+  window.remettreLeBoutonRouge = () => {
+    try {
+      Object.keys(localStorage).filter(k => /boheme-(recu|prevenu)/i.test(k))
+        .forEach(k => localStorage.removeItem(k));
+    } catch(e){}
+    return 'le bouton redevient rouge — recharge la page';
+  };
+
   window.__modeEssai = () => { try { return localStorage.getItem(CLE_ESSAI) === '1'; } catch(e){ return false; } };
   window.basculerModeEssai = () => {
     let on = false;
