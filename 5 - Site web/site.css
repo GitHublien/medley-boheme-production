@@ -709,3 +709,55 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
 .voile a .pastille{ position:absolute; margin:0 !important; left:-.95rem; top:.85em;
   width:.42rem !important; height:.42rem !important; }
 .voile a small{ font-weight:400; opacity:.78; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LA FRONTIÈRE DU TÉLÉPHONE (11 septembre 2026, 9 h)
+
+   Mickaël : « pourquoi tu ne fais pas une délimitation au-dessus de Bohème, en
+   dessous du point de l'appareil photo ? Une sorte de délimitation en or. Et
+   pareil pour le paysage. C'est très important de faire ces belles
+   délimitations. »
+
+   Deux étages, donc : ce qui appartient au téléphone (l'heure, la batterie,
+   l'objectif) et ce qui nous appartient. Un filet d'or les sépare, tracé
+   exactement là où le téléphone dit que sa zone s'arrête — jamais à une mesure
+   écrite en dur. Sur un iPhone à encoche ce sera plus bas, sur un vieil écran
+   plat ce sera au ras du bord : chaque appareil place le trait lui-même.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nav::before{
+  content:''; position:absolute; pointer-events:none; z-index:1;
+  background:linear-gradient(90deg, rgba(212,175,55,0) 0%, rgba(212,175,55,.35) 18%,
+    rgba(241,210,122,.7) 50%, rgba(212,175,55,.35) 82%, rgba(212,175,55,0) 100%);
+}
+
+/* ═══ DEBOUT : le filet passe sous l'objectif, au-dessus de « Bohème » ════ */
+@media (max-width:700px) and (orientation:portrait){
+  .nav::before{ left:14px; right:14px; top:env(safe-area-inset-top); height:1px; }
+
+  /* et la phrase d'accueil respire : elle n'est plus posée contre le filet */
+  .ouverture.a-image .texte{ padding-top:2rem !important; }
+  .ouverture .actions{ margin-top:1.6rem; margin-bottom:2rem; }
+}
+
+/* ═══ COUCHÉ : le filet longe le bord, à hauteur de l'objectif ════════════ */
+@media (max-height:520px) and (orientation:landscape) and (pointer:coarse){
+  .nav::before{ left:env(safe-area-inset-left); top:12px; bottom:12px; width:1px; height:auto;
+    background:linear-gradient(180deg, rgba(212,175,55,0) 0%, rgba(212,175,55,.35) 18%,
+      rgba(241,210,122,.7) 50%, rgba(212,175,55,.35) 82%, rgba(212,175,55,0) 100%); }
+
+  /* ─── L'ALIGNEMENT (sa demande n° 3) ────────────────────────────────────
+     Mesuré : l'affiche commençait à 259, la phrase à 178. Deux départs
+     différents, et la phrase collée au filet d'or. Elles partagent maintenant
+     la même largeur et le même axe : tout s'aligne, et l'air vient tout seul. */
+  .page{ padding-left:32px !important; padding-right:32px !important; }
+  .ouverture.a-image .fond,
+  .ouverture.a-image .texte{
+    max-width:min(100%, calc(78dvh * 16 / 9)) !important;
+    margin-left:auto !important; margin-right:auto !important;
+  }
+  .ouverture.a-image .texte{ padding:1.6rem 0 1.4rem !important; }
+  .ouverture.a-image .texte::before{ left:0; right:0; }
+  .ouverture .actions{ margin-top:1.5rem; margin-bottom:1.8rem; }
+  .ouverture{ padding-bottom:2.2rem !important; }
+}

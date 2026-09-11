@@ -6928,4 +6928,41 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
   .barre .b-aller:not(.la){ display:none !important; }
 }
 </style>
+
+<style>
+/* ═══ L'ATELIER : LA MÊME FRONTIÈRE D'OR (11 septembre 2026, 9 h) ═══════════
+   Mickaël : « quand j'ouvre l'atelier, des fois, il y a le machin qui est sur
+   l'appareil photo. Des fois il le fait, des fois il le fait pas. » C'est vrai :
+   la colonne n'avait aucune garde en haut, et sa hauteur change selon que le
+   bouton « aller à ton passage » existe ou non. Elle se décalait donc toute
+   seule. Ici elle est tenue, dans les deux sens, par la mesure que donne le
+   téléphone lui-même — et le filet d'or marque la frontière, comme sur le site. */
+
+/* debout : la rangée de pastilles se pose SOUS l'objectif */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: portrait){
+  .barre{ padding-top:calc(10px + env(safe-area-inset-top)) !important; position:relative; }
+  .barre::before{
+    content:''; position:absolute; left:16px; right:16px; top:env(safe-area-inset-top);
+    height:1px; pointer-events:none;
+    background:linear-gradient(90deg, rgba(212,175,55,0), rgba(212,175,55,.35) 18%,
+      rgba(241,210,122,.7) 50%, rgba(212,175,55,.35) 82%, rgba(212,175,55,0));
+  }
+}
+
+/* couché : la colonne, son filet le long du bord, et ses ronds au milieu */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
+  .barre{
+    padding-top:calc(10px + env(safe-area-inset-top)) !important;
+    padding-left:calc(10px + env(safe-area-inset-left)) !important;
+    align-content:center !important;      /* six ronds : ils se posent au milieu */
+    position:relative;
+  }
+  .barre::before{
+    content:''; position:absolute; left:env(safe-area-inset-left); top:14px; bottom:14px;
+    width:1px; pointer-events:none;
+    background:linear-gradient(180deg, rgba(212,175,55,0), rgba(212,175,55,.35) 18%,
+      rgba(241,210,122,.7) 50%, rgba(212,175,55,.35) 82%, rgba(212,175,55,0));
+  }
+}
+</style>
 </body>
