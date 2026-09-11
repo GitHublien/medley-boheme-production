@@ -290,6 +290,12 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   font-size:16px; font-weight:700;
   transition:transform .4s cubic-bezier(0.32,0.72,0,1), opacity .4s; }
 #pied button:active{ transform:scale(.97); }
+/* « Suivant » : gris tant que le geste n'est pas fait, vert dès qu'il l'est */
+#pied button.bloque{ background:rgba(255,255,255,.05) !important; color:rgba(255,255,255,.3) !important;
+  border-color:rgba(255,255,255,.12) !important; cursor:not-allowed; }
+#pied button.pret{ background:rgba(120,220,90,.2) !important; color:#c8ff8a !important;
+  border-color:rgba(120,220,90,.6) !important; animation:pretBat 2.4s ease-in-out infinite; }
+@keyframes pretBat{ 0%,100%{ box-shadow:0 0 0 0 rgba(120,220,90,.4) } 50%{ box-shadow:0 0 0 7px rgba(120,220,90,0) } }
 #bPrec{ border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.05);
   color:var(--encre); }
 #bSuiv{ border:1px solid rgba(212,175,55,.65); background:rgba(255,200,20,.2);
@@ -641,49 +647,105 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
 </section>
 
 <!-- ═══ CHAPITRE · LES MISES À JOUR ═══ -->
-<section class="chapitre" data-ch="maj">
-  <h1><span class="picto">⟳</span>Les mises à jour</h1>
-  <p class="sous">Le medley n'est pas encore fini. Mickaël le construit petit à petit,
-    et l'application se met à jour toute seule quand tu appuies sur un bouton.
-    Aucune réinstallation, jamais.</p>
+<!-- Le chapitre « mise à jour » a été retiré le 11 septembre 2026.
+     Mickaël : « la mise à jour, pas la peine — elle est ailleurs maintenant. »
+     Le bouton n'existe plus dans l'atelier : le guide n'en parle donc plus. -->
 
+
+<!-- ═══ CHAPITRE 8 · C'EST À TOI ═══ -->
+
+<!-- ═══ LE DOIGT POSÉ (11 septembre 2026) ═══
+     Mickaël : « tu montres carrément tous les logos et tu dis : reste appuyé
+     dessus. » C'est le premier geste à connaître, avant tous les autres. -->
+<section class="chapitre" data-ch="doigt">
+  <h1><span class="picto">☝</span>Un doigt posé, et j'explique</h1>
+  <p class="sous">Voilà le geste le plus utile de tout l'atelier, et personne ne le
+    devine tout seul : sur <b>n'importe quelle commande</b>, garde le doigt appuyé
+    une seconde — et elle te dit à quoi elle sert.</p>
   <div class="ecran-cadre"><div class="ecran">
-    <div class="bandeau"><span class="n">⟳</span><span class="t">Le bouton dans l'atelier</span><span class="h"></span></div>
-    <div class="scene-sim" style="height:auto;padding:24px 16px;overflow:visible;">
-      <div class="pupitre" style="padding:0;">
-        <button class="btn-sim" style="pointer-events:none;"><i class="pic" style="background-image:url(site-images/icones-karaoke/maj.png)"></i> Mise à jour</button>
+    <div class="bandeau"><span class="n">☝</span><span class="t">Essaie ici</span><span class="h"></span></div>
+    <div class="scene-sim" style="height:auto;padding:22px 16px;overflow:visible;">
+      <div class="pupitre" style="padding:0;gap:10px;flex-wrap:wrap;">
+        <button class="btn-sim appelle" id="simLong1"><i class="pic" style="background-image:url(site-images/icones-karaoke/blocs.png)"></i>Blocs</button>
+        <button class="btn-sim" id="simLong2"><i class="pic" style="background-image:url(site-images/icones-karaoke/micro.png)"></i>Voix témoins</button>
+        <button class="btn-sim" id="simLong3"><i class="pic" style="background-image:url(site-images/icones-karaoke/style.png)"></i>Style</button>
       </div>
-      <p style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
-        Il est en bas de l'atelier, avec les autres commandes.<br>
-        Un appui, et tu as la toute dernière version.</p>
+      <p id="bulleLong" style="text-align:center;color:#8a8474;font-size:14px;margin:18px 0 0;line-height:1.6;">
+        Garde le doigt appuyé sur l'une d'elles…</p>
     </div>
   </div></div>
-
-  <div class="consigne"><span class="rond">💡</span>
-    <span><b>Appuie dessus de temps en temps</b>, par exemple avant chaque séance de
-    travail. Si quelque chose de nouveau est arrivé, il l'installe en deux secondes.</span></div>
-
+  <div class="consigne" id="cDoigt"><span class="rond">👆</span>
+    <span>Reste appuyé <b>une seconde</b> sur une des trois commandes.</span></div>
   <div class="cases">
-    <!-- 10 sept : ce cadre disait encore « jusqu'au Blues du Businessman, la suite
-         arrivera » — le medley est COMPLET depuis le 6 septembre. -->
-    <div class="case"><b>Où en est le medley aujourd'hui</b>
-      <p id="ouEnEst">L'atelier contient <b>le medley en entier</b> : les vingt blocs, de
-      la narration d'ouverture au dernier mot d'<i>Aimer</i>, vingt-six minutes cinquante,
-      réglés phrase par phrase. Les mises à jour servent maintenant à la mise en scène,
-      qui s'affine jusqu'au dernier jour.</p></div>
-    <div class="case"><b>Ce que dit le bouton</b>
-      <p>Soit « ✔ tu as déjà la dernière version », soit « 🎉 une nouvelle version est
-      arrivée » et il l'installe aussitôt. Tu n'as rien d'autre à faire.</p></div>
-    <div class="case"><b>Tes réglages sont gardés</b>
-      <p>Ton style, ton aide personnelle, ton prénom : tout est conservé d'une mise à
-      jour à l'autre. Tu ne repars jamais de zéro.</p></div>
-    <div class="case"><b>Le conseil de Mickaël</b>
-      <p>La première fois, écoute le medley <b>en entier</b> : tu comprendras l'ensemble
-      et l'enchaînement. Ensuite, pour travailler, saute directement à tes passages.</p></div>
+    <div class="case"><b>Un appui normal ne dit rien</b>
+      <p>Il fait le geste, tout de suite, sans t'interrompre. C'est voulu : quand
+      tu travailles, tu n'as pas envie qu'on t'explique.</p></div>
+    <div class="case"><b>Le doigt posé, à tout moment</b>
+      <p>Ce n'est pas réservé à la première fois. Dans six mois, si tu as oublié
+      un bouton, pose le doigt dessus : il te répondra.</p></div>
   </div>
 </section>
 
-<!-- ═══ CHAPITRE 8 · C'EST À TOI ═══ -->
+<!-- ═══ LE VISAGE ═══
+     Mickaël : « tu expliques ce que c'est que le visage, tu le montres carrément
+     derrière. Il n'est en fonction que lorsqu'on n'utilise pas l'atelier. » -->
+<section class="chapitre" data-ch="visage">
+  <h1><span class="picto">◉</span>Le visage</h1>
+  <p class="sous">Le visage de l'ouverture revient te tenir compagnie. C'est
+    <b>une décoration, rien d'autre</b> : il flotte en fond quand l'atelier est au
+    repos, doucement, jamais deux fois au même endroit.</p>
+  <div class="ecran-cadre"><div class="ecran" style="position:relative;overflow:hidden;">
+    <video id="simVisage" playsinline muted loop preload="metadata"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease;"></video>
+    <div class="bandeau" style="position:relative;z-index:2;"><span class="n">◉</span><span class="t">Le visage</span><span class="h"></span></div>
+    <div class="scene-sim" style="height:auto;padding:22px 16px;overflow:visible;position:relative;z-index:2;">
+      <div class="pupitre" style="padding:0;">
+        <button class="btn-sim grand appelle" id="simVisageBtn"><i class="pic" style="background-image:url(site-images/icones-karaoke/aide.png)"></i>Le visage</button>
+      </div>
+      <p id="visageDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
+        Appuie : il s'allume derrière.</p>
+    </div>
+  </div></div>
+  <div class="consigne" id="cVisage"><span class="rond">👆</span>
+    <span>Appuie sur <b>Le visage</b> pour le voir apparaître.</span></div>
+  <div class="cases">
+    <div class="case"><b>Il s'efface quand tu travailles</b>
+      <p>Dès que l'atelier se met en route — la musique, les paroles qui s'allument
+      — il recule tout seul et te laisse la place. Il ne gêne jamais.</p></div>
+    <div class="case"><b>Allumé ou endormi, ça se voit</b>
+      <p>Le bouton est <b>en or</b> quand il est là, <b>gris et barré</b> quand il
+      dort. Si tu n'en veux pas, éteins-le : il ne reviendra plus.</p></div>
+  </div>
+</section>
+
+<!-- ═══ ALLER À TON PASSAGE ═══ -->
+<section class="chapitre" data-ch="passage">
+  <h1><span class="picto">⏩</span>Aller à ton passage</h1>
+  <p class="sous">Celui-là ne se montre pas toujours, et c'est fait exprès : il
+    n'apparaît que <b>lorsque ton entrée est encore loin</b> — plus de quarante-cinq
+    secondes. Un appui, et tu sautes trois phrases avant la tienne.</p>
+  <div class="ecran-cadre"><div class="ecran">
+    <div class="bandeau"><span class="n">⏩</span><span class="t">Quand il apparaît</span><span class="h"></span></div>
+    <div class="scene-sim" style="height:auto;padding:22px 16px;overflow:visible;">
+      <div class="pupitre" style="padding:0;">
+        <button class="btn-sim grand appelle" id="simPassage"><i class="pic" style="background-image:url(site-images/icones-karaoke/passage.png)"></i>Aller à ton passage</button>
+      </div>
+      <p id="passageDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
+        Appuie pour voir ce qu'il fait.</p>
+    </div>
+  </div></div>
+  <div class="consigne" id="cPassage"><span class="rond">👆</span>
+    <span>Appuie sur <b>Aller à ton passage</b>.</span></div>
+  <div class="cases">
+    <div class="case"><b>Pourquoi trois phrases avant</b>
+      <p>Pour que tu entendes ce qui amène ton entrée. Tomber pile sur sa première
+      note, sans élan, c'est le meilleur moyen de la rater.</p></div>
+    <div class="case"><b>Il disparaît avec l'étoile</b>
+      <p>Sans ton aide personnelle, l'atelier ne sait plus qui tu es — « ton
+      passage » n'a plus de sens. Le bouton s'en va avec elle.</p></div>
+  </div>
+</section>
+
 <section class="chapitre" data-ch="fin">
   <h1><span class="picto">🎤</span>Tu sais tout</h1>
   <p class="sous">▶ pour lancer · la barre pour se déplacer · ⟨ ⟩ pour changer de
@@ -892,6 +954,9 @@ function reussir(idConsigne, texte){
   c.classList.add('reussi');
   c.querySelector('.rond').textContent = '✓';
   c.querySelector('span:last-child').innerHTML = texte;
+  /* le geste est fait : le chapitre est acquis, et « Suivant » passe au vert */
+  const sec = c.closest('.chapitre');
+  if (sec && sec.dataset.ch) noterFait(sec.dataset.ch);
 }
 
 /* ─── LES CHAPITRES ─────────────────────────────────────────── */
@@ -902,6 +967,41 @@ let ici = 0;
 const points = document.getElementById('points');
 actifs.forEach(() => points.appendChild(document.createElement('i')));
 
+/* ═══ LE GUIDE EST VERROUILLÉ — LA PREMIÈRE FOIS SEULEMENT ═══════════════════
+   Mickaël, 11 septembre 2026 : « je veux que ce soit un véritable guide. Tant
+   qu'il n'a pas fait le geste, il ne peut pas passer au suivant. En vert quand
+   c'est ok, en gris quand on ne peut pas y aller. Et quand on y retourne, ça
+   reste au vert. »
+
+   Et sur ma proposition, qu'il a validée : la PREMIÈRE visite est un
+   apprentissage, donc on verrouille. Les suivantes sont une consultation — on
+   revient chercher une chose précise — donc on circule librement. Les coches
+   vertes, elles, restent : elles disent ce qu'on a déjà fait. */
+const CLE_FAITS = 'boheme-guide-faits';
+const CLE_FINI  = 'boheme-guide-fini';
+let faits = new Set();
+try { faits = new Set(JSON.parse(localStorage.getItem(CLE_FAITS) || '[]')); } catch(e){}
+const dejaFini = (() => { try { return localStorage.getItem(CLE_FINI) === '1'; } catch(e){ return false; } })();
+
+/* un chapitre qui porte une consigne demande un geste ; les autres se lisent */
+const aConsigne = c => !!c.querySelector('.consigne');
+const estFait   = c => faits.has(c.dataset.ch);
+function noterFait(ch){
+  faits.add(ch);
+  try { localStorage.setItem(CLE_FAITS, JSON.stringify([...faits])); } catch(e){}
+  majSuivant();
+}
+function majSuivant(){
+  const b = document.getElementById('bSuiv');
+  if (!b) return;
+  const c = actifs[ici];
+  const bloque = !dejaFini && aConsigne(c) && !estFait(c);
+  b.disabled = bloque;
+  b.classList.toggle('bloque', bloque);
+  b.classList.toggle('pret', !bloque);
+  b.title = bloque ? 'fais d\u2019abord le geste demandé' : '';
+}
+
 function allerChapitre(i){
   arreterExtrait();
   ici = Math.max(0, Math.min(actifs.length - 1, i));
@@ -909,10 +1009,13 @@ function allerChapitre(i){
   actifs[ici].classList.add('ici');
   [...points.children].forEach((p, j) => {
     p.classList.toggle('ici', j === ici);
-    p.classList.toggle('fait', j < ici);
+    p.classList.toggle('fait', j < ici || estFait(actifs[j]));
   });
   document.getElementById('bPrec').disabled = (ici === 0);
   document.getElementById('bSuiv').style.visibility = (ici === actifs.length - 1) ? 'hidden' : 'visible';
+  majSuivant();
+  /* arrivé au bout : le guide est fini, on ne reverrouille plus jamais */
+  if (ici === actifs.length - 1){ try { localStorage.setItem(CLE_FINI, '1'); } catch(e){} }
   window.scrollTo({ top:0, behavior:'smooth' });
   const prepare = PREPARATIONS[actifs[ici].dataset.ch];
   if (prepare) prepare();
@@ -1192,6 +1295,82 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
     reussir('cBande', voix
       ? 'Et te revoilà avec les voix témoins. C\'est aussi simple que ça.'
       : 'Te voilà sur l\'instrumental — comme au concert. Réappuie pour retrouver les voix témoins.');
+  });
+})();
+
+/* ── LE DOIGT POSÉ : on attend un vrai appui long ─────────────────────── */
+(function(){
+  const bulle = document.getElementById('bulleLong');
+  const MOTS = {
+    simLong1:['Blocs', 'la liste des titres du medley — tu choisis, tu y es.'],
+    simLong2:['Voix témoins', 'la bande avec des voix pour te guider, ou sans.'],
+    simLong3:['Style', 'l\u2019habillage des paroles : Projecteur, Néon, 3D…'],
+  };
+  Object.keys(MOTS).forEach(id => {
+    const b = document.getElementById(id);
+    if (!b) return;
+    let t = null, long = false;
+    const dire = () => {
+      long = true;
+      b.classList.remove('appelle');
+      if (bulle) bulle.innerHTML = '<b style="color:#f1d27a">' + MOTS[id][0] + '</b> — ' + MOTS[id][1];
+      reussir('cDoigt', 'C\u2019est exactement ça. Ce geste marche sur toutes les commandes de l\u2019atelier, à tout moment.');
+    };
+    b.addEventListener('touchstart', () => { long = false; t = setTimeout(dire, 600); }, { passive:true });
+    ['touchend','touchmove','touchcancel'].forEach(ev =>
+      b.addEventListener(ev, () => clearTimeout(t), { passive:true }));
+    /* à la souris : on garde le bouton enfoncé, ou clic droit */
+    b.addEventListener('mousedown', () => { long = false; t = setTimeout(dire, 600); });
+    ['mouseup','mouseleave'].forEach(ev => b.addEventListener(ev, () => clearTimeout(t)));
+    b.addEventListener('contextmenu', e => { e.preventDefault(); dire(); });
+    b.addEventListener('click', () => {
+      if (long){ long = false; return; }
+      if (bulle) bulle.textContent = 'Un appui normal ne dit rien — il fait le geste. Reste appuyé une seconde pour l\u2019explication.';
+    });
+  });
+})();
+
+/* ── LE VISAGE : on l'allume pour de vrai, derrière ───────────────────── */
+(function(){
+  const b = document.getElementById('simVisageBtn');
+  const v = document.getElementById('simVisage');
+  const d = document.getElementById('visageDit');
+  if (!b || !v) return;
+  const FILMS = ['eveil','cote','cadre','eclats-1'];
+  let la = false;
+  b.addEventListener('click', () => {
+    b.classList.remove('appelle');
+    la = !la;
+    if (la){
+      try {
+        v.src = 'media/presence/' + FILMS[Math.floor(Math.random() * FILMS.length)] + '.mp4';
+        v.play().catch(()=>{});
+      } catch(e){}
+      v.style.opacity = '.55';
+      b.style.borderColor = 'rgba(212,175,55,.8)';
+      b.style.background = 'rgba(212,175,55,.18)';
+      if (d) d.innerHTML = 'Le voilà, derrière. Il bouge doucement, et il n\u2019est jamais deux fois au même endroit.';
+      reussir('cVisage', 'Tu le vois : il vit en fond, sans jamais gêner la lecture. Réappuie pour l\u2019éteindre.');
+    } else {
+      v.style.opacity = '0';
+      setTimeout(() => { try { v.pause(); } catch(e){} }, 900);
+      b.style.borderColor = '';
+      b.style.background = '';
+      if (d) d.textContent = 'Il dort. Le bouton devient gris et barré dans l\u2019atelier.';
+    }
+  });
+})();
+
+/* ── ALLER À TON PASSAGE : on montre le saut ──────────────────────────── */
+(function(){
+  const b = document.getElementById('simPassage');
+  const d = document.getElementById('passageDit');
+  if (!b) return;
+  b.addEventListener('click', () => {
+    b.classList.remove('appelle');
+    if (d) d.innerHTML = 'La musique vient de sauter <b style="color:#f1d27a">trois phrases avant ton entrée</b> : '
+      + 'tu entends ce qui l\u2019amène, puis tu chantes.';
+    reussir('cPassage', 'Voilà ce qu\u2019il fait. Dans l\u2019atelier, il n\u2019apparaît que lorsque ton entrée est encore loin.');
   });
 })();
 
