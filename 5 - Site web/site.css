@@ -626,3 +626,84 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   .voile a{ padding:.36rem 0; font-size:1.15rem; }
   .voile a small{ font-size:.58rem; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LES FINITIONS D'OR (11 septembre 2026, 8 h)
+
+   Mickaël : « si tu fais une délimitation, mets-moi un truc doré, comme ça c'est
+   joli — là, pour moi, ce n'est pas fini. Agrandis Accueil, Atelier, Textes…
+   et fais un autre trait en or, et en dessous, dans une sorte de carré, tu mets
+   le rond. Il faut que le texte ait la même valeur. Il faut que ce soit beau. »
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── le trait d'or : un vrai filet, pas un trait de crayon ──────────────── */
+.nav::after, .bas::before{
+  content:''; position:absolute; pointer-events:none;
+  background:linear-gradient(90deg, rgba(212,175,55,0) 0%, rgba(212,175,55,.55) 12%,
+    rgba(241,210,122,.95) 50%, rgba(212,175,55,.55) 88%, rgba(212,175,55,0) 100%);
+  box-shadow:0 0 10px rgba(212,175,55,.45);
+}
+.nav{ position:fixed; }
+.nav::after{ left:0; right:0; bottom:-1px; height:1.5px; }
+.bas::before{ left:0; right:0; top:-1px; height:1.5px; }
+
+/* ── la case de la musique et du menu ───────────────────────────────────── */
+.nav .basNav{ display:flex; align-items:center; gap:.45rem; }
+
+/* ═══ DEBOUT ══════════════════════════════════════════════════════════════ */
+@media (max-width:700px) and (orientation:portrait){
+  /* le noir monte jusqu'au bord : on ne voit plus la moindre lisière au-dessus */
+  .nav{ background:#080706 !important; }
+  .nav .basNav{ margin-left:auto; }
+
+  /* la bande du bas porte le même filet, et son trait ne touche plus les boutons */
+  .bas{ background:#080706 !important; position:fixed; }
+  body{ padding-bottom:calc(116px + env(safe-area-inset-bottom)); }
+  .ouverture{ padding-bottom:calc(122px + env(safe-area-inset-bottom)) !important; }
+  .ouverture .actions{ margin-bottom:1.4rem; }
+
+  /* « Six voix, vingt-six minutes… » : sa propre zone, fermée par un filet d'or */
+  .ouverture.a-image .texte{ padding:1.6rem 1.1rem 1.4rem !important; position:relative; }
+  .ouverture.a-image .texte::before{
+    content:''; position:absolute; left:1.1rem; right:1.1rem; top:0; height:1px;
+    background:linear-gradient(90deg, rgba(212,175,55,0), rgba(212,175,55,.5) 30%,
+      rgba(212,175,55,.5) 70%, rgba(212,175,55,0));
+  }
+}
+
+/* ═══ COUCHÉ : le rail respire, et il est rangé ═══════════════════════════ */
+@media (max-height:520px) and (orientation:landscape) and (pointer:coarse){
+  .nav{ background:#080706 !important; }
+  /* le filet d'or passe à droite : c'est là que le rail se termine */
+  .nav::after{ left:auto; right:-1px; top:0; bottom:0; width:1.5px; height:auto;
+    background:linear-gradient(180deg, rgba(212,175,55,0) 0%, rgba(212,175,55,.55) 10%,
+      rgba(241,210,122,.95) 50%, rgba(212,175,55,.55) 90%, rgba(212,175,55,0) 100%);
+    box-shadow:0 0 10px rgba(212,175,55,.45); }
+
+  /* les pages, en plus grand : c'est le cœur du rail */
+  .nav a.l{ font-size:1.02rem !important; padding:.46rem .6rem !important; gap:.7rem !important; }
+  .nav a.l .ico{ width:1.15em; height:1.15em; }
+  .nav .marque span{ font-size:1.02rem; }
+
+  /* la case du bas : un trait d'or, puis la musique et le menu, centrés */
+  .nav .basNav{
+    margin:auto 0 0 !important; justify-content:center; gap:14px;
+    padding:.7rem 0 .2rem; position:relative;
+  }
+  .nav .basNav::before{
+    content:''; position:absolute; left:-4px; right:-4px; top:0; height:1px;
+    background:linear-gradient(90deg, rgba(212,175,55,0), rgba(212,175,55,.6) 25%,
+      rgba(241,210,122,.85) 50%, rgba(212,175,55,.6) 75%, rgba(212,175,55,0));
+  }
+  .nav .musique{ margin:0 !important; order:0; }
+  .nav .burger{ margin:0 !important; order:1; }
+}
+
+/* ═══ LE MENU : chaque ligne a exactement le même poids ═══════════════════ */
+.voile a{ position:relative; }
+.voile a span{ font-weight:500; }
+/* la pastille rouge ne pousse plus le texte : elle se pose à côté, sans rien bouger */
+.voile a .pastille{ position:absolute; margin:0 !important; left:-.95rem; top:.85em;
+  width:.42rem !important; height:.42rem !important; }
+.voile a small{ font-weight:400; opacity:.78; }

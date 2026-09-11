@@ -53,7 +53,11 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   nav.innerHTML = '<a class="marque" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><img src="icone-192.png" alt=""><span>Bohème</span></a>'
     + (surAccueil ? '' : '<a class="rond maison" href="' + lien(PAGES[0]) + '" aria-label="Accueil" title="Accueil"><i class="ico ico-maison"></i></a>')
     + PAGES.slice(0, 7).map(p => '<a class="l' + (p.f === ici ? ' ici' : '') + '" href="' + lien(p) + '"><i class="ico ico-' + p.i + '"></i>' + p.t + '</a>').join('')
-    + '<button class="burger rond" aria-label="Menu"><i></i><i></i></button>';
+    /* 11 sept, 8 h — Mickaël : « tu fais un autre trait en or, et en dessous, dans
+       une sorte de carré, tu mets le rond. » La musique et le menu vivent donc dans
+       leur propre case, séparée des pages par un trait d'or. Debout, cette case se
+       range simplement à droite ; couché, elle se pose au pied de la colonne. */
+    + '<div class="basNav"><button class="burger rond" aria-label="Menu"><i></i><i></i></button></div>';
   const voile = document.createElement('div'); voile.className = 'voile';
   voile.innerHTML = '<button class="fermer" aria-label="Fermer le menu"><i></i><i></i></button><nav>' + PAGES.map(p => '<a href="' + lien(p) + '"><span><i class="ico ico-' + p.i + '"></i>' + p.t + '</span><small>' + p.s + '</small></a>').join('') + '</nav>';
   const bas = document.createElement('div'); bas.className = 'bas';
@@ -307,9 +311,13 @@ const VERSION_SITE = '11/09/2026 · 01h10';
        trouve du premier coup d'œil, sur les trois dispositions (barre horizontale sur
        ordinateur, réduite sur téléphone debout, colonne à gauche en paysage). */
     /* ordre voulu : ⌂ accueil · ♪ musique · … · ≡ menu */
-    const apres = nav.querySelector('.rond.maison') || nav.querySelector('.marque');
-    if (apres && apres.parentNode === nav) apres.insertAdjacentElement('afterend', boite);
-    else nav.appendChild(boite);
+    const case_ = nav.querySelector('.basNav');
+    if (case_) case_.insertBefore(boite, case_.firstChild);          /* ♪ puis ≡, dans leur case */
+    else {
+      const apres = nav.querySelector('.rond.maison') || nav.querySelector('.marque');
+      if (apres && apres.parentNode === nav) apres.insertAdjacentElement('afterend', boite);
+      else nav.appendChild(boite);
+    }
 
     const rond   = boite.querySelector('.mRond');
     const ico    = boite.querySelector('.mIco');
