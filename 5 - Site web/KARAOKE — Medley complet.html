@@ -6914,6 +6914,18 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
    « les logos ne sont pas au centre ». Ils le sont. */
 @media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
   .barre > *{ justify-self:center !important; }
+
+  /* Mickaël, 5 h 40 : « pourquoi le trait, tu ne le rapproches pas ? Il faut que ce
+     soit délimité au niveau de la zone sombre. » La colonne se resserre sur ses ronds :
+     la marge de la caméra + 10, le rond de 44, 10 — et la ligne dorée est le bord
+     même de la zone sombre, plus de dégradé qui traîne. */
+  :root{ --rail: calc(64px + env(safe-area-inset-left)); }
+  .barre{ background:rgba(6,5,4,.97) !important; border-right:1px solid rgba(212,175,55,.32) !important;
+          padding-right:10px !important; }
+
+  /* le rond vide : le bouton « aller à ton passage » n'a rien à faire là tant qu'il
+     n'y a pas de passage à rejoindre (sa règle display:none était écrasée) */
+  .barre .b-aller:not(.la){ display:none !important; }
 }
 </style>
 </body>
