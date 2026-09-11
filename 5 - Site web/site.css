@@ -566,7 +566,16 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
   .voile{ padding-bottom:calc(env(safe-area-inset-bottom) + 130px); }
 }
 
-/* la même prudence partout où le téléphone réserve de la place en haut */
-@media (max-width:1100px){
+/* La même prudence partout où le téléphone réserve de la place en haut —
+   MAIS DEBOUT SEULEMENT. Mesuré le 11/09 : couché, cette règle arrivait après
+   celle du rail et lui imposait top:10px, alors que le rail se remonte de la
+   moitié de sa hauteur. La colonne commençait donc à −148 : coupée en haut.
+   Mickaël : « le paysage ne doit pas être la même chose que le portrait. » */
+@media (max-width:1100px) and (orientation:portrait){
   .nav{ top:calc(env(safe-area-inset-top) + 10px); }
+}
+/* couché : le rail reste centré, et il ne mord jamais sur la caméra */
+@media (max-height:520px) and (orientation:landscape) and (pointer:coarse){
+  .nav{ top:50% !important; bottom:auto !important; translate:0 -50% !important;
+        margin-top:calc(env(safe-area-inset-top) / 2) !important; }
 }
