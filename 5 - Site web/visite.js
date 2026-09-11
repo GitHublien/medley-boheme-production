@@ -43,8 +43,14 @@
             || localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
   const voix = VOIX_DE[qui] || 'leda';
 
-  const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3';
-  const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3';
+  /* ⚠️ QUAND UNE VOIX EST REFAITE, LE FICHIER GARDE SON NOM — et le telephone
+     sert alors l'ancienne, qu'il garde en reserve pendant dix minutes. On colle
+     donc un numero derriere l'adresse : il change le jour ou je refabrique des
+     voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
+     (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
+  const VOIX_VERSION = '12091';
+  const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
+  const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
   /* ── les douze arrêts ─────────────────────────────────────────────────── */
   /* Chaque arret porte un nom : c'est ce que Mickael verra dans le mode essai,
