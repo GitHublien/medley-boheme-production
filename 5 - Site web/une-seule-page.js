@@ -103,9 +103,33 @@
         (e.classList && GARDES.some(c => e.classList.contains(c)))
           || e.tagName === 'FOOTER' || e.tagName === 'SCRIPT' || e.tagName === 'AUDIO');
       [...ici.children].forEach(e => { if (!garde.includes(e)) e.remove(); });
+      /* ⚠️ 11 septembre, 18 h 30 — LES SCRIPTS DE LA PAGE DOIVENT REVIVRE.
+         Mickaël : « voir le plan en grand ne marche pas, il ne se passe rien. »
+         C'était juste : ce bouton est servi par un script écrit DANS la page des
+         documents, et je ne rejouais pas les scripts. Le bouton arrivait donc
+         sans personne pour l'écouter.
+
+         On les rejoue maintenant — en les recopiant, car un script inséré tel
+         quel ne s'exécute jamais. Ceux qui portent une adresse (src) sont
+         ignorés : ils sont déjà chargés une fois pour toutes. */
+      const scripts = [];
       [...corpsNeuf.children].forEach(e => {
-        if (e.tagName === 'SCRIPT') return;            /* on ne rejoue pas les scripts */
-        ici.appendChild(document.importNode(e, true));
+        if (e.tagName === 'SCRIPT'){ scripts.push(e); return; }
+        const clone = document.importNode(e, true);
+        ici.appendChild(clone);
+        /* un script niché dans le contenu compte aussi */
+        clone.querySelectorAll && clone.querySelectorAll('script').forEach(x => scripts.push(x));
+      });
+      scripts.forEach(vieux => {
+        if (vieux.src) return;                        /* déjà chargé, une fois pour toutes */
+        const neuf = document.createElement('script');
+        neuf.textContent = vieux.textContent;
+        neuf.dataset.deLaPage = '1';
+        document.body.appendChild(neuf);
+      });
+      /* on nettoie les scripts de la page précédente : ils ont fait leur office */
+      document.querySelectorAll('script[data-de-la-page]').forEach((x, i, l) => {
+        if (i < l.length - scripts.length) x.remove();
       });
 
       document.title = neuve.title || document.title;
