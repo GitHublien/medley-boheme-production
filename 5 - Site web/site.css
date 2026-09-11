@@ -848,3 +848,140 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
 .bas a.duNeuf::before{ inset:0; border-radius:999px; border-left:0;
   background:linear-gradient(180deg, rgba(255,77,77,.20), rgba(255,77,77,0) 75%);
   box-shadow:inset 0 2px 0 rgba(255,90,90,.75); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LES TROIS COULEURS (11 septembre 2026, 11 h)
+
+   Mickaël : « le rouge, ça veut dire que ce n'est pas bon. Pour la mise à jour,
+   peut-être une autre couleur, un rosé, une jolie couleur. Par contre, tant
+   qu'il ne m'a pas envoyé, ça, c'est rouge. »
+
+   Une couleur = une idée, et jamais deux idées pour la même couleur :
+     • ROUGE  — j'attends quelque chose de toi (dis-moi que tout s'ouvre).
+     • ROSÉ   — il y a du nouveau à voir. Ce n'est pas un problème, c'est un cadeau.
+     • VERT   — c'est fait, tu n'as plus rien à faire.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── rouge : j'attends de toi ───────────────────────────────────────────── */
+.btn.aFaireRouge{
+  background:linear-gradient(180deg,#ff7b6e,#d8453a) !important; color:#2a0c08 !important;
+  border-color:rgba(255,123,110,.6) !important;
+  box-shadow:0 0 22px rgba(255,77,77,.35);
+  animation:battementRouge 2.6s ease-in-out infinite;
+}
+@keyframes battementRouge{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,77,77,.45) } 50%{ box-shadow:0 0 0 9px rgba(255,77,77,0) } }
+
+/* ── vert : c'est fait ──────────────────────────────────────────────────── */
+.btn.faitVert{
+  background:linear-gradient(180deg,#a9e6a0,#5aa84e) !important; color:#0b2408 !important;
+  border-color:rgba(150,224,140,.55) !important; animation:none; box-shadow:none;
+}
+
+/* la petite porte « j'ai un souci » : discrète, jamais alarmante */
+.btn.souci{ margin-top:.55rem; font-size:.92rem; opacity:.8; }
+.btn.souci:hover{ opacity:1; }
+.motRecu{ color:var(--gris2); font-size:.85rem; line-height:1.5; margin:.7rem 0 0; }
+
+/* ── rosé : du nouveau à voir (remplace le rouge du souffle) ─────────────── */
+.duNeuf::before{
+  background:linear-gradient(90deg, rgba(255,150,196,.24) 0%, rgba(255,150,196,.12) 38%,
+    rgba(255,150,196,.03) 68%, rgba(255,150,196,0) 100%) !important;
+  border-left-color:rgba(255,165,205,.9) !important;
+  box-shadow:-6px 0 16px -6px rgba(255,150,196,.6) !important;
+}
+.duNeuf .pastille{ background:#ff9ec4 !important; box-shadow:0 0 8px rgba(255,158,196,.9) !important; }
+.bas a.duNeuf::before{
+  background:linear-gradient(180deg, rgba(255,150,196,.22), rgba(255,150,196,0) 75%) !important;
+  box-shadow:inset 0 2px 0 rgba(255,165,205,.8) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LE LECTEUR VIDÉO — noir et or, sans un mot du système (11 septembre 2026)
+   Voir video.js pour le pourquoi. Ici, rien que l'allure.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.vScene{
+  position:fixed; inset:0; z-index:120; display:none;
+  background:#050505; opacity:0; transition:opacity .32s var(--lent);
+  align-items:center; justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 58px) calc(env(safe-area-inset-right) + 10px)
+          calc(env(safe-area-inset-bottom) + 86px) calc(env(safe-area-inset-left) + 10px);
+}
+.vScene.la{ display:flex; opacity:1; }
+body.vOuvert{ overflow:hidden; }
+
+.vScene .vCadre{ width:100%; height:100%; display:grid; place-items:center; }
+.vScene .vFilm{ max-width:100%; max-height:100%; width:auto; height:auto;
+  background:#000; border-radius:.5rem; box-shadow:0 30px 90px rgba(0,0,0,.8); }
+
+/* la flèche de retour, en haut à gauche — le seul geste à connaître */
+.vScene .vRetour{
+  position:absolute; top:calc(env(safe-area-inset-top) + 10px);
+  left:calc(env(safe-area-inset-left) + 10px);
+  width:46px; height:46px; border-radius:50%; cursor:pointer; z-index:2;
+  border:1px solid rgba(212,175,55,.45); background:rgba(212,175,55,.1);
+  display:grid; place-items:center;
+}
+.vScene .vRetour i{ position:absolute; width:15px; height:1.6px; background:var(--or2); border-radius:2px; }
+.vScene .vRetour i:first-child{ transform:translate(-3px,-4px) rotate(-45deg); }
+.vScene .vRetour i:last-child{ transform:translate(-3px,4px) rotate(45deg); }
+
+/* la barre du bas : lecture, temps, le rail où l'on se promène */
+.vScene .vBarre{
+  position:absolute; left:calc(env(safe-area-inset-left) + 14px);
+  right:calc(env(safe-area-inset-right) + 14px);
+  bottom:calc(env(safe-area-inset-bottom) + 16px);
+  display:flex; align-items:center; gap:.7rem; z-index:2;
+  background:rgba(10,9,8,.9); border:1px solid rgba(212,175,55,.3);
+  border-radius:999px; padding:.45rem .9rem .45rem .5rem;
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+}
+.vScene .vJouer{
+  width:42px; height:42px; flex:none; border-radius:50%; cursor:pointer; position:relative;
+  border:1px solid rgba(212,175,55,.45); background:rgba(212,175,55,.12);
+}
+/* le triangle de lecture, dessiné — il devient deux barres quand ça joue */
+.vScene .vJouer::before{
+  content:''; position:absolute; inset:0; margin:auto; width:0; height:0;
+  border-left:13px solid var(--or2); border-top:8px solid transparent;
+  border-bottom:8px solid transparent; transform:translateX(2px);
+}
+.vScene.joue .vJouer::before{
+  width:12px; height:15px; border:0; transform:none;
+  background:linear-gradient(90deg, var(--or2) 0 4px, transparent 4px 8px, var(--or2) 8px 12px);
+}
+.vScene .vTemps, .vScene .vFin{ font:500 .78rem system-ui; color:var(--gris); flex:none; min-width:2.4rem; }
+.vScene .vFin{ text-align:right; }
+.vScene .vRail{
+  position:relative; flex:1; height:30px; display:flex; align-items:center;
+  cursor:pointer; touch-action:none;
+}
+.vScene .vRail::before{
+  content:''; position:absolute; left:0; right:0; height:4px; border-radius:999px;
+  background:rgba(255,255,255,.14);
+}
+.vScene .vFait{
+  position:absolute; left:0; height:4px; border-radius:999px; width:0;
+  background:linear-gradient(90deg,#c9a13a,#f1d27a);
+  box-shadow:0 0 10px rgba(212,175,55,.5);
+}
+.vScene .vBoule{
+  position:absolute; left:0; width:13px; height:13px; border-radius:50%;
+  background:linear-gradient(180deg,#f4d97f,#c9a13a); box-shadow:0 0 10px rgba(212,175,55,.8);
+  transform:translateX(-50%); pointer-events:none; display:none;
+}
+
+/* la pastille posée sur chaque vignette : « touche-moi » */
+.vAppel{
+  position:absolute; inset:0; margin:auto; width:62px; height:62px; border-radius:50%;
+  border:1px solid rgba(212,175,55,.55); background:rgba(10,9,8,.55); cursor:pointer;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  transition:background .4s var(--lent), transform .4s var(--lent);
+}
+.vAppel::before{
+  content:''; position:absolute; inset:0; margin:auto; width:0; height:0;
+  border-left:19px solid var(--or2); border-top:12px solid transparent;
+  border-bottom:12px solid transparent; transform:translateX(3px);
+}
+.vAppel:hover{ background:rgba(212,175,55,.2); transform:scale(1.06); }

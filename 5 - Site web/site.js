@@ -71,6 +71,15 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   voile.querySelector('.fermer').addEventListener('click', basculer);
   addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu')) basculer(); });
 
+  /* ── LE LECTEUR VIDÉO (11 sept) ───────────────────────────────────────
+     Il ne se charge que si la page contient une vidéo : les autres n'en portent
+     pas une ligne. C'est lui qui remplace les boutons de Chrome — et qui évite le
+     message « glisser vers le bas » en n'appelant jamais le plein écran système. */
+  if (document.querySelector('video')){
+    const v = document.createElement('script'); v.src = 'video.js';
+    (document.body || document.documentElement).appendChild(v);
+  }
+
   /* ── LE MODE RÉGLAGE (11 sept) ────────────────────────────────────────
      Mickaël : « est-ce que je peux te montrer ? » Oui : ?reglage=1 sur n'importe
      quelle page, et il déplace les choses au doigt. Le fichier n'est chargé que
@@ -259,13 +268,65 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   pastiller();
 
   /* ── le bouton « j'ai tout reçu » ───────────────────────────────────── */
+  /* ═══ L'ACCUSÉ DE RÉCEPTION (refait le 11 septembre 2026) ══════════════════
+     Mickaël : « quand je suis la première personne, il est marqué "j'ai tout reçu",
+     il ne va pas comprendre pourquoi. Quand c'est en rouge, c'est que j'attends de
+     savoir si c'est bon. Après, c'est en vert quand ça a été fait. Et il peut y
+     avoir une autre option : s'il y a un souci. »
+
+     Trois états, donc :
+       • ROUGE   — personne n'a encore rien dit. Le bouton demande, et il explique.
+       • VERT    — le message est parti. Le bouton devient un constat, plus une demande.
+       • et à côté, toujours, une petite porte « j'ai un souci » qui prépare
+         l'autre message.
+     Le message est écrit d'avance : il n'a qu'à choisir le groupe et envoyer. */
   const recu = document.querySelector('[data-recu]');
   if (recu){
-    const NUMERO = recu.getAttribute('data-recu');            /* le numéro WhatsApp de Mickaël, au format international sans + */
+    const NUMERO = recu.getAttribute('data-recu');   /* numéro WhatsApp, format international sans + ; vide = il choisit */
     const qui = pour ? pour.charAt(0).toUpperCase() + pour.slice(1) : '';
-    const msg = encodeURIComponent((qui ? qui + ' : ' : '') + 'j\'ai bien reçu le site Bohème, tout s\'ouvre chez moi.');
-    recu.setAttribute('href', NUMERO ? 'https://wa.me/' + NUMERO + '?text=' + msg : 'https://wa.me/?text=' + msg);
-    recu.setAttribute('target', '_blank'); recu.setAttribute('rel', 'noopener');
+    const lien = t => (NUMERO ? 'https://wa.me/' + NUMERO + '?text=' : 'https://wa.me/?text=') + encodeURIComponent(t);
+    const CLE = 'boheme-recu-dit';
+    const dit = () => { try { return localStorage.getItem(CLE) === '1'; } catch(e){ return false; } };
+
+    const bon  = (qui ? qui + ' : ' : '') + 'j\u2019ai bien l\u2019application Bohème, tout est OK pour moi.';
+    const souci= (qui ? qui + ' : ' : '') + 'j\u2019ai un souci avec l\u2019application Bohème — ';
+
+    /* la petite porte « j'ai un souci », posée juste après le bouton */
+    const pb = document.createElement('a');
+    pb.className = 'btn doux souci';
+    pb.innerHTML = 'J\u2019ai un souci <b><i class="ico ico-fleche"></i></b>';
+    pb.href = lien(souci); pb.target = '_blank'; pb.rel = 'noopener';
+    pb.title = 'préparer un message pour dire ce qui ne va pas';
+
+    const peindre = () => {
+      const v = dit();
+      recu.classList.toggle('faitVert', v);
+      recu.classList.toggle('aFaireRouge', !v);
+      recu.innerHTML = v
+        ? 'C\u2019est envoyé, merci <b><i class="ico ico-coche"></i></b>'
+        : 'Dis-moi que tout s\u2019ouvre <b><i class="ico ico-coche"></i></b>';
+      recu.href = lien(bon);
+      recu.target = '_blank'; recu.rel = 'noopener';
+    };
+    peindre();
+    recu.insertAdjacentElement('afterend', pb);
+
+    recu.addEventListener('click', () => {
+      /* on note APRÈS un instant : le temps que WhatsApp s'ouvre pour de bon */
+      setTimeout(() => { try { localStorage.setItem(CLE, '1'); } catch(e){} peindre(); }, 1500);
+    });
+
+    /* le mot d'explication, juste en dessous — il change avec la couleur */
+    const mot = document.createElement('p');
+    mot.className = 'motRecu';
+    const direMot = () => {
+      mot.textContent = dit()
+        ? 'C\u2019est noté. S\u2019il t\u2019arrive quoi que ce soit, la porte « J\u2019ai un souci » reste ouverte.'
+        : 'Tant que ce bouton est rouge, c\u2019est que je ne sais pas encore si tout s\u2019ouvre chez toi. '
+        + 'Un appui prépare le message : tu n\u2019as plus qu\u2019à choisir le groupe et envoyer.';
+    };
+    direMot(); pb.insertAdjacentElement('afterend', mot);
+    recu.addEventListener('click', () => setTimeout(direMot, 1600));
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -286,9 +347,11 @@ const VERSION_SITE = '11/09/2026 · 01h10';
      ═══════════════════════════════════════════════════════════════════════ */
   (function musique(){
     const MUSIQUES = [
-      { f:'media/site/air-sing-boheme.mp3',     t:'Air Sing Bohème' },
-      { f:'media/site/boheme-on-decolle-2.mp3', t:'Bohème, on décolle 2' },
-      { f:'media/site/boheme-on-decolle-3.mp3', t:'Bohème, on décolle 3' },
+      /* Les noms crachés par Suno ne valaient rien. Mickaël, 11 sept :
+         « L'ère des talents, peut-être en jeu de mots — l'air, l'ère. » */
+      { f:'media/site/air-sing-boheme.mp3',     t:'L\u2019ère des talents' },
+      { f:'media/site/boheme-on-decolle-2.mp3', t:'Avant le lever de rideau' },
+      { f:'media/site/boheme-on-decolle-3.mp3', t:'La loge, à trois heures' },
     ];
     if (!MUSIQUES.length) return;
     const VOLUME = 0.16;          /* bas, volontairement */
@@ -344,8 +407,16 @@ const VERSION_SITE = '11/09/2026 · 01h10';
        d'avoir le texte, et quand on rappuie dessus, qu'il s'éteigne. » Le panneau ne
        se referme donc plus tout seul au bout de quatre secondes : c'est lui qui décide.
        Il se replie seulement quand on touche ailleurs dans la page. */
-    const deplier = () => boite.classList.add('ouvert');
-    const replierPan = () => boite.classList.remove('ouvert');
+    /* 11 sept, 11 h — Mickaël : « il faut que le nom disparaisse après trois ou
+       quatre secondes, parce que sinon on le voit en continu, et quand on scrolle
+       ce n'est pas extraordinaire. » Il revient dès qu'on retouche la note. */
+    let replier = null;
+    const replierPan = () => { clearTimeout(replier); boite.classList.remove('ouvert'); };
+    const deplier = () => {
+      boite.classList.add('ouvert');
+      clearTimeout(replier);
+      replier = setTimeout(() => boite.classList.remove('ouvert'), 4000);
+    };
     document.addEventListener('click', e => { if (!boite.contains(e.target)) replierPan(); }, true);
 
     /* CHANGER DE MORCEAU SANS COUPURE (10 sept) : « il faudrait avoir la possibilité
