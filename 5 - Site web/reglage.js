@@ -188,6 +188,28 @@
 
   pan.append(titre, boutons, reglages, info, boutons2);
   document.body.appendChild(pan);
+
+  /* ─── 11 sept, 6 h — Mickaël : « ce n'est pas pratique, je n'ai pas réussi à
+     faire ce que je voulais. » Sa capture le montrait : couché, le panneau
+     couvrait tout l'écran. Il se replie maintenant en une pastille d'or, qu'on
+     ouvre d'un doigt quand on en a besoin, et qu'on referme pour VOIR. */
+  let ouvert = false;
+  const pastille = $('div', { position:'fixed', zIndex:'100000', right:'10px', bottom:'10px',
+    width:'50px', height:'50px', borderRadius:'50%', display:'grid', placeItems:'center',
+    background:'linear-gradient(180deg,#f4d97f,#c9a13a)', color:'#1a1408',
+    font:'700 20px system-ui', boxShadow:'0 8px 28px rgba(0,0,0,.7)', cursor:'pointer' });
+  pastille.textContent = '⚙';
+  const montrer = v => {
+    ouvert = v;
+    pan.style.display = v ? 'grid' : 'none';
+    pastille.textContent = v ? '✕' : '⚙';
+  };
+  pastille.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); montrer(!ouvert); });
+  document.body.appendChild(pastille);
+  montrer(false);
+  /* replié, il laisse quand même la place à la pastille en bas à droite */
+  pan.style.bottom = '68px';
+  pan.style.maxHeight = '50vh';
   document.body.classList.add('reglageActif');
   redire();
   addEventListener('resize', redire);
