@@ -6905,4 +6905,15 @@ const VERSION_APPLI = '10/09/2026 · 23h10';
 })();
 </script>
 
+
+<style>
+/* ═══ LA COLONNE DE L'ATELIER, COUCHÉ : LES RONDS AU CENTRE (11 septembre, 5 h) ═══
+   Mesuré sur le téléphone de Mickaël (904×406) : la colonne fait 168 px, son
+   contenu va de 49 à 158, et les ronds de 44 px se collaient au bord gauche
+   (49→93) au lieu d'être au milieu (81→125). Sa photo annotée le montrait :
+   « les logos ne sont pas au centre ». Ils le sont. */
+@media (pointer: coarse) and (max-width: 1100px) and (orientation: landscape){
+  .barre > *{ justify-self:center !important; }
+}
+</style>
 </body>
