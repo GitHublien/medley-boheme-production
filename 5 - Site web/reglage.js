@@ -24,8 +24,35 @@
   const nb = v => Math.round(v);
   const cadre = e => { const b = e.getBoundingClientRect();
     return { g:nb(b.left), d:nb(b.right), h:nb(b.top), b:nb(b.bottom), l:nb(b.width), ht:nb(b.height) }; };
-  /* poser un style qui GAGNE contre celui du site (c'est ce qui manquait) */
-  const pose = (el, prop, val) => el && el.style.setProperty(prop, val, 'important');
+  /* ─── DEBOUT ET COUCHÉ SONT DEUX RÉGLAGES SÉPARÉS (11 sept, 7 h) ──────────
+     Mickaël : « quand je touche au paysage, ça touche aussi au portrait, et ça
+     je ne veux surtout pas. Il faut que ce soit deux choses totalement
+     différentes. » Chaque réglage est donc rangé dans SON sens. Quand on tourne
+     le téléphone, on efface tout ce qu'on avait posé et on remet celui de
+     l'autre sens — les deux ne se mélangent jamais. */
+  const SENS = () => (innerWidth > innerHeight ? 'couché' : 'debout');
+  let sensActuel = SENS();
+  const memo = { debout:new Map(), 'couché':new Map() };
+  const clef = el => el === nav ? 'nav' : el === bas ? 'bas' : (el.dataset.reglageId ||
+    (el.dataset.reglageId = 'e' + Math.random().toString(36).slice(2, 8)));
+  const vus = new Map();          /* tout ce qu'on a touché, pour savoir quoi effacer */
+
+  function pose(el, prop, val){
+    if (!el) return;
+    el.style.setProperty(prop, val, 'important');
+    const m = memo[sensActuel], k = clef(el);
+    if (!m.has(k)) m.set(k, { el, props:{} });
+    m.get(k).props[prop] = val;
+    if (!vus.has(k)) vus.set(k, { el, props:new Set() });
+    vus.get(k).props.add(prop);
+  }
+
+  /* on efface tout ce qu'on a posé, puis on remet celui du sens demandé */
+  function basculer(sens){
+    vus.forEach(o => o.props.forEach(p => o.el.style.removeProperty(p)));
+    sensActuel = sens;
+    memo[sens].forEach(o => Object.keys(o.props).forEach(p => o.el.style.setProperty(p, o.props[p], 'important')));
+  }
 
   /* ── les marges que le téléphone réserve (appareil photo, barre du bas) ── */
   const sonde = $('div', { position:'fixed', left:'0', top:'0', pointerEvents:'none', opacity:'0',
@@ -152,7 +179,8 @@
     const i = document.createElement('input');
     i.type = 'range'; i.min = min; i.max = max; i.value = valeur;
     Object.assign(i.style, { width:'100%', accentColor:'#d4af37', height:'22px', margin:'0' });
-    const dire = () => { t.textContent = nom + ' : ' + i.value + u; bouges[nom] = i.value + u; redire(); };
+    const dire = () => { t.textContent = nom + ' : ' + i.value + u;
+      bouges['[' + sensActuel + '] ' + nom] = i.value + u; redire(); };
     i.addEventListener('input', () => { quand(+i.value); dire(); });
     t.textContent = nom + ' : ' + valeur + u;
     r.append(t, i); reglages.appendChild(r);
@@ -215,7 +243,9 @@
     }),
   );
 
-  /* ── les onze réglages ─────────────────────────────────────────────────── */
+  /* ── les onze réglages, refabriqués à chaque changement de sens ────────── */
+  function poserReglages(){
+  reglages.textContent = '';
   if (nav){
     const d = getComputedStyle(nav);
     const r0 = nav.getBoundingClientRect();
@@ -255,6 +285,8 @@
     curseur('barre du bas · distance du bas', 0, 300, nb(innerHeight - rb.bottom),
       v => { pose(bas, 'bottom', v + 'px'); pose(bas, 'top', 'auto'); });
   }
+  }
+  poserReglages();
 
   pan.append(titre, rangee1, reglages, info, rangee2, rangee3);
   document.body.appendChild(pan);
@@ -273,7 +305,11 @@
 
   document.body.classList.add('reglageActif');
   redire();
-  addEventListener('resize', redire);
+  addEventListener('resize', () => {
+    const s = SENS();
+    if (s !== sensActuel){ basculer(s); poserReglages(); }   /* on a tourné le téléphone */
+    redire();
+  });
 
   /* pendant le réglage, un doigt sur la barre la déplace — il n'ouvre pas la page */
   document.addEventListener('click', e => {
