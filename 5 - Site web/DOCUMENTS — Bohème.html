@@ -9,11 +9,17 @@
 <style>
   .doc{ display:grid; gap:.9rem; }
   .doc .coeur{ padding:clamp(1.1rem,2.4vw,1.6rem); display:grid; gap:.9rem; }
-  .doc .haut{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
-  .doc .type{ font-family:var(--disp); letter-spacing:.2em; color:var(--or); font-size:.95rem; }
+  /* 11 septembre 2026 — Mickaël : « Bientôt en préparation, vos textes à
+     télécharger, tout est écrit n'importe comment, il n'y a même pas de saut de
+     ligne. » La cause : cette carte-là est posée HORS du bloc « .doc », elle ne
+     recevait donc aucune de ces règles. On les détache de « .doc » : elles
+     valent partout où il y a une carte de document. */
+  .haut{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+         flex-wrap:wrap; margin-bottom:.5rem; }
+  .type{ font-family:var(--disp); letter-spacing:.2em; color:var(--or); font-size:.95rem; }
   .doc h3{ margin:.1rem 0 0; }
   .doc p{ color:var(--gris); max-width:66ch; }
-  .doc .quand{ color:var(--gris2); font-size:.85rem; }
+  .quand{ color:var(--gris2); font-size:.85rem; }
   .doc .gestes{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.2rem; }
   .apercu{ margin-top:.4rem; border-radius:var(--r2); overflow:hidden; border:1px solid rgba(255,255,255,.08); background:#0a0908; display:none; }
   .apercu.ouvert{ display:block; }
@@ -134,12 +140,21 @@ body.plein{ overflow:hidden; }
     b.addEventListener('click', e => { e.preventDefault(); ouvrir(b.dataset.plein); }));
   document.getElementById('vpFermer').addEventListener('click', fermer);
   addEventListener('keydown', e => { if (e.key === 'Escape' && !v.hidden) fermer(); });
-  let y0 = null;
-  v.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; }, { passive:true });
+  /* 11 septembre 2026 — Mickaël : « quand je regarde le plan, que je vais en
+     haut ou en bas, ça disparaît, comme si ça avait rechargé. »
+     C'était mon glissement-pour-fermer : il se déclenchait dès qu'on faisait
+     défiler le plan lui-même. On ne ferme donc plus que si le geste part du
+     FOND NOIR, jamais du plan — et seulement si le plan est déjà tout en haut. */
+  let y0 = null, surLePlan = false;
+  v.addEventListener('touchstart', e => {
+    y0 = e.touches[0].clientY;
+    surLePlan = !!(e.target.closest && e.target.closest('.vpCadre'));
+  }, { passive:true });
   v.addEventListener('touchend', e => {
     if (y0 === null) return;
-    const dy = e.changedTouches[0].clientY - y0; y0 = null;
-    if (dy > 100) fermer();
+    const dy = e.changedTouches[0].clientY - y0; const depart = y0; y0 = null;
+    if (surLePlan) return;                         /* on parcourait le plan */
+    if (dy > 120) fermer();
   }, { passive:true });
 })();
 </script>

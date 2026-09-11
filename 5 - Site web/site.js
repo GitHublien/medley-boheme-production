@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 17h40';
+const VERSION_SITE = '11/09/2026 · 17h54';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -110,6 +110,15 @@ const VERSION_SITE = '11/09/2026 · 17h40';
   document.addEventListener('selectstart', e => { if (!libre(e.target)) e.preventDefault(); });
   document.addEventListener('dragstart', e => { if (!libre(e.target)) e.preventDefault(); });
 
+  /* ── UNE SEULE PAGE (11 septembre 2026) ───────────────────────────────
+     Pour que la musique ne s'arrête jamais en changeant de page. Chargé avant
+     tout le reste, et seulement sur les pages qui s'y prêtent : l'atelier, le
+     livre, le guide et la porte gardent leur propre vie. */
+  {
+    const u = document.createElement('script'); u.src = 'une-seule-page.js';
+    (document.body || document.documentElement).appendChild(u);
+  }
+
   /* ── LE LECTEUR VIDÉO (11 sept) ───────────────────────────────────────
      Il ne se charge que si la page contient une vidéo : les autres n'en portent
      pas une ligne. C'est lui qui remplace les boutons de Chrome — et qui évite le
@@ -167,8 +176,15 @@ const VERSION_SITE = '11/09/2026 · 17h40';
     const p = el.getAttribute('data-img-portrait');
     return (p && debout()) ? p : el.getAttribute('data-img');
   }
-  const aImages = [...document.querySelectorAll('[data-img]')];
+  /* ═══ CE QUI DOIT REVIVRE À CHAQUE PAGE (11 septembre 2026) ═══════════════
+     Depuis que le site ne recharge plus ses pages (voir une-seule-page.js), tout
+     ce qui se faisait « une fois au démarrage » doit pouvoir se refaire. On le
+     range donc dans une fonction qu'on rappelle à chaque arrivée. */
+  let aImages = [];
+  function poserImages(){
+  aImages = [...document.querySelectorAll('[data-img]')];
   aImages.forEach(el => {
+    if (el._img) return;                       /* déjà servie */
     const img = new Image();
     img.onload = () => {
       el.appendChild(img); requestAnimationFrame(() => img.classList.add('la'));
@@ -179,6 +195,15 @@ const VERSION_SITE = '11/09/2026 · 17h40';
     img.alt = ''; img.src = bonneImage(el);
     el._img = img;
   });
+  document.querySelectorAll('[data-video]').forEach(el => {
+    if (el._video) return;
+    const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
+    v.src = el.getAttribute('data-video'); el._video = v;
+    v.addEventListener('canplay', () => { el.appendChild(v); requestAnimationFrame(() => v.classList.add('la')); v.play().catch(() => {}); }, { once: true });
+    v.addEventListener('error', () => {});
+  });
+  }
+  poserImages();
   function suivreRotation(){
     aImages.forEach(el => {
       if (!el._img || !el.getAttribute('data-img-portrait')) return;
@@ -190,16 +215,29 @@ const VERSION_SITE = '11/09/2026 · 17h40';
   }
   addEventListener('resize', suivreRotation, { passive: true });
   addEventListener('orientationchange', () => setTimeout(suivreRotation, 80), { passive: true });
-  document.querySelectorAll('[data-video]').forEach(el => {
-    const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true;
-    v.src = el.getAttribute('data-video');
-    v.addEventListener('canplay', () => { el.appendChild(v); requestAnimationFrame(() => v.classList.add('la')); v.play().catch(() => {}); }, { once: true });
-    v.addEventListener('error', () => {});
-  });
-
   /* ── la révélation au défilement ───────────────────────────────────── */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('vu'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
-  document.querySelectorAll('.rev').forEach(el => io.observe(el));
+  function reveler(){ document.querySelectorAll('.rev:not(.vu)').forEach(el => io.observe(el)); }
+  reveler();
+
+  /* ═══ LE RÉVEIL, à chaque page qui arrive sans rechargement ═══════════════ */
+  window.reveillerLaPage = function(){
+    poserImages();
+    reveler();
+    if (typeof pastiller === 'function') pastiller();
+    /* les liens de la page neuve doivent porter le prénom, comme les autres */
+    if (suite) document.querySelectorAll('a[href$=".html"]').forEach(a => {
+      const h = a.getAttribute('href') || '';
+      if (h.includes('?') || /^(http|#|javascript:)/.test(h)) return;
+      a.setAttribute('href', h + suite);
+    });
+    /* et la barre du bas doit savoir où l'on est */
+    const ou = decodeURIComponent(location.pathname.split('/').pop() || '');
+    document.querySelectorAll('.nav a.l, .bas a, .voile a').forEach(a => {
+      const h = decodeURIComponent((a.getAttribute('href') || '').split('?')[0]);
+      a.classList.toggle('ici', h === ou);
+    });
+  };
 
   /* ── l'ouverture : deux calques en parallaxe, par transform seulement ── */
   const fond = document.querySelector('.ouverture .fond, .enTete .fond');
@@ -612,16 +650,24 @@ const VERSION_SITE = '11/09/2026 · 17h40';
       onSEnVa = true;
       noterMaintenant();
       try { sessionStorage.setItem('boheme-musique-raccord', '1'); } catch(e){}
-      versVolume(0, () => { location.href = vers; }, 0.34);
-      setTimeout(() => { location.href = vers; }, 420);     /* filet de sécurité */
+      /* 11 septembre — Mickaël : « ça coupe bizarrement, tu ne m'as pas fait le
+         fondu. » 420 ms, c'était trop court pour s'entendre. On descend
+         maintenant sur près d'une seconde : l'oreille a le temps de le suivre. */
+      versVolume(0, () => { location.href = vers; }, 0.10);
+      setTimeout(() => { location.href = vers; }, 950);     /* filet de sécurité */
       return true;
     }
+    /* ⚠️ 11 septembre, 18 h — DEPUIS LA PAGE UNIQUE, CE FONDU NE SERT PLUS QUE
+       DE SECOURS. Quand la page ne se recharge pas, le son ne s'arrête jamais :
+       il n'y a rien à adoucir. On ne descend donc le volume QUE si l'on part
+       vraiment — vers l'atelier, le livre, le guide, ou hors du site. */
     document.addEventListener('click', e => {
       const a = e.target && e.target.closest && e.target.closest('a[href]');
       if (!a || a.target || e.defaultPrevented) return;
       const h = a.getAttribute('href') || '';
       if (/^(#|javascript:|mailto:|tel:)/.test(h)) return;
       try { if (new URL(a.href).origin !== location.origin) return; } catch(err){ return; }
+      if (window.__pageUnique && window.__pageUnique(a.href)) return;   /* on ne quitte pas : rien à faire */
       if (partirEnDouceur(a.href)){ e.preventDefault(); e.stopPropagation(); }
     }, true);
     addEventListener('pagehide', noterMaintenant);
