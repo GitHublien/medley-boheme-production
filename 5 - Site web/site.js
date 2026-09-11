@@ -60,6 +60,15 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   voile.querySelector('.fermer').addEventListener('click', basculer);
   addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu')) basculer(); });
 
+  /* ── LE MODE RÉGLAGE (11 sept) ────────────────────────────────────────
+     Mickaël : « est-ce que je peux te montrer ? » Oui : ?reglage=1 sur n'importe
+     quelle page, et il déplace les choses au doigt. Le fichier n'est chargé que
+     dans ce cas : le site normal n'en porte pas une ligne. */
+  if (new URLSearchParams(location.search).get('reglage') === '1'){
+    const r = document.createElement('script'); r.src = 'reglage.js'; r.defer = true;
+    addEventListener('load', () => document.body.appendChild(r));
+  }
+
   /* ── le pied de page ───────────────────────────────────────────────── */
   const pied = document.createElement('footer');
   pied.innerHTML = '<div class="page"><img src="site-assets/signature-blanc.png" alt="" onerror="this.remove()">'

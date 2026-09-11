@@ -498,7 +498,11 @@ footer .liens a:hover{ color:var(--or2); }
 
 /* ── debout : la barre reste, toujours ─────────────────────────────────── */
 @media (max-width:700px) and (orientation:portrait){
-  .nav{ gap:.45rem; padding:.3rem .3rem; width:max-content; max-width:calc(100% - 20px); }   /* mesure du 11/09 : le fond faisait 203px pour 255 de contenu, le menu sortait */
+  .nav{ gap:.45rem; padding:.3rem .3rem; width:max-content; max-width:calc(100% - 20px);
+    /* Mesuré le 11/09 sur son téléphone : Android réserve 39 px en haut pour
+       l'appareil photo et l'heure, et la barre était posée à 10. Le point noir
+       mordait sur « Bohème ». Elle se pose maintenant SOUS la zone réservée. */
+    top:calc(env(safe-area-inset-top) + 8px) !important; }   /* mesure du 11/09 : le fond faisait 203px pour 255 de contenu, le menu sortait */
   .nav .marque{ height:46px !important; padding:0 .9rem 0 .28rem !important; }
   .nav .marque img{ width:34px; height:34px; }
   .nav .marque span{ font-size:1.05rem; }
@@ -558,4 +562,9 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
 /* debout, dans un navigateur : « Installer », onzième entrée, passait sous la barre du bas */
 @media (max-width:700px) and (orientation:portrait){
   .voile{ padding-bottom:calc(env(safe-area-inset-bottom) + 130px); }
+}
+
+/* la même prudence partout où le téléphone réserve de la place en haut */
+@media (max-width:1100px){
+  .nav{ top:calc(env(safe-area-inset-top) + 10px); }
 }
