@@ -382,40 +382,101 @@
     volumeGarde = null;
   }
 
-  function attendre(quoi, apres){
+  /* ⚠️ 12 septembre — LE PARAMETRE S'APPELAIT « apres », COMME LE MINUTEUR.
+     Quand j'ai fait passer toute la visite aux horloges qui survivent aux
+     changements de page, j'ai renomme chaque « setTimeout » en « apres » — y
+     compris la ou « apres » etait deja le nom de la suite a jouer. La ligne
+     « attendre un peu, puis continuer » s'est donc changee en « continuer tout
+     de suite ». D'ou le defaut que Mickael a vu : ca partait sans lui.
+     Les suites s'appellent « alors », maintenant. Deux noms, deux choses. */
+  function attendre(quoi, alors){
     if (quoi === 'paysage'){
-      if (innerWidth > innerHeight) return apres();
+      if (innerWidth > innerHeight) return alors();
       tourne.classList.add('la');
       const voir = () => { if (innerWidth > innerHeight){
         tourne.classList.remove('la');
-        removeEventListener('resize', voir); apres(apres, 500); } };
+        removeEventListener('resize', voir); apres(alors, 500); } };
       addEventListener('resize', voir);
       /* on ne retient personne : au bout de vingt secondes, on continue */
-      apres(() => { tourne.classList.remove('la'); removeEventListener('resize', voir); apres(); }, 20000);
+      apres(() => { tourne.classList.remove('la'); removeEventListener('resize', voir); alors(); }, 20000);
       return;
     }
-    apres();
+    alors();
   }
 
   /* ── LA QUESTION DU BOUTON ROUGE ────────────────────────────────────────
-     Deux boutons, et la visite attend. S'il dit oui, on ouvre vraiment le
-     message — puis la visite reprend d'elle-meme quand il revient. */
-  function demander(d, apres){
+     ⚠️ 12 septembre — Mickael : « il faut que les paroles s'arretent tant qu'il
+     n'a pas fait le choix. Pense a Ren'Py : il y a un choix a faire, hop. S'il
+     n'a pas fait le choix, rien ne se met en marche. »
+
+     Un choix qui se fait tout seul n'est pas un choix. Le compte a rebours de
+     quinze secondes est supprime : la visite attend, aussi longtemps qu'il le
+     faut, et rien d'autre ne se passe pendant ce temps.
+
+     Et s'il part envoyer le message, on l'attend VRAIMENT — jusqu'a ce qu'il
+     revienne sur l'application. Deux secondes et demie, c'etait le temps
+     d'ouvrir WhatsApp, pas celui d'ecrire et de revenir. */
+  function demander(d, alors){
     const boite = document.createElement('div');
     boite.className = 'visiteGarde'; boite.id = 'vDemande';
     boite.innerHTML = '<div class="bulle"><p>' + d.texte + '</p>'
       + '<button class="oui">' + d.oui + '</button>'
       + '<button class="non">' + d.non + '</button></div>';
+    /* la voix se tait : on ne parle pas par-dessus un choix */
+    try { son.pause(); } catch(e){}
     document.body.appendChild(boite);
     const partir = (ouvrir) => {
       boite.remove();
-      if (ouvrir){ const c = document.querySelector(d.fait); if (c) c.click(); }
-      apres(apres, ouvrir ? 2600 : 500);
+      /* ⚠️ 12 septembre — Mickael : « s'il fait le choix negatif, tu dis : ok,
+         tu as fait ce choix. Par contre, quand tu le desireras, tu pourras
+         avertir Mickael. » Les deux reponses ont droit a la meme consideration :
+         « plus tard » est un choix, pas un echec, et on le lui dit. */
+      if (!ouvrir) return repondre('02d-plus-tard', alors);
+      const c = document.querySelector(d.fait);
+      if (c) c.click();
+      attendreSonRetour(() => repondre('02c-merci', alors));
     };
     boite.querySelector('.oui').addEventListener('click', () => partir(true));
     boite.querySelector('.non').addEventListener('click', () => partir(false));
-    /* on ne retient personne : au bout de quinze secondes sans reponse, on passe */
-    apres(() => { if (boite.isConnected) partir(false); }, 15000);
+    /* et AUCUN compte a rebours : tant qu'il n'a pas repondu, rien ne bouge. */
+  }
+
+  /* ── ON L'ATTEND VRAIMENT ───────────────────────────────────────────────
+     Il est parti dans WhatsApp. Le telephone nous le dit : la page devient
+     « cachee », puis « visible » quand il revient. On ne reprend pas une
+     seconde avant — et s'il ne revient jamais, il n'y a rien a reprendre : la
+     visite dort, elle ne tourne pas dans le vide. */
+  function attendreSonRetour(alors){
+    let parti = document.visibilityState === 'hidden', fini = false;
+    const finir1 = () => { if (fini) return; fini = true;
+      document.removeEventListener('visibilitychange', voir); alors(); };
+    const voir = () => {
+      if (document.visibilityState === 'hidden'){ parti = true; return; }
+      if (parti) apres(finir1, 900);     /* le temps que l'ecran revienne */
+    };
+    document.addEventListener('visibilitychange', voir);
+    /* s'il n'est pas sorti du tout — le partage s'est ouvert par-dessus sans
+       quitter l'application, ou le telephone l'a refuse — on reprend au bout de
+       huit secondes : on ne le laisse jamais devant un ecran mort. */
+    apres(() => { if (!parti) finir1(); }, 8000);
+  }
+
+  /* ── LA REPONSE A SON CHOIX ─────────────────────────────────────────────
+     Mickael : « il faudrait lui dire quand il a fait le choix. » Une phrase
+     pour « je le fais maintenant », une autre pour « plus tard ». Ce sont les
+     deux seules de toute la visite qui repondent a un geste — et aucune des
+     deux ne reproche quoi que ce soit.
+
+     Si le fichier n'est pas encore la, on enchaine sans rien dire : la visite
+     ne bloque jamais sur un son manquant. */
+  function repondre(quoi, alors){
+    son.onended = son.onerror = null;
+    let passe = false;
+    const suite = () => { if (!passe){ passe = true; apres(alors, 700); } };
+    son.src = sonCommun(quoi);
+    son.onended = suite;
+    son.onerror = () => apres(suite, 200);
+    son.play().catch(() => apres(suite, 200));
   }
 
   /* ── LE DOIGT QUI SE POSE ───────────────────────────────────────────────
