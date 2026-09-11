@@ -5852,7 +5852,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '11/09/2026 · 16h54';
+const VERSION_APPLI = '11/09/2026 · 17h13';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -7174,24 +7174,28 @@ body:not(.aideAllumee) .barre .b-aller{ display:none !important; }
 </script>
 
 <style>
-/* ═══ LES BOUTONS DU LECTEUR, BIEN CENTRÉS (11 septembre 2026) ═════════════
-   Mickaël : « le truc de lecture est joli, mais il n'est pas bien centré. Il
-   n'est pas très très bien centré. »
+/* ═══ LES BOUTONS DU LECTEUR : LE BON CENTRAGE (11 septembre 2026, 17 h) ════
+   Mickaël : « dans l'atelier, tu as mal centré. Dans le texte, c'est parfait.
+   Fais pareil que dans le texte. »
 
-   Deux raisons à cela, et les deux sont réglées ici :
-     • le triangle de lecture est un dessin ASYMÉTRIQUE — son poids visuel tire
-       à gauche, alors qu'un carré le place au milieu géométrique. Les nouveaux
-       dessins sont fabriqués centrés sur leur masse, pas sur leur boîte ;
-     • le pictogramme était posé en « absolu » sans point d'ancrage sûr. Il est
-       maintenant au centre exact de son rond, calculé par la grille.
+   Mon erreur, et elle est nette : j'avais mis ces boutons en GRILLE. Or chacun
+   contient DEUX choses — le pictogramme (un pseudo-élément) et le caractère
+   ◄ ► écrit dans la page, rendu invisible mais toujours présent. La grille les
+   a donc rangés l'un AU-DESSUS de l'autre, et le dessin s'est retrouvé poussé
+   vers le haut.
 
-   ⚠️ Les cercles ne changent pas de taille — règle de Mickaël. Seul le dessin
-   à l'intérieur est remplacé. */
-#lbPrec, #lbSuiv, #lbPlay{ display:grid !important; place-items:center !important; }
-#lbPrec::before, #lbSuiv::before, #lbPlay::before{
-  position:static !important; margin:0 !important; transform:none !important;
+   Le centrage d'origine — posé en absolu, calé sur les quatre bords, marge
+   automatique — était le bon. Je le remets, et je ne touche qu'aux images.
+
+   ⚠️ Les cercles ne changent pas de taille. Le rond de lecture est plus grand
+   que ses voisins : c'est voulu, c'est le geste principal. */
+#lbPrec, #lbPlay, #lbSuiv{ display:flex !important; align-items:center; justify-content:center; }
+#lbPrec::before, #lbPlay::before, #lbSuiv::before{
+  position:absolute !important; inset:0 !important; margin:auto !important;
+  transform:none !important;
 }
-#lbPlay::before{ background-image:url(site-images/icones-karaoke/lecture3.png) !important; }
+#lbPlay::before{ background-image:url(site-images/icones-karaoke/lecture3.png) !important;
+                 width:28px !important; height:28px !important; }
 #lbPlay.on::before{ background-image:url(site-images/icones-karaoke/pause2.png) !important; }
 #lbPrec::before{ background-image:url(site-images/icones-karaoke/precedent2.png) !important; }
 #lbSuiv::before{ background-image:url(site-images/icones-karaoke/suivant2.png) !important; }
