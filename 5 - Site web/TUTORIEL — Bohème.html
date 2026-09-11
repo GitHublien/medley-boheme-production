@@ -290,6 +290,17 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
   font-size:16px; font-weight:700;
   transition:transform .4s cubic-bezier(0.32,0.72,0,1), opacity .4s; }
 #pied button:active{ transform:scale(.97); }
+/* les ronds du guide : le dessin exact de l'atelier */
+.rond-sim{ width:52px; height:52px; flex:none; border-radius:50%; cursor:pointer;
+  border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.07) center/24px 24px no-repeat;
+  position:relative; transition:opacity .35s, border-color .35s, box-shadow .35s, transform .35s; }
+.rond-sim.allume{ border-color:rgba(157,255,53,.7); background-color:rgba(157,255,53,.14);
+  box-shadow:0 0 14px rgba(157,255,53,.3); }
+.rond-sim.eteint{ opacity:.4; border-color:rgba(212,175,55,.24); background-color:rgba(212,175,55,.04); }
+.rond-sim.eteint::after{ content:''; position:absolute; left:12%; right:12%; top:50%;
+  height:2px; background:#d4af37; opacity:.8; border-radius:2px; transform:rotate(-38deg); }
+/* le rond qui SUIT l'étoile : il disparaît avec elle */
+.rond-sim.suit.parti{ opacity:0; transform:scale(.6); pointer-events:none; }
 /* le visage éteint, dans le guide : exactement l'allure de l'atelier */
 #simVisageBtn{ position:relative; overflow:visible; transition:opacity .35s, border-color .35s, background .35s; }
 #simVisageBtn.eteintSim{ opacity:.45; border-color:rgba(212,175,55,.26) !important;
@@ -594,7 +605,23 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <div id="bandeauDemo"><div class="bd-etat">…</div><div class="bd-texte"></div></div>
     <div class="scene-sim" id="sceneAide" style="height:180px;"></div>
   </div></div>
-  <div class="pupitre"><button class="btn-sim" id="simRejoueRampe">↻ Revoir la séquence</button></div>
+  <!-- 11 septembre 2026 — Mickaël : « on ne sait pas comment est son aide. Il faut
+       que tu montres l'étoile en vert, qu'il appuie, et qu'il voie. Et il faut faire
+       apparaître l'autre logo en même temps : quand il allume, il voit que l'autre
+       apparaît aussi. » Les deux boutons sont donc ici, exactement comme dans
+       l'atelier — l'étoile commande, le rond obéit. -->
+  <div class="pupitre" style="gap:14px;flex-wrap:wrap;">
+    <button class="btn-sim" id="simRejoueRampe">↻ Revoir la séquence</button>
+    <button class="rond-sim allume" id="simEtoile" title="Ton aide personnelle"
+      style="background-image:url(site-images/icones-karaoke/etoile2.png)"></button>
+    <button class="rond-sim suit" id="simRondPassage" title="Aller à ton passage"
+      style="background-image:url(site-images/icones-karaoke/passage.png)"></button>
+  </div>
+  <p id="etoileDit" style="text-align:center;color:#8a8474;font-size:14px;margin:14px 0 0;line-height:1.6;">
+    Ton aide est <b style="color:#c8ff8a">allumée d'office</b> — c'est elle, l'étoile.
+    À côté d'elle, le rond « aller à ton passage » : il n'existe que grâce à elle.</p>
+  <div class="consigne" id="cEtoile"><span class="rond">👆</span>
+    <span>Appuie sur <b>l'étoile</b> pour l'éteindre, puis rallume-la.</span></div>
   <div class="cases">
     <div class="case"><b>La ligne du haut</b>
       <p>Où tu en es : « tu es en place, rideau fermé », puis « bientôt à toi »,
@@ -735,7 +762,11 @@ header .marque small{ display:block; letter-spacing:.14em; font-size:10px;
     <div class="bandeau"><span class="n">⏩</span><span class="t">Quand il apparaît</span><span class="h"></span></div>
     <div class="scene-sim" style="height:auto;padding:22px 16px;overflow:visible;">
       <div class="pupitre" style="padding:0;">
-        <button class="btn-sim grand appelle" id="simPassage"><i class="pic" style="background-image:url(site-images/icones-karaoke/passage.png)"></i>Aller à ton passage</button>
+        <!-- le dessin EXACT de l'atelier : un rond d'or qui passe au vert
+             quand il a vraiment un passage à rejoindre. Mickaël : « il faut que
+             tu fasses exactement le même que dans le logiciel. » -->
+        <button class="rond-sim" id="simPassage" title="Aller à ton passage"
+          style="background-image:url(site-images/icones-karaoke/passage.png)"></button>
       </div>
       <p id="passageDit" style="text-align:center;color:#8a8474;font-size:14px;margin:16px 0 0;line-height:1.6;">
         Appuie pour voir ce qu'il fait.</p>
@@ -1305,6 +1336,35 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
   });
 })();
 
+/* ── L'ÉTOILE COMMANDE, LE ROND OBÉIT ─────────────────────────────────── */
+(function(){
+  const e = document.getElementById('simEtoile');
+  const r = document.getElementById('simRondPassage');
+  const d = document.getElementById('etoileDit');
+  if (!e || !r) return;
+  let allumee = true, eteinteUneFois = false;
+  e.addEventListener('click', () => {
+    allumee = !allumee;
+    e.classList.toggle('allume', allumee);
+    e.classList.toggle('eteint', !allumee);
+    r.classList.toggle('parti', !allumee);
+    if (!allumee){
+      eteinteUneFois = true;
+      if (d) d.innerHTML = 'Éteinte : l\u2019étoile est <b style="color:#d4af37">grise et barrée</b>, '
+        + 'le bandeau ne t\u2019annonce plus rien — et tu vois que <b style="color:#f1d27a">l\u2019autre rond a disparu avec elle</b>. '
+        + 'L\u2019atelier redevient un atelier nu.';
+    } else {
+      if (d) d.innerHTML = 'Rallumée. L\u2019étoile est <b style="color:#c8ff8a">verte</b>, et '
+        + '<b style="color:#f1d27a">le rond « aller à ton passage » revient avec elle</b> — '
+        + 'je t\u2019expliquerai ce dernier un peu plus loin dans le guide.';
+      if (eteinteUneFois){
+        reussir('cEtoile', 'Tu as vu les deux états. Ton aide est allumée d\u2019office : tu n\u2019as rien à faire. '
+          + 'Le jour où tu connaîtras tes passages par cœur, ce bouton éteindra tout — et le rond partira avec.');
+      }
+    }
+  });
+})();
+
 /* ── LE DOIGT POSÉ : on attend un vrai appui long ─────────────────────── */
 (function(){
   const bulle = document.getElementById('bulleLong');
@@ -1406,8 +1466,10 @@ document.getElementById('simRejoueRampe').addEventListener('click', jouerDemoRam
   if (!b) return;
   b.addEventListener('click', () => {
     b.classList.remove('appelle');
+    b.classList.add('allume');
     if (d) d.innerHTML = 'La musique vient de sauter <b style="color:#f1d27a">trois phrases avant ton entrée</b> : '
-      + 'tu entends ce qui l\u2019amène, puis tu chantes.';
+      + 'tu entends ce qui l\u2019amène, puis tu chantes. Dans l\u2019atelier, il s\u2019allume en vert '
+      + 'comme ici quand il a vraiment un passage à te proposer.';
     reussir('cPassage', 'Voilà ce qu\u2019il fait. Dans l\u2019atelier, il n\u2019apparaît que lorsque ton entrée est encore loin.');
   });
 })();
