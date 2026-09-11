@@ -5061,7 +5061,11 @@ body[data-pour] #bandeau{ display:flex; }
         const l = lignes[k];
         if (l.debut > t && concerne(l.qui).actif){ suivante = l; iSuiv = k; break; }
       }
-      if (suivante && suivante.debut - t > 45){
+      /* 11 septembre 2026 — le seuil passe de 45 à 25 secondes. Mickaël :
+         « on descend le seuil pour tout le monde à 25. » Mesuré : Adrien entre
+         à 31 s, il était donc le seul des six à ne pas voir le bouton au
+         démarrage. À 25 s, les six voient la même chose. */
+      if (suivante && suivante.debut - t > 25){
         /* on recule de trois phrases : il entend ce qui amène la sienne */
         const avant = lignes[Math.max(0, iSuiv - 3)];
         ouAller = Math.max(0, Math.min(avant.debut, suivante.debut - 25) - 0.4);
@@ -5848,7 +5852,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '11/09/2026 · 10h57';
+const VERSION_APPLI = '11/09/2026 · 11h03';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
@@ -7128,4 +7132,44 @@ body:not(.aideAllumee) .barre .b-aller{ display:none !important; }
 }
 @keyframes tPret{ 0%,100%{ box-shadow:0 0 0 0 rgba(157,255,53,.4) } 50%{ box-shadow:0 0 0 7px rgba(157,255,53,0) } }
 </style>
+
+<style>
+/* ═══ DEUX RETOUCHES DU 11 SEPTEMBRE, AU MATIN ═════════════════════════════
+   Mickaël : « il y a une petite flèche en haut qui pour moi ne sert à rien.
+   Si on enlève l'étoile, le truc disparaît — donc ça fait double. » C'est
+   juste : l'étoile éteint déjà le bandeau entier. La flèche faisait doublon,
+   elle part.
+
+   Et : « quand on ouvre les blocs, il ne faut pas que ce soit au-dessus des
+   logos, il faut que ce soit en dessous. » Le menu se pose donc SOUS la
+   colonne — c'est le script ci-dessous qui le place, parce que la hauteur de
+   la colonne change selon l'orientation et selon les boutons affichés. */
+#bandeau .b-poignee{ display:none !important; }
+</style>
+<script>
+(function(){
+  const menu = document.getElementById('menuB');
+  const barre = document.querySelector('.barre');
+  if (!menu || !barre) return;
+  function poser(){
+    if (!menu.classList.contains('vu')) return;
+    const r = barre.getBoundingClientRect();
+    const paysage = matchMedia('(orientation: landscape)').matches;
+    if (paysage){
+      /* la colonne est à gauche : le menu se pose à sa droite, en haut */
+      menu.style.top = Math.round(r.top + 8) + 'px';
+      menu.style.left = Math.round(r.right + 10) + 'px';
+      menu.style.right = 'auto';
+    } else {
+      /* la rangée est en haut : le menu se pose juste dessous */
+      menu.style.top = Math.round(r.bottom + 8) + 'px';
+      menu.style.left = '12px';
+      menu.style.right = '12px';
+    }
+  }
+  new MutationObserver(poser).observe(menu, { attributes:true, attributeFilter:['class'] });
+  addEventListener('resize', poser);
+  addEventListener('orientationchange', () => setTimeout(poser, 220));
+})();
+</script>
 </body>
