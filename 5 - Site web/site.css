@@ -1040,3 +1040,28 @@ body.vOuvert{ overflow:hidden; }
    Mickaël : « enlève-moi le petit point rouge, je ne veux pas le petit point
    rouge pour les mises à jour. » Le halo rosé dit déjà tout, et il le dit mieux. */
 .pastille{ display:none !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UNE APPLICATION, PAS UNE PAGE WEB (11 septembre 2026)
+
+   Mickaël : « je ne veux pas que ce soit comme un site internet. Quand on copie,
+   on voit une page en haut qui apparaît, de Google. Dans une application, on ne
+   copie pas normalement. Enlève-moi la possibilité de copier quoi que ce soit,
+   à part les endroits où je dis qu'on peut. »
+
+   C'est ce petit menu « Copier / Partager / Rechercher sur le Web » qui trahit
+   le navigateur. Il n'apparaît que parce que le texte est sélectionnable. On le
+   rend donc insélectionnable partout — SAUF là où c'est voulu : un champ où
+   l'on écrit, ou un bloc marqué « copiable ».
+   ═══════════════════════════════════════════════════════════════════════════ */
+html, body{
+  -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
+  -webkit-touch-callout:none;          /* pas de bulle au doigt maintenu */
+  -webkit-tap-highlight-color:transparent;
+}
+/* ce qui reste copiable, parce qu'on en a besoin */
+input, textarea, [contenteditable="true"], .copiable, .copiable *{
+  -webkit-user-select:text !important; user-select:text !important;
+  -webkit-touch-callout:default;
+}

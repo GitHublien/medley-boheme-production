@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 17h13';
+const VERSION_SITE = '11/09/2026 · 17h20';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -70,6 +70,20 @@ const VERSION_SITE = '11/09/2026 · 17h13';
   voile.addEventListener('click', e => { if (e.target === voile) basculer(); });
   voile.querySelector('.fermer').addEventListener('click', basculer);
   addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('menu')) basculer(); });
+
+  /* ═══ ON NE COPIE PLUS, SAUF OÙ C'EST PRÉVU (11 septembre 2026) ═════════
+     Le style ferme déjà la sélection. Ces trois gardes ferment le reste : le
+     menu du clic droit, le presse-papier, et le glisser d'une image hors de
+     l'application. Tout ce qui porte la classe « copiable » reste libre — et
+     les boutons qui copient pour toi (le diagnostic, le mode réglage)
+     continuent de marcher : ils passent par le presse-papier du système, pas
+     par une sélection. */
+  const libre = e => e && e.closest && e.closest('input, textarea, [contenteditable="true"], .copiable');
+  document.addEventListener('contextmenu', e => { if (!libre(e.target)) e.preventDefault(); });
+  document.addEventListener('copy', e => { if (!libre(e.target)) e.preventDefault(); });
+  document.addEventListener('cut',  e => { if (!libre(e.target)) e.preventDefault(); });
+  document.addEventListener('selectstart', e => { if (!libre(e.target)) e.preventDefault(); });
+  document.addEventListener('dragstart', e => { if (!libre(e.target)) e.preventDefault(); });
 
   /* ── LE LECTEUR VIDÉO (11 sept) ───────────────────────────────────────
      Il ne se charge que si la page contient une vidéo : les autres n'en portent
@@ -444,6 +458,9 @@ const VERSION_SITE = '11/09/2026 · 17h13';
         if (jouer) lancer();
       };
       if (enDouceur) versVolume(0, poser); else poser();
+      /* à la reprise d'une page à l'autre, on entre en fondu : le raccord ne
+         s'entend pas, là où un démarrage sec faisait « sauter » la musique */
+      if (reprise) son.volume = 0;
     }
 
     /* on monte et on descend en douceur : un son qui claque, c'est laid */
@@ -511,6 +528,28 @@ const VERSION_SITE = '11/09/2026 · 17h13';
         if (etat.joue !== false){ son.play().then(() => versVolume(VOLUME)).catch(()=>{}); }
       }
     });
+
+    /* ═══ ELLE NE SAUTE PLUS EN CHANGEANT DE PAGE (11 septembre 2026) ═══════
+       Mickaël : « quand on change de page, la musique saute un peu, et ce n'est
+       pas beau. Est-ce que ça peut ne pas sauter ? »
+
+       Oui. Le saut venait de ce qu'on ne notait sa position que toutes les deux
+       secondes, pour ménager la mémoire du téléphone : en partant, on pouvait
+       donc perdre jusqu'à deux secondes de musique. Maintenant on note la
+       position EXACTE au moment précis où la page s'en va — et la suivante
+       reprend sur cette seconde-là, en montant le son en un souffle plutôt
+       qu'en le rallumant d'un coup. */
+    const noterMaintenant = () => {
+      try { if (son.src && !isNaN(son.currentTime)) { etat.t = son.currentTime; garder(); } } catch(e){}
+    };
+    addEventListener('pagehide', noterMaintenant);
+    addEventListener('beforeunload', noterMaintenant);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) noterMaintenant(); });
+    /* et tout lien touché note la position avant même que la page parte */
+    document.addEventListener('click', e => {
+      const a = e.target && e.target.closest && e.target.closest('a[href]');
+      if (a && !a.target && !/^(#|javascript:)/.test(a.getAttribute('href') || '')) noterMaintenant();
+    }, true);
 
     son.addEventListener('ended', () => charger(etat.i + 1, true));
     son.addEventListener('timeupdate', () => {

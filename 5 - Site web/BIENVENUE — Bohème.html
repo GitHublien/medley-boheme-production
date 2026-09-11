@@ -307,5 +307,33 @@ document.getElementById('entrer').addEventListener('click', () => {
 });
 </script>
 <script src="retour.js"></script>
+
+<style>
+/* ═══ UNE APPLICATION, PAS UNE PAGE WEB (11 septembre 2026) ════════════════
+   Mickaël : « je ne veux pas que ce soit comme un site internet. Quand on copie,
+   on voit une page en haut qui apparaît, de Google. Dans une application, on ne
+   copie pas normalement. »
+   Ce petit menu « Copier / Partager / Rechercher sur le Web » n'apparaît que
+   parce que le texte est sélectionnable. On ferme donc la sélection — SAUF dans
+   un champ où l'on écrit, ou dans un bloc marqué « copiable ». */
+html, body{
+  -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
+  -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent;
+}
+input, textarea, [contenteditable="true"], .copiable, .copiable *{
+  -webkit-user-select:text !important; user-select:text !important;
+  -webkit-touch-callout:default;
+}
+</style>
+<script>
+/* les gardes : le menu du clic droit, le presse-papier, le glisser d'une image.
+   Les boutons qui copient POUR toi continuent de marcher : ils passent par un
+   champ de saisie ou par le presse-papier du système, jamais par une sélection. */
+(function(){
+  const libre = e => e && e.closest && e.closest('input, textarea, [contenteditable="true"], .copiable');
+  ['contextmenu','copy','cut','selectstart','dragstart'].forEach(nom =>
+    document.addEventListener(nom, e => { if (!libre(e.target)) e.preventDefault(); }));
+})();
+</script>
 </body>
 </html>
