@@ -48,7 +48,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12091';
+  const VOIX_VERSION = '12092';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -66,12 +66,18 @@
     { son: sonPerso('02-le-bouton-rouge'),
       vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
       sauterSiAbsent: true,
+      /* ⚠️ 12 septembre — Mickael : « meme quand c'est valide, il y a le bouton
+         "j'ai un souci". Il faudrait que tu parles aussi de ce bouton. Le bouton
+         juste en dessous. » La voix en parle maintenant a la fin de la phrase :
+         la lumiere descend donc dessus au meme instant, sinon elle nommerait une
+         chose en montrant une autre. */
+      pendant: [ { part: 0.72, geste: 'rien', vise: '.carteEssentiel .souci' } ],
       /* « demande » vient APRES la phrase : on ne coupe jamais la voix pour poser
          une question. C'est la deuxieme des trois exceptions — c'est lui qui
          decide, maintenant ou plus tard. */
       demande: { texte: 'Tu veux le faire maintenant ?',
                  oui: 'Je le fais maintenant', non: 'Plus tard',
-                 fait: '.carteEssentiel .ceLigne:first-child a, .carteEssentiel .ceLigne:first-child button' } },
+                 fait: '.carteEssentiel .ceLigne:first-child a[data-recu]' } },
     { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour' },
     /* La phrase dure une vingtaine de secondes : « cette note, c'est la musique
        du hall… un appui montre son titre et te laisse en changer… un second
@@ -99,6 +105,8 @@
 
   /* ── les gestes que la visite fait elle-même ──────────────────────────── */
   const GESTES = {
+    /* pour un temps qui ne fait que deplacer la lumiere, sans rien toucher */
+    rien(){ return 0; },
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
 
     /* ── LA MUSIQUE, POUR DE VRAI ────────────────────────────────────────
@@ -703,11 +711,21 @@
        comme quelqu'un qui montre en parlant. */
     const posterLesGestes = () => {
       (a.pendant || []).forEach(g => {
-        apres(() => {
+        /* ⚠️ « part » plutot que « a » : une fraction de la phrase, pas un
+           nombre de secondes. Les six voix ne parlent pas a la meme vitesse —
+           la meme phrase fait 54 secondes chez Stephanie et 59 chez Adrien — et
+           un temps fixe tombait donc a cote chez les uns ou chez les autres. La
+           duree n'est connue qu'une fois la bande chargee : on attend. */
+        const poser = (quand) => apres(() => {
           if (monFil !== fil || arrete || enPause) return;
           if (GESTES[g.geste]) GESTES[g.geste]();
           if (g.vise !== undefined) eclairer(g.vise);
-        }, Math.round(g.a * 1000));
+        }, Math.round(quand * 1000));
+        if (g.part !== undefined){
+          const calculer = () => { if (son.duration) poser(son.duration * g.part); };
+          if (son.duration) calculer();
+          else son.addEventListener('loadedmetadata', calculer, { once: true });
+        } else poser(g.a);
       });
     };
 
