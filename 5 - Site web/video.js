@@ -172,6 +172,8 @@
   }
   const balayer = () => document.querySelectorAll('video').forEach(adopter);
   balayer();
+  /* et à chaque page qui arrive sans rechargement : les vidéos neuves aussi */
+  document.addEventListener('boheme-page-changee', () => setTimeout(balayer, 60));
   /* les pages qui ajoutent des vidéos plus tard sont servies aussi */
   new MutationObserver(balayer).observe(document.documentElement, { childList:true, subtree:true });
 })();

@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 17h54';
+const VERSION_SITE = '11/09/2026 · 18h07';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -123,7 +123,17 @@ const VERSION_SITE = '11/09/2026 · 17h54';
      Il ne se charge que si la page contient une vidéo : les autres n'en portent
      pas une ligne. C'est lui qui remplace les boutons de Chrome — et qui évite le
      message « glisser vers le bas » en n'appelant jamais le plein écran système. */
-  if (document.querySelector('video')){
+  /* ⚠️ 11 septembre, 18 h 15 — IL SE CHARGE TOUJOURS, MAINTENANT.
+     Mickaël : « je vais dans Technique, je retrouve le même truc de vidéos
+     Windows. On n'avait pas changé le système de vidéo ? »
+
+     Si, et il marchait. Mais je ne le chargeais que si la page contenait DÉJÀ
+     une vidéo au démarrage. Depuis que le site ne recharge plus ses pages, on
+     arrive toujours par l'accueil — qui n'en a pas — donc il ne se chargeait
+     jamais, et Chrome reprenait la main avec ses trois points.
+     Il pèse sept kilo-octets et ne fait rien s'il n'y a pas de vidéo : il est
+     donc là dès le départ, une fois pour toutes. */
+  {
     const v = document.createElement('script'); v.src = 'video.js';
     (document.body || document.documentElement).appendChild(v);
   }
