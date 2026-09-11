@@ -305,11 +305,18 @@
 
   document.body.classList.add('reglageActif');
   redire();
-  addEventListener('resize', () => {
+  /* On surveille la rotation de TROIS façons : « resize » arrive parfois avant que
+     le téléphone ait fini de tourner (mesuré le 11/09 : il annonçait encore
+     « debout » alors que l'écran était déjà couché). La question posée au
+     navigateur — est-on en paysage ? — est la seule qui ne se trompe jamais. */
+  const verifier = () => {
     const s = SENS();
-    if (s !== sensActuel){ basculer(s); poserReglages(); }   /* on a tourné le téléphone */
+    if (s !== sensActuel){ basculer(s); poserReglages(); }
     redire();
-  });
+  };
+  addEventListener('resize', () => { verifier(); setTimeout(verifier, 250); });
+  addEventListener('orientationchange', () => setTimeout(verifier, 250));
+  matchMedia('(orientation: landscape)').addEventListener('change', () => setTimeout(verifier, 120));
 
   /* pendant le réglage, un doigt sur la barre la déplace — il n'ouvre pas la page */
   document.addEventListener('click', e => {
