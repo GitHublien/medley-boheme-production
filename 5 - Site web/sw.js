@@ -22,6 +22,13 @@ self.addEventListener('activate', e => {
 });
 
 const TOUJOURS_NEUF = /\.(?:html|js|css|json|txt)$/i;
+/* ⚠️ 11 septembre 2026 — POURQUOI LES NOUVELLES PHOTOS N'ARRIVAIENT PAS.
+   Mickaël : « je vois toujours les mêmes photos, pourtant j'ai fermé et
+   rouvert. » Les images sont gardées en cache exprès : les recharger coûterait
+   cher en données, et elles ne changent presque jamais. Mais quand elles
+   changent VRAIMENT, elles restent bloquées derrière les anciennes.
+   La règle retenue : on ne change jamais une image en place — on lui donne un
+   nouveau nom (adrien-2.jpg). Un nom neuf n'a pas d'ancien en cache. */
 
 self.addEventListener('fetch', e => {
   const r = e.request;
