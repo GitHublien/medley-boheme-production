@@ -39,14 +39,17 @@
       <h3>La fiche technique du 4 octobre</h3>
       <p>Pour le Palais : lumière, son, écran, fumée. Ce que nous demandons, et pourquoi. C'est le document que le régisseur reçoit.</p>
       <div class="gestes">
-        <button class="btn doux" data-voir="apercu-fiche">Voir ici <b>◉</b></button>
         <a class="btn" href="media/fiche/fiche-technique-4-octobre-2026.pdf" download>Télécharger <b><i class="ico ico-telecharger"></i></b></a>
         <!-- 10 sept : « Ouvrir à part » éjectait dans le navigateur — une application ne
              fait jamais ça. Et un PDF ne s'affiche pas dans une application sur Android.
              On lit donc la MÊME fiche en page web, ici, sans jamais sortir. -->
         <a class="btn doux" href="fiche-technique-debussy-b7e4a2.html">Lire la fiche <b><i class="ico ico-fleche"></i></b></a>
       </div>
-      <div class="apercu" id="apercu-fiche"><iframe data-src="media/fiche/fiche-technique-4-octobre-2026.pdf#view=FitH" title="La fiche technique"></iframe></div>
+      <!-- 11 septembre 2026 — Mickaël : « Voir ici le PDF, ça ne marche pas. Lire la
+           fiche, ça fonctionne. Ça fait double emploi : on garde Lire la fiche. »
+           L'aperçu du PDF est retiré : dans une application installée, Android refuse
+           d'afficher un PDF dans un cadre. « Lire la fiche » ouvre la vraie page, elle,
+           écrite en clair — c'est mieux que le PDF, et ça marche partout. -->
     </div></article>
 
     <article class="coque rev d1"><div class="coeur">
@@ -54,10 +57,11 @@
       <h3>Le plan de plateau</h3>
       <p>Jardin, cour, les lampes, les entrées et les sorties, bloc par bloc. À regarder avant la répétition.</p>
       <div class="gestes">
-        <button class="btn doux" data-voir="apercu-plan">Voir ici <b>◉</b></button>
+        <button class="btn doux" data-plein="media/fiche/plan-plateau.png">Voir le plan en grand <b><i class="ico ico-etoile"></i></b></button>
         <a class="btn" href="media/fiche/plan-plateau.png" download>Télécharger <b><i class="ico ico-telecharger"></i></b></a>
       </div>
-      <div class="apercu" id="apercu-plan"><img data-src="media/fiche/plan-plateau.png" alt="Le plan de plateau"></div>
+      <!-- le plan s'ouvre EN GRAND, sur toute la page : un plan de plateau se lit
+           mal dans une vignette. Un doigt pour agrandir, la flèche pour revenir. -->
     </div></article>
 
   </div>
@@ -91,6 +95,53 @@ document.querySelectorAll('[data-voir]').forEach(b => b.addEventListener('click'
   b.innerHTML = ouvert ? 'Fermer l\'aperçu <b>×</b>' : 'Voir ici <b>◉</b>';
   if (ouvert) setTimeout(() => z.scrollIntoView({ behavior: 'smooth', block: 'center' }), 220);
 }));
+</script>
+
+<div class="vuePlein" id="vuePlein" hidden>
+  <button class="vpFermer" id="vpFermer" aria-label="Fermer"><i></i><i></i></button>
+  <div class="vpCadre"><img id="vpImage" alt=""></div>
+  <div class="vpMot">Deux doigts pour agrandir · un glissement vers le bas pour fermer</div>
+</div>
+<style>
+/* ═══ LE PLAN, EN GRAND (11 septembre 2026) ════════════════════════════════
+   Mickaël : « quand on regarde le plan du plateau, il faudrait que ça prenne
+   toute la page. » Un plan de plateau ne se lit pas dans une vignette. */
+.vuePlein{ position:fixed; inset:0; z-index:120; background:#050505;
+  display:grid; place-items:center; padding:calc(env(safe-area-inset-top) + 58px) 8px
+  calc(env(safe-area-inset-bottom) + 52px); }
+.vuePlein[hidden]{ display:none; }
+.vuePlein .vpCadre{ width:100%; height:100%; display:grid; place-items:center; overflow:auto; }
+.vuePlein img{ max-width:100%; max-height:100%; width:auto; height:auto; display:block; }
+.vuePlein .vpFermer{ position:absolute; top:calc(env(safe-area-inset-top) + 10px);
+  left:calc(env(safe-area-inset-left) + 10px); width:46px; height:46px; border-radius:50%;
+  border:1px solid rgba(212,175,55,.45); background:rgba(212,175,55,.1);
+  display:grid; place-items:center; cursor:pointer; z-index:2; }
+.vuePlein .vpFermer i{ position:absolute; width:15px; height:1.6px; background:var(--or2); border-radius:2px; }
+.vuePlein .vpFermer i:first-child{ transform:translate(-3px,-4px) rotate(-45deg); }
+.vuePlein .vpFermer i:last-child{ transform:translate(-3px,4px) rotate(45deg); }
+.vuePlein .vpMot{ position:absolute; left:0; right:0;
+  bottom:calc(env(safe-area-inset-bottom) + 14px); text-align:center;
+  font-size:.74rem; letter-spacing:.08em; color:var(--gris2); }
+body.plein{ overflow:hidden; }
+</style>
+<script>
+(function(){
+  const v = document.getElementById('vuePlein');
+  const img = document.getElementById('vpImage');
+  const ouvrir = src => { img.src = src; v.hidden = false; document.body.classList.add('plein'); };
+  const fermer = () => { v.hidden = true; document.body.classList.remove('plein'); };
+  document.querySelectorAll('[data-plein]').forEach(b =>
+    b.addEventListener('click', e => { e.preventDefault(); ouvrir(b.dataset.plein); }));
+  document.getElementById('vpFermer').addEventListener('click', fermer);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !v.hidden) fermer(); });
+  let y0 = null;
+  v.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; }, { passive:true });
+  v.addEventListener('touchend', e => {
+    if (y0 === null) return;
+    const dy = e.changedTouches[0].clientY - y0; y0 = null;
+    if (dy > 100) fermer();
+  }, { passive:true });
+})();
 </script>
 </body>
 </html>

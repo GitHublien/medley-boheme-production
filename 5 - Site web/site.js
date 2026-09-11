@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 17h33';
+const VERSION_SITE = '11/09/2026 · 17h40';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -81,6 +81,29 @@ const VERSION_SITE = '11/09/2026 · 17h33';
      continuent de marcher : ils passent par le presse-papier du système, pas
      par une sélection. */
   const libre = e => e && e.closest && e.closest('input, textarea, [contenteditable="true"], .copiable');
+
+  /* ═══ ET PLUS DE VIBRATION AU DOIGT MAINTENU (11 septembre 2026) ═══════════
+     Mickaël : « il y a le téléphone qui réagit comme s'il voulait copier, cette
+     petite vibration. Dans une vraie application, ça n'existe pas. »
+
+     Cette secousse vient d'Android : elle accompagne le geste de sélection de
+     texte. On ne peut pas commander le vibreur depuis une page — mais on peut
+     empêcher le geste d'être reconnu. Le doigt qui reste posé sans bouger voit
+     donc son appui long annulé AVANT qu'Android ne le prenne pour une sélection.
+     Les endroits qui ont besoin de l'appui long (les boutons de l'atelier, la
+     copie prévue) sont épargnés : ils portent leur propre garde. */
+  document.addEventListener('touchstart', e => {
+    if (libre(e.target)) return;
+    if (e.target && e.target.closest && e.target.closest('[data-appui-long], .btn-reg, button, a')) return;
+    if (e.touches.length === 1 && e.cancelable) {
+      /* on ne bloque pas le toucher : on retire seulement son pouvoir d'ouvrir
+         la sélection — c'est le « long press » qu'Android accompagne du vibreur */
+      const cible = e.target;
+      const annuler = () => { try { getSelection().removeAllRanges(); } catch(x){} };
+      setTimeout(annuler, 300); setTimeout(annuler, 520);
+    }
+  }, { passive: true, capture: true });
+
   document.addEventListener('contextmenu', e => { if (!libre(e.target)) e.preventDefault(); });
   document.addEventListener('copy', e => { if (!libre(e.target)) e.preventDefault(); });
   document.addEventListener('cut',  e => { if (!libre(e.target)) e.preventDefault(); });

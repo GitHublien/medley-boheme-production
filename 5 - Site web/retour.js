@@ -25,10 +25,16 @@
   const a = document.createElement('a');
   a.id = 'retourSite';
   a.href = 'ACCUEIL — Bohème.html' + (pour ? '?pour=' + encodeURIComponent(pour) : '');
-  a.innerHTML = '<span>⌂</span> Le site';
+  /* 11 septembre 2026 — Mickaël : « le site, ce ne sont plus les maisons que je
+     veux, ce sont les flèches. » Le vrai pictogramme d'or, comme partout. */
+  a.innerHTML = '<span class="picRetour"></span> Le site';
   a.title = 'Revenir à l\'accueil : textes, mise en scène, documents, vidéos';
   const css = document.createElement('style');
   css.textContent = `
+  #retourSite .picRetour{ display:inline-block; width:1.1em; height:1.1em;
+    vertical-align:-.18em; background:center/contain no-repeat
+    url(site-images/icones-karaoke/retour.png);
+    filter:drop-shadow(0 0 5px rgba(212,175,55,.4)); }
     #retourSite{ position:fixed; z-index:2147483000; left:14px; top:calc(14px + env(safe-area-inset-top));
       display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .95rem .5rem .8rem;
       border-radius:999px; border:1px solid rgba(212,175,55,.55); background:rgba(12,11,10,.82);

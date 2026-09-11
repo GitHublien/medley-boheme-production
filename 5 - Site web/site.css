@@ -1082,3 +1082,7 @@ input, textarea, [contenteditable="true"], .copiable, .copiable *{
   box-shadow:-6px 0 16px -6px rgba(255,150,196,.6);
   animation:souffleNeuf 3.4s ease-in-out infinite; }
 .legendeNeuf .dit{ color:var(--gris2); font-size:.82rem; line-height:1.55; }
+
+/* le toucher ne sert qu'à toucher : pas de double-tap pour agrandir, pas de
+   geste de sélection — c'est ce geste-là qu'Android accompagne du vibreur */
+html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:manipulation; }

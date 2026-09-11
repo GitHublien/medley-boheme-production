@@ -1673,5 +1673,28 @@
 })();
 </script>
 <script src="retour.js"></script>
+
+<style>
+/* ═══ LA BARRE DES SECTIONS, EN DUR EN BAS (11 septembre 2026) ═════════════
+   Mickaël : « il faudrait que tu mettes une barre en bas dure, pareil, au
+   niveau du document quand on le lit. L'essentiel, écouter, tout ça, il faut
+   un truc dur. »
+   Sur téléphone, elle quitte donc le haut et vient se poser au pied de l'écran,
+   opaque, fermée par un trait — et la page réserve sa place. */
+@media (max-width:820px){
+  nav{
+    position:fixed !important; top:auto !important; bottom:0 !important;
+    left:0; right:0; z-index:60;
+    background:#fbfaf7 !important; backdrop-filter:none !important;
+    border-bottom:0 !important; border-top:1px solid rgba(30,28,24,.16) !important;
+    box-shadow:0 -8px 24px rgba(0,0,0,.12);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav .dedans{ padding:0 12px; }
+  nav a{ padding:13px 11px; font-size:13px; }
+  #nav-tout{ bottom:calc(env(safe-area-inset-bottom) + 8px) !important; }
+  body{ padding-bottom:calc(64px + env(safe-area-inset-bottom)); }
+}
+</style>
 </body>
 </html>
