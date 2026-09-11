@@ -32,6 +32,9 @@
   scene.innerHTML =
       '<button class="vRetour" aria-label="Revenir"><i></i><i></i></button>'
     + '<div class="vCadre"><video class="vFilm" playsinline preload="metadata"></video></div>'
+    + '<div class="vTourne"><div class="vTel">\u{1F4F1}</div>'
+    +   '<div class="vTourneT">Tourne ton téléphone</div>'
+    +   '<div class="vTourneS">La vidéo se regarde en <b>mode paysage</b></div></div>'
     + '<div class="vBarre">'
     +   '<button class="vJouer" aria-label="Lecture"></button>'
     +   '<span class="vTemps">0:00</span>'
@@ -49,16 +52,41 @@
   let origine  = null;          /* la vignette d'où l'on vient */
 
   /* ── ouvrir / fermer ──────────────────────────────────────────────────── */
+  /* ─── LE PAYSAGE, D'OFFICE ─────────────────────────────────────────────
+     Mickaël : « je veux qu'elle se mette automatiquement en mode paysage. C'est
+     très important, parce que sinon c'est complètement débile, on voit presque
+     rien. » Dans l'application installée, Android accepte qu'on lui demande de
+     tourner. Dans un simple navigateur, il refuse — alors on invite, avec le
+     même petit téléphone qui pivote que dans le film d'ouverture. */
+  function demanderPaysage(){
+    try {
+      const o = screen.orientation;
+      if (o && o.lock) return o.lock('landscape').catch(() => {});
+    } catch(e){}
+    return Promise.resolve();
+  }
+  function rendreOrientation(){
+    try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){}
+  }
+  const enPaysage = () => innerWidth > innerHeight;
+  function juger(){ scene.classList.toggle('aTourner', !enPaysage()); }
+  addEventListener('resize', juger);
+  addEventListener('orientationchange', () => setTimeout(juger, 200));
+
   function ouvrir(src, depart){
     origine = depart || null;
     if (film.getAttribute('src') !== src){ film.setAttribute('src', src); film.load(); }
     document.body.classList.add('vOuvert');
     scene.classList.add('la');
+    demanderPaysage().then(() => setTimeout(juger, 250));
+    juger();
     film.play().catch(() => {});
     dessiner();
+    montrerBarre();
   }
   function fermer(){
     film.pause();
+    rendreOrientation();
     scene.classList.remove('la');
     document.body.classList.remove('vOuvert');
     /* on rend la place à la vignette, au temps où on l'a laissée */
@@ -78,10 +106,26 @@
     if (dy > 90 && !rail.contains(e.target)) fermer();
   }, { passive:true });
 
+  /* ─── LA BARRE NE CACHE PLUS LA VIDÉO ──────────────────────────────────
+     Mickaël : « le lecteur cache la vidéo. » En paysage la vidéo remplit tout,
+     donc la barre se posait forcément dessus. Elle s'efface maintenant au bout
+     de trois secondes, et un doigt n'importe où sur l'image la rappelle. */
+  let cacher = null;
+  function montrerBarre(){
+    scene.classList.remove('sansBarre');
+    clearTimeout(cacher);
+    cacher = setTimeout(() => { if (!film.paused) scene.classList.add('sansBarre'); }, 3000);
+  }
+  scene.querySelector('.vCadre').addEventListener('click', e => {
+    e.stopPropagation();
+    if (scene.classList.contains('sansBarre')) montrerBarre();
+    else { clearTimeout(cacher); scene.classList.add('sansBarre'); }
+  });
+
   /* ── les boutons ──────────────────────────────────────────────────────── */
-  jouer.addEventListener('click', () => { film.paused ? film.play() : film.pause(); });
-  film.addEventListener('play',  () => scene.classList.add('joue'));
-  film.addEventListener('pause', () => scene.classList.remove('joue'));
+  jouer.addEventListener('click', () => { film.paused ? film.play() : film.pause(); montrerBarre(); });
+  film.addEventListener('play',  () => { scene.classList.add('joue'); montrerBarre(); });
+  film.addEventListener('pause', () => { scene.classList.remove('joue'); montrerBarre(); });
   film.addEventListener('ended', () => scene.classList.remove('joue'));
   film.addEventListener('loadedmetadata', dessiner);
   film.addEventListener('timeupdate', dessiner);
@@ -101,7 +145,7 @@
     if (film.duration) film.currentTime = p * film.duration;
     fait.style.width = (p * 100) + '%';
   };
-  rail.addEventListener('pointerdown', e => { glisse = true; rail.setPointerCapture(e.pointerId); viser(e.clientX); });
+  rail.addEventListener('pointerdown', e => { glisse = true; montrerBarre(); rail.setPointerCapture(e.pointerId); viser(e.clientX); });
   rail.addEventListener('pointermove', e => { if (glisse) viser(e.clientX); });
   rail.addEventListener('pointerup',   () => { glisse = false; });
   rail.addEventListener('pointercancel', () => { glisse = false; });

@@ -995,3 +995,37 @@ body.vOuvert{ overflow:hidden; }
    Elle débordait donc de 74 px et se faisait rogner en haut et en bas. Elle
    occupe maintenant exactement le cadre, posée dedans en entier — jamais coupée. */
 .vScene .vFilm{ width:100%; height:100%; object-fit:contain; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LA VIDÉO SE REGARDE COUCHÉ (11 septembre 2026, midi)
+
+   Mickaël : « je veux qu'elle se mette automatiquement en mode paysage, sinon
+   c'est complètement débile, on voit presque rien. Et il faut qu'on le voie en
+   plein écran. Le lecteur cache la vidéo. »
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* debout : on ne montre pas un timbre-poste, on invite à tourner */
+.vScene .vTourne{
+  position:absolute; inset:0; z-index:3; display:none;
+  flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  background:#050505; padding:8vw; text-align:center;
+}
+.vScene.aTourner .vTourne{ display:flex; }
+.vScene.aTourner .vBarre{ display:none; }
+.vScene .vTel{ font-size:62px; animation:vTourneTel 2s ease-in-out infinite; }
+@keyframes vTourneTel{ 0%,100%{ transform:rotate(0) } 50%{ transform:rotate(90deg) } }
+.vScene .vTourneT{ font-family:var(--disp); font-size:clamp(19px,5vw,25px); color:var(--or2); }
+.vScene .vTourneS{ font-size:clamp(13px,3.6vw,16px); color:var(--gris); }
+
+/* couché : la vidéo prend TOUT, la barre flotte dessus puis s'efface */
+@media (orientation:landscape){
+  .vScene{ padding:0 !important; }
+  .vScene .vCadre{ width:100%; height:100%; }
+  .vScene .vFilm{ width:100%; height:100%; object-fit:contain; border-radius:0; box-shadow:none; }
+  .vScene .vRetour, .vScene .vBarre{
+    transition:opacity .45s var(--lent), transform .45s var(--lent);
+  }
+  .vScene.sansBarre .vBarre{ opacity:0; transform:translateY(14px); pointer-events:none; }
+  .vScene.sansBarre .vRetour{ opacity:0; pointer-events:none; }
+}
