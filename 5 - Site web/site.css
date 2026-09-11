@@ -1065,3 +1065,20 @@ input, textarea, [contenteditable="true"], .copiable, .copiable *{
   -webkit-user-select:text !important; user-select:text !important;
   -webkit-touch-callout:default;
 }
+
+
+/* ═══ LA LÉGENDE DU HALO (11 septembre 2026) ═══════════════════════════════
+   Mickaël : « explique juste en bas, un petit carré, là où on voit la couleur.
+   Tu montres même la couleur. » On ne décrit donc pas le halo : on le montre,
+   allumé, à côté de son explication. */
+.legendeNeuf{ display:flex; align-items:flex-start; gap:.9rem; margin-top:1rem;
+  padding-top:.9rem; border-top:1px solid rgba(255,255,255,.08); }
+.legendeNeuf .ex{ position:relative; flex:none; padding:.32rem .7rem; border-radius:.5rem;
+  font-family:var(--disp); font-size:.9rem; color:var(--encre); isolation:isolate; }
+.legendeNeuf .ex::before{ content:''; position:absolute; inset:-.1rem -.35rem; z-index:-1;
+  border-radius:inherit;
+  background:linear-gradient(90deg, rgba(255,150,196,.24), rgba(255,150,196,.06) 60%, rgba(255,150,196,0));
+  border-left:2px solid rgba(255,165,205,.9);
+  box-shadow:-6px 0 16px -6px rgba(255,150,196,.6);
+  animation:souffleNeuf 3.4s ease-in-out infinite; }
+.legendeNeuf .dit{ color:var(--gris2); font-size:.82rem; line-height:1.55; }

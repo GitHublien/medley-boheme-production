@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '11/09/2026 · 17h20';
+const VERSION_SITE = '11/09/2026 · 17h33';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -14,7 +14,9 @@ const VERSION_SITE = '11/09/2026 · 17h20';
     { f:'QUI CHANTE QUOI — Bohème.html', t:'Qui chante quoi', g:'♪', i:'note', s:'bloc par bloc, qui prend la parole' },
     { f:'MISE EN SCÈNE — Bohème.html',  t:'Mise en scène',  g:'◎', i:'scene', s:'qui est où, quand' },
     { f:'DOCUMENTS — Bohème.html',      t:'Documents',      g:'≡', i:'document', s:'à télécharger' },
-    { f:'VIDÉOS — Bohème.html',         t:'Vidéos',         g:'▶', i:'lecture', s:'à regarder' },
+    /* 11 sept — Mickaël : « Vidéos, ça fait double emploi avec la mise en scène.
+       C'est l'extrait de la conduite : tu peux mettre Vidéo technique. » */
+    { f:'VIDÉOS — Bohème.html',         t:'Technique',      g:'▶', i:'lecture', s:'la conduite, en vidéo' },
     { f:'CALENDRIER — Bohème.html',     t:'Calendrier',     g:'✦', i:'etoile', s:'le rendez-vous' },
     { f:'NOUVEAUTÉS — Bohème.html',     t:'Nouveautés',     g:'◌', i:'nouveau', s:'ce qui a changé' },
     { f:'PRENOM — Bohème.html',         t:'Mon prénom',     g:'●', i:'coche', s:'choisir, ou en changer' },
@@ -200,8 +202,15 @@ const VERSION_SITE = '11/09/2026 · 17h20';
   /* Ce qui a changé aujourd'hui. Une page retirée d'ici perd son halo rosé.
      11 septembre : ajout de la Mise en scène et des Vidéos, pour que Mickaël
      voie le halo en vrai — c'est ce qu'il m'a demandé. */
-  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html',
-                   'MISE EN SCÈNE — Bohème.html', 'VIDÉOS — Bohème.html'];
+  /* ⚠️ 11 septembre 2026 — ON N'ANNONCE QUE CE QUI A VRAIMENT CHANGÉ.
+     Mickaël : « je n'ai rien fait comme mise à jour sur la mise en scène, ni sur
+     la vidéo. Il ne faut pas faire des faux trucs. » J'avais allumé ces deux
+     pages pour lui MONTRER le halo : c'était un mensonge à l'écran. Retirées.
+
+     Ce qui mérite le halo, ce sont les changements qu'il décide : un texte
+     modifié dans le medley, une répartition, une mise en scène écrite, un
+     document ajouté, une date. Jamais une retouche de mon côté. */
+  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html'];
   const mot = document.createElement('div'); mot.className = 'mot';
   document.body.appendChild(mot);
   let motMinuteur = null;
@@ -465,14 +474,24 @@ const VERSION_SITE = '11/09/2026 · 17h20';
 
     /* on monte et on descend en douceur : un son qui claque, c'est laid */
     let fondu = null;
-    function versVolume(cible, apres){
+    /* Le fondu : « pas » dit à quelle vitesse on descend ou on monte. Petit, il
+       prend son temps — c'est ce qu'il faut pour un adieu. Mickaël : « ça coupe
+       d'un coup, ce n'est pas beau du tout. Il faut vraiment que ça coupe
+       doucement, en décrescendo. » */
+    function versVolume(cible, apres, pas){
       clearInterval(fondu);
+      const p = pas || 0.25;
       fondu = setInterval(() => {
         const d = cible - son.volume;
-        if (Math.abs(d) < 0.012){ son.volume = cible; clearInterval(fondu); if (apres) apres(); return; }
-        son.volume = Math.max(0, Math.min(1, son.volume + d * 0.25));
+        if (Math.abs(d) < 0.008){ son.volume = cible; clearInterval(fondu); if (apres) apres(); return; }
+        son.volume = Math.max(0, Math.min(1, son.volume + d * p));
       }, 40);
     }
+
+    /* arrive-t-on d'une page qu'on vient de quitter ? alors on remonte en douceur */
+    let raccord = false;
+    try { raccord = sessionStorage.getItem('boheme-musique-raccord') === '1';
+          sessionStorage.removeItem('boheme-musique-raccord'); } catch(e){}
 
     function lancer(){
       if (!son.src) charger(etat.i, false, true);   /* reprise : on garde la position d'une page à l'autre */
@@ -480,7 +499,11 @@ const VERSION_SITE = '11/09/2026 · 17h20';
       son.play().then(() => {
         etat.joue = true; garder();
         boite.classList.add('joue'); boite.classList.remove('eteint'); ico.textContent = '♪';
-        versVolume(VOLUME);
+        /* si l'on arrive d'une page qu'on vient de quitter, on remonte LENTEMENT :
+           c'est ce qui efface le raccord. Un premier allumage, lui, peut monter
+           franchement — on vient de le demander. */
+        versVolume(VOLUME, null, raccord ? 0.055 : 0.25);
+        raccord = false;
       }).catch(() => {
         /* ⚠️ 10 sept, au soir — UN REFUS N'EST PAS UNE DÉCISION.
            Ici on écrivait « joue = false » : un simple refus passager du navigateur
@@ -498,7 +521,9 @@ const VERSION_SITE = '11/09/2026 · 17h20';
       });
     }
     function stopper(garderEtat){
-      versVolume(0, () => son.pause());
+      /* un décrescendo d'environ une seconde : l'oreille l'entend partir,
+         elle ne le reçoit pas comme un couperet */
+      versVolume(0, () => son.pause(), 0.07);
       if (garderEtat !== 'silencieux'){ etat.joue = false; garder(); }
       boite.classList.remove('joue'); boite.classList.add('eteint'); ico.textContent = '♪';
     }
@@ -542,6 +567,40 @@ const VERSION_SITE = '11/09/2026 · 17h20';
     const noterMaintenant = () => {
       try { if (son.src && !isNaN(son.currentTime)) { etat.t = son.currentTime; garder(); } } catch(e){}
     };
+
+    /* ═══ LE RACCORD D'UNE PAGE À L'AUTRE (11 septembre 2026, 17 h) ═══════════
+       Mickaël : « la musique saute encore. Fais comme dans Reaper : en passant
+       d'une page à l'autre, ça doit donner l'impression d'une seule et même
+       musique. »
+
+       Il faut être honnête sur ce qui est possible. Chaque page est un document
+       neuf : le son ne peut pas traverser, il est forcément rechargé. Ce qu'on
+       PEUT faire, et qui suffit à l'oreille, c'est le raccord des monteurs :
+       on DESCEND avant de partir, on REMONTE en arrivant, et on reprend à la
+       seconde exacte. L'oreille ne perçoit plus une coupure mais un souffle.
+
+       Pour vraiment n'avoir qu'un seul son continu, il faudrait que le site ne
+       change jamais de page — c'est un autre chantier, et je te le dirai
+       franchement si tu veux qu'on le fasse. */
+    let onSEnVa = false;
+    function partirEnDouceur(vers){
+      if (onSEnVa) return true;
+      if (son.paused || son.volume < 0.02) return false;   /* rien à adoucir */
+      onSEnVa = true;
+      noterMaintenant();
+      try { sessionStorage.setItem('boheme-musique-raccord', '1'); } catch(e){}
+      versVolume(0, () => { location.href = vers; }, 0.34);
+      setTimeout(() => { location.href = vers; }, 420);     /* filet de sécurité */
+      return true;
+    }
+    document.addEventListener('click', e => {
+      const a = e.target && e.target.closest && e.target.closest('a[href]');
+      if (!a || a.target || e.defaultPrevented) return;
+      const h = a.getAttribute('href') || '';
+      if (/^(#|javascript:|mailto:|tel:)/.test(h)) return;
+      try { if (new URL(a.href).origin !== location.origin) return; } catch(err){ return; }
+      if (partirEnDouceur(a.href)){ e.preventDefault(); e.stopPropagation(); }
+    }, true);
     addEventListener('pagehide', noterMaintenant);
     addEventListener('beforeunload', noterMaintenant);
     document.addEventListener('visibilitychange', () => { if (document.hidden) noterMaintenant(); });
