@@ -1034,3 +1034,9 @@ body.vOuvert{ overflow:hidden; }
   .vScene.sansBarre .vBarre{ opacity:0; transform:translateY(14px); pointer-events:none; }
   .vScene.sansBarre .vRetour{ opacity:0; pointer-events:none; }
 }
+
+
+/* ═══ PLUS DE POINT, RIEN QUE LE HALO (11 septembre 2026, midi) ═════════════
+   Mickaël : « enlève-moi le petit point rouge, je ne veux pas le petit point
+   rouge pour les mises à jour. » Le halo rosé dit déjà tout, et il le dit mieux. */
+.pastille{ display:none !important; }
