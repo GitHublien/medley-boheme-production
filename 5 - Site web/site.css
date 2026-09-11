@@ -540,12 +540,11 @@ footer .liens a:hover{ color:var(--or2); }
   body{ padding-bottom:calc(100px + env(safe-area-inset-bottom)); }
   .ouverture{ padding-bottom:calc(106px + env(safe-area-inset-bottom)) !important; }
   .ouverture.a-image .texte{ padding-top:1.2rem; padding-bottom:1rem; }
-  /* Mesuré : l'affiche verticale faisait 727 px de haut, si bien que la phrase
-     d'accueil tombait à 819 — derrière la bande du bas. On la cadre pour que
-     tout tienne : l'affiche, la phrase, et les deux bandes. Rien n'est rogné,
-     l'image est posée en entier dans la place qu'on lui donne. */
-  .ouverture.a-image .fond{ max-height:calc(100dvh - var(--nav) - 250px) !important; }
-  .ouverture.a-image .fond img, .ouverture.a-image .fond video{ object-fit:contain; }
+  /* J'avais essayé de rapetisser l'affiche pour que la phrase tienne au-dessus
+     de la bande. Regardé : ça creusait un vide noir sous l'affiche et ça poussait
+     les deux boutons derrière la bande. Pire. L'affiche garde donc sa taille :
+     la phrase et les boutons arrivent en descendant, comme dans n'importe quelle
+     application, et la place réservée en bas garantit qu'on les atteint. */
   /* la pastille de la page en cours dépassait de 7 px par-dessus le trait d'or */
   .bas{ padding:.55rem .3rem calc(.55rem + env(safe-area-inset-bottom)) !important; }
   .bas a{ padding:.5rem .2rem !important; }
