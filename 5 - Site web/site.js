@@ -29,7 +29,14 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   /* le prénom : dans le lien, sinon celui qu'on a gardé (application installée) */
   let pour = new URLSearchParams(location.search).get('pour');
   try { if (pour) localStorage.setItem('boheme-pour', pour); else pour = localStorage.getItem('boheme-pour') || null; } catch(e){}
-  const suite = pour ? '?pour=' + encodeURIComponent(pour) : '';
+  /* LE MODE RÉGLAGE SE RETIENT (11 sept) : une fois allumé, il suit de page en
+     page et survit à un rechargement, sinon on le perd au premier lien touché. */
+  let reglage = new URLSearchParams(location.search).get('reglage') === '1';
+  try {
+    if (reglage) sessionStorage.setItem('boheme-reglage', '1');
+    else if (sessionStorage.getItem('boheme-reglage') === '1') reglage = true;
+  } catch(e){}
+  const suite = (pour ? '?pour=' + encodeURIComponent(pour) : '') + (reglage ? (pour ? '&' : '?') + 'reglage=1' : '');
   const ici = decodeURIComponent(location.pathname.split('/').pop() || '');
   const lien = p => encodeURI(p.f) + suite;
 
@@ -64,7 +71,7 @@ const VERSION_SITE = '11/09/2026 · 01h10';
      Mickaël : « est-ce que je peux te montrer ? » Oui : ?reglage=1 sur n'importe
      quelle page, et il déplace les choses au doigt. Le fichier n'est chargé que
      dans ce cas : le site normal n'en porte pas une ligne. */
-  if (new URLSearchParams(location.search).get('reglage') === '1'){
+  if (reglage){
     /* on le pose tout de suite : le corps existe déjà (la barre vient d'y être
        ajoutée). Passer par l'événement « load » arrivait trop tard, il était
        parfois déjà tiré, et le script n'était jamais posé. */

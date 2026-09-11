@@ -168,7 +168,10 @@
       try { await navigator.clipboard.writeText(t); alert('Copié. Colle-le dans la conversation.'); }
       catch(e){ const z = document.createElement('textarea'); z.value = t; document.body.appendChild(z); z.select(); document.execCommand('copy'); z.remove(); alert('Copié.'); }
     }, true),
-    bouton('Quitter', () => { location.search = location.search.replace(/[?&]reglage=1/, '') || ''; }),
+    bouton('Quitter', () => {
+      try { sessionStorage.removeItem('boheme-reglage'); } catch(e){}
+      location.search = location.search.replace(/[?&]reglage=1/, '') || '';
+    }),
   );
 
   /* les curseurs qui servent vraiment : où la barre s'arrête, sa taille */
