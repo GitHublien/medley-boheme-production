@@ -183,7 +183,11 @@ const VERSION_SITE = '11/09/2026 · 01h10';
   /* ── LA MISE À JOUR, comme dans l'atelier : un petit mot qui répond ──
      Elle vérifie à l'ouverture, sans déranger, et dit toujours où on en est.
      Les nouveautés du jour allument une pastille sur les pages concernées. */
-  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html'];   /* ce qui a changé aujourd'hui */
+  /* Ce qui a changé aujourd'hui. Une page retirée d'ici perd son halo rosé.
+     11 septembre : ajout de la Mise en scène et des Vidéos, pour que Mickaël
+     voie le halo en vrai — c'est ce qu'il m'a demandé. */
+  const NOUVEAU = ['NOUVEAUTÉS — Bohème.html', 'QUI CHANTE QUOI — Bohème.html',
+                   'MISE EN SCÈNE — Bohème.html', 'VIDÉOS — Bohème.html'];
   const mot = document.createElement('div'); mot.className = 'mot';
   document.body.appendChild(mot);
   let motMinuteur = null;
