@@ -312,6 +312,15 @@
     return lisse;
   }
 
+  /* ⚠️ 12 septembre, 11 h 50 — MESURE SUR SON TELEPHONE, au dixieme de seconde :
+     « regarde » finit a 10,9 s ; la page ne bouge pas avant 13,9 s ; puis elle
+     devale 7 700 pixels en 0,6 s au lieu de ses 5,8 s ; et la phrase du retour
+     part alors que la page est encore en bas.
+     Ce n'etait ni le son ni sa trace : c'est le DEFILEMENT LISSE du site
+     (scroll-behavior: smooth) qui se battait contre le rejeu. Chaque position
+     posee declenchait une glissade animee ; cinquante par seconde s'annulaient
+     entre elles, et ca rattrapait tout d'un coup. On pilote en mode direct,
+     image par image : behavior « instant », et le lissage, c'est nous. */
   function rejouer(traceBrute, auPlusBas){
     return new Promise(resoudre => {
       const trace = nettoyer(traceBrute);
@@ -333,10 +342,10 @@
         const a = trace[i], b = trace[Math.min(i + 1, trace.length - 1)];
         const f = b[0] > a[0] ? Math.min(1, (t - a[0]) / (b[0] - a[0])) : 1;
         const y = a[1] + (b[1] - a[1]) * f;
-        scrollTo(0, y);
+        scrollTo({ top: y, behavior: 'instant' });
         if (!ditPlusBas && auPlusBas && y >= plusBas - 40){ ditPlusBas = true; auPlusBas(); }
         if (t < fin) requestAnimationFrame(pas);
-        else { scrollTo(0, trace[trace.length - 1][1]); removeEventListener('pointerdown', lacher, true); resoudre(); }
+        else { scrollTo({ top: trace[trace.length - 1][1], behavior: 'instant' }); removeEventListener('pointerdown', lacher, true); resoudre(); }
       };
       requestAnimationFrame(pas);
     });
@@ -368,9 +377,9 @@
         if (enPause){ requestAnimationFrame(pas); return; }   /* on attend, on ne lache pas */
         const t = Math.min(1, (now - depart) / duree);
         const ou = cible();
-        scrollTo(0, depuis + (ou - depuis) * doux(t));
+        scrollTo({ top: depuis + (ou - depuis) * doux(t), behavior: 'instant' });
         if (t < 1) requestAnimationFrame(pas);
-        else { scrollTo(0, ou); removeEventListener('pointerdown', lacher, true); resoudre(); }
+        else { scrollTo({ top: ou, behavior: 'instant' }); removeEventListener('pointerdown', lacher, true); resoudre(); }
       };
       requestAnimationFrame(pas);
     });
