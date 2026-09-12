@@ -749,7 +749,16 @@
         const r2 = poserSur(c);
         rangerLePasser(r2);
         /* on continue a le suivre, doucement, tant qu'on parle de lui */
-        suivi = H2.call(window, () => { if (c.isConnected) poserSur(c); else { clearInterval(suivi); suivi = null; } }, 250);
+        /* ⚠️ 13 h 10 — « apres la validation, la lumiere part sur la gauche tout
+           en haut. » Le bouton rouge s'efface a la fin de la phrase, et le suivi
+           continuait a se poser sur lui — un objet efface est en (0,0). Si
+           l'objet suivi disparait ou devient invisible, la lumiere s'eteint
+           doucement au lieu de partir dans le coin. */
+        suivi = H2.call(window, () => {
+          const rr = c.isConnected ? c.getBoundingClientRect() : null;
+          if (rr && (rr.width || rr.height)) poserSur(c);
+          else { clearInterval(suivi); suivi = null; voile.style.background = 'transparent'; haloActuel = null; }
+        }, 250);
       }
     }, 100);
     });
