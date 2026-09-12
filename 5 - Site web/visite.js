@@ -86,11 +86,12 @@
        pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
        Je designais toute la ligne de la carte : le titre, le texte, les deux
        boutons. Quand on montre tout, on ne montre rien. */
-    /* 12 h 55 — « fais comme les mises a jour : en gros, puis tout d'un coup en
-       petit. » La carte d'abord, puis la lumiere se resserre sur le bouton. */
+    /* 13 h 05 — Mickael : « tu avais un calcul tout a l'heure qui etait parfait
+       pour le bouton rouge. Remets-toi a cet endroit-la. » On y revient : la
+       lumiere directement sur le bouton, sans le zoom en deux temps. Le zoom
+       reste sur les mises a jour, ou il l'a valide. */
     { son: sonPerso('02-le-bouton-rouge'),
-      vise: '.carteEssentiel .ceLigne:first-child', nom: 'Le bouton rouge',
-      pendant: [ { part: 0.30, geste: 'rien', vise: '.carteEssentiel .ceLigne:first-child a[data-recu]' } ],
+      vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
       sauterSiAbsent: true,
       /* ⚠️ 12 septembre, plus tard — LA LUMIERE NE MONTRE PLUS « J'AI UN SOUCI ».
          J'avais mis la voix a en parler ici, et Mickael m'a reprise : « le fait
