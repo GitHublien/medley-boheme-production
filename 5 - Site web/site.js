@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 13h30';
+const VERSION_SITE = '12/09/2026 · 15h00';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -515,7 +515,7 @@ const VERSION_SITE = '12/09/2026 · 13h30';
       const v = dit();
       recu.classList.toggle('faitVert', v);
       recu.classList.toggle('aFaireRouge', !v);
-      if (v && !recu.dataset.vientDeLEnvoyer){ recu.style.display = 'none'; pb.classList.remove('doux'); }
+      /* 14 h 30 — le bouton vert reste affiche a chaque visite : c'est la cle validee */
       recu.innerHTML = v
         ? 'C\u2019est envoyé, merci <b><i class="ico ico-coche"></i></b>'
         : 'Dis-moi que tout s\u2019ouvre <b><i class="ico ico-coche"></i></b>';
@@ -561,7 +561,8 @@ const VERSION_SITE = '12/09/2026 · 13h30';
       recu.dataset.vientDeLEnvoyer = '1';
       try { localStorage.setItem(CLE, '1'); } catch(e){}
       peindre(); direMot();
-      if (!sansEffacer) setTimeout(effacerLeBouton, 6000);
+      /* 14 h 30 — plus d'effacement, ni ici ni dans la visite : « il restera
+         toujours en vert, comme une cle validee ». */
     };
     window.marquerLeRecuEnvoye = marquerEnvoye;
     window.effacerLeRecuNet = effacerNet;

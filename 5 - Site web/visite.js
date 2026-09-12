@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12103';
+  const VOIX_VERSION = '12110';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -62,94 +62,97 @@
      et c'est ce qui rendra ses notes utilisables. « Arret 7, le menu » se
      corrige ; « ca ne va pas » ne se corrige pas. */
   const ARRETS = [
+    /* ═══════════════════════════════════════════════════════════════════
+       LE NOUVEL ORDRE — valide par Mickael le 12 septembre a 14 h 45.
+       « On suit la page. Un gros cadre, on zoome, on dezoome, on passe au
+       suivant. On ne bouge plus d'un cote et de l'autre. »
+       Une seule descente, du haut en bas de l'accueil, puis la barre du bas,
+       le menu du haut, la musique, le paysage, la fin. Chaque arret glisse
+       jusqu'a sa cible a la vitesse de sa main, et la lumiere epouse la forme
+       de l'objet. Le zoom : « vise » large, puis « pendant » resserre.
+       ═══════════════════════════════════════════════════════════════════ */
+
+    /* 1 · le visage, puis l'arrivee */
     { son: sonPerso('01-bonjour'),        vise: null, nom: "L’accueil" },
-    /* c'est ICI que le visage s'efface : la voix dit « voila la page d'accueil »
-       au moment exact ou la page apparait. Le rideau se leve sur la phrase. */
-    /* la page d'accueil : le geste commande, la parole suit. Chaque etape
-       attend la precedente. */
+
+    /* 2 · la page d'accueil : son geste, enregistre a sa main */
     { nom: 'La page d’accueil', vise: null, avant: 'effacerLeVisage',
       etapes: [
-        /* 11 h 55 — « la, pour le coup, tu es parti trop tot. » 1,3 s compensait
-           l'ancien retard ; en direct, ca coupait le mot. Une demi-seconde : la
-           page part sur la fin de « regarde », pas avant. */
-        /* 12 h — « il faudrait que tu le demarres une petite seconde apres,
-           juste apres le regard. » Plus de chevauchement : la phrase finit, une
-           respiration de 700 ms (le fichier en porte deja 300), et la page part.
-           Une seconde apres le mot, ni avant ni apres. */
         { son: sonCommun('01b-accueil') },
         { attendre: 700 },
-        { geste: 'defilerCommeLui' },                    /* SON geste, rejoue tel quel — descente, arret, remontee */
-        { son: sonCommun('01d-en-haut') },               /* « et voila, on est de nouveau a l'accueil » */
+        { geste: 'defilerCommeLui' },
+        { son: sonCommun('01d-en-haut') },
       ] },
-    /* ⚠️ 12 septembre — Mickael : « quand on montre le bouton rouge, il ne faut
-       vraiment montrer QUE le bouton rouge. Il faut resserrer et zoomer un peu
-       pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
-       Je designais toute la ligne de la carte : le titre, le texte, les deux
-       boutons. Quand on montre tout, on ne montre rien. */
-    /* 13 h 05 — Mickael : « tu avais un calcul tout a l'heure qui etait parfait
-       pour le bouton rouge. Remets-toi a cet endroit-la. » On y revient : la
-       lumiere directement sur le bouton, sans le zoom en deux temps. Le zoom
-       reste sur les mises a jour, ou il l'a valide. */
-    { son: sonPerso('02-le-bouton-rouge'),
-      vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
-      sauterSiAbsent: true,
-      /* ⚠️ 12 septembre, plus tard — LA LUMIERE NE MONTRE PLUS « J'AI UN SOUCI ».
-         J'avais mis la voix a en parler ici, et Mickael m'a reprise : « le fait
-         de dire "j'ai un souci" et apres de dire... ce n'est pas le bon moment
-         de le mettre. » Il a raison : cette phrase atteignait 59 secondes, un
-         tiers de la visite pour un seul arret, et le message le plus important
-         se noyait. Le bouton du souci retrouvera sa place ailleurs — mais la
-         lumiere ne le designe plus ici, car la voix ne le nomme plus. Une
-         lumiere qui montre ce dont on ne parle pas est pire qu'aucune lumiere. */
-      /* « demande » vient APRES la phrase : on ne coupe jamais la voix pour poser
-         une question. C'est la deuxieme des trois exceptions — c'est lui qui
-         decide, maintenant ou plus tard. */
+
+    /* 3 · la carte de l'essentiel, en gros */
+    { son: sonCommun('03-la-carte'), nom: 'La carte',
+      vise: '.carteEssentiel' },
+
+    /* 4 · zoom sur le bouton rouge ; le vert reste */
+    { son: sonPerso('02-le-bouton-rouge'), nom: 'Le bouton rouge',
+      vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', sauterSiAbsent: true, sauterSiVert: true,
       demande: { texte: 'Tu veux le faire maintenant ?',
                  oui: 'Je le fais maintenant', non: 'Plus tard',
                  fait: '.carteEssentiel .ceLigne:first-child a[data-recu]' } },
-    /* comme le bouton rouge : on eclaire LE BOUTON, pas la carte entiere.
-       « Quand on montre tout, on ne montre rien. » */
-    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour',
-      /* d'abord toute la carte, puis, quand la voix dit « ce bouton », la
-         lumiere se resserre en glissant sur le bouton lui-meme */
-      pendant: [ { part: 0.42, geste: 'rien', vise: '.carteEssentiel .ceLigne:last-child button' } ] },
-    /* ⚠️ 12 septembre — Mickael : « les infos, on les garde et on en parlera
-       dans l'aide, mais on ne les met pas au debut. » Elles ne barrent donc
-       plus le chemin apres le film ; c'est ici qu'on les annonce, au moment ou
-       ca a du sens, et la lumiere va se poser sur leur tuile. */
-    { son: sonCommun('02e-les-infos'), nom: 'Les informations utiles',
-      vise: 'a[href*="BIENVENUE"].tuile', sauterSiAbsent: true },
-    /* ⚠️ 12 septembre — LA PROMESSE TENUE. La voix dit, des la premiere phrase,
-       qu'elle montrera ou le film est range. Une promesse qu'on ne tient pas
-       dans une visite de deux minutes, ca se remarque tout de suite — et ca
-       decredibilise tout le reste. C'est ici qu'on la tient. */
-    { son: sonCommun('02f-le-film'), nom: 'Le film',
-      vise: 'a[href*="revoir=1"].tuile', sauterSiAbsent: true },
-    /* La phrase dure une vingtaine de secondes : « cette note, c'est la musique
-       du hall… un appui montre son titre et te laisse en changer… un second
-       appui l'eteint. » Les gestes tombent au moment ou elle les nomme. */
-    { son: sonCommun('03-musique'),       vise: '.nav .musique', nom: 'La musique',
-      pendant: [ { a: 1.5,  geste: 'musiqueAllumer' },
-                 /* le titre s'affiche : la lumiere s'elargit a la note ET au panneau */
-                 { a: 8.5,  geste: 'musiqueMorceauSuivant', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
-                 { a: 12.0, geste: 'musiqueMorceauSuivant' },
-                 /* on eteint : retour sur la note seule */
-                 { a: 16.5, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
-    { son: sonCommun('04-barre-du-bas'),  vise: '.bas', nom: 'La barre du bas' },
-    { son: sonCommun('05-atelier'),       vise: 'a[href*="KARAOKE"].tuile', nom: "L’atelier" },
-    { son: sonCommun('06-textes'),        vise: 'a[href*="LIVRE"].tuile', nom: 'Les textes' },
-    /* « Et voici tout le reste. Je t'ouvre le menu. » — il s'ouvre a « je
-       t'ouvre », pas trois secondes avant dans le silence. */
-    { son: sonCommun('07-menu'),          vise: null, nom: 'Le menu',
-      pendant: [ { a: 2.2, geste: 'ouvrirMenu', vise: '.voile nav' } ] },
-    { son: sonCommun('08-halo'),          vise: '.voile .legendeMenu', nom: 'Le halo bleu' },
-    /* « Je referme. » — elle referme en le disant. */
-    { son: sonCommun('09-retour'),        vise: null, nom: 'Le retour',
-      pendant: [ { a: 1.2, geste: 'fermerMenu', vise: '.nav .marque' } ] },
-    { son: sonCommun('10-exemple'),       vise: null, avant: 'montrerCalendrier', nom: 'Un exemple' },
-    { son: sonCommun('11-paysage'),       vise: null, attend: 'paysage', nom: 'Le paysage' },
-    { son: sonPerso('12-la-fin'),         vise: null, avant: 'revenirAccueil', nom: 'La fin' },
+
+    /* 5 · zoom sur « j'ai un probleme technique » */
+    { son: sonCommun('05-probleme'), nom: 'Un problème technique',
+      vise: '.carteEssentiel .ceLigne:first-child a.souci' },
+
+    /* 6 · zoom sur « mise a jour » */
+    { son: sonCommun('02b-mises-a-jour'), nom: 'Les mises à jour',
+      vise: '.carteEssentiel .ceLigne:last-child button' },
+
+    /* 7 · zoom sur la legende du halo bleu */
+    { son: sonCommun('07-halo-bleu'), nom: 'Le halo bleu',
+      vise: '.carteEssentiel .legendeNeuf', sauterSiAbsent: true },
+
+    /* 8 a 16 · les tuiles, dans l'ordre de la page */
+    { son: sonCommun('05-atelier'),      nom: "L’atelier",              vise: 'a[href*="KARAOKE"].tuile' },
+    { son: sonCommun('06-textes'),       nom: 'Les textes',             vise: 'a[href*="LIVRE"].tuile' },
+    { son: sonCommun('10-qui-chante'),   nom: 'Qui chante quoi',        vise: 'a[href*="QUI CHANTE"].tuile' },
+    { son: sonCommun('11-mise-en-scene'),nom: 'La mise en scène',       vise: 'a[href*="MISE EN SC"].tuile' },
+    { son: sonCommun('12-documents'),    nom: 'Les documents',          vise: 'a[href*="DOCUMENTS"].tuile' },
+    { son: sonCommun('13-technique'),    nom: 'La technique',           vise: 'a[href*="VID"].tuile' },
+    { son: sonCommun('02f-le-film'),     nom: 'Le film',                vise: 'a[href*="revoir=1"].tuile' },
+    { son: sonCommun('15-rendez-vous'),  nom: 'Le rendez-vous',         vise: 'a[href*="CALENDRIER"].tuile' },
+    { son: sonCommun('02e-les-infos'),   nom: 'Les informations utiles',vise: 'a[href*="BIENVENUE"].tuile' },
+
+    /* 17 · les quatre mondes, puis les six : la page glisse le long */
+    /* la section fait 2 400 pixels : la lumiere glisse monde par monde, au
+       rythme ou la voix les nomme, puis sur les six. */
+    { son: sonCommun('17-quatre-mondes'), nom: 'Quatre mondes',
+      vise: '.mondes .monde.monopolis',
+      pendant: [ { part: 0.30, geste: 'rien', vise: '.mondes .monde.notredame' },
+                 { part: 0.40, geste: 'rien', vise: '.mondes .monde.egypte' },
+                 { part: 0.50, geste: 'rien', vise: '.mondes .monde.romeo' },
+                 { part: 0.62, geste: 'rien', vise: '.six' } ] },
+
+    /* 18 · la barre du bas */
+    { son: sonCommun('04-barre-du-bas'), nom: 'La barre du bas',
+      vise: '.bas',
+      pendant: [ { part: 0.70, geste: 'rien', vise: '.bas .menuBas' } ] },
+
+    /* 19 · le menu du haut : on remonte, il s'ouvre, on referme, le logo */
+    { son: sonCommun('07-menu'), nom: 'Le menu', vise: null,
+      avant: 'remonterEnHaut',
+      pendant: [ { part: 0.10, geste: 'ouvrirMenu', vise: '.voile nav' },
+                 { part: 0.74, geste: 'fermerMenu', vise: '.nav .burger' },
+                 { part: 0.86, geste: 'rien', vise: '.nav .marque' } ] },
+
+    /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
+    { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',
+      pendant: [ { a: 0.5,  geste: 'musiqueAllumer' },
+                 { part: 0.55, geste: 'musiqueMorceauSuivant', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
+                 { part: 0.88, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
+
+    /* 21 · le paysage */
+    { son: sonCommun('11-paysage'), nom: 'Le paysage', vise: null, attend: 'paysage' },
+
+    /* 22 · la fin */
+    { son: sonPerso('12-la-fin'), nom: 'La fin', vise: null, avant: 'revenirAccueil' },
   ];
+
 
   /* ── les gestes que la visite fait elle-même ──────────────────────────── */
   const GESTES = {
@@ -174,7 +177,10 @@
        arriver. Si son doigt touche l'ecran, on lache — et on considere le
        geste fini, pour ne jamais bloquer la suite. */
     descendreAuxVisages(){ return glisser('visages', 22000); },
-    remonterEnHaut(){ return glisser('haut', 18000); },
+    remonterEnHaut(){
+      const d = Math.max(1500, Math.min(6000, scrollY / VITESSE_MAIN * 1000));
+      return glisser('haut', d);
+    },
     /* le geste enregistre par Mickael, s'il existe ; sinon la descente puis la
        remontee calculees, l'une apres l'autre */
     /* ── LES SIX VISAGES DANS L'ECRAN ──────────────────────────────────────
@@ -1017,10 +1023,9 @@
         if (typeof window.marquerLeRecuEnvoye === 'function') window.marquerLeRecuEnvoye(true);
         /* le vert d'abord ; la voix ; et A LA FIN de la phrase, tout s'efface
            d'un coup et on continue sans attendre */
-        apres(() => repondre('02c-merci', () => {
-          if (typeof window.effacerLeRecuNet === 'function') window.effacerLeRecuNet();
-          apres(alors, 300);
-        }), 900);
+        /* 14 h 30 — « on ne va pas faire d'effacement : il restera toujours en
+           vert, comme une cle validee. » */
+        apres(() => repondre('02c-merci', alors), 900);
       } else {
         repondre('02g-pas-fait', alors);
       }
@@ -1127,6 +1132,10 @@
        de faux. */
     if (a.sauterSiAbsent && a.vise && !document.querySelector(a.vise))
       return jouer(k + 1, monFil);
+    /* 14 h 50 — le bouton vert RESTE affiche : l'arret ne se saute plus parce
+       qu'il est absent, mais parce qu'il est deja vert. Sinon la voix dirait
+       « ce bouton rouge » devant un bouton vert. */
+    if (a.sauterSiVert && a.vise){ const e = document.querySelector(a.vise); if (e && e.classList.contains('faitVert')) return jouer(k + 1, monFil); }
     /* ── LES GESTES PENDANT LA PHRASE ───────────────────────────────────
        ⚠️ 12 septembre — Mickael : « pour le menu, il ne s'est pas ouvert
        automatiquement. Elle a voulu montrer des choses mais je n'ai rien vu,
@@ -1202,7 +1211,12 @@
         else apres(suivant, 3500);
       });
     };
-    const d = a.avant && GESTES[a.avant] ? GESTES[a.avant]() : 0;
+    /* 15 h — un geste « avant » peut rendre une promesse (la remontee vers le
+       menu) : on l'attend, au lieu de parler pendant que la page bouge encore. */
+    let d = a.avant && GESTES[a.avant] ? GESTES[a.avant]() : 0;
+    const attendreAvant = (d && typeof d.then === 'function') ? d : null;
+    if (attendreAvant) d = 0;
+    const apresAvant = (fn, ms) => attendreAvant ? attendreAvant.then(() => apres(fn, ms)) : apres(fn, ms);
 
     /* ⚠️ 12 septembre, 11 h — Mickael : « entre le moment ou la phrase a
      termine et la suivante, il y a deux ou trois secondes a chaque fois. Quand
@@ -1252,12 +1266,12 @@
           apres(encore, e.attendre);
         } else encore();
       };
-      apres(() => { eclairer(a.vise); jouerEtape(0); }, d);
+      apresAvant(() => { eclairer(a.vise); jouerEtape(0); }, d);
       return;
     }
 
-    if (a.attend) apres(() => attendre(a.attend, suite), d);
-    else apres(suite, d);
+    if (a.attend) apresAvant(() => attendre(a.attend, suite), d);
+    else apresAvant(suite, d);
   }
 
   /* ── BIENVENUE, AVEC SON VISAGE ─────────────────────────────────────────
@@ -1523,9 +1537,9 @@
       /* les deux premiers arrets se jouent en haut de l'accueil ; les autres
          partent de la ou la page est, comme en vrai */
       if (k <= 1) scrollTo({ top: 0, behavior: 'instant' });
-      if (k < 6) taireLaMusique();     /* avant l'arret de la musique, elle se tait */
+      if (k < 19) taireLaMusique();    /* avant l'arret de la musique, elle se tait */
       /* en essai, le bouton rouge revient a chaque passage sur son arret */
-      if (k === 2 && window.__modeEssai && window.__modeEssai() && typeof window.remettreLeRecuRouge === 'function') window.remettreLeRecuRouge();
+      if (k === 3 && window.__modeEssai && window.__modeEssai() && typeof window.remettreLeRecuRouge === 'function') window.remettreLeRecuRouge();
       const p = document.querySelector('#vPause'); if (p) p.remove();
       const d = document.querySelector('#vDemande'); if (d) d.remove();
       try { son.pause(); son.onended = son.onerror = null; } catch(e){}
@@ -1533,7 +1547,7 @@
       document.body.classList.add('enVisite');
       /* le menu doit etre ouvert pour les arrets qui parlent de lui, ferme
          pour les autres : sinon on eclaire quelque chose d'invisible. */
-      const dansLeMenu = /^(7|8)$/.test(String(k));
+      const dansLeMenu = false;
       document.body.classList.toggle('menu', dansLeMenu);
       const monFil = fil;
       /* 14 h — Mickael : « en mode test, je ne vois pas non plus la photo de

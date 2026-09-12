@@ -887,10 +887,17 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
 @keyframes battementRouge{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,77,77,.45) } 50%{ box-shadow:0 0 0 9px rgba(255,77,77,0) } }
 
 /* ── vert : c'est fait ──────────────────────────────────────────────────── */
+/* ⚠️ 12 septembre, 14 h 30 — Mickael : « un vert plus professionnel. Je n'aime
+   pas qu'il y ait du jaune sur le vert. Comme quand tu viens d'installer une
+   cle et qu'elle reste active : c'est valide. Pas de rond orange autour. »
+   Le vert clair-jaune (#a9e6a0) est parti : un vert profond, un texte blanc,
+   et la pastille doree disparait aussi sur le vert. */
 .btn.faitVert{
-  background:linear-gradient(180deg,#a9e6a0,#5aa84e) !important; color:#0b2408 !important;
-  border-color:rgba(150,224,140,.55) !important; animation:none; box-shadow:none;
+  background:linear-gradient(180deg,#2e9e5b,#1c7a43) !important; color:#f2fff5 !important;
+  border-color:rgba(46,158,91,.7) !important; animation:none;
+  box-shadow:0 0 18px rgba(46,158,91,.28);
 }
+.btn.faitVert b{ display:none; }
 
 /* la petite porte « j'ai un souci » : discrète, jamais alarmante */
 .btn.souci{ margin-top:.55rem; font-size:.92rem; opacity:.8; }
