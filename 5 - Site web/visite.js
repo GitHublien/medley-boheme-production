@@ -130,9 +130,11 @@
        appui l'eteint. » Les gestes tombent au moment ou elle les nomme. */
     { son: sonCommun('03-musique'),       vise: '.nav .musique', nom: 'La musique',
       pendant: [ { a: 1.5,  geste: 'musiqueAllumer' },
-                 { a: 8.5,  geste: 'musiqueMorceauSuivant' },
+                 /* le titre s'affiche : la lumiere s'elargit a la note ET au panneau */
+                 { a: 8.5,  geste: 'musiqueMorceauSuivant', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
                  { a: 12.0, geste: 'musiqueMorceauSuivant' },
-                 { a: 16.5, geste: 'musiqueEteindre' } ] },
+                 /* on eteint : retour sur la note seule */
+                 { a: 16.5, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
     { son: sonCommun('04-barre-du-bas'),  vise: '.bas', nom: 'La barre du bas' },
     { son: sonCommun('05-atelier'),       vise: 'a[href*="KARAOKE"].tuile', nom: "L’atelier" },
     { son: sonCommun('06-textes'),        vise: 'a[href*="LIVRE"].tuile', nom: 'Les textes' },
@@ -471,6 +473,17 @@
       transition:opacity .5s ease, background-position .6s cubic-bezier(.32,.72,0,1); }
     body.enVisite #vVoile{ opacity:1; pointer-events:auto; }
     #vProjecteur{ display:none; }
+    /* ⚠️ 13 h 40 — Mickael : « j'ai pense plutot a un carre en halo, parce que
+       le rond n'est pas carre par rapport au truc. Le carre pour les trucs qui
+       sont carres, le halo rond pour les trucs qui sont un peu en rond. »
+       La lumiere est donc un TROU dans le noir, qui prend la forme de l'objet :
+       rond pour la note ou le logo, rectangle aux coins doux pour une carte ou
+       une tuile. Le noir vient de son ombre demesuree, le bord est fondu par un
+       leger flou, et l'or fait l'ourlet. */
+    #vTrou{ position:fixed; z-index:151; pointer-events:none; opacity:0;
+      box-shadow:0 0 0 9999px rgba(4,4,4,.92), 0 0 0 2px rgba(241,210,122,.5), 0 0 26px 8px rgba(241,210,122,.35);
+      filter:blur(3px); transition:opacity .4s ease; }
+    #vTrou.la{ opacity:1; }
     /* ⚠️ « Aucun texte ne doit manger un autre texte. » Ce bouton se posait
        PILE sur la barre du bas et mangeait ATELIER et TEXTES (vu en image le
        11 septembre au soir). Il se tient maintenant AU-DESSUS d'elle — et pas
@@ -557,6 +570,7 @@
     if (html) d.innerHTML = html; document.body.appendChild(d); return d; };
   const voile = el('vVoile');
   const proj  = el('vProjecteur');
+  const trou  = el('vTrou');
   const puces = el('vPuces');
   /* ⚠️ 12 septembre — PLUS DE « PASSER LA VISITE ».
      Mickael : « on ne peut pas passer outre, il faut qu'il voie l'aide
@@ -642,6 +656,7 @@
      stabilisait en retard, et reposait le cadre sur l'ANCIEN objet. Tous les
      arrets finissaient par montrer la meme chose. */
   const estAncre = (e) => {
+    if (e && e.els) return estAncre(e.els[0]);
     for (let n = e; n && n !== document.body; n = n.parentElement)
       if (getComputedStyle(n).position === 'fixed') return true;
     return false;
@@ -659,13 +674,15 @@
      GLISSE, centre et rayon, en six dixiemes de seconde. Comme une poursuite
      qui se resserre sur un chanteur. */
   let haloActuel = null, haloAnim = null;
-  function peindreHalo(cx, cy, rx, ry){
-    voile.style.background =
-      'radial-gradient(ellipse ' + Math.round(rx) + 'px ' + Math.round(ry) + 'px at '
-      + Math.round(cx) + 'px ' + Math.round(cy) + 'px, '
-      + 'rgba(4,4,4,0) 0%, rgba(4,4,4,0) 70%, '
-      + 'rgba(241,210,122,.26) 77%, '
-      + 'rgba(4,4,4,.80) 88%, rgba(4,4,4,.94) 100%)';
+  /* rx, ry : les demi-largeur et demi-hauteur du trou ; rond : sa forme */
+  function peindreHalo(cx, cy, rx, ry, rond){
+    trou.style.left = Math.round(cx - rx) + 'px';
+    trou.style.top  = Math.round(cy - ry) + 'px';
+    trou.style.width  = Math.round(rx * 2) + 'px';
+    trou.style.height = Math.round(ry * 2) + 'px';
+    trou.style.borderRadius = rond ? '50%' : '18px';
+    trou.classList.add('la');
+    voile.style.background = 'transparent';
   }
   function poserSur(c){
     const r = c.getBoundingClientRect();
@@ -679,13 +696,16 @@
        vraiment, et qu'on ne voie pas autour. » La marge tombe a six pixels, et
        le clair tient jusqu'a 70 % du rayon : la lumiere epouse l'objet au lieu
        d'eclairer son quartier. */
-    const rx = Math.max(28, (r.width  / 2 + 6)) / 0.70;
-    const ry = Math.max(24, (r.height / 2 + 6)) / 0.70;
-    const vise = { cx, cy, rx, ry };
+    const rx = Math.max(22, r.width  / 2 + 8);
+    const ry = Math.max(22, r.height / 2 + 8);
+    /* rond si l'objet est a peu pres carre et petit (une note, un logo) */
+    const ratio = r.width / Math.max(1, r.height);
+    const rond = ratio > 0.75 && ratio < 1.33 && r.width < 140;
+    const vise = { cx, cy, rx, ry, rond };
     /* premiere pose, ou meme cible qui a juste bouge de quelques pixels : direct */
     if (!haloActuel || (Math.abs(haloActuel.rx - rx) < 30 && Math.abs(haloActuel.ry - ry) < 30
                         && Math.abs(haloActuel.cx - cx) < 60 && Math.abs(haloActuel.cy - cy) < 60)){
-      haloActuel = vise; peindreHalo(cx, cy, rx, ry); return r;
+      haloActuel = vise; peindreHalo(cx, cy, rx, ry, rond); return r;
     }
     /* sinon on glisse : 600 ms de l'ancien halo au nouveau */
     if (haloAnim) cancelAnimationFrame(haloAnim);
@@ -694,8 +714,9 @@
     const pas = (now) => {
       const t = Math.min(1, (now - t0) / D), k = doux(t);
       const h = { cx: de.cx + (vise.cx - de.cx) * k, cy: de.cy + (vise.cy - de.cy) * k,
-                  rx: de.rx + (vise.rx - de.rx) * k, ry: de.ry + (vise.ry - de.ry) * k };
-      haloActuel = h; peindreHalo(h.cx, h.cy, h.rx, h.ry);
+                  rx: de.rx + (vise.rx - de.rx) * k, ry: de.ry + (vise.ry - de.ry) * k,
+                  rond: k < .5 ? de.rond : vise.rond };
+      haloActuel = h; peindreHalo(h.cx, h.cy, h.rx, h.ry, h.rond);
       if (t < 1) haloAnim = requestAnimationFrame(pas); else haloAnim = null;
     };
     haloAnim = requestAnimationFrame(pas);
@@ -704,7 +725,26 @@
   function eteindreLaLumiere(){ voile.style.background = 'rgba(4,4,4,.86)'; }
   function eclairer(selecteur){
     eteindreLesHorloges();
-    let c = selecteur && document.querySelector(selecteur);
+    /* ⚠️ 13 h 45 — Mickael, sur la musique : « quand tu cliques dessus, on ne
+       voit pas la possibilite de changer les titres. Il faudrait rajouter un
+       carre en dessous, en plus du rond. » Le panneau des titres s'ouvre sous
+       la barre, sur toute la largeur : il n'est pas DANS la note. Une cible peut
+       donc etre plusieurs elements a la fois, et la lumiere prend leur union —
+       la note et le panneau dans un seul cadre. */
+    let c = null;
+    if (Array.isArray(selecteur)){
+      const els = selecteur.map(q => document.querySelector(q)).filter(Boolean);
+      if (els.length){
+        c = { isConnected: true, els,
+              getBoundingClientRect(){
+                const rs = this.els.filter(e => e.isConnected).map(e => e.getBoundingClientRect()).filter(r => r.width || r.height);
+                if (!rs.length) return { left:0, top:0, width:0, height:0, right:0, bottom:0 };
+                const l = Math.min(...rs.map(r => r.left)), t = Math.min(...rs.map(r => r.top));
+                const rt = Math.max(...rs.map(r => r.right)), b = Math.max(...rs.map(r => r.bottom));
+                return { left:l, top:t, right:rt, bottom:b, width:rt - l, height:b - t };
+              } };
+      }
+    } else c = selecteur && document.querySelector(selecteur);
     /* ⚠️ 13 h — MESURE SUR SON TELEPHONE : « bouton@0 » sur toute la trace. Le
        bouton rouge avait ete envoye a l'essai precedent, le site l'avait efface
        (display:none), et la lumiere visait un objet de taille nulle : elle
@@ -715,7 +755,7 @@
     if (!c && selecteur){ return; }
     /* rien a designer : on n'assombrit rien non plus. On regarde la vraie
        application, en pleine lumiere, pendant que la voix parle. */
-    if (!c){ voile.style.background = 'transparent'; haloActuel = null; rangerLePasser(null); return; }
+    if (!c){ voile.style.background = 'transparent'; trou.classList.remove('la'); haloActuel = null; rangerLePasser(null); return; }
     /* ⚠️ UNE BARRE ANCREE NE DEFILE PAS. Le logo, la barre du bas, la note de
        la musique sont fixes a l'ecran : on ne defile que pour ce qui defile.
 
@@ -760,7 +800,7 @@
         suivi = H2.call(window, () => {
           const rr = c.isConnected ? c.getBoundingClientRect() : null;
           if (rr && (rr.width || rr.height)) poserSur(c);
-          else { clearInterval(suivi); suivi = null; voile.style.background = 'transparent'; haloActuel = null; }
+          else { clearInterval(suivi); suivi = null; voile.style.background = 'transparent'; trou.classList.remove('la'); haloActuel = null; }
         }, 250);
       }
     }, 100);
@@ -817,7 +857,7 @@
     try { son.onended = son.onerror = null; } catch(e){}
     try { son.pause(); } catch(e){}
     document.body.classList.remove('enVisite', 'menu');
-    voile.style.background = 'transparent';
+    voile.style.background = 'transparent'; trou.classList.remove('la');
     effacerLeBonjour();
     eteindreLesHorloges();
     tourne.classList.remove('la');
