@@ -119,8 +119,12 @@
      appui dessus l'agrandit pour lire tranquillement ; un second le replie.
      Le prenom y est remplace par le vrai, pour que ce soit exactement ce qu'il
      entend. */
+  /* ⚠️ 12 septembre, 10 h — Mickael : « je ne veux pas le texte, ca pollue. Ils
+     entendent bien. » L'ardoise n'apparait plus a l'ecran ; les textes restent
+     lisibles dans le document a cote des sons, c'est la qu'il les relit. */
   const ardoise = document.createElement('div');
   ardoise.id = 'vTexte'; ardoise.className = 'visiteGarde';
+  ardoise.style.display = 'none';
   document.body.appendChild(ardoise);
   ardoise.addEventListener('click', () => ardoise.classList.toggle('grand'));
 

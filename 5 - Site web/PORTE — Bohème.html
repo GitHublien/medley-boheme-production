@@ -175,9 +175,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
              text-shadow:0 0 24px rgba(212,175,55,.35);padding-left:.55em}
 #entree .trait{width:clamp(44px,8vw,72px);height:1px;
                background:linear-gradient(90deg,transparent,rgba(212,175,55,.6),transparent)}
-#entree .note{position:absolute;bottom:5vh;font-size:10px;letter-spacing:.24em;
-              color:rgba(226,196,132,.26);text-transform:uppercase;text-align:center;
-              padding:0 6vw;line-height:1.9}
+/* ⚠️ 12 septembre, 10 h — Mickael : « au tout debut, avant d'ouvrir la video, tu
+   mets un texte : avant de commencer, veuillez augmenter le son et mettre le
+   portable en mode paysage. Comme ca, quand ils arrivent, ils ont deja le son. »
+   La note existait, mais a 10 pixels et 26 % d'opacite, elle etait invisible.
+   Un texte qu'on ne lit pas n'est pas une consigne, c'est une decoration. */
+#entree .note{position:absolute;bottom:6vh;left:0;right:0;text-align:center;
+              padding:0 8vw;line-height:1.5;text-transform:none;letter-spacing:0}
+#entree .note b{display:block;font-size:clamp(11px,3vw,13px);letter-spacing:.22em;
+              text-transform:uppercase;color:rgba(226,196,132,.55);margin-bottom:8px}
+#entree .note span{display:block;font-size:clamp(15px,4.4vw,19px);font-weight:700;
+              color:#f1d27a;text-shadow:0 2px 14px rgba(0,0,0,.8)}
+#entree .note small{display:block;font-size:clamp(12px,3.4vw,14px);color:rgba(232,226,210,.75);
+              margin-top:6px}
 
 /* ─── L'INVITATION, après le film ──────────────────────────────── */
 /* ─── L'INVITATION, après le film ──────────────────────────────── */
@@ -340,7 +350,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000 !important;
     <div class="couche dessus">Clique maintenant sur le logo pour continuer</div>
   </div>
 
-  <div class="note">le son fait partie du film<br>installez-vous confortablement</div>
+  <div class="note"><b>Avant de commencer</b>
+    <span>🔊 Monte le son</span>
+    <span>📱 Tourne ton téléphone</span>
+    <small>Le film se regarde en paysage, et le son en fait partie.</small></div>
 </div>
 
 <script>
