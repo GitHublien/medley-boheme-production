@@ -86,8 +86,11 @@
        pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
        Je designais toute la ligne de la carte : le titre, le texte, les deux
        boutons. Quand on montre tout, on ne montre rien. */
+    /* 12 h 55 — « fais comme les mises a jour : en gros, puis tout d'un coup en
+       petit. » La carte d'abord, puis la lumiere se resserre sur le bouton. */
     { son: sonPerso('02-le-bouton-rouge'),
-      vise: '.carteEssentiel .ceLigne:first-child a[data-recu]', nom: 'Le bouton rouge',
+      vise: '.carteEssentiel .ceLigne:first-child', nom: 'Le bouton rouge',
+      pendant: [ { part: 0.30, geste: 'rien', vise: '.carteEssentiel .ceLigne:first-child a[data-recu]' } ],
       sauterSiAbsent: true,
       /* ⚠️ 12 septembre, plus tard — LA LUMIERE NE MONTRE PLUS « J'AI UN SOUCI ».
          J'avais mis la voix a en parler ici, et Mickael m'a reprise : « le fait
@@ -385,17 +388,19 @@
     const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
     cible = Math.max(0, Math.min(max, cible));
     const distance = Math.abs(cible - scrollY);
-    if (distance < 30) return;
+    if (distance < 30) return Promise.resolve();
     const duree = Math.max(500, Math.min(6000, distance / VITESSE_MAIN * 1000));
     const depuis = scrollY, t0 = performance.now();
     const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;
-    const pas = (now) => {
-      if (arrete) return;
-      const t = Math.min(1, (now - t0) / duree);
-      scrollTo({ top: depuis + (cible - depuis) * doux(t), behavior: 'instant' });
-      if (t < 1) requestAnimationFrame(pas);
-    };
-    requestAnimationFrame(pas);
+    return new Promise(resoudre => {
+      const pas = (now) => {
+        if (arrete){ resoudre(); return; }
+        const t = Math.min(1, (now - t0) / duree);
+        scrollTo({ top: depuis + (cible - depuis) * doux(t), behavior: 'instant' });
+        if (t < 1) requestAnimationFrame(pas); else resoudre();
+      };
+      requestAnimationFrame(pas);
+    });
   }
 
   /* le glissement lui-meme : de la ou on est jusqu'a la cible, en douceur */
@@ -710,7 +715,15 @@
        GLISSE jusqu'a la tuile a la vitesse de sa main — celle mesuree sur sa
        descente aux visages, 7 578 pixels en 4,3 secondes — et le halo ne
        s'allume qu'une fois arrivee. */
-    if (!estAncre(c)) glisserVersElement(c);
+    /* ⚠️ 12 h 55 — Mickael : « le bouton rouge n'est plus au bon endroit, je ne
+       sais pas ce que tu as fait. » C'est moi : la lumiere guettait deux mesures
+       identiques pour se croire posee — or un glissement doux DEMARRE presque
+       immobile, et elle se posait avant le depart, au mauvais endroit. Elle
+       attend maintenant la fin du glissement, et seulement apres elle guette. */
+    const arrivee = estAncre(c) ? Promise.resolve() : glisserVersElement(c);
+    const monFilDeLumiere = ++filDeLumiere;
+    arrivee.then(() => {
+    if (monFilDeLumiere !== filDeLumiere) return;    /* une autre lumiere a pris la main */
     let avant = null, stable = 0, tours = 0;
     const H2 = (window.__horlogeHorsSurveillance || window).setInterval;
     const montre = guette = H2.call(window, () => {
@@ -730,7 +743,9 @@
         suivi = H2.call(window, () => { if (c.isConnected) poserSur(c); else { clearInterval(suivi); suivi = null; } }, 250);
       }
     }, 100);
+    });
   }
+  let filDeLumiere = 0;
 
   /* ⚠️ « Aucun texte ne doit manger un autre texte. » Le bouton « Passer la
      visite » vit en bas de l'ecran — et quand on montre la barre du bas, il se
