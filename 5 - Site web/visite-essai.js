@@ -171,8 +171,27 @@
   const gros = document.createElement('button');
   gros.id = 'vGros'; gros.className = 'visiteGarde'; gros.hidden = true;
   document.body.appendChild(gros);
+  /* ⚠️ 12 septembre, 10 h 35 — Mickael : « j'ai rate mon coup, je voulais le
+     refaire. Est-ce que tu pourrais rajouter un truc pour le refaire si je me
+     suis trompe ? » Un bouton « recommencer » a cote du gros, et ⏺ repart
+     toujours de zero, meme au milieu d'un enregistrement. */
+  const refaire = document.createElement('button');
+  refaire.id = 'vRefaire'; refaire.className = 'visiteGarde'; refaire.hidden = true;
+  refaire.textContent = '↺ recommencer';
+  document.body.appendChild(refaire);
+  function toutAnnuler(){
+    if (tic){ clearInterval(tic); tic = null; }
+    trace = null; etape = 0; gardes = {};
+    gros.hidden = true; refaire.hidden = true;
+    try { son.pause(); son.onended = son.onerror = null; } catch(e){}
+  }
+  refaire.addEventListener('click', () => { toutAnnuler(); bEnr.click(); });
   const sty = document.createElement('style');
-  sty.textContent = `#vGros{ position:fixed; z-index:201; left:50%; transform:translateX(-50%);
+  sty.textContent = `#vRefaire{ position:fixed; z-index:201; right:10px;
+      bottom:calc(env(safe-area-inset-bottom) + 118px); padding:9px 14px; border-radius:999px;
+      border:1px solid rgba(212,175,55,.5); background:rgba(10,9,8,.96); color:#f1d27a;
+      font:600 13px system-ui, sans-serif; -webkit-tap-highlight-color:transparent; }
+    #vGros{ position:fixed; z-index:201; left:50%; transform:translateX(-50%);
       bottom:calc(env(safe-area-inset-bottom) + 64px); padding:14px 26px; border-radius:999px;
       border:2px solid rgba(255,120,120,.7); background:rgba(120,30,30,.96); color:#fff;
       font:700 16px system-ui, sans-serif; box-shadow:0 8px 30px rgba(0,0,0,.6);
@@ -190,9 +209,10 @@
     tic = setInterval(() => trace.push([Math.round(performance.now() - t0), Math.round(scrollY)]), 50); };
   const finirTrace = () => { clearInterval(tic); tic = null; const t = trace; trace = null; return t; };
 
-  function montrer(texte){ gros.textContent = texte; gros.hidden = false; }
+  function montrer(texte){ gros.textContent = texte; gros.hidden = false; refaire.hidden = false; }
 
   bEnr.addEventListener('click', () => {
+    toutAnnuler();                       /* on repart toujours de zero */
     /* on gele la visite, la page est a lui, et la voix dit la premiere phrase */
     if (!V.ou().enPause) V.basculerPause();
     const p = document.querySelector('#vPause'); if (p) p.remove();
@@ -212,7 +232,7 @@
     }
     else if (etape === 3){ commencerTrace(); montrer('● 4 · je suis en haut'); }
     else if (etape === 4){
-      gardes.remontee = finirTrace(); gros.hidden = true;
+      gardes.remontee = finirTrace(); gros.hidden = true; refaire.hidden = true;
       try { localStorage.setItem(CLE_GESTE, JSON.stringify(gardes)); } catch(e){}
       const d = (gardes.descente.slice(-1)[0][0] / 1000).toFixed(1);
       const r = (gardes.remontee.slice(-1)[0][0] / 1000).toFixed(1);
