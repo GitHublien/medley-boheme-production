@@ -1727,33 +1727,48 @@
      pas le mode essai. Ils touchent un arret, et ils l'ecoutent. » */
   const sommaire = document.createElement('div');
   sommaire.id = 'vSommaire'; sommaire.className = 'visiteGarde'; sommaire.hidden = true;
-  sommaire.innerHTML = '<div class="carte">'
-    + '<div class="tete"><h2>Sommaire de la visite</h2><button class="fermer" type="button">Fermer</button></div>'
+  /* 18 h 50 — Mickael : « on met une tres jolie image sur tout l'ecran, le
+     sommaire, la croix, et rien d'autre. Tout le reste est bloque. Quand on
+     ferme, on retourne sur l'application normale. » Le velours noir et or. */
+  sommaire.innerHTML = '<div class="fond"></div>'
+    + '<button class="fermer" type="button" aria-label="Fermer">✕</button>'
+    + '<div class="carte">'
+    + '<h2>Sommaire de la visite</h2>'
     + '<button class="debut" type="button">Depuis le début</button>'
     + '<div class="liste"></div></div>';
   document.body.appendChild(sommaire);
   const styleSommaire = document.createElement('style');
   styleSommaire.textContent = `
-    #vSommaire{ position:fixed; inset:0; z-index:205; background:rgba(4,4,4,.96); display:grid; place-items:center;
-      padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px); }
+    #vSommaire{ position:fixed; inset:0; z-index:205; display:grid; place-items:center;
+      padding:calc(env(safe-area-inset-top) + 64px) 14px calc(env(safe-area-inset-bottom) + 14px); }
     #vSommaire[hidden]{ display:none !important; }
-    #vSommaire .carte{ width:100%; max-width:34rem; max-height:100%; display:grid; grid-template-rows:auto auto 1fr; gap:10px;
-      background:rgba(12,11,10,.98); border:1px solid rgba(212,175,55,.4); border-radius:1rem; padding:1rem;
+    #vSommaire .fond{ position:absolute; inset:0; z-index:-1;
+      background:url(site-images/15-velours.jpg) center/cover no-repeat #050505; }
+    #vSommaire .fond::after{ content:''; position:absolute; inset:0;
+      background:linear-gradient(180deg, rgba(5,5,5,.55), rgba(5,5,5,.25) 40%, rgba(5,5,5,.6)); }
+    #vSommaire .fermer{ position:absolute; top:calc(env(safe-area-inset-top) + 12px); right:14px;
+      width:46px; height:46px; border-radius:50%; border:1px solid rgba(212,175,55,.6);
+      background:rgba(8,7,6,.85); color:#f1d27a; font:400 26px/1 system-ui; display:grid; place-items:center;
+      -webkit-tap-highlight-color:transparent; }
+    #vSommaire .carte{ width:100%; max-width:30rem; max-height:100%; display:grid; grid-template-rows:auto auto 1fr; gap:12px;
+      background:rgba(10,9,8,.82); border:1px solid rgba(212,175,55,.5); border-radius:1.1rem; padding:1.1rem;
+      box-shadow:0 30px 80px rgba(0,0,0,.7); backdrop-filter:blur(8px);
       font:400 15px/1.4 system-ui, sans-serif; color:#f2ead6; }
-    #vSommaire .tete{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
-    #vSommaire h2{ margin:0; color:#f1d27a; font:600 1.05rem system-ui; }
-    #vSommaire .fermer{ border-radius:999px; border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.1);
-      color:#f1d27a; font:600 .9rem system-ui; padding:.5rem .9rem; }
-    #vSommaire .debut{ border-radius:999px; border:0; padding:.8rem; font:700 .95rem system-ui;
+    #vSommaire h2{ margin:0; color:#f1d27a; font:600 1.15rem system-ui; text-align:center; letter-spacing:.03em; }
+    #vSommaire .debut{ border-radius:999px; border:0; padding:.85rem; font:700 1rem system-ui;
       background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
-    #vSommaire .liste{ overflow:auto; -webkit-overflow-scrolling:touch; display:grid; gap:4px; align-content:start; }
+    #vSommaire .liste{ overflow:auto; -webkit-overflow-scrolling:touch; display:grid; gap:5px; align-content:start; }
     #vSommaire .liste button{ display:flex; align-items:center; gap:10px; width:100%; text-align:left;
-      border-radius:10px; padding:10px 12px; font:600 15px system-ui; border:1px solid rgba(212,175,55,.18);
-      background:rgba(255,255,255,.03); color:#e8e0cc; -webkit-tap-highlight-color:transparent; }
+      border-radius:10px; padding:11px 12px; font:600 15px system-ui; border:1px solid rgba(212,175,55,.22);
+      background:rgba(255,255,255,.04); color:#e8e0cc; -webkit-tap-highlight-color:transparent; }
+    #vSommaire .liste button:active{ background:rgba(212,175,55,.18); }
     #vSommaire .liste button i{ font-style:normal; color:#cbbf9c; min-width:2ch; text-align:right; }
-    @media (orientation:landscape){ #vSommaire .carte{ grid-template-columns:auto 1fr; grid-template-rows:auto 1fr;
-      grid-template-areas:"tete tete" "debut liste"; } #vSommaire .tete{ grid-area:tete; }
-      #vSommaire .debut{ grid-area:debut; align-self:start; } #vSommaire .liste{ grid-area:liste; } }`;
+    @media (orientation:landscape){
+      #vSommaire{ padding-top:calc(env(safe-area-inset-top) + 14px); }
+      #vSommaire .carte{ max-width:44rem; grid-template-columns:auto 1fr; grid-template-rows:auto 1fr;
+        grid-template-areas:"titre titre" "debut liste"; }
+      #vSommaire h2{ grid-area:titre; } #vSommaire .debut{ grid-area:debut; align-self:start; }
+      #vSommaire .liste{ grid-area:liste; } }`;
   document.head.appendChild(styleSommaire);
   {
     const liste = sommaire.querySelector('.liste');
