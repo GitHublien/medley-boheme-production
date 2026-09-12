@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12099';
+  const VOIX_VERSION = '12100';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -69,7 +69,7 @@
        attend la precedente. */
     { nom: 'La page d’accueil', vise: null, avant: 'effacerLeVisage',
       etapes: [
-        { son: sonCommun('01b-accueil') },              /* « tiens, je vais te montrer. regarde. » */
+        { son: sonCommun('01b-accueil'), chevauche: 1.3 },   /* le geste part SUR « regarde » */
         { geste: 'defilerCommeLui' },                    /* SON geste, rejoue tel quel — descente, arret, remontee */
         { son: sonCommun('01d-en-haut') },               /* « et voila, on est de nouveau a l'accueil » */
       ] },
@@ -304,8 +304,11 @@
       for (let j = Math.max(0, i - h); j <= Math.min(t.length - 1, i + h); j++){ somme += t[j][1]; n++; }
       lisse.push([t[i][0], somme / n]);
     }
-    /* les deux extremites restent exactes : on part d'ou il est parti, on arrive ou il est arrive */
-    lisse[0][1] = t[0][1]; lisse[lisse.length - 1][1] = t[t.length - 1][1];
+    /* les deux extremites restent exactes : on part d'ou il est parti, on arrive ou il est arrive.
+       Et le depart n'est pas ramolli par la moyenne : les premiers points gardent
+       leur elan, sinon la page semble hesiter avant de partir. */
+    for (let i = 0; i < Math.min(h, lisse.length); i++) lisse[i][1] = t[i][1];
+    lisse[lisse.length - 1][1] = t[t.length - 1][1];
     return lisse;
   }
 
@@ -1046,6 +1049,21 @@
           const fini = () => { if (!passe){ passe = true; apres(encore, 80); } };
           son.onended = fini;
           son.onerror = () => apres(fini, 2500);
+          /* ⚠️ 12 septembre, 11 h 15 — Mickael : « des que tu dis regarde, il
+             faut partir. Regarde, hop, tout de suite. Il y a trois ou quatre
+             secondes apres le regard. » Une phrase enregistree finit toujours
+             par un souffle qu'on ne peut pas couper sans abimer le dernier mot.
+             Alors on n'attend pas la fin du FICHIER : « chevauche » dit combien
+             de secondes avant la fin on lance la suite. Le geste part sur le
+             mot lui-meme, comme une main qui bouge en parlant. */
+          if (e.chevauche){
+            const guetter = () => {
+              if (passe || monFil !== fil) return;
+              if (son.duration && son.currentTime >= son.duration - e.chevauche) fini();
+              else apres(guetter, 60);
+            };
+            apres(guetter, 200);
+          }
           son.src = e.son;
           son.play().catch(err => {
             if (err && /NotAllowed/i.test(String(err.name || err))) demanderLePremierAppui(k, monFil);
