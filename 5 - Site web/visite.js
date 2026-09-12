@@ -390,7 +390,10 @@
     cible = Math.max(0, Math.min(max, cible));
     const distance = Math.abs(cible - scrollY);
     if (distance < 30) return Promise.resolve();
-    const duree = Math.max(500, Math.min(6000, distance / VITESSE_MAIN * 1000));
+    /* ⚠️ 13 h 25 — mesure sur son telephone : 938 pixels en 0,7 s, « je ne vois
+       rien de tout ca ». A la vitesse de sa main, un court trajet est un eclair.
+       Un plancher d'une seconde et demie : on VOIT la page aller a la carte. */
+    const duree = Math.max(1500, Math.min(6000, distance / VITESSE_MAIN * 1000));
     const depuis = scrollY, t0 = performance.now();
     const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;
     return new Promise(resoudre => {
