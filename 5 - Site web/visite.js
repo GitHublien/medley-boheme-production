@@ -167,9 +167,15 @@
          « hop, un appui » a 78-84 %. Les titres restent ouverts entre les deux,
          zoom franc sur le rond ET les titres, puis tout se referme. */
       pendant: [ { a: 0.5,  geste: 'musiqueAllumer' },
-                 { part: 0.41, geste: 'musiqueTitresOuverts', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
+                 /* 18 h 40 — « pas assez franc, on voit des parcelles » : la lumiere
+                    se posait sur un panneau a moitie ouvert. On ouvre, on attend
+                    qu'il soit deplie, PUIS on eclaire ; on referme, on attend, PUIS
+                    la lumiere revient sur le rond seul. */
+                 { part: 0.40, geste: 'musiqueTitresOuverts' },
+                 { part: 0.44, geste: 'rien', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
                  { part: 0.56, geste: 'musiqueMorceauSuivant' },
-                 { part: 0.79, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
+                 { part: 0.78, geste: 'musiqueEteindre' },
+                 { part: 0.82, geste: 'rien', vise: '.nav .musique .mRond' } ] },
 
     /* 21 · le paysage, en deux temps : la voix demande, puis SE TAIT jusqu'a
        ce qu'il ait tourne, puis reprend. « Tant qu'il n'a pas tourne, plus de
@@ -814,7 +820,7 @@
     }
     /* sinon on glisse : 600 ms de l'ancien halo au nouveau */
     if (haloAnim) cancelAnimationFrame(haloAnim);
-    const de = haloActuel, t0 = performance.now(), D = 600;
+    const de = haloActuel, t0 = performance.now(), D = 380;   /* 18 h 40 — plus franc */
     const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;
     const pas = (now) => {
       const t = Math.min(1, (now - t0) / D), k = doux(t);
