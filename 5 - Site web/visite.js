@@ -879,8 +879,13 @@
     const partir = (envoye) => {
       b.remove();
       if (envoye){
-        if (typeof window.marquerLeRecuEnvoye === 'function') window.marquerLeRecuEnvoye();
-        apres(() => repondre('02c-merci', alors), 900);     /* le vert d'abord, la voix apres */
+        if (typeof window.marquerLeRecuEnvoye === 'function') window.marquerLeRecuEnvoye(true);
+        /* le vert d'abord ; la voix ; et A LA FIN de la phrase, tout s'efface
+           d'un coup et on continue sans attendre */
+        apres(() => repondre('02c-merci', () => {
+          if (typeof window.effacerLeRecuNet === 'function') window.effacerLeRecuNet();
+          apres(alors, 300);
+        }), 900);
       } else {
         repondre('02g-pas-fait', alors);
       }

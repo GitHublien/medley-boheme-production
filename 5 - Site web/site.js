@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 12h15';
+const VERSION_SITE = '12/09/2026 · 12h22';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -551,13 +551,20 @@ const VERSION_SITE = '12/09/2026 · 12h15';
     /* « c'est envoye » : le bouton passe au vert, puis s'efface. La visite
        guidee appelle ceci quand il repond oui a SA question, pour que le vert
        arrive AVANT la voix qui le nomme. */
-    const marquerEnvoye = () => {
+    /* ⚠️ 12 h 30 — Mickael : « quand il passe au vert, il disparait bizarrement
+       et ce n'est pas beau. Tu laisses le bouton vert, et a la fin de la
+       phrase, tu effaces tout d'un coup. » Pendant la visite, c'est donc la
+       visite qui decide du moment, et l'effacement est net : pas de fondu qui
+       traine. Hors visite, on garde le fondu doux six secondes apres. */
+    const effacerNet = () => { recu.style.display = 'none'; pb.classList.remove('doux'); };
+    const marquerEnvoye = (sansEffacer) => {
       recu.dataset.vientDeLEnvoyer = '1';
       try { localStorage.setItem(CLE, '1'); } catch(e){}
       peindre(); direMot();
-      setTimeout(effacerLeBouton, 6000);
+      if (!sansEffacer) setTimeout(effacerLeBouton, 6000);
     };
     window.marquerLeRecuEnvoye = marquerEnvoye;
+    window.effacerLeRecuNet = effacerNet;
 
     const demanderSiEnvoye = () => {
       if (document.querySelector('.boiteEnvoye')) return;
