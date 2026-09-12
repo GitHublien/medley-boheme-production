@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 10h04';
+const VERSION_SITE = '12/09/2026 · 10h06';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -78,7 +78,12 @@ const VERSION_SITE = '12/09/2026 · 10h04';
     /* 11 septembre — on peut redemander la visite guidee a tout moment. Elle ne
        se propose d'elle-meme qu'une fois, le tout premier jour ; apres, elle est
        ici, en petit, et personne ne tombe dessus par hasard. */
-    + '<button class="revoirVisite" type="button">Revoir la visite guidée</button></div>';
+    + '<button class="revoirVisite" type="button">Revoir la visite guidée</button>'
+    /* 12 septembre, 10 h — Mickael : « est-ce que tu peux faire un bouton pour le
+       mode essai ? » L'appui long etait invisible et ne lui parlait pas. Un vrai
+       bouton, qui dit son etat. Il n'apparait que chez Mickael (son lien) ou
+       quand le mode est deja allume : les cinq autres ne le verront pas. */
+    + '<button class="modeEssai" type="button" hidden></button></div>';
   const bas = document.createElement('div'); bas.className = 'bas';
   bas.innerHTML = [PAGES[0], PAGES[1], PAGES[2]].map(p => '<a class="' + (p.f === ici ? 'ici' : '') + '" href="' + lien(p) + '"><span class="ico ico-' + p.i + '"></span>' + p.t + '</a>').join('')
     + '<a class="menuBas" href="#"><span>≡</span>Menu</a>';
@@ -102,6 +107,29 @@ const VERSION_SITE = '12/09/2026 · 10h04';
     const fin = () => { if (minuteur){ clearTimeout(minuteur); minuteur = null; } };
     b.addEventListener('pointerdown', debut);
     ['pointerup','pointercancel','pointerleave'].forEach(n => b.addEventListener(n, fin));
+  }
+  {
+    const b = voile.querySelector('.modeEssai');
+    const peindre = () => {
+      let on = false;
+      try { on = localStorage.getItem('boheme-visite-essai') === '1'; } catch(e){}
+      const moi = (pour || '').toLowerCase() === 'mickael';
+      b.hidden = !(on || moi);
+      b.textContent = on ? 'Mode essai : allumé — la visite repart à chaque ouverture'
+                         : 'Mode essai : éteint';
+      b.classList.toggle('allume', on);
+    };
+    peindre();
+    b.addEventListener('click', () => {
+      let on = false;
+      try {
+        on = localStorage.getItem('boheme-visite-essai') !== '1';
+        if (on) localStorage.setItem('boheme-visite-essai', '1');
+        else localStorage.removeItem('boheme-visite-essai');
+      } catch(e){}
+      peindre();
+      setTimeout(() => location.reload(), 500);
+    });
   }
   document.body.prepend(nav, voile, bas);
   const basculer = () => document.body.classList.toggle('menu');

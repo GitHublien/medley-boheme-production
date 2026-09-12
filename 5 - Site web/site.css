@@ -1267,3 +1267,14 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 }
 .boiteEnvoye .beOui{ background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
 .boiteEnvoye .beNon{ background:rgba(212,175,55,.08); color:#f1d27a; }
+
+/* ── LE BOUTON DU MODE ESSAI (12 septembre) ─────────────────────────────── */
+.voile .legendeMenu .modeEssai{
+  margin-top:.5rem; width:100%; padding:.6rem 1rem; border-radius:999px; cursor:pointer;
+  font:600 .74rem/1.3 system-ui, sans-serif; color:#8f867a;
+  background:rgba(255,255,255,.03); border:1px dashed rgba(255,255,255,.18);
+  -webkit-tap-highlight-color:transparent;
+}
+.voile .legendeMenu .modeEssai.allume{
+  color:#ffd9d9; background:rgba(120,30,30,.35); border:1px solid rgba(255,120,120,.45);
+}
