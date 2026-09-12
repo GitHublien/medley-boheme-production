@@ -274,8 +274,42 @@
      (mode essai) passe devant, pour qu'il puisse en refaire une sans attendre
      une publication. */
   const GESTE_ACCUEIL = null;   /* rempli quand il en aura enregistre un */
-  function rejouer(trace, auPlusBas){
+  /* ── NETTOYER UNE TRACE AVANT DE LA REJOUER ─────────────────────────────
+     ⚠️ 12 septembre, 10 h 55 — Mickael : « des que j'appuie sur le bouton, ca
+     prend une certaine latence avant que ca descende. Et il faut que ce soit
+     plus fluide, meme si mon geste a ete un peu saccade. »
+
+     Deux choses, donc. La LATENCE : quand il appuie sur ● 1, l'enregistrement
+     part aussitot, mais lui met une demi-seconde a poser le doigt et a bouger.
+     Ce silence etait rejoue tel quel. On coupe les plateaux du debut et de la
+     fin. Les SACCADES : un scroll au doigt, c'est de l'inertie et des a-coups,
+     meme quand le geste est bon. On lisse par une moyenne glissante d'environ
+     un tiers de seconde — ses vitesses et ses arrets restent, les a-coups
+     partent. Et on n'ecrit jamais dans la trace d'origine. */
+  function nettoyer(trace){
+    if (!trace || trace.length < 3) return trace;
+    let t = trace.map(p => [p[0], p[1]]);
+    /* les plateaux : on avance tant que ca ne bouge pas, on recule pareil */
+    let a = 0; while (a < t.length - 1 && Math.abs(t[a + 1][1] - t[0][1]) < 4) a++;
+    let b = t.length - 1; while (b > a + 1 && Math.abs(t[b - 1][1] - t[b][1]) < 4) b--;
+    t = t.slice(a, b + 1);
+    const t0 = t[0][0];
+    t = t.map(p => [p[0] - t0, p[1]]);
+    /* le lissage : moyenne glissante sur 7 points (350 ms), bords gardes */
+    const L = 7, h = Math.floor(L / 2), lisse = [];
+    for (let i = 0; i < t.length; i++){
+      let somme = 0, n = 0;
+      for (let j = Math.max(0, i - h); j <= Math.min(t.length - 1, i + h); j++){ somme += t[j][1]; n++; }
+      lisse.push([t[i][0], somme / n]);
+    }
+    /* les deux extremites restent exactes : on part d'ou il est parti, on arrive ou il est arrive */
+    lisse[0][1] = t[0][1]; lisse[lisse.length - 1][1] = t[t.length - 1][1];
+    return lisse;
+  }
+
+  function rejouer(traceBrute, auPlusBas){
     return new Promise(resoudre => {
+      const trace = nettoyer(traceBrute);
       if (!trace || trace.length < 2){ resoudre(); return; }
       const depart = performance.now();
       const fin = trace[trace.length - 1][0];
