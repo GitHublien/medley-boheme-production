@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 18h24';
+const VERSION_SITE = '12/09/2026 · 18h28';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -724,13 +724,19 @@ const VERSION_SITE = '12/09/2026 · 18h24';
     /* 11 sept, 11 h — Mickaël : « il faut que le nom disparaisse après trois ou
        quatre secondes, parce que sinon on le voit en continu, et quand on scrolle
        ce n'est pas extraordinaire. » Il revient dès qu'on retouche la note. */
-    let replier = null;
-    const replierPan = () => { clearTimeout(replier); boite.classList.remove('ouvert'); };
+    let replier = null, tenirOuvert = false;
+    const replierPan = () => { if (tenirOuvert) return; clearTimeout(replier); boite.classList.remove('ouvert'); };
     const deplier = () => {
       boite.classList.add('ouvert');
       clearTimeout(replier);
-      replier = setTimeout(() => boite.classList.remove('ouvert'), 4000);
+      if (!tenirOuvert) replier = setTimeout(() => boite.classList.remove('ouvert'), 4000);
     };
+    /* 12 septembre, 18 h 35 — pour la visite guidee : « il faut que les titres
+       restent en bas, ca disparait, ca reapparait, c'est bizarre. » La visite
+       tient le panneau ouvert le temps d'en parler, puis le rend. */
+    window.__musiquePanneau = (ouvert) => { tenirOuvert = !!ouvert;
+      if (ouvert){ boite.classList.add('ouvert'); clearTimeout(replier); }
+      else { clearTimeout(replier); boite.classList.remove('ouvert'); } };
     document.addEventListener('click', e => { if (!boite.contains(e.target)) replierPan(); }, true);
 
     /* CHANGER DE MORCEAU SANS COUPURE (10 sept) : « il faudrait avoir la possibilité

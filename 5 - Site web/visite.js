@@ -163,9 +163,13 @@
 
     /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
     { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',
+      /* 18 h 35 — mesure sur les deux voix : « trois morceaux » a 41-43 %,
+         « hop, un appui » a 78-84 %. Les titres restent ouverts entre les deux,
+         zoom franc sur le rond ET les titres, puis tout se referme. */
       pendant: [ { a: 0.5,  geste: 'musiqueAllumer' },
-                 { part: 0.55, geste: 'musiqueMorceauSuivant', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
-                 { part: 0.88, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
+                 { part: 0.41, geste: 'musiqueTitresOuverts', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
+                 { part: 0.56, geste: 'musiqueMorceauSuivant' },
+                 { part: 0.79, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
 
     /* 21 · le paysage, en deux temps : la voix demande, puis SE TAIT jusqu'a
        ce qu'il ait tourne, puis reprend. « Tant qu'il n'a pas tourne, plus de
@@ -317,12 +321,14 @@
       volumeGarde = null;                          /* on la laisse s'entendre */
       return 400;
     },
+    musiqueTitresOuverts(){ if (window.__musiquePanneau) window.__musiquePanneau(true); return 350; },
     musiqueMorceauSuivant(){
       const b = document.querySelector('.musique .mNav[data-m="suiv"]');
       if (b) b.click();
       return 400;
     },
     musiqueEteindre(){
+      if (window.__musiquePanneau) window.__musiquePanneau(false);   /* on rend les titres */
       const b = document.querySelector('.musique .mRond');
       const boite = document.querySelector('.musique');
       if (!b || !boite) return 0;
