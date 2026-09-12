@@ -834,10 +834,15 @@
     const img = bonjour.querySelector('img');
     img.addEventListener('error', () => { const c = img.closest('.bCadre'); if (c) c.style.display = 'none'; });
     apres(() => bonjour.classList.add('la'), 60);
+    /* ⚠️ 12 septembre — Mickael : « j'aimerais que quand tu dis bienvenue, tu
+       restes un petit peu plus longtemps avec la photo de la personne. »
+       Trois secondes et demie, c'etait le temps de la reconnaitre, pas celui de
+       la regarder. Six secondes : de quoi laisser l'image s'installer avant que
+       la voix ne commence. */
     apres(() => {
       bonjour.classList.remove('la');
-      apres(() => { if (bonjour) bonjour.remove(); bonjour = null; alors(); }, 900);
-    }, 3400);
+      apres(() => { if (bonjour) bonjour.remove(); bonjour = null; alors(); }, 1100);
+    }, 6000);
   }
 
   /* ── la carte d'entrée ────────────────────────────────────────────────── */
@@ -900,6 +905,36 @@
     } catch(e){}
     return on ? 'mode essai ALLUMÉ — recharge la page' : 'mode essai éteint';
   };
+  /* ⚠️ 12 septembre — Mickael : « j'aimerais pouvoir avoir acces aux trucs a
+     l'avant et a l'arriere. Ca a defile, il y a eu un texte qui ne m'a pas plu,
+     mais je ne peux pas revenir en arriere, je ne me souviens plus lequel. »
+
+     Le drapeau du mode essai avait disparu de son telephone — une reinstallation
+     de l'application, sans doute. Il se retrouvait donc sans commandes au milieu
+     de la visite, exactement dans la situation qu'on voulait eviter. Un second
+     chemin, plus court et qui ne depend d'aucun menu : un appui long sur le logo
+     Boheme, en haut a gauche, pendant la visite. Deux secondes et demie —
+     personne ne tombe dessus par hasard, et lui le trouve du premier coup. */
+  {
+    const logo = document.querySelector('.nav .marque');
+    if (logo){
+      let t = null;
+      const debut = () => { t = apres(() => {
+        t = null;
+        if (!window.__modeEssai()){
+          try { localStorage.setItem(CLE_ESSAI, '1'); } catch(e){}
+        }
+        if (!document.querySelector('script[src="visite-essai.js"]')){
+          const sc = document.createElement('script'); sc.src = 'visite-essai.js';
+          document.body.appendChild(sc);
+        }
+      }, 2500); };
+      const fin = () => { if (t){ clearTimeout(t); t = null; } };
+      logo.addEventListener('pointerdown', debut);
+      ['pointerup','pointercancel','pointerleave'].forEach(n => logo.addEventListener(n, fin));
+    }
+  }
+
   if (window.__modeEssai() && !document.querySelector('script[src="visite-essai.js"]')){
     const t = document.createElement('script'); t.src = 'visite-essai.js';
     document.body.appendChild(t);

@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '12/09/2026 · 08h30';
+const VERSION_SITE = '12/09/2026 · 09h15';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -453,12 +453,16 @@ const VERSION_SITE = '12/09/2026 · 08h30';
     const dit = () => { try { return localStorage.getItem(CLE) === '1'; } catch(e){ return false; } };
 
     const bon  = (qui ? qui + ' : ' : '') + 'j\u2019ai bien l\u2019application Bohème, tout est OK pour moi.';
-    const souci= (qui ? qui + ' : ' : '') + 'j\u2019ai un souci avec l\u2019application Bohème — ';
+    const souci= (qui ? qui + ' : ' : '') + 'j\u2019ai un problème technique avec l\u2019application Bohème — ';
 
     /* la petite porte « j'ai un souci », posée juste après le bouton */
     const pb = document.createElement('a');
     pb.className = 'btn doux souci';
-    pb.innerHTML = 'J\u2019ai un souci <b><i class="ico ico-fleche"></i></b>';
+    /* ⚠️ 12 septembre — Mickael : « est-ce que le mot "j'ai un souci" est bien ?
+       Est-ce que ce n'est pas mieux "j'ai un probleme technique" ? »
+       « Souci » etait accueillant mais flou : on peut avoir un souci avec sa
+       repartition ou avec une date. Le nouveau nom dit de quoi il s'agit. */
+    pb.innerHTML = 'J\u2019ai un problème technique <b><i class="ico ico-fleche"></i></b>';
     pb.href = lien(souci); pb.target = '_blank'; pb.rel = 'noopener';
     pb.title = 'préparer un message pour dire ce qui ne va pas';
 
