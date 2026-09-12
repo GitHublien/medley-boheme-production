@@ -107,6 +107,7 @@
     + '<button class="rejouer" title="Rejouer cet arrêt">↻</button>'
     + '<div class="quoi">essai</div>'
     + '<button class="defaut" title="Noter un défaut">✎</button>'
+    + '<button class="enregistrer" title="Enregistrer mon geste de défilement">⏺</button>'
     + '<button class="suiv" title="Arrêt suivant">▶</button>';
   document.body.appendChild(barre);
 
@@ -145,6 +146,48 @@
     x = x.replace(/\{prénom\}/g, PRENOMS[quiEstLa] || 'toi');
     if (x !== dernierTexte){ ardoise.textContent = x; dernierTexte = x; ardoise.scrollTop = 0; }
   }
+
+  /* ── ENREGISTRER SON GESTE ──────────────────────────────────────────────
+     ⚠️ 12 septembre, 10 h 20 — Mickael : « le scroll va beaucoup trop vite, il
+     y a des temps d'attente interminables. Est-ce que tu veux faire un truc de
+     mesure ? Quand tu dis "tiens, je vais te montrer", moi je scrolle. Tu
+     mesures le scroll que je fais. Quand je suis arrive en bas, j'appuie sur
+     un bouton OK, et ensuite je remonte. »
+
+     C'est sa methode, celle de Reaper : on ne regle pas une vitesse au juge,
+     on ENREGISTRE UNE PRISE et on la rejoue. Un appui sur ⏺, il fait le geste
+     a sa main — descente, arret, remontee — un appui sur ✔, et la trace est
+     gardee : la position de la page toutes les cinquante millisecondes. La
+     visite la rejoue ensuite telle quelle, avec ses vitesses et ses pauses a
+     lui. Je la lis par le cable et je la fige dans le code. */
+  const CLE_GESTE = 'boheme-geste-accueil';
+  let trace = null, tic = null, depart = 0;
+  const bEnr = barre.querySelector('.enregistrer');
+  bEnr.addEventListener('click', () => {
+    if (!trace){
+      /* on gele la visite et on laisse la page libre sous son doigt */
+      if (!V.ou().enPause) V.basculerPause();
+      const p = document.querySelector('#vPause'); if (p) p.remove();
+      document.body.classList.remove('enVisite');
+      trace = []; depart = performance.now();
+      tic = setInterval(() => trace.push([Math.round(performance.now() - depart), Math.round(scrollY)]), 50);
+      bEnr.textContent = '✔'; bEnr.title = 'Terminer l’enregistrement';
+      bEnr.style.background = 'rgba(120,30,30,.95)';
+      quoi.innerHTML = '<b>⏺ enregistre</b> · descends, arrête-toi, remonte, puis ✔';
+    } else {
+      clearInterval(tic); tic = null;
+      const t = trace; trace = null;
+      try { localStorage.setItem(CLE_GESTE, JSON.stringify(t)); } catch(e){}
+      bEnr.textContent = '⏺'; bEnr.title = 'Enregistrer mon geste de défilement';
+      bEnr.style.background = '';
+      const duree = t.length ? (t[t.length-1][0] / 1000).toFixed(1) : '0';
+      const plusBas = Math.max.apply(null, t.map(x => x[1]));
+      quoi.innerHTML = '<b>geste gardé</b> · ' + duree + ' s, jusqu’à ' + plusBas + ' px';
+      document.body.classList.add('enVisite');
+      setTimeout(rafraichir, 4000);
+    }
+  });
+  window.gesteEnregistre = () => { try { return JSON.parse(localStorage.getItem(CLE_GESTE) || 'null'); } catch(e){ return null; } };
 
   /* ── la fiche de note ───────────────────────────────────────────────── */
   const fiche = document.createElement('div');

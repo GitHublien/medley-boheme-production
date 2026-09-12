@@ -69,12 +69,9 @@
        attend la precedente. */
     { nom: 'La page d’accueil', vise: null, avant: 'effacerLeVisage',
       etapes: [
-        { son: sonCommun('01b-accueil') },              /* « je descends doucement » */
-        { geste: 'descendreAuxVisages' },                /* 22 s, en silence         */
-        { son: sonCommun('01c-visages') },               /* « vos six visages »       */
-        { attendre: 1800 },
-        { geste: 'remonterEnHaut' },                     /* 18 s, en silence          */
-        { son: sonCommun('01d-en-haut') },               /* « voila, c'est l'accueil » */
+        { son: sonCommun('01b-accueil') },              /* « tiens, je vais te montrer. regarde. » */
+        { geste: 'defilerCommeLui' },                    /* SON geste, rejoue tel quel — descente, arret, remontee */
+        { son: sonCommun('01d-en-haut') },               /* « et voila, on est de nouveau a l'accueil » */
       ] },
     /* ⚠️ 12 septembre — Mickael : « quand on montre le bouton rouge, il ne faut
        vraiment montrer QUE le bouton rouge. Il faut resserrer et zoomer un peu
@@ -161,6 +158,18 @@
        geste fini, pour ne jamais bloquer la suite. */
     descendreAuxVisages(){ return glisser('visages', 22000); },
     remonterEnHaut(){ return glisser('haut', 18000); },
+    /* le geste enregistre par Mickael, s'il existe ; sinon la descente puis la
+       remontee calculees, l'une apres l'autre */
+    defilerCommeLui(){
+      const t = gesteAccueil();
+      const direLesVisages = () => {
+        son.onended = son.onerror = null;
+        son.src = sonCommun('01c-visages');
+        son.play().catch(() => {});
+      };
+      if (t) return rejouer(t, direLesVisages);
+      return glisser('visages', 22000).then(() => { direLesVisages(); return new Promise(r => apres(r, 3500)); }).then(() => glisser('haut', 18000));
+    },
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
 
     /* ── LA MUSIQUE, POUR DE VRAI ────────────────────────────────────────
@@ -214,6 +223,48 @@
       return 900;
     },
   };
+
+  /* ── REJOUER SON GESTE ──────────────────────────────────────────────────
+     Une trace : [[temps en ms, position], ...] enregistree par Mickael a la
+     main, dans le mode essai. On la rejoue a l'identique — ses vitesses, ses
+     arrets, ses hesitations. Rien n'est lisse ni calcule : c'est SA main.
+     La trace figee ci-dessous est celle qu'il a validee ; celle du telephone
+     (mode essai) passe devant, pour qu'il puisse en refaire une sans attendre
+     une publication. */
+  const GESTE_ACCUEIL = null;   /* rempli quand il en aura enregistre un */
+  function rejouer(trace, auPlusBas){
+    return new Promise(resoudre => {
+      if (!trace || trace.length < 2){ resoudre(); return; }
+      const depart = performance.now();
+      const fin = trace[trace.length - 1][0];
+      /* le point le plus bas de SA descente : c'est la que la voix dira « et
+         la, tu vois, on arrive en bas » — au moment ou lui s'est arrete */
+      const plusBas = Math.max.apply(null, trace.map(x => x[1]));
+      let ditPlusBas = false;
+      let i = 0, lache = false;
+      const lacher = () => { lache = true; };
+      addEventListener('pointerdown', lacher, { once: true, capture: true });
+      const pas = (now) => {
+        if (lache || arrete){ removeEventListener('pointerdown', lacher, true); resoudre(); return; }
+        if (enPause){ requestAnimationFrame(pas); return; }
+        const t = now - depart;
+        while (i < trace.length - 1 && trace[i + 1][0] <= t) i++;
+        const a = trace[i], b = trace[Math.min(i + 1, trace.length - 1)];
+        const f = b[0] > a[0] ? Math.min(1, (t - a[0]) / (b[0] - a[0])) : 1;
+        const y = a[1] + (b[1] - a[1]) * f;
+        scrollTo(0, y);
+        if (!ditPlusBas && auPlusBas && y >= plusBas - 40){ ditPlusBas = true; auPlusBas(); }
+        if (t < fin) requestAnimationFrame(pas);
+        else { scrollTo(0, trace[trace.length - 1][1]); removeEventListener('pointerdown', lacher, true); resoudre(); }
+      };
+      requestAnimationFrame(pas);
+    });
+  }
+  function gesteAccueil(){
+    let t = null;
+    try { t = JSON.parse(localStorage.getItem('boheme-geste-accueil') || 'null'); } catch(e){}
+    return (t && t.length > 1) ? t : GESTE_ACCUEIL;
+  }
 
   /* le glissement lui-meme : de la ou on est jusqu'a la cible, en douceur */
   function glisser(vers, duree){
