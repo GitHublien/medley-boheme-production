@@ -1420,7 +1420,7 @@
         if (!document.querySelector('script[src="visite-essai.js"]')){
           const sc = document.createElement('script'); sc.src = 'visite-essai.js';
           document.body.appendChild(sc);
-        }
+        } else if (typeof window.montrerLaBarreDEssai === 'function') window.montrerLaBarreDEssai();
       }, 2500); };
       const fin = () => { if (t){ clearTimeout(t); t = null; } };
       logo.addEventListener('pointerdown', debut);

@@ -110,6 +110,7 @@
     + '<div class="quoi">essai</div>'
     + '<button class="defaut" title="Noter un défaut">✎</button>'
     + '<button class="enregistrer" title="Enregistrer mon geste de défilement">⏺</button>'
+    + '<button class="apercu" title="Voir la visite entière, sans la barre">👁</button>'
     + '<button class="suiv" title="Arrêt suivant">▶</button>';
   document.body.appendChild(barre);
 
@@ -298,6 +299,19 @@
   }
 
   window.gesteEnregistre = () => { try { return JSON.parse(localStorage.getItem(CLE_GESTE) || 'null'); } catch(e){ return null; } };
+
+  /* ── L'APERCU : TOUTE LA TRAME, SANS LA BARRE ─────────────────────────────
+     14 h — Mickael : « je voudrais voir toute la trame depuis le debut, comme
+     si je n'etais pas en mode test, mais pouvoir revenir en arriere. » Un appui
+     sur 👁 : la barre disparait, la visite repart du visage, et tout s'enchaine
+     comme chez les six. Un appui long sur le logo Boheme ramene la barre. */
+  barre.querySelector('.apercu').addEventListener('click', () => {
+    barre.hidden = true;
+    if (typeof window.remettreLeRecuRouge === 'function') window.remettreLeRecuRouge();
+    scrollTo(0, 0);
+    V.allerA(0);
+  });
+  window.montrerLaBarreDEssai = () => { barre.hidden = false; };
 
   /* ── la fiche de note ───────────────────────────────────────────────── */
   const fiche = document.createElement('div');
