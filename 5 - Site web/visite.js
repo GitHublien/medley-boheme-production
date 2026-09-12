@@ -1643,6 +1643,13 @@
     try { son.pause(); son.onended = son.onerror = null; } catch(e){}
     document.body.classList.remove('enVisite');
     eteindreLaLumiere();
-    entree.classList.add('la');
+    /* ⚠️ 12 septembre, 16 h 35 — Mickael : « quand on revoit la visite guidee,
+       je devrais voir ma photo tout de suite, et je ne la vois pas. » La carte
+       « on y va ? » demarrait a l'arret 1 sans le visage. Il a deja choisi
+       « Revoir » dans le menu : pas de deuxieme question, le visage, puis la
+       visite, exactement comme au premier jour. */
+    departA = 0;
+    verrouillerPortrait();
+    montrerLeBonjour(lancer);
   };
 })();
