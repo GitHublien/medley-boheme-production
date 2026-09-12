@@ -162,13 +162,21 @@
        remontee calculees, l'une apres l'autre */
     defilerCommeLui(){
       const t = gesteAccueil();
-      const direLesVisages = () => {
-        son.onended = son.onerror = null;
+      /* la phrase du bas, et on ATTEND qu'elle soit finie avant de remonter :
+         c'est lui qui a dit « je rappuie vite pour figer » — il ne remonte pas
+         pendant qu'elle parle. */
+      const direLesVisages = () => new Promise(r => {
+        let passe = false; const fini = () => { if (!passe){ passe = true; r(); } };
+        son.onended = fini; son.onerror = () => apres(fini, 1500);
         son.src = sonCommun('01c-visages');
-        son.play().catch(() => {});
-      };
-      if (t) return rejouer(t, direLesVisages);
-      return glisser('visages', 22000).then(() => { direLesVisages(); return new Promise(r => apres(r, 3500)); }).then(() => glisser('haut', 18000));
+        son.play().catch(() => apres(fini, 1500));
+      });
+      /* deux traces enregistrees a sa main : descente, puis remontee */
+      if (t && t.descente && t.remontee)
+        return rejouer(t.descente).then(direLesVisages).then(() => rejouer(t.remontee));
+      /* une seule trace (ancien format) : la phrase au point le plus bas */
+      if (t && t.length) return rejouer(t, () => { direLesVisages(); });
+      return glisser('visages', 22000).then(direLesVisages).then(() => glisser('haut', 18000));
     },
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
 
@@ -263,7 +271,8 @@
   function gesteAccueil(){
     let t = null;
     try { t = JSON.parse(localStorage.getItem('boheme-geste-accueil') || 'null'); } catch(e){}
-    return (t && t.length > 1) ? t : GESTE_ACCUEIL;
+    if (t && ((t.descente && t.remontee) || t.length > 1)) return t;
+    return GESTE_ACCUEIL;
   }
 
   /* le glissement lui-meme : de la ou on est jusqu'a la cible, en douceur */
@@ -1215,6 +1224,7 @@
       const m = decodeURIComponent(src).match(/([^/]+?)--/);
       return m ? m[1] : '';
     },
+    urlDuSon(cle){ return sonCommun(cle); },
     basculerPause(){
       if (enPause){
         const b = document.querySelector('#vPause'); if (b) b.remove();

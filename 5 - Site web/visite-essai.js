@@ -147,44 +147,80 @@
     if (x !== dernierTexte){ ardoise.textContent = x; dernierTexte = x; ardoise.scrollTop = 0; }
   }
 
-  /* ── ENREGISTRER SON GESTE ──────────────────────────────────────────────
-     ⚠️ 12 septembre, 10 h 20 — Mickael : « le scroll va beaucoup trop vite, il
-     y a des temps d'attente interminables. Est-ce que tu veux faire un truc de
-     mesure ? Quand tu dis "tiens, je vais te montrer", moi je scrolle. Tu
-     mesures le scroll que je fais. Quand je suis arrive en bas, j'appuie sur
-     un bouton OK, et ensuite je remonte. »
+  /* ── ENREGISTRER L'ACCUEIL, GUIDE PAR LA VOIX ────────────────────────────
+     ⚠️ 12 septembre, 10 h 30 — Mickael : « regarde, j'appuie sur le bouton,
+     je descends comme ca. Je rappuie : la, le deuxieme texte arrive, "on
+     arrive en bas, vos six visages". Je rappuie vite pour figer, je fais
+     defiler, et quand j'arrive a l'accueil je rappuie, et la on dit "et voila,
+     on est de nouveau a l'accueil". Ce n'est pas mieux comme ca ? »
 
-     C'est sa methode, celle de Reaper : on ne regle pas une vitesse au juge,
-     on ENREGISTRE UNE PRISE et on la rejoue. Un appui sur ⏺, il fait le geste
-     a sa main — descente, arret, remontee — un appui sur ✔, et la trace est
-     gardee : la position de la page toutes les cinquante millisecondes. La
-     visite la rejoue ensuite telle quelle, avec ses vitesses et ses pauses a
-     lui. Je la lis par le cable et je la fige dans le code. */
+     Si. Quatre appuis, et la voix entre chaque : chaque phrase tombe la ou
+     LUI la met, et les pauses sont les siennes. On garde deux traces — la
+     descente, la remontee — et la visite les rejoue telles quelles, avec les
+     phrases exactement aux memes endroits.
+
+       ● 1 : je descends            (on enregistre)
+       ● 2 : je suis aux visages    → la voix : « on arrive en bas… »
+       ● 3 : je remonte             (on enregistre)
+       ● 4 : je suis en haut        → la voix : « on est de nouveau a l'accueil » */
   const CLE_GESTE = 'boheme-geste-accueil';
-  let trace = null, tic = null, depart = 0;
+  const son = document.querySelector('audio[data-visite]');
   const bEnr = barre.querySelector('.enregistrer');
+  let etape = 0, trace = null, tic = null, t0 = 0, gardes = {};
+
+  const gros = document.createElement('button');
+  gros.id = 'vGros'; gros.className = 'visiteGarde'; gros.hidden = true;
+  document.body.appendChild(gros);
+  const sty = document.createElement('style');
+  sty.textContent = `#vGros{ position:fixed; z-index:201; left:50%; transform:translateX(-50%);
+      bottom:calc(env(safe-area-inset-bottom) + 64px); padding:14px 26px; border-radius:999px;
+      border:2px solid rgba(255,120,120,.7); background:rgba(120,30,30,.96); color:#fff;
+      font:700 16px system-ui, sans-serif; box-shadow:0 8px 30px rgba(0,0,0,.6);
+      -webkit-tap-highlight-color:transparent; }`;
+  document.head.appendChild(sty);
+
+  const dire = (cle, puis) => {
+    son.onended = son.onerror = null;
+    const url = (window.__visite.urlDuSon && window.__visite.urlDuSon(cle)) || '';
+    if (!url){ puis(); return; }
+    son.onended = puis; son.onerror = () => setTimeout(puis, 1500);
+    son.src = url; son.play().catch(() => setTimeout(puis, 1500));
+  };
+  const commencerTrace = () => { trace = []; t0 = performance.now();
+    tic = setInterval(() => trace.push([Math.round(performance.now() - t0), Math.round(scrollY)]), 50); };
+  const finirTrace = () => { clearInterval(tic); tic = null; const t = trace; trace = null; return t; };
+
+  function montrer(texte){ gros.textContent = texte; gros.hidden = false; }
+
   bEnr.addEventListener('click', () => {
-    if (!trace){
-      /* on gele la visite et on laisse la page libre sous son doigt */
-      if (!V.ou().enPause) V.basculerPause();
-      const p = document.querySelector('#vPause'); if (p) p.remove();
-      document.body.classList.remove('enVisite');
-      trace = []; depart = performance.now();
-      tic = setInterval(() => trace.push([Math.round(performance.now() - depart), Math.round(scrollY)]), 50);
-      bEnr.textContent = '✔'; bEnr.title = 'Terminer l’enregistrement';
-      bEnr.style.background = 'rgba(120,30,30,.95)';
-      quoi.innerHTML = '<b>⏺ enregistre</b> · descends, arrête-toi, remonte, puis ✔';
-    } else {
-      clearInterval(tic); tic = null;
-      const t = trace; trace = null;
-      try { localStorage.setItem(CLE_GESTE, JSON.stringify(t)); } catch(e){}
-      bEnr.textContent = '⏺'; bEnr.title = 'Enregistrer mon geste de défilement';
-      bEnr.style.background = '';
-      const duree = t.length ? (t[t.length-1][0] / 1000).toFixed(1) : '0';
-      const plusBas = Math.max.apply(null, t.map(x => x[1]));
-      quoi.innerHTML = '<b>geste gardé</b> · ' + duree + ' s, jusqu’à ' + plusBas + ' px';
-      document.body.classList.add('enVisite');
-      setTimeout(rafraichir, 4000);
+    /* on gele la visite, la page est a lui, et la voix dit la premiere phrase */
+    if (!V.ou().enPause) V.basculerPause();
+    const p = document.querySelector('#vPause'); if (p) p.remove();
+    document.body.classList.remove('enVisite');
+    scrollTo(0, 0);
+    etape = 0; gardes = {};
+    quoi.innerHTML = '<b>enregistrement</b> · écoute, puis ● 1';
+    dire('01b-accueil', () => montrer('● 1 · je descends'));
+  });
+
+  gros.addEventListener('click', () => {
+    etape++;
+    if (etape === 1){ commencerTrace(); montrer('● 2 · je suis aux visages'); }
+    else if (etape === 2){
+      gardes.descente = finirTrace(); gros.hidden = true;
+      dire('01c-visages', () => montrer('● 3 · je remonte'));
+    }
+    else if (etape === 3){ commencerTrace(); montrer('● 4 · je suis en haut'); }
+    else if (etape === 4){
+      gardes.remontee = finirTrace(); gros.hidden = true;
+      try { localStorage.setItem(CLE_GESTE, JSON.stringify(gardes)); } catch(e){}
+      const d = (gardes.descente.slice(-1)[0][0] / 1000).toFixed(1);
+      const r = (gardes.remontee.slice(-1)[0][0] / 1000).toFixed(1);
+      dire('01d-en-haut', () => {
+        quoi.innerHTML = '<b>gardé</b> · descente ' + d + ' s, remontée ' + r + ' s';
+        document.body.classList.add('enVisite');
+        setTimeout(rafraichir, 5000);
+      });
     }
   });
   window.gesteEnregistre = () => { try { return JSON.parse(localStorage.getItem(CLE_GESTE) || 'null'); } catch(e){ return null; } };
