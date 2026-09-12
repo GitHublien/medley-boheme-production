@@ -35,11 +35,15 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    #vNavBarre{ position:fixed; z-index:200; left:0; right:0;
-      bottom:calc(env(safe-area-inset-bottom) + 6px);
+    /* ⚠️ LA REGLE (11 septembre) : une bande DURE, pleine largeur, trait d'or,
+       jamais flottante, jamais devant les logos. Elle se pose au-dessus de la
+       barre du bas (portrait) ou a droite de la colonne (paysage) : la position
+       est mesuree sur l'ecran reel, a chaque rotation. */
+    #vNavBarre{ position:fixed; z-index:200; left:0; right:0; bottom:0;
       display:flex; align-items:stretch; justify-content:center; gap:6px;
-      padding:0 8px; pointer-events:none; }
-    #vNavBarre > *{ pointer-events:auto; }
+      padding:6px 8px; background:rgba(8,7,6,.97);
+      border-top:1px solid rgba(212,175,55,.75);
+      box-shadow:0 -1px 0 rgba(212,175,55,.25), 0 -10px 30px rgba(0,0,0,.5); }
     #vNavBarre[hidden], #vNav[hidden]{ display:none !important; }
     #vNavBarre button{ border-radius:12px; cursor:pointer; min-width:52px;
       border:1px solid rgba(212,175,55,.45); background:rgba(10,9,8,.96);
@@ -106,6 +110,23 @@
     + '<button class="suiv" title="Arrêt suivant">▶</button>'
     + '<div class="ou" role="button"><b>—</b><small>touche ☰ pour le sommaire</small></div>';
   document.body.appendChild(barre);
+
+  /* la bande se range au-dessus de la barre du bas (debout) ou a droite de la
+     colonne (couche) : on mesure, on ne suppose pas */
+  function poserLaBande(){
+    const bas = document.querySelector('.bas');
+    const r = bas ? bas.getBoundingClientRect() : null;
+    if (r && r.width > r.height){            /* debout : une barre en bas */
+      barre.style.left = '0'; barre.style.right = '0';
+      barre.style.bottom = Math.max(0, innerHeight - r.top) + 'px';
+    } else if (r){                             /* couche : une colonne a gauche */
+      barre.style.left = Math.round(r.right) + 'px'; barre.style.right = '0';
+      barre.style.bottom = '0';
+    } else { barre.style.left = '0'; barre.style.right = '0'; barre.style.bottom = '0'; }
+  }
+  poserLaBande();
+  addEventListener('resize', () => setTimeout(poserLaBande, 350));
+  [400, 1500, 4000].forEach(t => setTimeout(poserLaBande, t));
 
   /* ── le sommaire ─────────────────────────────────────────────────────── */
   const nav = document.createElement('div');
