@@ -151,7 +151,11 @@
                  { part: 0.67,  geste: 'rien', surligne: null, bleu: '.voile nav a[href*="MISE%20EN%20SC"], .voile nav a[href*="MISE EN SC"]' },
                  { part: 0.80,  geste: 'fermerMenu', bleu: null, vise: '.nav' },
                  { part: 0.87,  geste: 'rien', vise: '.nav .marque' },
-                 { part: 0.95,  geste: 'rien', vise: '.nav' } ] },
+                 /* 18 h 10 — « il faudrait que tu cliques vraiment dessus, et que ca
+                    amene vraiment a l'accueil. » On appuie pour de vrai : le logo
+                    s'enfonce, l'accueil se recharge en douceur, en haut. */
+                 { part: 0.93,  geste: 'cliquerLogo' },
+                 { part: 0.97,  geste: 'rien', vise: '.nav' } ] },
 
     /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
     { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',
@@ -330,6 +334,15 @@
         .find(x => /CALENDRIER/i.test(decodeURIComponent(x.getAttribute('href') || '')));
       if (a) a.click();
       apres(() => GESTES.revenirAccueil(), 4200);
+      return 900;
+    },
+    /* un vrai appui sur le logo Boheme : on le voit s'enfoncer, puis l'accueil
+       revient (le site recoud la page sans couper la voix) */
+    cliquerLogo(){
+      const a = document.querySelector('.nav .marque');
+      if (!a) return 0;
+      a.style.transition = 'transform .18s'; a.style.transform = 'scale(.82)';
+      apres(() => { a.style.transform = ''; a.click(); }, 220);
       return 900;
     },
     revenirAccueil(){
