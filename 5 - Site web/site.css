@@ -449,8 +449,15 @@ footer .liens a:hover{ color:var(--or2); }
   border:1px solid rgba(212,175,55,.42) !important; background:rgba(212,175,55,.08) !important;
   color:var(--or2); text-decoration:none; cursor:pointer; box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   transition:background .5s var(--lent), border-color .5s, transform .4s var(--lent); }
-.nav .rond:hover, .nav .musique .mRond:hover, .nav .burger:hover, .nav .marque:hover{ background:rgba(212,175,55,.18) !important; border-color:rgba(212,175,55,.75) !important; }
-.nav .rond:active, .nav .burger:active{ transform:scale(.93); }
+/* 12 septembre, 18 h 20 — Mickael : « quand on appuie sur le logo, il y a un
+   truc orange derriere, ca devrait etre noir. » Au doigt, le survol reste colle
+   apres l'appui : il n'existe donc plus qu'avec une vraie souris. Et le logo
+   n'a aucune couleur derriere lui, jamais. */
+@media (hover:hover){
+  .nav .rond:hover, .nav .musique .mRond:hover, .nav .burger:hover{ background:rgba(212,175,55,.18) !important; border-color:rgba(212,175,55,.75) !important; }
+}
+.nav .marque, .nav .marque:hover, .nav .marque:active, .nav .marque:focus{ background:transparent !important; box-shadow:none !important; }
+.nav .rond:active, .nav .burger:active, .nav .marque:active{ transform:scale(.93); }
 .nav .rond .ico{ width:20px; height:20px; }
 .nav .musique .mRond{ opacity:1; font-size:1.5rem; }   /* 24px, le poids du menu a cote */
 .nav .burger i{ background:var(--or2) !important; width:18px !important; }
