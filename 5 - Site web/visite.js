@@ -1497,8 +1497,8 @@
         if (!window.__modeEssai()){
           try { localStorage.setItem(CLE_ESSAI, '1'); } catch(e){}
         }
-        if (!document.querySelector('script[src="visite-essai.js"]')){
-          const sc = document.createElement('script'); sc.src = 'visite-essai.js';
+        if (!document.querySelector('script[src="visite-navigateur.js"]')){
+          const sc = document.createElement('script'); sc.src = 'visite-navigateur.js';
           document.body.appendChild(sc);
         } else if (typeof window.montrerLaBarreDEssai === 'function') window.montrerLaBarreDEssai();
       }, 2500); };
@@ -1508,8 +1508,8 @@
     }
   }
 
-  if (window.__modeEssai() && !document.querySelector('script[src="visite-essai.js"]')){
-    const t = document.createElement('script'); t.src = 'visite-essai.js';
+  if (window.__modeEssai() && !document.querySelector('script[src="visite-navigateur.js"]')){
+    const t = document.createElement('script'); t.src = 'visite-navigateur.js';
     document.body.appendChild(t);
   }
 
@@ -1594,7 +1594,7 @@
      quand je le desire. »
 
      La visite n'a pas besoin de savoir qu'on l'examine : elle expose trois
-     gestes, et c'est tout. Le mode essai (visite-essai.js) s'en sert pour
+     gestes, et c'est tout. Le mode essai (visite-navigateur.js) s'en sert pour
      dessiner sa barre. Rien de tout cela n'existe chez les chanteurs. */
   window.__visite = {
     ou(){
@@ -1633,6 +1633,8 @@
     },
     /* le nom du fichier de son d'un arret : le mode essai s'en sert pour
        retrouver le texte ecrit correspondant. */
+    /* 17 h 25 — le nom de chaque arret, pour le sommaire du navigateur */
+    nom(k){ return (ARRETS[k] && ARRETS[k].nom) || ''; },
     cle(k){
       const a = ARRETS[k];
       const src = a && (a.son || (a.etapes && (a.etapes.find(e => e.son) || {}).son));
