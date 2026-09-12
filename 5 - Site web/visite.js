@@ -149,13 +149,15 @@
                  { part: 0.385, geste: 'rien', surligne: '.voile nav a[href*="NOUVEAUT"]' },
                  { part: 0.43,  geste: 'rien', surligne: '.voile nav a[href*="NOUVEAUT"], .voile nav a[href*="PRENOM"]' },
                  { part: 0.67,  geste: 'rien', surligne: null, bleu: '.voile nav a[href*="MISE%20EN%20SC"], .voile nav a[href*="MISE EN SC"]' },
-                 { part: 0.80,  geste: 'fermerMenu', bleu: null, vise: '.nav' },
-                 { part: 0.87,  geste: 'rien', vise: '.nav .marque' },
-                 /* 18 h 10 — « il faudrait que tu cliques vraiment dessus, et que ca
-                    amene vraiment a l'accueil. » On appuie pour de vrai : le logo
-                    s'enfonce, l'accueil se recharge en douceur, en haut. */
+                 /* 18 h 25 — Mickael : « pas de zoom sur le logo, je veux voir toute
+                    la page. Mais ca amene a la meme page, on ne voit pas de
+                    difference. » La difference, on la fabrique : le menu ferme, la
+                    page descend un peu vers les tuiles ; « il te ramene a l'accueil »,
+                    le logo est vraiment appuye, et la page remonte en haut. */
+                 { part: 0.80,  geste: 'fermerMenu', bleu: null, vise: null },
+                 { part: 0.84,  geste: 'descendreUnPeu' },
                  { part: 0.93,  geste: 'cliquerLogo' },
-                 { part: 0.97,  geste: 'rien', vise: '.nav' } ] },
+                 { part: 0.97,  geste: 'rien', vise: null } ] },
 
     /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
     { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',
@@ -338,6 +340,9 @@
     },
     /* un vrai appui sur le logo Boheme : on le voit s'enfoncer, puis l'accueil
        revient (le site recoud la page sans couper la voix) */
+    /* la page descend doucement d'un ecran et demi : assez pour que le retour
+       en haut par le logo se voie */
+    descendreUnPeu(){ try { scrollTo({ top: Math.round(innerHeight * 1.5), behavior: 'smooth' }); } catch(e){ scrollTo(0, innerHeight * 1.5); } return 900; },
     cliquerLogo(){
       const a = document.querySelector('.nav .marque');
       if (!a) return 0;
