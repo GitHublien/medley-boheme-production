@@ -1134,7 +1134,12 @@
         if (arrete || passe || monFil !== fil) return;
         passe = true;
         /* en mode essai, on s'arrete la : c'est lui qui appuie sur ▶ */
-        const aller = () => { if (window.__modeEssai && window.__modeEssai()) return; apres(() => jouer(k + 1, monFil), 350); };
+        /* ⚠️ 13 h 30 — Mickael : « quand je reviens en arriere, en avant, il est
+           perdu. » C'est le mode essai qui coupait l'enchainement : apres un
+           arret, il attendait ▶, la page restait ou elle etait, et la descente
+           vers l'arret suivant — celle qu'il veut voir — n'avait jamais lieu.
+           L'enchainement est retabli, en essai comme en vrai. Pour revenir : ◀. */
+        const aller = () => apres(() => jouer(k + 1, monFil), 350);
         const puis = () => { if (a.demande) demander(a.demande, aller); else aller(); };
         if (gesteEnCours){ const g = gesteEnCours; gesteEnCours = null; g.then(puis); }
         else puis();
@@ -1172,10 +1177,7 @@
     if (a.etapes){
       const jouerEtape = (n) => {
         if (monFil !== fil || arrete) return;
-        if (n >= a.etapes.length){
-          if (window.__modeEssai && window.__modeEssai()) return;   /* on attend ▶ */
-          apres(() => jouer(k + 1, monFil), 350); return;
-        }
+        if (n >= a.etapes.length){ apres(() => jouer(k + 1, monFil), 350); return; }
         const e = a.etapes[n];
         const encore = () => jouerEtape(n + 1);
         if (e.son){
@@ -1292,10 +1294,24 @@
     try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){}
   }
 
+  /* ⚠️ 13 h 30 — Mickael : « au debut, c'est chiant la musique, c'est fatigant
+     a l'oreille. Tu la mettras au moment ou tu la montreras. » La musique du
+     hall se tait des le depart de la visite ; c'est l'arret de la musique qui
+     l'allume, pour de vrai, quand la voix en parle. */
+  function taireLaMusique(){
+    const b = document.querySelector('.musique');
+    const s2 = [...document.querySelectorAll('audio')].find(x => x !== son && !x.dataset.visite);
+    if (b && s2 && !s2.paused){
+      const r = b.querySelector('.mRond');
+      if (r){ if (!b.classList.contains('ouvert')) r.click(); r.click(); }   /* deux appuis : son vrai geste pour eteindre */
+    }
+  }
+
   function lancer(){
     /* un depart neuf annule tout ce qui pouvait encore tourner */
     fil++; arrete = false;
     verrouillerPortrait();
+    taireLaMusique();
     try { son.pause(); son.onended = son.onerror = null; } catch(e){}
     mesurerLaBarreDuBas();
     entree.classList.remove('la');
@@ -1464,6 +1480,10 @@
       k = Math.max(0, Math.min(ARRETS.length - 1, k));
       fil++; arrete = false; enPause = false;
       effacerLeBonjour(); mesurerLaBarreDuBas();
+      /* les deux premiers arrets se jouent en haut de l'accueil ; les autres
+         partent de la ou la page est, comme en vrai */
+      if (k <= 1) scrollTo({ top: 0, behavior: 'instant' });
+      if (k < 6) taireLaMusique();     /* avant l'arret de la musique, elle se tait */
       const p = document.querySelector('#vPause'); if (p) p.remove();
       const d = document.querySelector('#vDemande'); if (d) d.remove();
       try { son.pause(); son.onended = son.onerror = null; } catch(e){}
