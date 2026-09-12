@@ -84,7 +84,18 @@
     #vNote .liste{ max-height:32vh; overflow:auto; display:grid; gap:.4rem; }
     #vNote .liste div{ font:400 .78rem/1.4 system-ui; color:#bcb4a2;
       background:rgba(255,255,255,.03); border-radius:.5rem; padding:.45rem .6rem; }
-    #vNote .liste b{ color:#f1d27a; }`;
+    #vNote .liste b{ color:#f1d27a; }
+    /* l'ardoise : le texte de la phrase en cours */
+    #vTexte{ position:fixed; z-index:199; left:8px; right:8px;
+      bottom:calc(env(safe-area-inset-bottom) + 58px);
+      max-height:5.2rem; overflow:auto; -webkit-overflow-scrolling:touch;
+      background:rgba(8,7,6,.95); border:1px solid rgba(212,175,55,.28);
+      border-radius:10px; padding:8px 11px;
+      font:400 12px/1.45 system-ui, sans-serif; color:#ddd5c2;
+      -webkit-user-select:text; user-select:text; }
+    #vTexte.grand{ max-height:58vh; font-size:15px; line-height:1.6; color:#f2ead6;
+      border-color:rgba(212,175,55,.5); }
+    #vTexte:empty{ display:none; }`;
   document.head.appendChild(style);
 
   /* ── la barre ───────────────────────────────────────────────────────── */
@@ -101,6 +112,35 @@
 
   const quoi = barre.querySelector('.quoi');
   const boutonPause = barre.querySelector('.pause');
+
+  /* ── LE TEXTE DE CE QU'ELLE DIT ─────────────────────────────────────────
+     Mickael : « il faudrait que je puisse voir le texte que tu mets a chaque
+     fois. » Il se pose au-dessus de la barre, en petit, et suit les arrets. Un
+     appui dessus l'agrandit pour lire tranquillement ; un second le replie.
+     Le prenom y est remplace par le vrai, pour que ce soit exactement ce qu'il
+     entend. */
+  const ardoise = document.createElement('div');
+  ardoise.id = 'vTexte'; ardoise.className = 'visiteGarde';
+  document.body.appendChild(ardoise);
+  ardoise.addEventListener('click', () => ardoise.classList.toggle('grand'));
+
+  const PRENOMS = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
+                    mickael:'Mickaël', bry:'Bry', elie:'Élie' };
+  let quiEstLa = '';
+  try { quiEstLa = (new URLSearchParams(location.search).get('pour')
+                 || localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
+
+  let dernierTexte = '';
+  function direLeTexte(){
+    const t = window.TEXTES_VISITE || null;
+    if (!t){ ardoise.style.display = 'none'; return; }
+    const e = V.ou();
+    const cle = (V.cle && V.cle(e.arret)) || '';
+    let x = t[cle] || '';
+    if (!x){ ardoise.textContent = '(pas de texte pour cet arrêt)'; return; }
+    x = x.replace(/\{prénom\}/g, PRENOMS[quiEstLa] || 'toi');
+    if (x !== dernierTexte){ ardoise.textContent = x; dernierTexte = x; ardoise.scrollTop = 0; }
+  }
 
   /* ── la fiche de note ───────────────────────────────────────────────── */
   const fiche = document.createElement('div');
@@ -139,6 +179,7 @@
 
   /* ── ce qu'on voit dans la barre ────────────────────────────────────── */
   function rafraichir(){
+    direLeTexte();
     const e = V.ou();
     quoi.innerHTML = '<b>' + (e.arret + 1) + '/' + e.total + '</b> · ' + e.nom;
     boutonPause.textContent = e.enPause ? '▶' : '⏸';

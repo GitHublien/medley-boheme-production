@@ -5,7 +5,7 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '12/09/2026 · 09h15';
+const VERSION_SITE = '12/09/2026 · 11h05';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -179,6 +179,10 @@ const VERSION_SITE = '12/09/2026 · 09h15';
      (window.revoirLaVisite). Elle pèse peu et ne fait rien tant qu'on ne
      l'appelle pas. */
   {
+    /* le texte ecrit des phrases accompagne la visite : il ne sert qu'au mode
+       essai, mais il doit etre charge avant lui pour etre deja la. */
+    const x = document.createElement('script'); x.src = 'visite-textes.js';
+    (document.body || document.documentElement).appendChild(x);
     const g = document.createElement('script'); g.src = 'visite.js';
     (document.body || document.documentElement).appendChild(g);
   }

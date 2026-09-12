@@ -37,7 +37,12 @@
 
   /* qui est là, et donc quelle voix lui parle */
   const VOIX_DE = { adrien:'leda', mickael:'leda', bry:'leda', elie:'leda',
-                    stephanie:'charon', candice:'charon' };
+                    /* ⚠️ 12 septembre — Mickael a choisi ALGENIB a l'oreille, apres
+                       treize essais mesures : c'est la plus grave des voix d'homme
+                       de Gemini. Ce nom-la doit changer ICI AUSSI, sinon le site
+                       continue de demander les anciens fichiers « --charon » et
+                       les nouveaux ne sont jamais joues. Vu avant publication. */
+                    stephanie:'algenib', candice:'algenib' };
   let qui = '';
   try { qui = (new URLSearchParams(location.search).get('pour')
             || localStorage.getItem('boheme-pour') || '').toLowerCase(); } catch(e){}
@@ -48,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12093';
+  const VOIX_VERSION = '12094';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -87,6 +92,12 @@
        ca a du sens, et la lumiere va se poser sur leur tuile. */
     { son: sonCommun('02e-les-infos'), nom: 'Les informations utiles',
       vise: 'a[href*="BIENVENUE"].tuile', sauterSiAbsent: true },
+    /* ⚠️ 12 septembre — LA PROMESSE TENUE. La voix dit, des la premiere phrase,
+       qu'elle montrera ou le film est range. Une promesse qu'on ne tient pas
+       dans une visite de deux minutes, ca se remarque tout de suite — et ca
+       decredibilise tout le reste. C'est ici qu'on la tient. */
+    { son: sonCommun('02f-le-film'), nom: 'Le film',
+      vise: 'a[href*="revoir=1"].tuile', sauterSiAbsent: true },
     /* La phrase dure une vingtaine de secondes : « cette note, c'est la musique
        du hall… un appui montre son titre et te laisse en changer… un second
        appui l'eteint. » Les gestes tombent au moment ou elle les nomme. */
@@ -704,7 +715,7 @@
   }
   document.addEventListener('pointerdown', e => {
     if (!document.body.classList.contains('enVisite')) return;
-    if (e.target.closest('#vBarre, #vDemande, #vPause, #vEntree, #vTourne, #vEssai, #vNote')) return;
+    if (e.target.closest('#vBarre, #vDemande, #vPause, #vEntree, #vTourne, #vEssai, #vNote, #vTexte, #vBonjour, #vDepart')) return;
     pauser();
   }, true);
 
@@ -1016,6 +1027,14 @@
       document.body.classList.toggle('menu', dansLeMenu);
       const monFil = fil;
       apres(() => jouer(k, monFil), dansLeMenu ? 450 : 120);
+    },
+    /* le nom du fichier de son d'un arret : le mode essai s'en sert pour
+       retrouver le texte ecrit correspondant. */
+    cle(k){
+      const a = ARRETS[k];
+      if (!a || !a.son) return '';
+      const m = decodeURIComponent(a.son).match(/([^/]+?)--/);
+      return m ? m[1] : '';
     },
     basculerPause(){
       if (enPause){
