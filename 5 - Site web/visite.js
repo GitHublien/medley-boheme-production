@@ -960,7 +960,8 @@
       const suivant = () => {
         if (arrete || passe || monFil !== fil) return;
         passe = true;
-        const aller = () => apres(() => jouer(k + 1, monFil), 900);
+        /* en mode essai, on s'arrete la : c'est lui qui appuie sur ▶ */
+        const aller = () => { if (window.__modeEssai && window.__modeEssai()) return; apres(() => jouer(k + 1, monFil), 900); };
         const puis = () => { if (a.demande) demander(a.demande, aller); else aller(); };
         if (gesteEnCours){ const g = gesteEnCours; gesteEnCours = null; g.then(puis); }
         else puis();
@@ -993,7 +994,10 @@
     if (a.etapes){
       const jouerEtape = (n) => {
         if (monFil !== fil || arrete) return;
-        if (n >= a.etapes.length){ apres(() => jouer(k + 1, monFil), 900); return; }
+        if (n >= a.etapes.length){
+          if (window.__modeEssai && window.__modeEssai()) return;   /* on attend ▶ */
+          apres(() => jouer(k + 1, monFil), 900); return;
+        }
         const e = a.etapes[n];
         const encore = () => jouerEtape(n + 1);
         if (e.son){
@@ -1203,7 +1207,12 @@
        truc a chaque fois. »
        En mode essai, la visite repart donc a CHAQUE ouverture de l'accueil, comme
        si c'etait la premiere. Chez les six, rien ne change : une seule fois. */
-    if (window.__modeEssai && window.__modeEssai()) vue = false;
+    /* ⚠️ 12 septembre, 10 h 50 — Mickael : « je veux juste etre sur la page
+       d'accueil. Ni sur le debut de Candice, ni apres. Tant que je n'ai pas
+       valide, je ne veux pas que ca passe a autre chose. » En mode essai,
+       plus rien ne demarre tout seul : il est sur l'accueil, la barre est la,
+       et c'est lui qui lance ce qu'il veut. */
+    if (window.__modeEssai && window.__modeEssai()) return;
     /* une visite interrompue passe avant tout : meme s'il l'a deja vue, on lui
        propose de finir celle qu'il avait commencee. */
     const reste = ouIlEnEtait();
@@ -1252,6 +1261,7 @@
     allerA(k){
       k = Math.max(0, Math.min(ARRETS.length - 1, k));
       fil++; arrete = false; enPause = false;
+      effacerLeBonjour(); mesurerLaBarreDuBas();
       const p = document.querySelector('#vPause'); if (p) p.remove();
       const d = document.querySelector('#vDemande'); if (d) d.remove();
       try { son.pause(); son.onended = son.onerror = null; } catch(e){}

@@ -346,7 +346,12 @@
 
   /* ── les gestes ─────────────────────────────────────────────────────── */
   barre.querySelector('.prec').addEventListener('click', () => { V.allerA(V.ou().arret - 1); rafraichir(); });
-  barre.querySelector('.suiv').addEventListener('click', () => { V.allerA(V.ou().arret + 1); rafraichir(); });
+  /* ▶ : si rien n'a encore joue, on demarre au premier arret ; sinon le suivant */
+  barre.querySelector('.suiv').addEventListener('click', () => {
+    const e = V.ou();
+    V.allerA(document.body.classList.contains('enVisite') ? e.arret + 1 : 0);
+    rafraichir();
+  });
   barre.querySelector('.rejouer').addEventListener('click', () => { V.allerA(V.ou().arret); rafraichir(); });
   boutonPause.addEventListener('click', () => { V.basculerPause(); rafraichir(); });
 
