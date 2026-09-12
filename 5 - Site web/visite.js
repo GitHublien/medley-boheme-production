@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12097';
+  const VOIX_VERSION = '12098';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -65,9 +65,17 @@
     { son: sonPerso('01-bonjour'),        vise: null, nom: "L’accueil" },
     /* c'est ICI que le visage s'efface : la voix dit « voila la page d'accueil »
        au moment exact ou la page apparait. Le rideau se leve sur la phrase. */
-    { son: sonCommun('01b-accueil'), vise: null, nom: 'La page d’accueil',
-      avant: 'effacerLeVisage',
-      pendant: [ { a: 2.6, geste: 'defilerLaPage' } ] },
+    /* la page d'accueil : le geste commande, la parole suit. Chaque etape
+       attend la precedente. */
+    { nom: 'La page d’accueil', vise: null, avant: 'effacerLeVisage',
+      etapes: [
+        { son: sonCommun('01b-accueil') },              /* « je descends doucement » */
+        { geste: 'descendreAuxVisages' },                /* 22 s, en silence         */
+        { son: sonCommun('01c-visages') },               /* « vos six visages »       */
+        { attendre: 1800 },
+        { geste: 'remonterEnHaut' },                     /* 18 s, en silence          */
+        { son: sonCommun('01d-en-haut') },               /* « voila, c'est l'accueil » */
+      ] },
     /* ⚠️ 12 septembre — Mickael : « quand on montre le bouton rouge, il ne faut
        vraiment montrer QUE le bouton rouge. Il faut resserrer et zoomer un peu
        pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
@@ -135,57 +143,24 @@
     rien(){ return 0; },
     effacerLeVisage(){ effacerLeBonjour(); return 900; },
 
-    /* ── LA PAGE DEFILE TOUTE SEULE ──────────────────────────────────────
-       ⚠️ 12 septembre — Mickael : « tu fais le scroll de l'accueil
-       automatiquement pendant que tu parles. Tu descends jusqu'en bas, et tu
-       remontes jusqu'en haut. »
-       Un defilement lisse du navigateur va trop vite pour etre VU : il faut
-       le mener a la main, image par image. Quatre secondes pour descendre,
-       un souffle en bas, trois pour remonter. Si son doigt touche l'ecran
-       pendant ce temps, on lache : la visite ne lutte jamais contre lui. */
-    defilerLaPage(){
-      /* la page mesure plus de 8 000 pixels : en quatre secondes, ca file sans
-         qu'on voie rien. Sept pour descendre, cinq pour remonter — c'est le
-         temps de la phrase, et c'est le temps de voir. Et on remesure le bas a
-         chaque image : les photos se chargent en route et allongent la page. */
-      /* ⚠️ 12 septembre, 10 h — Mickael, en le voyant : « c'est beaucoup trop
-         rapide. Il faudrait plutot que tu t'arretes aux photos, et que tu
-         scrolles beaucoup plus lentement. »
-         On ne va donc plus « en bas » : on va AUX SIX VISAGES, et on s'y pose.
-         Quatorze secondes pour descendre, deux et demie devant les visages, dix
-         pour remonter. C'est plus long que la phrase — alors la visite attend
-         la fin du mouvement avant de passer a la suite (voir « gesteEnCours »).
-         La cible est remesuree a chaque image : les photos se chargent en route
-         et deplacent tout. */
-      const leBas = () => {
-        const q = document.querySelector('.qui');
-        const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
-        if (!q) return max;
-        return Math.min(max, Math.max(0, q.getBoundingClientRect().top + scrollY - 14));
-      };
-      if (leBas() < 40) return 0;
-      const depart = performance.now();
-      const DESCENTE = 14000, PAUSE = 2500, MONTEE = 10000;
-      let finir1 = null;
-      gesteEnCours = new Promise(r => { finir1 = r; });
-      const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;   /* accelere puis freine */
-      let lache = false;
-      const lacher = () => { lache = true; };
-      addEventListener('pointerdown', lacher, { once: true, capture: true });
-      const pas = (now) => {
-        if (lache || arrete || enPause){ finir1(); return; }
-        const t = now - depart, bas = leBas();
-        let y;
-        if (t < DESCENTE) y = bas * doux(t / DESCENTE);
-        else if (t < DESCENTE + PAUSE) y = bas;
-        else if (t < DESCENTE + PAUSE + MONTEE) y = bas * (1 - doux((t - DESCENTE - PAUSE) / MONTEE));
-        else { scrollTo(0, 0); removeEventListener('pointerdown', lacher, true); finir1(); return; }
-        scrollTo(0, y);
-        requestAnimationFrame(pas);
-      };
-      requestAnimationFrame(pas);
-      return 0;
-    },
+    /* ── LA PAGE DEFILE, DOUCEMENT, ET LA PAROLE SUIT ─────────────────────
+       ⚠️ 12 septembre, 10 h 10 — Mickael : « pendant que tu parles il faut que
+       ca scrolle. Tu arrives devant les photos, hop, et ensuite tu remontes,
+       mais doucement. Il faut qu'on puisse voir tous les trucs. Reflechis
+       comme un etre humain. »
+
+       Un humain qui montre une page ne recite pas une phrase par-dessus un
+       mouvement. Il descend en parlant, s'arrete devant ce qu'il veut montrer,
+       le nomme, remonte, et ne dit « voila » qu'une fois revenu. LE GESTE
+       COMMANDE, LA PAROLE SUIT. Ces deux gestes rendent donc chacun une
+       promesse, et l'arret les enchaine avec les morceaux de voix, dans l'ordre.
+
+       Vingt-deux secondes pour descendre, dix-huit pour remonter : c'est le
+       temps qu'il faut pour VOIR passer chaque porte, pas seulement pour
+       arriver. Si son doigt touche l'ecran, on lache — et on considere le
+       geste fini, pour ne jamais bloquer la suite. */
+    descendreAuxVisages(){ return glisser('visages', 22000); },
+    remonterEnHaut(){ return glisser('haut', 18000); },
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
 
     /* ── LA MUSIQUE, POUR DE VRAI ────────────────────────────────────────
@@ -239,6 +214,34 @@
       return 900;
     },
   };
+
+  /* le glissement lui-meme : de la ou on est jusqu'a la cible, en douceur */
+  function glisser(vers, duree){
+    return new Promise(resoudre => {
+      const cible = () => {
+        const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+        if (vers === 'haut') return 0;
+        const q = document.querySelector('.qui');
+        if (!q) return max;
+        return Math.min(max, Math.max(0, q.getBoundingClientRect().top + scrollY - 14));
+      };
+      const depuis = scrollY, depart = performance.now();
+      const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;
+      let lache = false;
+      const lacher = () => { lache = true; };
+      addEventListener('pointerdown', lacher, { once: true, capture: true });
+      const pas = (now) => {
+        if (lache || arrete){ removeEventListener('pointerdown', lacher, true); resoudre(); return; }
+        if (enPause){ requestAnimationFrame(pas); return; }   /* on attend, on ne lache pas */
+        const t = Math.min(1, (now - depart) / duree);
+        const ou = cible();
+        scrollTo(0, depuis + (ou - depuis) * doux(t));
+        if (t < 1) requestAnimationFrame(pas);
+        else { scrollTo(0, ou); removeEventListener('pointerdown', lacher, true); resoudre(); }
+      };
+      requestAnimationFrame(pas);
+    });
+  }
 
   /* ── le décor : le voile, le projecteur, la barre de passage ──────────── */
   const style = document.createElement('style');
@@ -885,6 +888,39 @@
       });
     };
     const d = a.avant && GESTES[a.avant] ? GESTES[a.avant]() : 0;
+
+    /* ── UN ARRET EN PLUSIEURS ETAPES ──────────────────────────────────
+       Quand un arret porte « etapes », on les joue l'une apres l'autre : un son
+       (on attend qu'il finisse), un geste (on attend sa promesse), une pause.
+       Rien ne se chevauche. C'est ce qui permet a la voix de ne dire « voila »
+       qu'une fois la page revenue en haut. */
+    if (a.etapes){
+      const jouerEtape = (n) => {
+        if (monFil !== fil || arrete) return;
+        if (n >= a.etapes.length){ apres(() => jouer(k + 1, monFil), 900); return; }
+        const e = a.etapes[n];
+        const encore = () => jouerEtape(n + 1);
+        if (e.son){
+          let passe = false;
+          const fini = () => { if (!passe){ passe = true; apres(encore, 250); } };
+          son.onended = fini;
+          son.onerror = () => apres(fini, 2500);
+          son.src = e.son;
+          son.play().catch(err => {
+            if (err && /NotAllowed/i.test(String(err.name || err))) demanderLePremierAppui(k, monFil);
+            else apres(fini, 2500);
+          });
+        } else if (e.geste && GESTES[e.geste]){
+          const r = GESTES[e.geste]();
+          if (r && typeof r.then === 'function') r.then(encore); else apres(encore, r || 0);
+        } else if (e.attendre){
+          apres(encore, e.attendre);
+        } else encore();
+      };
+      apres(() => { eclairer(a.vise); jouerEtape(0); }, d);
+      return;
+    }
+
     if (a.attend) apres(() => attendre(a.attend, suite), d);
     else apres(suite, d);
   }
@@ -1123,8 +1159,9 @@
        retrouver le texte ecrit correspondant. */
     cle(k){
       const a = ARRETS[k];
-      if (!a || !a.son) return '';
-      const m = decodeURIComponent(a.son).match(/([^/]+?)--/);
+      const src = a && (a.son || (a.etapes && (a.etapes.find(e => e.son) || {}).son));
+      if (!src) return '';
+      const m = decodeURIComponent(src).match(/([^/]+?)--/);
       return m ? m[1] : '';
     },
     basculerPause(){

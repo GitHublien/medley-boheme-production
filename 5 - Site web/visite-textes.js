@@ -11,7 +11,11 @@ window.TEXTES_VISITE = {
   '01-bonjour':
     'Bonjour {prénom}. J\'espère que le film t\'a plu. Il n\'a pas été fait pour rien : c\'est la trame du spectacle, ce que vous raconterez le quatre octobre. Le jour venu, il y aura des images derrière vous, à des moments précis. Lesquelles, ce n\'est pas encore arrêté. Voilà pourquoi il fallait le voir en premier : avant d\'apprendre les notes, il faut savoir ce qu\'on raconte. Si tu veux le revoir, je te montrerai où. Bon. Passons au vif du sujet.',
   '01b-accueil':
-    'Voilà, nous sommes sur la page d\'accueil. C\'est d\'ici que tout part, et c\'est ici que tu reviendras toujours. Regarde : tout tient sur cette seule page, il suffit de descendre. Les six portes, vos six visages, tout en bas. Et on remonte. Voilà. C\'est l\'accueil.',
+    'Voilà la page d\'accueil. C\'est d\'ici que tout part, et c\'est ici que tu reviendras toujours. Tiens, je vais te montrer. Regarde.',
+  '01c-visages':
+    'Et là, tu vois, on arrive en bas. Ça, c\'est vos six visages.',
+  '01d-en-haut':
+    'Et voilà. On est de nouveau à l\'accueil.',
   '02-le-bouton-rouge':
     'Une chose d\'abord, la seule qu\'on te demande. Ce bouton rouge prépare un message tout prêt et t\'emmène droit dans WhatsApp. Tu choisis le groupe du medley, tu envoies, c\'est tout. Vise bien, quand même : sinon quelqu\'un va recevoir un message très mystérieux.',
   '02b-mises-a-jour':
@@ -21,7 +25,7 @@ window.TEXTES_VISITE = {
   '02d-plus-tard':
     'Très bien, tu as fait ton choix. Le bouton reste là, en haut de l\'accueil, et il restera rouge tant que tu ne l\'auras pas touché. Un appui suffira, quand tu voudras. On continue.',
   '02e-les-infos':
-    'Un mot sur une porte que tu ne remarquerais pas forcément : les informations utiles, sur l\'accueil. C\'est là que tout est écrit noir sur blanc — ce que contient chaque page, à quoi sert chaque bouton, ce qui est prêt et ce qui arrive encore. Je te dis tout à l\'oreille aujourd\'hui, mais dans trois semaines, quand tu voudras revérifier un détail, c\'est là qu\'il sera. Va y jeter un œil une fois, tranquillement, quand j\'aurai fini.',
+    'Une porte que tu ne remarquerais pas forcément : les informations utiles. Tout y est écrit noir sur blanc, chaque page, chaque bouton. Je te dis tout à l\'oreille aujourd\'hui, mais dans trois semaines, quand tu voudras revérifier un détail, c\'est là qu\'il sera.',
   '02f-le-film':
     'Et voilà ce que je t\'avais promis : le film. Il est là, sur l\'accueil, et tu peux le revoir autant de fois que tu veux — mais il ne se relancera plus jamais tout seul. Un appui, et il repart du début.',
   '03-musique':
