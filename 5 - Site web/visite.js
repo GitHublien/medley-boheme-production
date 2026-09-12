@@ -1536,6 +1536,10 @@
       const dansLeMenu = /^(7|8)$/.test(String(k));
       document.body.classList.toggle('menu', dansLeMenu);
       const monFil = fil;
+      /* 14 h — Mickael : « en mode test, je ne vois pas non plus la photo de
+         Candice juste avant. Il faut que j'aie la possibilite de tout voir. »
+         L'arret 1 se joue donc AVEC le visage, comme au premier jour. */
+      if (k === 0){ verrouillerPortrait(); montrerLeBonjour(() => jouer(0, monFil)); return; }
       apres(() => jouer(k, monFil), dansLeMenu ? 450 : 120);
     },
     /* le nom du fichier de son d'un arret : le mode essai s'en sert pour
