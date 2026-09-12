@@ -114,6 +114,12 @@
     + '<button class="defaut" title="Noter un défaut">✎</button>'
     + '<button class="enregistrer" title="Enregistrer mon geste de défilement">⏺</button>'
     + '<button class="apercu" title="Voir la visite entière, sans la barre">👁</button>'
+    /* 12 septembre, 17 h 10 — Mickael : « il faut que pour les tests, je puisse
+       mettre a zero pour voir exactement ce que ca donne pour chaque personne. »
+       Le bouton rouge etait deja vert, la visite passait donc le choix. ⓪ efface
+       tout ce que le telephone avait retenu (bouton rouge, visite deja vue) et
+       recharge : comme au premier jour. */
+    + '<button class="zero" title="Remettre à zéro : bouton rouge, visite jamais vue">⓪</button>'
     + '<button class="suiv" title="Arrêt suivant">▶</button>';
   document.body.appendChild(barre);
 
@@ -372,6 +378,15 @@
   barre.querySelector('.rejouer').addEventListener('click', () => { V.allerA(V.ou().arret); rafraichir(); });
   boutonPause.addEventListener('click', () => { V.basculerPause(); rafraichir(); });
 
+  barre.querySelector('.zero').addEventListener('click', () => {
+    try {
+      if (typeof window.remettreLeBoutonRouge === 'function') window.remettreLeBoutonRouge();
+      Object.keys(localStorage).filter(k => /boheme-(visite-vue|visite-ou|recu|prevenu|maj)/i.test(k))
+        .forEach(k => localStorage.removeItem(k));
+    } catch(e){}
+    quoi.textContent = 'remis à zéro…';
+    setTimeout(() => location.reload(), 400);
+  });
   barre.querySelector('.defaut').addEventListener('click', () => {
     const e = V.ou();
     if (!e.enPause) V.basculerPause();        /* on s'arrête pendant qu'il écrit */
