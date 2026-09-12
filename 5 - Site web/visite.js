@@ -148,22 +148,38 @@
          qu'on voie rien. Sept pour descendre, cinq pour remonter — c'est le
          temps de la phrase, et c'est le temps de voir. Et on remesure le bas a
          chaque image : les photos se chargent en route et allongent la page. */
-      const leBas = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+      /* ⚠️ 12 septembre, 10 h — Mickael, en le voyant : « c'est beaucoup trop
+         rapide. Il faudrait plutot que tu t'arretes aux photos, et que tu
+         scrolles beaucoup plus lentement. »
+         On ne va donc plus « en bas » : on va AUX SIX VISAGES, et on s'y pose.
+         Quatorze secondes pour descendre, deux et demie devant les visages, dix
+         pour remonter. C'est plus long que la phrase — alors la visite attend
+         la fin du mouvement avant de passer a la suite (voir « gesteEnCours »).
+         La cible est remesuree a chaque image : les photos se chargent en route
+         et deplacent tout. */
+      const leBas = () => {
+        const q = document.querySelector('.qui');
+        const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+        if (!q) return max;
+        return Math.min(max, Math.max(0, q.getBoundingClientRect().top + scrollY - 14));
+      };
       if (leBas() < 40) return 0;
       const depart = performance.now();
-      const DESCENTE = 7000, PAUSE = 700, MONTEE = 5000;
+      const DESCENTE = 14000, PAUSE = 2500, MONTEE = 10000;
+      let finir1 = null;
+      gesteEnCours = new Promise(r => { finir1 = r; });
       const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;   /* accelere puis freine */
       let lache = false;
       const lacher = () => { lache = true; };
       addEventListener('pointerdown', lacher, { once: true, capture: true });
       const pas = (now) => {
-        if (lache || arrete || enPause) return;
+        if (lache || arrete || enPause){ finir1(); return; }
         const t = now - depart, bas = leBas();
         let y;
         if (t < DESCENTE) y = bas * doux(t / DESCENTE);
         else if (t < DESCENTE + PAUSE) y = bas;
         else if (t < DESCENTE + PAUSE + MONTEE) y = bas * (1 - doux((t - DESCENTE - PAUSE) / MONTEE));
-        else { scrollTo(0, 0); removeEventListener('pointerdown', lacher, true); return; }
+        else { scrollTo(0, 0); removeEventListener('pointerdown', lacher, true); finir1(); return; }
         scrollTo(0, y);
         requestAnimationFrame(pas);
       };
@@ -382,6 +398,10 @@
   document.body.appendChild(son);
 
   let ici = -1, arrete = false, departA = 0;
+  /* un geste qui dure plus longtemps que la phrase (le defilement de l'accueil)
+     pose ici une promesse : la visite ne passe a la suite qu'une fois qu'elle
+     est tenue. La voix ne parle jamais d'autre chose pendant que la page bouge. */
+  let gesteEnCours = null;
 
   /* ── UN SEUL FIL, ET PAS DEUX ───────────────────────────────────────────
      ⚠️ 11 septembre au soir — Mickael : « des fois il y a deux fois la voix
@@ -842,7 +862,9 @@
         if (arrete || passe || monFil !== fil) return;
         passe = true;
         const aller = () => apres(() => jouer(k + 1, monFil), 900);
-        if (a.demande) demander(a.demande, aller); else aller();
+        const puis = () => { if (a.demande) demander(a.demande, aller); else aller(); };
+        if (gesteEnCours){ const g = gesteEnCours; gesteEnCours = null; g.then(puis); }
+        else puis();
       };
       son.onended = suivant;
       /* si le son manque — fichier absent, réseau coupé — on n'attend pas : on
