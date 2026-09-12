@@ -156,10 +156,15 @@
       /* on arrête les horloges de la page qu'on quitte, avant toute chose */
       arreterLesHorloges();
       const scripts = [];
+      /* ⚠️ 12 septembre, 18 h 15 — Mickael : « Boheme Productions est en haut,
+         l'accueil est en bas. » Le contenu neuf etait ajoute A LA FIN du corps,
+         donc APRES le pied de page qu'on garde. Il se glisse maintenant avant
+         lui : nav, contenu, pied de page, comme sur une page fraiche. */
+      const pied = [...ici.children].find(e => e.tagName === 'FOOTER') || null;
       [...corpsNeuf.children].forEach(e => {
         if (e.tagName === 'SCRIPT'){ scripts.push(e); return; }
         const clone = document.importNode(e, true);
-        ici.appendChild(clone);
+        if (pied) ici.insertBefore(clone, pied); else ici.appendChild(clone);
         /* un script niché dans le contenu compte aussi */
         clone.querySelectorAll && clone.querySelectorAll('script').forEach(x => scripts.push(x));
       });

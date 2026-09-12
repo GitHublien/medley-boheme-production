@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 18h09';
+const VERSION_SITE = '12/09/2026 · 18h13';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -239,9 +239,13 @@ const VERSION_SITE = '12/09/2026 · 18h09';
 
   /* ── le pied de page ───────────────────────────────────────────────── */
   const pied = document.createElement('footer');
-  pied.innerHTML = '<div class="page"><img src="site-assets/signature-blanc.png" alt="" onerror="this.remove()">'
+  /* 12 septembre, 18 h 15 — Mickael : « la signature Boheme Production, tu la
+     fais plus grosse, mais en bas, tout en bas. Portrait et paysage. » Elle
+     ferme la page, apres les liens et la ligne du spectacle. */
+  pied.innerHTML = '<div class="page">'
     + '<div class="liens">' + PAGES.map(p => '<a href="' + lien(p) + '">' + p.t + '</a>').join('') + '</div>'
-    + '<p>Bohème Production · <b>Le Medley des Légendes</b> · Starmania, Notre-Dame de Paris, Les Dix Commandements, Roméo et Juliette · Palais des Festivals, Cannes, 4 octobre 2026</p></div>';
+    + '<p>Bohème Production · <b>Le Medley des Légendes</b> · Starmania, Notre-Dame de Paris, Les Dix Commandements, Roméo et Juliette · Palais des Festivals, Cannes, 4 octobre 2026</p>'
+    + '<img class="signature" src="site-assets/signature-blanc.png" alt="Bohème Production" onerror="this.remove()"></div>';
   document.body.appendChild(pied);
 
 

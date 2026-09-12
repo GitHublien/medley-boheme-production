@@ -208,7 +208,8 @@ section{ padding:clamp(3.2rem,8vw,7.5rem) 0; }
 footer{ padding:4rem 0 6rem; color:var(--gris2); font-size:.85rem; }
 footer .page{ display:grid; gap:1.2rem; }
 footer .page{ justify-items:center; text-align:center; }
-footer img{ width:min(520px, 84vw); opacity:.95; margin:0 auto; }
+footer img.signature{ width:min(760px, 94vw); opacity:.97; margin:1.2rem auto 0; }
+@media (orientation:landscape){ footer img.signature{ width:min(720px, 70vw); } }
 footer .liens{ justify-content:center; }
 /* le petit mot qui répond (mise à jour), comme dans le karaoké */
 .mot{ position:fixed; left:50%; bottom:22px; transform:translate(-50%, 24px); z-index:50; max-width:min(560px, 92vw);
