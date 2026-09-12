@@ -735,7 +735,7 @@
   }
   function poserSur(c){
     const r = c.getBoundingClientRect();
-    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const cx = r.left + r.width / 2; let cy = r.top + r.height / 2;
     /* le clair doit couvrir l'objet : il s'arrete a 62 % du rayon, donc on
        divise par 0,62 pour que l'objet tienne tout entier dans la lumiere */
     /* La lumiere doit serrer l'objet, pas inonder le voisinage : une premiere
@@ -746,7 +746,17 @@
        le clair tient jusqu'a 70 % du rayon : la lumiere epouse l'objet au lieu
        d'eclairer son quartier. */
     const rx = Math.max(22, r.width  / 2 + 8);
-    const ry = Math.max(22, r.height / 2 + 8);
+    let   ry = Math.max(22, r.height / 2 + 8);
+    /* ⚠️ 12 septembre, 17 h 15 — Mickael, sur la barre du bas : « il manque
+       une petite partie pour que ca recouvre, qu'on ne voie que la partie du
+       bas. » Mesure : la barre commence a 811 px, la lumiere a 803. Les huit
+       pixels de marge laissaient voir une bande de page au-dessus. Pour un
+       objet colle au bord bas de l'ecran, on descend la lumiere : son bord
+       haut s'aligne sur l'objet, et le surplus tombe hors de l'ecran. */
+    if (r.bottom >= innerHeight - 3){
+      ry = r.height / 2 + 12;
+      cy = r.top + ry + 4;
+    }
     /* rond si l'objet est a peu pres carre et petit (une note, un logo) */
     const ratio = r.width / Math.max(1, r.height);
     const rond = ratio > 0.75 && ratio < 1.33 && r.width < 140;
