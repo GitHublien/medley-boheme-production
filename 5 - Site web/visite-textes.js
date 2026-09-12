@@ -19,7 +19,7 @@ window.TEXTES_VISITE = {
   '02-le-bouton-rouge':
     'Une chose d\'abord, la seule qu\'on te demande. Ce bouton rouge prépare un message tout prêt et t\'emmène droit dans WhatsApp. Tu choisis le groupe du medley, tu envoies, c\'est tout. Vise bien, quand même : sinon quelqu\'un va recevoir un message très mystérieux.',
   '02b-mises-a-jour':
-    'Un mot sur les mises à jour. Le medley est terminé : ce que tu vois, c\'est ce qu\'on chantera. Mais l\'application, elle, va grandir, et surtout la mise en scène, avec les vidéos qui arrivent. Ce bouton va chercher la dernière version. Rien à réinstaller, jamais. Si rien ne semble changer, ferme l\'application et rouvre-la. Et quand on te prévient sur WhatsApp, fais-le : c\'est ce qui vous garde tous sur la même version.',
+    'Les mises à jour. Le medley est terminé, mais l\'application va grandir, surtout la mise en scène. Ce bouton va chercher la dernière version, rien à réinstaller. Si rien ne change, ferme et rouvre. Et quand on te prévient sur WhatsApp, un appui suffit.',
   '02c-merci':
     'Ah, super. Tu l\'as fait. Merci. Le message est parti, et c\'est une inquiétude de moins pour tout le monde. On peut continuer tranquillement.',
   '02d-plus-tard':
