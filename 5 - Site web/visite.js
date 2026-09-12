@@ -154,8 +154,10 @@
                     difference. » La difference, on la fabrique : le menu ferme, la
                     page descend un peu vers les tuiles ; « il te ramene a l'accueil »,
                     le logo est vraiment appuye, et la page remonte en haut. */
+                 /* 18 h 30 — « on referme et on se retrouve sur les six photos ; on
+                    appuie sur Boheme et on se retrouve sur la photo du debut. » */
                  { part: 0.80,  geste: 'fermerMenu', bleu: null, vise: null },
-                 { part: 0.84,  geste: 'descendreUnPeu' },
+                 { part: 0.82,  geste: 'seRetrouverSurLesSix' },
                  { part: 0.93,  geste: 'cliquerLogo' },
                  { part: 0.97,  geste: 'rien', vise: null } ] },
 
@@ -340,14 +342,21 @@
     },
     /* un vrai appui sur le logo Boheme : on le voit s'enfoncer, puis l'accueil
        revient (le site recoud la page sans couper la voix) */
-    /* la page descend doucement d'un ecran et demi : assez pour que le retour
-       en haut par le logo se voie */
-    descendreUnPeu(){ try { scrollTo({ top: Math.round(innerHeight * 1.5), behavior: 'smooth' }); } catch(e){ scrollTo(0, innerHeight * 1.5); } return 900; },
+    /* le menu vient de se fermer : on se retrouve sur les six photos, d'un coup */
+    seRetrouverSurLesSix(){
+      const h = [...document.querySelectorAll('section.page h2')].find(x => /Les six/i.test(x.textContent));
+      const sec = h ? h.closest('section') : null;
+      if (sec) scrollTo({ top: sec.getBoundingClientRect().top + scrollY - 8, behavior: 'instant' });
+      return 300;
+    },
+    /* « il te ramene toujours a l'accueil » : le logo s'enfonce et la page
+       remonte en douceur sur la photo du debut. Pas de rechargement : Mickael
+       l'a vu, « ce n'est pas beau ». */
     cliquerLogo(){
       const a = document.querySelector('.nav .marque');
-      if (!a) return 0;
-      a.style.transition = 'transform .18s'; a.style.transform = 'scale(.82)';
-      apres(() => { a.style.transform = ''; a.click(); }, 220);
+      if (a){ a.style.transition = 'transform .18s'; a.style.transform = 'scale(.82)';
+              apres(() => { a.style.transform = ''; }, 220); }
+      apres(() => { try { scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ scrollTo(0, 0); } }, 200);
       return 900;
     },
     revenirAccueil(){
