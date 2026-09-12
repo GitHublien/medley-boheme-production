@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 15h24';
+const VERSION_SITE = '12/09/2026 · 16h45';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -65,7 +65,7 @@ const VERSION_SITE = '12/09/2026 · 15h24';
        une sorte de carré, tu mets le rond. » La musique et le menu vivent donc dans
        leur propre case, séparée des pages par un trait d'or. Debout, cette case se
        range simplement à droite ; couché, elle se pose au pied de la colonne. */
-    + '<div class="basNav"><button class="burger rond" aria-label="Menu"><i></i><i></i></button></div>';
+    + '<div class="basNav"><button class="burger rond" aria-label="Menu"><i></i><i></i><i></i></button></div>';
   const voile = document.createElement('div'); voile.className = 'voile';
   /* 11 septembre — Mickaël : « j'aimerais qu'en bas du menu, un petit carré très
      joli marque la légende : si vous voyez cette couleur, c'est une mise à jour.

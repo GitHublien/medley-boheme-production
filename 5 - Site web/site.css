@@ -50,8 +50,12 @@ p{ margin:0; }
 .nav a.l.ici{ color:var(--or2); }
 .nav .burger{ width:40px; height:40px; border-radius:50%; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); display:grid; place-items:center; cursor:pointer; margin-left:.3rem; }
 .nav .burger i{ position:absolute; width:16px; height:1.5px; background:var(--encre); transition:transform .6s var(--lent), opacity .4s; }
-.nav .burger i:first-child{ transform:translateY(-3.5px); } .nav .burger i:last-child{ transform:translateY(3.5px); }
+/* 12 septembre, 15 h 30 — Mickael : « il y a trois bandes en bas et deux en
+   haut. Trois bandes sur chaque, je trouve ca plus joli. » Le trait du milieu
+   s'efface quand le menu s'ouvre, les deux autres font la croix. */
+.nav .burger i:first-child{ transform:translateY(-5px); } .nav .burger i:last-child{ transform:translateY(5px); }
 body.menu .nav .burger i:first-child{ transform:rotate(45deg); } body.menu .nav .burger i:last-child{ transform:rotate(-45deg); }
+body.menu .nav .burger i:nth-child(2){ opacity:0; }
 .nav .burger{ position:relative; }
 
 /* le menu plein écran, verre épais, liens qui montent l'un après l'autre */

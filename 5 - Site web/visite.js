@@ -146,11 +146,33 @@
                  { part: 0.55, geste: 'musiqueMorceauSuivant', vise: ['.nav .musique .mRond', '.nav .musique .mPan'] },
                  { part: 0.88, geste: 'musiqueEteindre', vise: '.nav .musique .mRond' } ] },
 
-    /* 21 · le paysage */
+    /* 21 · le paysage, en deux temps : la voix demande, puis SE TAIT jusqu'a
+       ce qu'il ait tourne, puis reprend. « Tant qu'il n'a pas tourne, plus de
+       voix. » */
+    /* ⚠️ 12 septembre, 16 h 40 — EN ATTENTE DES VOIX : Google a ferme le
+       compteur du jour (100 voix par compte). Le deux-temps ci-dessus est
+       pret ; en attendant, l'ancien morceau unique, dont la voix existe.
+       A remettre des que 11a/11b sont fabriques (voir fabriquer_visite.py). */
     { son: sonCommun('11-paysage'), nom: 'Le paysage', vise: null, attend: 'paysage' },
+    /* -- version deux temps, a retablir :
+    { nom: 'Le paysage', vise: null,
+      etapes: [
+        { son: sonCommun('11a-paysage-avant') },
+        { geste: 'attendreLePaysage' },
+        { son: sonCommun('11b-paysage-apres') },
+      ] },
+    -- */
 
-    /* 22 · la fin */
-    { son: sonPerso('12-la-fin'), nom: 'La fin', vise: null, avant: 'revenirAccueil' },
+    /* 22 · la fin : son visage revient, en grand, pendant qu'elle parle, puis
+       s'efface en fondu ; et on rend le portrait, puis la liberte de tourner */
+    { nom: 'La fin', vise: null,
+      etapes: [
+        { geste: 'revenirAccueil' },
+        { geste: 'revenirEnPortrait' },
+        { geste: 'montrerLeVisagePourFinir' },
+        { son: sonPerso('12-la-fin') },
+        { geste: 'effacerLeVisage' },
+      ] },
   ];
 
 
@@ -158,7 +180,25 @@
   const GESTES = {
     /* pour un temps qui ne fait que deplacer la lumiere, sans rien toucher */
     rien(){ return 0; },
-    effacerLeVisage(){ effacerLeBonjour(); return 350; },
+    effacerLeVisage(){ effacerLeBonjour(); return 900; },
+    /* attendre qu'il tourne, en silence, avec le pictogramme */
+    attendreLePaysage(){
+      libererOrientation();
+      return new Promise(r => attendre('paysage', r));
+    },
+    /* a la fin : on le ramene en portrait le temps de la derniere phrase */
+    revenirEnPortrait(){
+      verrouillerPortrait();
+      if (innerWidth <= innerHeight) return 300;
+      return new Promise(r => {
+        const voir = () => { if (innerWidth <= innerHeight){ removeEventListener('resize', voir); apres(r, 500); } };
+        addEventListener('resize', voir);
+        apres(() => { removeEventListener('resize', voir); r(); }, 6000);
+      });
+    },
+    montrerLeVisagePourFinir(){
+      return new Promise(r => { montrerLeBonjour(() => apres(r, 600)); });
+    },
 
     /* ── LA PAGE DEFILE, DOUCEMENT, ET LA PAROLE SUIT ─────────────────────
        ⚠️ 12 septembre, 10 h 10 — Mickael : « pendant que tu parles il faut que
@@ -859,7 +899,7 @@
 
   function finir(){
     arrete = true; fil++;   /* tout ce qui revient d'avant est desormais perime */
-    libererOrientation();
+    libererOrientation();   /* « choisis le mode qui te va » : la visite finie, il tourne s'il veut */
     try { son.onended = son.onerror = null; } catch(e){}
     try { son.pause(); } catch(e){}
     document.body.classList.remove('enVisite', 'menu');
@@ -1488,7 +1528,16 @@
     /* une visite interrompue passe avant tout : meme s'il l'a deja vue, on lui
        propose de finir celle qu'il avait commencee. */
     const reste = ouIlEnEtait();
+    /* ⚠️ 15 h 30 — Mickael : « on ne donne pas le choix "voulez-vous
+       continuer ?". Je veux que ca avance. Il faut qu'on voie le tutoriel. »
+       Apres un appel ou un rechargement, la visite reprend d'elle-meme a son
+       arret, sans carte ni question. */
     if (reste){
+      apres(() => { fil++; arrete = false; verrouillerPortrait(); taireLaMusique();
+                    document.body.classList.add('enVisite'); jouer(reste, fil); }, 900);
+      return;
+    }
+    if (false){
       entree.querySelector('h2').textContent = 'On reprend ?';
       entree.querySelector('.oui').textContent = 'Reprendre là où j’en étais';
       entree.querySelector('.non').textContent = 'Non, une autre fois';

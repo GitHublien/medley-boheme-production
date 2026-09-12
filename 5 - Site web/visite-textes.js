@@ -19,7 +19,7 @@ window.TEXTES_VISITE = {
   '02-le-bouton-rouge':
     'Une chose d\'abord, la seule qu\'on te demande. Ce bouton rouge prépare un message tout prêt et t\'emmène droit dans WhatsApp. Tu choisis le groupe du medley, tu envoies, c\'est tout. Vise bien, quand même : sinon quelqu\'un va recevoir un message très mystérieux.',
   '02b-mises-a-jour':
-    'Les mises à jour. Ce bouton va chercher la dernière version, rien à réinstaller. Si rien ne change, ferme et rouvre. Et quand une nouveauté arrive, tu le vois tout seul : les deux traits du menu, en haut, s\'éclairent en bleu.',
+    'Les mises à jour. Ce bouton va chercher la dernière version, rien à réinstaller. Si rien ne change, ferme et rouvre. Et quand une nouveauté arrive, tu le vois tout seul : les trois traits du menu, en haut, s\'éclairent en bleu.',
   '02c-merci':
     'Ah, super. Tu l\'as fait. Merci. Tu remarqueras qu\'il est passé au vert : c\'est validé, et il le restera. On continue.',
   '02d-plus-tard':
@@ -35,7 +35,7 @@ window.TEXTES_VISITE = {
   '03-musique':
     'Ça, c\'est juste pour le plaisir : la musique du hall, des productions de la maison. Trois morceaux pour l\'instant, d\'autres viendront avec les mises à jour. Et si tu en as marre, hop, un appui, tu la coupes. Elle ne t\'en voudra pas.',
   '04-barre-du-bas':
-    'Maintenant, comment retrouver tout ça. En bas de chaque écran, tu as toujours les trois portes les plus utiles : l\'accueil, l\'atelier, les textes. Et les deux traits, à droite : c\'est le menu. Viens, je te le montre.',
+    'Maintenant, comment retrouver tout ça. En bas de chaque écran, tu as toujours les trois portes les plus utiles : l\'accueil, l\'atelier, les textes. Et les trois traits, à droite : c\'est le menu. Mais je ne vais pas te l\'ouvrir en bas : je vais l\'ouvrir là-haut.',
   '05-atelier':
     'L\'atelier, c\'est le cœur, et c\'est par là qu\'on commence. Les paroles s\'allument en rythme, tes lignes dans ta couleur. Voix témoin pour apprendre, instrumental pour chanter. Il y a un guide à l\'intérieur : je te conseille de l\'écouter une fois, pour bien comprendre l\'atelier.',
   '05-probleme':
@@ -50,12 +50,14 @@ window.TEXTES_VISITE = {
     'Qui chante quoi : c\'est un résumé de la mise en scène, bloc par bloc. Tes parties en solo, celles où vous êtes plusieurs, dans ta couleur. Le vrai détail est juste en dessous, dans la mise en scène.',
   '11-mise-en-scene':
     'La mise en scène : où tu es, quand tu entres, de quel côté tu sors. Et c\'est ici qu\'arrivent les vidéos, au fur et à mesure. Elles te montreront exactement quoi faire — bien plus simple que de lire.',
-  '11-paysage':
-    'Maintenant, je voudrais te montrer autre chose : le mode paysage. Tourne ton téléphone. Tu vois ? C\'est la même application, rangée autrement. Pour les vidéos, je te conseille le paysage. Pour travailler dans l\'atelier, plutôt le portrait. Après, c\'est un choix personnel.',
+  '11a-paysage-avant':
+    'Maintenant, je voudrais te montrer autre chose : le mode paysage. Peux-tu tourner ton téléphone ?',
+  '11b-paysage-apres':
+    'Tu vois ? C\'est la même application, rangée autrement. Pour les vidéos, je te conseille le paysage. Pour travailler dans l\'atelier, plutôt le portrait. Après, c\'est un choix personnel.',
   '12-documents':
     'Les documents, à garder sur toi : la fiche technique du Palais, le plan de plateau, et d\'autres qui viendront avec les mises à jour, comme tes textes en PDF. Si tu veux travailler en dehors de l\'application, tu les télécharges, et ils sont dans ton téléphone.',
   '12-la-fin':
-    'Voilà, {prénom}. Tu sais tout. Si tu ne devais retenir qu\'une chose : va dans l\'atelier, et laisse-toi guider par le guide qui s\'y trouve. C\'est là que le travail commence. Le trois octobre, on se retrouve tous, et il faudra que chacun soit au point — on corrigera ensemble les dernières imperfections. On est une équipe, et le but, c\'est de faire quelque chose de beau. Et n\'oublie pas le bouton rouge, si tu ne l\'as pas encore touché. Bon travail. À très vite.',
+    'Voilà, {prénom}. Tu sais tout. Si tu ne devais retenir qu\'une chose : va dans l\'atelier, et laisse-toi guider par le guide qui s\'y trouve. C\'est là que le travail commence. Le trois octobre, on se retrouve tous, et il faudra que chacun soit au point. On est une équipe, et le but, c\'est de faire quelque chose de beau. N\'oublie pas le bouton rouge, si tu ne l\'as pas encore touché. Et si tu préfères le mode paysage, tu n\'as qu\'à tourner : choisis celui qui te va. Bon travail. À très vite.',
   '13-technique':
     'La technique : la conduite du spectacle, en vidéo. C\'est fait pour les techniciens, mais regarde-la : on y comprend beaucoup de choses, et les vidéos de la mise en scène seront dans le même style.',
   '15-rendez-vous':
