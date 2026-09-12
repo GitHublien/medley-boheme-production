@@ -1725,63 +1725,92 @@
      18 h 45 — Mickael : « quand on met "Revoir la visite guidee", je veux garder
      juste le sommaire. Pas le nom de la voix, pas les prenoms, pas les fleches,
      pas le mode essai. Ils touchent un arret, et ils l'ecoutent. » */
+  /* 19 h 40 — Mickael : « quand on appuie sur Revoir la visite guidee, la page
+     Visite guidee apparait en plein ecran. La ou il y avait accueil, atelier,
+     textes, menu : une croix et le menu special de la visite. Tout disparait
+     sauf le trait jaune en bas. On appuie sur le menu, un beau menu glisse, une
+     croix en haut le referme. La croix du bas ramene au logiciel comme avant. »
+     Deux photos, une par orientation, faites par lui dans Flow. */
   const sommaire = document.createElement('div');
   sommaire.id = 'vSommaire'; sommaire.className = 'visiteGarde'; sommaire.hidden = true;
-  /* 18 h 50 — Mickael : « on met une tres jolie image sur tout l'ecran, le
-     sommaire, la croix, et rien d'autre. Tout le reste est bloque. Quand on
-     ferme, on retourne sur l'application normale. » Le velours noir et or. */
-  sommaire.innerHTML = '<div class="fond"></div>'
-    + '<button class="fermer" type="button" aria-label="Fermer">✕</button>'
-    + '<div class="carte">'
-    + '<h2>Sommaire de la visite</h2>'
-    + '<button class="debut" type="button">Depuis le début</button>'
-    + '<div class="liste"></div></div>';
+  sommaire.innerHTML =
+      '<img class="fond paysage" alt="" src="site-images/visite-sommaire-paysage.jpg?v=' + VOIX_VERSION + '">'
+    + '<img class="fond portrait" alt="" src="site-images/visite-sommaire-portrait.jpg?v=' + VOIX_VERSION + '">'
+    + '<div class="bande">'
+    +   '<button class="fermer" type="button"><span class="x">\u2715</span><span class="mot">Fermer</span></button>'
+    +   '<button class="menu" type="button"><span class="x">\u2630</span><span class="mot">Sommaire de la visite</span></button>'
+    + '</div>'
+    + '<div class="tiroir" hidden>'
+    +   '<div class="tete"><h2>Sommaire de la visite</h2><button class="fermerTiroir" type="button" aria-label="Fermer le sommaire">\u2715</button></div>'
+    +   '<button class="debut" type="button">\u25B6 Depuis le d\u00e9but</button>'
+    +   '<div class="liste"></div>'
+    + '</div>';
   document.body.appendChild(sommaire);
   const styleSommaire = document.createElement('style');
   styleSommaire.textContent = `
-    #vSommaire{ position:fixed; inset:0; z-index:205; display:grid; place-items:center;
-      padding:calc(env(safe-area-inset-top) + 64px) 14px calc(env(safe-area-inset-bottom) + 14px); }
+    #vSommaire{ position:fixed; inset:0; z-index:205; background:#050505; overflow:hidden; }
     #vSommaire[hidden]{ display:none !important; }
-    #vSommaire .fond{ position:absolute; inset:0; z-index:-1;
-      background:url(site-images/15-velours.jpg) center/cover no-repeat #050505; }
-    #vSommaire .fond::after{ content:''; position:absolute; inset:0;
-      background:linear-gradient(180deg, rgba(5,5,5,.55), rgba(5,5,5,.25) 40%, rgba(5,5,5,.6)); }
-    #vSommaire .fermer{ position:absolute; top:calc(env(safe-area-inset-top) + 12px); right:14px;
-      width:46px; height:46px; border-radius:50%; border:1px solid rgba(212,175,55,.6);
-      background:rgba(8,7,6,.85); color:#f1d27a; font:400 26px/1 system-ui; display:grid; place-items:center;
-      -webkit-tap-highlight-color:transparent; }
-    #vSommaire .carte{ width:100%; max-width:30rem; max-height:100%; display:grid; grid-template-rows:auto auto 1fr; gap:12px;
-      background:rgba(10,9,8,.82); border:1px solid rgba(212,175,55,.5); border-radius:1.1rem; padding:1.1rem;
-      box-shadow:0 30px 80px rgba(0,0,0,.7); backdrop-filter:blur(8px);
-      font:400 15px/1.4 system-ui, sans-serif; color:#f2ead6; }
-    #vSommaire h2{ margin:0; color:#f1d27a; font:600 1.15rem system-ui; text-align:center; letter-spacing:.03em; }
+    #vSommaire .fond{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:center; display:none; }
+    @media (orientation:portrait){ #vSommaire .fond.portrait{ display:block; } }
+    @media (orientation:landscape){ #vSommaire .fond.paysage{ display:block; } }
+    /* LA REGLE : une bande dure, pleine largeur, trait d'or, en bas */
+    #vSommaire .bande{ position:absolute; left:0; right:0; bottom:0; display:flex; align-items:stretch; gap:8px;
+      padding:8px 10px calc(env(safe-area-inset-bottom) + 8px); background:rgba(8,7,6,.97);
+      border-top:1px solid rgba(212,175,55,.85); box-shadow:0 -1px 0 rgba(212,175,55,.25), 0 -12px 34px rgba(0,0,0,.6); }
+    #vSommaire .bande button{ display:flex; align-items:center; justify-content:center; gap:10px; border-radius:14px;
+      border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.08); color:#f1d27a;
+      font:600 15px system-ui, sans-serif; padding:12px 16px; -webkit-tap-highlight-color:transparent; }
+    #vSommaire .bande button:active{ background:rgba(212,175,55,.22); }
+    #vSommaire .bande .x{ font-size:22px; line-height:1; }
+    #vSommaire .bande .fermer{ flex:0 0 auto; }
+    #vSommaire .bande .menu{ flex:1; background:linear-gradient(180deg,rgba(244,217,127,.95),rgba(201,161,58,.95)); color:#1a1408; border-color:transparent; }
+    /* le tiroir du sommaire, qui glisse par-dessus la photo */
+    #vSommaire .tiroir{ position:absolute; left:0; right:0; bottom:0; top:calc(env(safe-area-inset-top) + 8vh);
+      display:grid; grid-template-rows:auto auto 1fr; gap:10px;
+      padding:14px 14px calc(env(safe-area-inset-bottom) + 14px);
+      background:rgba(10,9,8,.96); border-top:1px solid rgba(212,175,55,.85); border-radius:22px 22px 0 0;
+      box-shadow:0 -20px 60px rgba(0,0,0,.7); backdrop-filter:blur(10px);
+      color:#f2ead6; font:400 15px/1.4 system-ui, sans-serif;
+      transform:translateY(100%); transition:transform .45s cubic-bezier(.2,.8,.2,1); }
+    #vSommaire .tiroir.la{ transform:none; }
+    #vSommaire .tiroir[hidden]{ display:grid !important; visibility:hidden; }
+    #vSommaire .tiroir .tete{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    #vSommaire .tiroir h2{ margin:0; color:#f1d27a; font:600 1.1rem system-ui; letter-spacing:.03em; }
+    #vSommaire .fermerTiroir{ width:44px; height:44px; border-radius:50%; border:1px solid rgba(212,175,55,.6);
+      background:rgba(212,175,55,.1); color:#f1d27a; font:400 24px/1 system-ui; display:grid; place-items:center; }
     #vSommaire .debut{ border-radius:999px; border:0; padding:.85rem; font:700 1rem system-ui;
       background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
     #vSommaire .liste{ overflow:auto; -webkit-overflow-scrolling:touch; display:grid; gap:5px; align-content:start; }
     #vSommaire .liste button{ display:flex; align-items:center; gap:10px; width:100%; text-align:left;
-      border-radius:10px; padding:11px 12px; font:600 15px system-ui; border:1px solid rgba(212,175,55,.22);
+      border-radius:10px; padding:12px 12px; font:600 15px system-ui; border:1px solid rgba(212,175,55,.22);
       background:rgba(255,255,255,.04); color:#e8e0cc; -webkit-tap-highlight-color:transparent; }
     #vSommaire .liste button:active{ background:rgba(212,175,55,.18); }
     #vSommaire .liste button i{ font-style:normal; color:#cbbf9c; min-width:2ch; text-align:right; }
     @media (orientation:landscape){
-      #vSommaire{ padding-top:calc(env(safe-area-inset-top) + 14px); }
-      #vSommaire .carte{ max-width:44rem; grid-template-columns:auto 1fr; grid-template-rows:auto 1fr;
-        grid-template-areas:"titre titre" "debut liste"; }
-      #vSommaire h2{ grid-area:titre; } #vSommaire .debut{ grid-area:debut; align-self:start; }
-      #vSommaire .liste{ grid-area:liste; } }`;
+      #vSommaire .tiroir{ top:calc(env(safe-area-inset-top) + 6px); left:8vw; right:8vw;
+        grid-template-columns:auto 1fr; grid-template-rows:auto 1fr; grid-template-areas:"tete tete" "debut liste"; }
+      #vSommaire .tiroir .tete{ grid-area:tete; } #vSommaire .debut{ grid-area:debut; align-self:start; }
+      #vSommaire .liste{ grid-area:liste; }
+    }`;
   document.head.appendChild(styleSommaire);
   {
+    const tiroir = sommaire.querySelector('.tiroir');
     const liste = sommaire.querySelector('.liste');
+    const ouvrirTiroir = () => { tiroir.hidden = false; requestAnimationFrame(() => tiroir.classList.add('la')); };
+    const fermerTiroir = () => { tiroir.classList.remove('la'); apres(() => { tiroir.hidden = true; }, 460); };
+    const fermerTout = () => { tiroir.classList.remove('la'); tiroir.hidden = true; sommaire.hidden = true; };
     ARRETS.forEach((a, k) => {
       if (!a.nom) return;
       const b = document.createElement('button'); b.type = 'button';
       b.innerHTML = '<i>' + (k + 1) + '</i><span></span>'; b.querySelector('span').textContent = a.nom;
-      b.addEventListener('click', () => { sommaire.hidden = true; window.__visite.allerA(k); });
+      b.addEventListener('click', () => { fermerTout(); window.__visite.allerA(k); });
       liste.appendChild(b);
     });
-    sommaire.querySelector('.fermer').addEventListener('click', () => { sommaire.hidden = true; });
+    sommaire.querySelector('.bande .menu').addEventListener('click', ouvrirTiroir);
+    sommaire.querySelector('.fermerTiroir').addEventListener('click', fermerTiroir);
+    sommaire.querySelector('.bande .fermer').addEventListener('click', fermerTout);
     sommaire.querySelector('.debut').addEventListener('click', () => {
-      sommaire.hidden = true; departA = 0; verrouillerPortrait(); montrerLeBonjour(lancer);
+      fermerTout(); departA = 0; verrouillerPortrait(); montrerLeBonjour(lancer);
     });
   }
 
@@ -1797,8 +1826,9 @@
        « on y va ? » demarrait a l'arret 1 sans le visage. Il a deja choisi
        « Revoir » dans le menu : pas de deuxieme question, le visage, puis la
        visite, exactement comme au premier jour. */
-    /* 18 h 45 — depuis le menu : le sommaire, et il choisit */
+    /* 19 h 40 — depuis le menu : la page Visite guidee, plein ecran, photo entiere */
     document.body.classList.remove('menu');
+    libererOrientation();
     sommaire.hidden = false;
   };
 })();
