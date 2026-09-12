@@ -72,7 +72,12 @@
         /* 11 h 55 — « la, pour le coup, tu es parti trop tot. » 1,3 s compensait
            l'ancien retard ; en direct, ca coupait le mot. Une demi-seconde : la
            page part sur la fin de « regarde », pas avant. */
-        { son: sonCommun('01b-accueil'), chevauche: 0.5 },
+        /* 12 h — « il faudrait que tu le demarres une petite seconde apres,
+           juste apres le regard. » Plus de chevauchement : la phrase finit, une
+           respiration de 700 ms (le fichier en porte deja 300), et la page part.
+           Une seconde apres le mot, ni avant ni apres. */
+        { son: sonCommun('01b-accueil') },
+        { attendre: 700 },
         { geste: 'defilerCommeLui' },                    /* SON geste, rejoue tel quel — descente, arret, remontee */
         { son: sonCommun('01d-en-haut') },               /* « et voila, on est de nouveau a l'accueil » */
       ] },
