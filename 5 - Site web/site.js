@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 19h25';
+const VERSION_SITE = '12/09/2026 · 19h30';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -112,7 +112,7 @@ const VERSION_SITE = '12/09/2026 · 19h25';
     const b = voile.querySelector('.modeEssai');
     /* ⚠️ 12 septembre, 17 h — mode essai retire a la demande de Mickael.
        Meme interrupteur que dans visite.js : remettre true pour le rendre. */
-    const ESSAI_DISPONIBLE = true;   /* 16 h 58 — « je vais reprendre le systeme de test » */
+    const ESSAI_DISPONIBLE = false;  /* 19 h 30 — « enleve-moi le truc d'essai, je n'en ai plus besoin » */
     const peindre = () => {
       if (!ESSAI_DISPONIBLE){ b.hidden = true; return; }
       let on = false;

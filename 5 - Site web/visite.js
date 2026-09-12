@@ -1517,7 +1517,7 @@
      ?essai=1, ni l'appui long sur le logo, ni le menu), et le drapeau qui
      trainerait dans un telephone est efface. Remettre true pour le rendre.
      Le meme interrupteur existe dans site.js (le bouton du menu). */
-  const ESSAI_DISPONIBLE = true;   /* 16 h 58 — « je vais reprendre le systeme de test » */
+  const ESSAI_DISPONIBLE = false;  /* 19 h 30 — « enleve-moi le truc d'essai, je n'en ai plus besoin » */
   if (!ESSAI_DISPONIBLE){ try { localStorage.removeItem(CLE_ESSAI); } catch(e){} }
   try {
     const d = ESSAI_DISPONIBLE ? new URLSearchParams(location.search).get('essai') : null;
