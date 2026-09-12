@@ -836,7 +836,7 @@ body.menu .voile a:nth-child(10){ transition-delay:.5s } body.menu .voile a:nth-
    s'éteint vers la droite, avec un liseré rouge sur la tranche. Dès qu'on ouvre
    la page, le souffle disparaît : il ne reste que ce qu'on n'a pas encore vu.
    ═══════════════════════════════════════════════════════════════════════════ */
-.duNeuf{ position:relative; isolation:isolate; border-radius:.6rem; }
+.duNeuf, .visiteBleu{ position:relative; isolation:isolate; border-radius:.6rem; }
 .duNeuf::before{
   content:''; position:absolute; inset:-.15rem -.5rem; z-index:-1; border-radius:inherit;
   background:linear-gradient(90deg, rgba(255,77,77,.22) 0%, rgba(255,77,77,.11) 38%,
@@ -1128,8 +1128,11 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
    et or, il tranche sans agresser : on le voit, on ne le craint pas.
    ═══════════════════════════════════════════════════════════════════════════ */
 /* 12 septembre, 17 h 45 — Mickael : « le halo bleu n'est pas assez puissant,
-   pas assez fluorescent. » Bleu plus vif, plus opaque, et une lueur qui deborde. */
-.duNeuf::before{
+   pas assez fluorescent. » Bleu plus vif, plus opaque, et une lueur qui deborde.
+   .visiteBleu = le meme halo, pose par la visite guidee le temps d'une phrase. */
+.visiteBleu::before{ content:''; position:absolute; inset:-.15rem -.5rem; z-index:-1; border-radius:inherit;
+  animation:souffleNeuf 3.4s ease-in-out infinite; }
+.duNeuf::before, .visiteBleu::before{
   /* 17 h 55 — « toujours aussi fade » : on y va franchement. Un bleu cyan
      presque plein sur le premier tiers, trait de 4 px, lueur large. */
   background:linear-gradient(90deg, rgba(40,210,255,.85) 0%, rgba(40,210,255,.55) 30%,

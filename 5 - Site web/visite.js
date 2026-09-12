@@ -140,21 +140,16 @@
          eclaire-les, au moment ou elle le dit, en jaune. » Mesure a la machine
          sur les deux voix : « nouveautes » a 39-40 % de la phrase, « prenom » a
          43-45 %, « halo bleu » a 67-68 %, « je le referme » a 80 %. */
+      /* 18 h 05 — Mickael : « tu laisses le menu en entier, tu les eclaires,
+         c'est tout. Pas besoin de zoomer. Le halo bleu, ce n'est pas la legende :
+         c'est sur une page, la mise en scene par exemple. Tu eteins les jaunes et
+         tu mets le bleu au bon moment. "Je le referme" : le menu se ferme, on voit
+         tout, tu vas sur le logo, tu repars en arriere, puis la musique. » */
       pendant: [ { part: 0.10, geste: 'ouvrirMenu', vise: '.voile nav' },
-                 /* 17 h 55 — Mickael : « tu allumes les nouveautes en jaune, puis ton
-                    prenom en jaune, et APRES seulement tu zoomes sur les deux en meme
-                    temps, net. Puis tu rouvres tout, tu allumes le halo bleu pareil, tu
-                    zoomes, tu rouvres tout, et la musique. » Un seul zoom par idee. */
                  { part: 0.385, geste: 'rien', surligne: '.voile nav a[href*="NOUVEAUT"]' },
                  { part: 0.43,  geste: 'rien', surligne: '.voile nav a[href*="NOUVEAUT"], .voile nav a[href*="PRENOM"]' },
-                 { part: 0.50,  geste: 'rien', vise: ['.voile nav a[href*="NOUVEAUT"]', '.voile nav a[href*="PRENOM"]'] },
-                 { part: 0.61,  geste: 'rien', vise: '.voile nav', surligne: null },
-                 { part: 0.67,  geste: 'rien', surligne: '.voile .legendeMenu .ex' },
-                 { part: 0.71,  geste: 'rien', vise: '.voile .legendeMenu' },
-                 { part: 0.77,  geste: 'rien', vise: '.voile nav', surligne: null },
-                 /* 18 h — « le logo pareil : tu dezoomes, tu rezoomes sur le logo,
-                    tu dezoomes de nouveau, et tu vas sur la musique. » */
-                 { part: 0.80,  geste: 'fermerMenu', vise: '.nav' },
+                 { part: 0.67,  geste: 'rien', surligne: null, bleu: '.voile nav a[href*="MISE%20EN%20SC"], .voile nav a[href*="MISE EN SC"]' },
+                 { part: 0.80,  geste: 'fermerMenu', bleu: null, vise: '.nav' },
                  { part: 0.87,  geste: 'rien', vise: '.nav .marque' },
                  { part: 0.95,  geste: 'rien', vise: '.nav' } ] },
 
@@ -800,11 +795,12 @@
     return r;
   }
   /* le surlignage jaune : un ou plusieurs elements, et on efface le precedent */
-  function surligner(sel){
-    document.querySelectorAll('.visiteSurligne').forEach(e => e.classList.remove('visiteSurligne'));
-    if (sel) document.querySelectorAll(sel).forEach(e => e.classList.add('visiteSurligne'));
+  function surligner(sel, classe){
+    classe = classe || 'visiteSurligne';
+    document.querySelectorAll('.' + classe).forEach(e => e.classList.remove(classe));
+    if (sel) document.querySelectorAll(sel).forEach(e => e.classList.add(classe));
   }
-  function eteindreLaLumiere(){ surligner(null); voile.style.background = 'rgba(4,4,4,.86)'; }
+  function eteindreLaLumiere(){ surligner(null); surligner(null, 'visiteBleu'); voile.style.background = 'rgba(4,4,4,.86)'; }
   function eclairer(selecteur){
     eteindreLesHorloges();
     /* ⚠️ 13 h 45 — Mickael, sur la musique : « quand tu cliques dessus, on ne
@@ -1236,6 +1232,7 @@
           if (monFil !== fil || arrete || enPause) return;
           if (GESTES[g.geste]) GESTES[g.geste]();
           if (g.surligne !== undefined) surligner(g.surligne);
+          if (g.bleu !== undefined) surligner(g.bleu, 'visiteBleu');
           if (g.vise !== undefined) eclairer(g.vise);
         }, Math.round(quand * 1000));
         if (g.part !== undefined){
