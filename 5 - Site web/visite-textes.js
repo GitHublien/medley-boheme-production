@@ -21,13 +21,15 @@ window.TEXTES_VISITE = {
   '02b-mises-a-jour':
     'Les mises à jour. Le medley est terminé, mais l\'application va grandir, surtout la mise en scène. Ce bouton va chercher la dernière version, rien à réinstaller. Si rien ne change, ferme et rouvre. Et quand on te prévient sur WhatsApp, un appui suffit.',
   '02c-merci':
-    'Ah, super. Tu l\'as fait. Merci. Le message est parti, et c\'est une inquiétude de moins pour tout le monde. On peut continuer tranquillement.',
+    'Ah, super. Tu l\'as fait. Merci. Tu remarqueras que le bouton est passé au vert. Il disparaîtra ensuite, pour ne pas te gêner dans l\'application. On peut continuer tranquillement.',
   '02d-plus-tard':
     'Très bien, tu as fait ton choix. Le bouton reste là, en haut de l\'accueil, et il restera rouge tant que tu ne l\'auras pas touché. Un appui suffira, quand tu voudras. On continue.',
   '02e-les-infos':
     'Une porte que tu ne remarquerais pas forcément : les informations utiles. Tout y est écrit noir sur blanc, chaque page, chaque bouton. Je te dis tout à l\'oreille aujourd\'hui, mais dans trois semaines, quand tu voudras revérifier un détail, c\'est là qu\'il sera.',
   '02f-le-film':
     'Et voilà ce que je t\'avais promis : le film. Il est là, sur l\'accueil, et tu peux le revoir autant de fois que tu veux — mais il ne se relancera plus jamais tout seul. Un appui, et il repart du début.',
+  '02g-pas-fait':
+    'Bon, écoute, c\'est ton choix, et il n\'y a aucun souci. Le bouton rouge reste là, en haut de l\'accueil. Tu n\'auras qu\'à appuyer dessus quand tu voudras. On continue.',
   '03-musique':
     'Cette note, en haut, c\'est la musique du hall. Elle t\'accompagne pendant que tu lis. Un appui montre son titre et te laisse en changer. Un second appui l\'éteint — et elle ne revient plus jamais toute seule. Elle s\'arrête aussi d\'elle-même dès qu\'une vidéo ou une bande démarre. Elle ne te gênera jamais.',
   '04-barre-du-bas':

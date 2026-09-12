@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 12h03';
+const VERSION_SITE = '12/09/2026 · 12h15';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -548,6 +548,17 @@ const VERSION_SITE = '12/09/2026 · 12h03';
       pb.classList.remove('doux');
     };
 
+    /* « c'est envoye » : le bouton passe au vert, puis s'efface. La visite
+       guidee appelle ceci quand il repond oui a SA question, pour que le vert
+       arrive AVANT la voix qui le nomme. */
+    const marquerEnvoye = () => {
+      recu.dataset.vientDeLEnvoyer = '1';
+      try { localStorage.setItem(CLE, '1'); } catch(e){}
+      peindre(); direMot();
+      setTimeout(effacerLeBouton, 6000);
+    };
+    window.marquerLeRecuEnvoye = marquerEnvoye;
+
     const demanderSiEnvoye = () => {
       if (document.querySelector('.boiteEnvoye')) return;
       /* ⚠️ 12 septembre — Mickaël : « même s'il a mis "plus tard" sur le système
@@ -568,13 +579,7 @@ const VERSION_SITE = '12/09/2026 · 12h03';
       /* elle naît sous son doigt au retour : sourde une demi-seconde */
       b.style.pointerEvents = 'none';
       setTimeout(() => { b.style.pointerEvents = ''; }, 600);
-      b.querySelector('.beOui').addEventListener('click', () => {
-        b.remove();
-        recu.dataset.vientDeLEnvoyer = '1';
-        try { localStorage.setItem(CLE, '1'); } catch(e){}
-        peindre(); direMot();
-        setTimeout(effacerLeBouton, 6000);
-      });
+      b.querySelector('.beOui').addEventListener('click', () => { b.remove(); marquerEnvoye(); });
       b.querySelector('.beNon').addEventListener('click', () => b.remove());
     };
 

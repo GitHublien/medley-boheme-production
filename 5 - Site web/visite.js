@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12101';
+  const VOIX_VERSION = '12102';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -872,7 +872,19 @@
        demi-seconde, pour qu'aucun geste en cours ne reponde a sa place. */
     b.style.pointerEvents = 'none';
     apres(() => { b.style.pointerEvents = ''; }, 600);
-    const partir = (envoye) => { b.remove(); repondre(envoye ? '02c-merci' : '02d-plus-tard', alors); };
+    /* ⚠️ 12 h 10 — Mickael : « quand c'est envoye, il faut que ca se
+       transforme en vert, et LA ensuite elle parle. » Et : « s'il revient en
+       arriere et dit non, finalement je ne l'ai pas fait, il faut un autre
+       texte » — different de « plus tard », qui est le refus d'y aller. */
+    const partir = (envoye) => {
+      b.remove();
+      if (envoye){
+        if (typeof window.marquerLeRecuEnvoye === 'function') window.marquerLeRecuEnvoye();
+        apres(() => repondre('02c-merci', alors), 900);     /* le vert d'abord, la voix apres */
+      } else {
+        repondre('02g-pas-fait', alors);
+      }
+    };
     b.querySelector('.oui').addEventListener('click', () => partir(true));
     b.querySelector('.non').addEventListener('click', () => partir(false));
   }
@@ -1293,7 +1305,16 @@
        valide, je ne veux pas que ca passe a autre chose. » En mode essai,
        plus rien ne demarre tout seul : il est sur l'accueil, la barre est la,
        et c'est lui qui lance ce qu'il veut. */
-    if (window.__modeEssai && window.__modeEssai()) return;
+    if (window.__modeEssai && window.__modeEssai()){
+      /* ⚠️ 12 h 15 — Mickael : « je suis alle sur WhatsApp, j'ai change d'avis,
+         et il n'y a plus aucun message. Il ne sait pas ou aller. » En simulation
+         tout marchait ; sur le telephone, Android avait RECHARGE l'application
+         pendant qu'il etait dans WhatsApp, et en mode essai rien ne redemarre.
+         Si une visite etait en cours, on la reprend a son arret, sans carte. */
+      const reste = ouIlEnEtait();
+      if (reste) apres(() => window.__visite.allerA(reste), 900);
+      return;
+    }
     /* une visite interrompue passe avant tout : meme s'il l'a deja vue, on lui
        propose de finir celle qu'il avait commencee. */
     const reste = ouIlEnEtait();
