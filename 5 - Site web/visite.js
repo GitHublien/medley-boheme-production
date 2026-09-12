@@ -599,7 +599,12 @@
       border-radius:50%; overflow:hidden;
       box-shadow:0 0 0 2px color-mix(in srgb, var(--c) 70%, transparent),
                  0 0 58px color-mix(in srgb, var(--c) 45%, transparent); }
-    #vBonjour .bCadre img{ width:100%; height:100%; object-fit:cover; display:block; }
+    /* 12 septembre, 16 h 45 — Mickael : « je suis rogne, il faut qu'on soit
+       dans le rond. » Les six portraits sont des 760x1013, le rond est carre :
+       centre au milieu, il coupait les cheveux d'Adrien, d'Elie, de Mickael et
+       de Stephanie. Verifie sur une planche des six : a 12 % du haut, les six
+       visages tiennent entiers. */
+    #vBonjour .bCadre img{ width:100%; height:100%; object-fit:cover; object-position:50% 12%; display:block; }
     #vBonjour .bCadre i{ position:absolute; inset:0;
       background:radial-gradient(circle at 50% 120%, color-mix(in srgb, var(--c) 30%, transparent), transparent 62%); }
     #vBonjour .bMot{ font:400 1rem/1 system-ui, sans-serif; letter-spacing:.32em;
@@ -1336,6 +1341,10 @@
   function montrerLeBonjour(alors){
     const nom = PORTRAITS[qui];
     if (!nom) return alors();              /* on ne sait pas qui c'est : on passe */
+    /* 16 h 45 — vu sur son telephone : deux « Bienvenue » empiles (un lance a
+       distance, un lance du menu). On effacait le second, le premier restait
+       pour toujours. Un nouveau visage remplace TOUJOURS l'ancien. */
+    document.querySelectorAll('#vBonjour').forEach(v => v.remove());
     bonjour = document.createElement('div');
     bonjour.id = 'vBonjour'; bonjour.className = 'visiteGarde';
     bonjour.style.setProperty('--c', 'var(--' + qui + ')');
