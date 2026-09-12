@@ -1052,6 +1052,13 @@
   function proposer(){
     let vue = true;
     try { vue = localStorage.getItem(CLE_VUE) === '1'; } catch(e){}
+    /* ⚠️ 12 septembre, 10 h — Mickael : « comme on ne la voit qu'une seule fois,
+       quand je dis ok c'est bon, je ne peux plus revenir dessus. Pour tester, il
+       me faut un truc pour que, quand je retourne dans l'application, j'aie le
+       truc a chaque fois. »
+       En mode essai, la visite repart donc a CHAQUE ouverture de l'accueil, comme
+       si c'etait la premiere. Chez les six, rien ne change : une seule fois. */
+    if (window.__modeEssai && window.__modeEssai()) vue = false;
     /* une visite interrompue passe avant tout : meme s'il l'a deja vue, on lui
        propose de finir celle qu'il avait commencee. */
     const reste = ouIlEnEtait();
