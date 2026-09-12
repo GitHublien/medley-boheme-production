@@ -5,7 +5,13 @@
    quand elles existent (et laisse un beau fond sinon), et fait suivre le lien
    personnel (?pour=…) de page en page.
    ═══════════════════════════════════════════════════════════════════════════ */
-const VERSION_SITE = '12/09/2026 · 14h25';
+/* ⚠️ 12 septembre, 9 h 55 — Mickael : « tu te trompes sur les horaires, il est
+   9 h 54 du matin. » J'inventais des heures qui avancaient toutes seules au
+   lieu de lire l'horloge : « 14h25 » a 9 h 54, c'est faux, et un numero de
+   version faux est pire qu'un compteur — il fait croire a une publication qui
+   n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
+   publication, jamais tapee. */
+const VERSION_SITE = '12/09/2026 · 09h55';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
