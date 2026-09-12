@@ -700,7 +700,15 @@
   function eteindreLaLumiere(){ voile.style.background = 'rgba(4,4,4,.86)'; }
   function eclairer(selecteur){
     eteindreLesHorloges();
-    const c = selecteur && document.querySelector(selecteur);
+    let c = selecteur && document.querySelector(selecteur);
+    /* ⚠️ 13 h — MESURE SUR SON TELEPHONE : « bouton@0 » sur toute la trace. Le
+       bouton rouge avait ete envoye a l'essai precedent, le site l'avait efface
+       (display:none), et la lumiere visait un objet de taille nulle : elle
+       partait vers le coin (0,0). « Tu repars dans les coins. »
+       Une cible absente ou invisible ne fait plus rien bouger : on garde la
+       lumiere la ou elle est, et la voix continue. */
+    if (c){ const rr = c.getBoundingClientRect(); if (!rr.width && !rr.height) c = null; }
+    if (!c && selecteur){ return; }
     /* rien a designer : on n'assombrit rien non plus. On regarde la vraie
        application, en pleine lumiere, pendant que la voix parle. */
     if (!c){ voile.style.background = 'transparent'; haloActuel = null; rangerLePasser(null); return; }
