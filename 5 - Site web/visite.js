@@ -152,8 +152,11 @@
                  { part: 0.67,  geste: 'rien', surligne: '.voile .legendeMenu .ex' },
                  { part: 0.71,  geste: 'rien', vise: '.voile .legendeMenu' },
                  { part: 0.77,  geste: 'rien', vise: '.voile nav', surligne: null },
-                 { part: 0.80,  geste: 'fermerMenu', vise: '.nav .burger' },
-                 { part: 0.87,  geste: 'rien', vise: '.nav .marque' } ] },
+                 /* 18 h — « le logo pareil : tu dezoomes, tu rezoomes sur le logo,
+                    tu dezoomes de nouveau, et tu vas sur la musique. » */
+                 { part: 0.80,  geste: 'fermerMenu', vise: '.nav' },
+                 { part: 0.87,  geste: 'rien', vise: '.nav .marque' },
+                 { part: 0.95,  geste: 'rien', vise: '.nav' } ] },
 
     /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
     { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',
