@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 18h32';
+const VERSION_SITE = '12/09/2026 · 18h40';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -78,7 +78,7 @@ const VERSION_SITE = '12/09/2026 · 18h32';
     /* 11 septembre — on peut redemander la visite guidee a tout moment. Elle ne
        se propose d'elle-meme qu'une fois, le tout premier jour ; apres, elle est
        ici, en petit, et personne ne tombe dessus par hasard. */
-    + '<button class="revoirVisite" type="button">Revoir la visite guidée</button>'
+    + '<button class="revoirVisite" type="button"><span class="ico ico-lecture"></span> Revoir la visite guidée</button>'
     /* 12 septembre, 10 h — Mickael : « est-ce que tu peux faire un bouton pour le
        mode essai ? » L'appui long etait invisible et ne lui parlait pas. Un vrai
        bouton, qui dit son etat. Il n'apparait que chez Mickael (son lien) ou

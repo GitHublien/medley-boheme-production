@@ -1010,11 +1010,11 @@
   function attendre(quoi, alors){
     if (quoi === 'paysage'){
       libererOrientation();
-      if (innerWidth > innerHeight) return alors();
+      if (innerWidth > innerHeight){ verrouillerPaysage(); return alors(); }
       tourne.classList.add('la');
       const voir = () => { if (innerWidth > innerHeight){
         tourne.classList.remove('la');
-        removeEventListener('resize', voir); apres(alors, 500); } };
+        removeEventListener('resize', voir); verrouillerPaysage(); apres(alors, 500); } };
       addEventListener('resize', voir);
       /* on ne retient personne : au bout de vingt secondes, on continue */
       apres(() => { tourne.classList.remove('la'); removeEventListener('resize', voir); alors(); }, 20000);
@@ -1461,6 +1461,12 @@
   function verrouillerPortrait(){
     try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(() => {}); } catch(e){}
   }
+  /* 18 h 45 — Mickael : « quand on est en paysage, je veux que ce soit bloque
+     aussi, juste pendant ce temps-la. » Une fois tourne, on tient le paysage
+     jusqu'a la fin, ou le portrait est remis. */
+  function verrouillerPaysage(){
+    try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); } catch(e){}
+  }
   function libererOrientation(){
     try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){}
   }
@@ -1715,6 +1721,55 @@
   };
 
   /* et on peut la redemander, à tout moment */
+  /* ── LE SOMMAIRE DE LA VISITE, pour les six ──────────────────────────────
+     18 h 45 — Mickael : « quand on met "Revoir la visite guidee", je veux garder
+     juste le sommaire. Pas le nom de la voix, pas les prenoms, pas les fleches,
+     pas le mode essai. Ils touchent un arret, et ils l'ecoutent. » */
+  const sommaire = document.createElement('div');
+  sommaire.id = 'vSommaire'; sommaire.className = 'visiteGarde'; sommaire.hidden = true;
+  sommaire.innerHTML = '<div class="carte">'
+    + '<div class="tete"><h2>Sommaire de la visite</h2><button class="fermer" type="button">Fermer</button></div>'
+    + '<button class="debut" type="button">Depuis le début</button>'
+    + '<div class="liste"></div></div>';
+  document.body.appendChild(sommaire);
+  const styleSommaire = document.createElement('style');
+  styleSommaire.textContent = `
+    #vSommaire{ position:fixed; inset:0; z-index:205; background:rgba(4,4,4,.96); display:grid; place-items:center;
+      padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px); }
+    #vSommaire[hidden]{ display:none !important; }
+    #vSommaire .carte{ width:100%; max-width:34rem; max-height:100%; display:grid; grid-template-rows:auto auto 1fr; gap:10px;
+      background:rgba(12,11,10,.98); border:1px solid rgba(212,175,55,.4); border-radius:1rem; padding:1rem;
+      font:400 15px/1.4 system-ui, sans-serif; color:#f2ead6; }
+    #vSommaire .tete{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    #vSommaire h2{ margin:0; color:#f1d27a; font:600 1.05rem system-ui; }
+    #vSommaire .fermer{ border-radius:999px; border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.1);
+      color:#f1d27a; font:600 .9rem system-ui; padding:.5rem .9rem; }
+    #vSommaire .debut{ border-radius:999px; border:0; padding:.8rem; font:700 .95rem system-ui;
+      background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
+    #vSommaire .liste{ overflow:auto; -webkit-overflow-scrolling:touch; display:grid; gap:4px; align-content:start; }
+    #vSommaire .liste button{ display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+      border-radius:10px; padding:10px 12px; font:600 15px system-ui; border:1px solid rgba(212,175,55,.18);
+      background:rgba(255,255,255,.03); color:#e8e0cc; -webkit-tap-highlight-color:transparent; }
+    #vSommaire .liste button i{ font-style:normal; color:#cbbf9c; min-width:2ch; text-align:right; }
+    @media (orientation:landscape){ #vSommaire .carte{ grid-template-columns:auto 1fr; grid-template-rows:auto 1fr;
+      grid-template-areas:"tete tete" "debut liste"; } #vSommaire .tete{ grid-area:tete; }
+      #vSommaire .debut{ grid-area:debut; align-self:start; } #vSommaire .liste{ grid-area:liste; } }`;
+  document.head.appendChild(styleSommaire);
+  {
+    const liste = sommaire.querySelector('.liste');
+    ARRETS.forEach((a, k) => {
+      if (!a.nom) return;
+      const b = document.createElement('button'); b.type = 'button';
+      b.innerHTML = '<i>' + (k + 1) + '</i><span></span>'; b.querySelector('span').textContent = a.nom;
+      b.addEventListener('click', () => { sommaire.hidden = true; window.__visite.allerA(k); });
+      liste.appendChild(b);
+    });
+    sommaire.querySelector('.fermer').addEventListener('click', () => { sommaire.hidden = true; });
+    sommaire.querySelector('.debut').addEventListener('click', () => {
+      sommaire.hidden = true; departA = 0; verrouillerPortrait(); montrerLeBonjour(lancer);
+    });
+  }
+
   window.revoirLaVisite = () => {
     try { localStorage.removeItem(CLE_VUE); } catch(e){}
     /* on coupe net ce qui tournait peut-etre encore avant de reproposer */
@@ -1727,8 +1782,8 @@
        « on y va ? » demarrait a l'arret 1 sans le visage. Il a deja choisi
        « Revoir » dans le menu : pas de deuxieme question, le visage, puis la
        visite, exactement comme au premier jour. */
-    departA = 0;
-    verrouillerPortrait();
-    montrerLeBonjour(lancer);
+    /* 18 h 45 — depuis le menu : le sommaire, et il choisit */
+    document.body.classList.remove('menu');
+    sommaire.hidden = false;
   };
 })();

@@ -1280,6 +1280,7 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
   -webkit-tap-highlight-color:transparent;
 }
 .voile .legendeMenu .revoirVisite:active{ background:rgba(212,175,55,.16); }
+.voile .legendeMenu .revoirVisite .ico{ width:18px; height:18px; vertical-align:-4px; margin-right:.3rem; }
 
 /* ── « TU AS BIEN ENVOYÉ ? » ──────────────────────────────────────────────
    12 septembre. Mickaël : « s'il va sur WhatsApp et finalement change d'avis,
