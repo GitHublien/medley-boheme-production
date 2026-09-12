@@ -51,12 +51,14 @@
       display:flex; align-items:center; justify-content:center; gap:6px;
       padding:0 8px; pointer-events:none; }
     #vEssai > *{ pointer-events:auto; }
-    #vEssai button{ border-radius:10px; cursor:pointer;
+    /* ⚠️ 12 septembre, 10 h 40 — Mickael : « c'est trop petit, j'aimerais un
+       truc un peu plus gros pour que je puisse bien voir. » */
+    #vEssai button{ border-radius:12px; cursor:pointer;
       border:1px solid rgba(212,175,55,.45); background:rgba(10,9,8,.96);
-      color:#f1d27a; font:600 15px system-ui, sans-serif; padding:9px 11px;
+      color:#f1d27a; font:700 22px system-ui, sans-serif; padding:12px 14px;
       -webkit-tap-highlight-color:transparent; }
     #vEssai button:active{ background:rgba(212,175,55,.2); }
-    #vEssai .quoi{ flex:1; min-width:0; font:600 11px/1.25 system-ui, sans-serif;
+    #vEssai .quoi{ flex:1; min-width:0; font:600 13px/1.25 system-ui, sans-serif;
       color:#cbbf9c; background:rgba(10,9,8,.96); border:1px solid rgba(212,175,55,.28);
       border-radius:10px; padding:6px 9px; text-align:center;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -192,9 +194,9 @@
       border:1px solid rgba(212,175,55,.5); background:rgba(10,9,8,.96); color:#f1d27a;
       font:600 13px system-ui, sans-serif; -webkit-tap-highlight-color:transparent; }
     #vGros{ position:fixed; z-index:201; left:50%; transform:translateX(-50%);
-      bottom:calc(env(safe-area-inset-bottom) + 64px); padding:14px 26px; border-radius:999px;
-      border:2px solid rgba(255,120,120,.7); background:rgba(120,30,30,.96); color:#fff;
-      font:700 16px system-ui, sans-serif; box-shadow:0 8px 30px rgba(0,0,0,.6);
+      bottom:calc(env(safe-area-inset-bottom) + 84px); padding:22px 34px; border-radius:999px;
+      border:3px solid rgba(255,120,120,.8); background:rgba(160,30,30,.97); color:#fff;
+      font:800 22px system-ui, sans-serif; box-shadow:0 10px 40px rgba(0,0,0,.7);
       -webkit-tap-highlight-color:transparent; }`;
   document.head.appendChild(sty);
 

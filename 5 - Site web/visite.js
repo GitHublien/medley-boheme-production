@@ -160,16 +160,50 @@
     remonterEnHaut(){ return glisser('haut', 18000); },
     /* le geste enregistre par Mickael, s'il existe ; sinon la descente puis la
        remontee calculees, l'une apres l'autre */
+    /* ── LES SIX VISAGES DANS L'ECRAN ──────────────────────────────────────
+       ⚠️ 12 septembre, 10 h 40 — Mickael : « le seul probleme, c'est que je ne
+       vois pas tous les visages. Je ne peux pas tout encadrer quand je descends.
+       Est-ce que tu as une autre solution ? »
+       Oui : au lieu de chercher un cadrage impossible, la page rapetisse
+       d'elle-meme le bloc des six, juste ce qu'il faut pour qu'ils tiennent
+       tous entre la barre du haut et celle du bas — et reprend sa taille a la
+       remontee. Le rapport est CALCULE sur l'ecran reel : ca tient sur son
+       Xiaomi comme sur un iPhone plus petit. */
+    montrerLesSix(){
+      const bloc = document.querySelector('.six');
+      if (!bloc) return 0;
+      const r = bloc.getBoundingClientRect();
+      const haut = (document.querySelector('.nav') || {}).getBoundingClientRect?.().height || 56;
+      const bas  = (document.querySelector('.bas') || {}).getBoundingClientRect?.().height || 92;
+      const place = innerHeight - haut - bas - 24;
+      const k = Math.min(1, place / r.height);
+      bloc.style.transition = 'transform .9s cubic-bezier(.22,.8,.2,1)';
+      bloc.style.transformOrigin = '50% 0';
+      bloc.style.transform = 'scale(' + k.toFixed(3) + ')';
+      /* et on cale le haut du bloc juste sous la barre, pour que TOUT soit visible */
+      const y = r.top + scrollY - haut - 12;
+      scrollTo({ top: y, behavior: 'smooth' });
+      return 1000;
+    },
+    rendreLesSix(){
+      const bloc = document.querySelector('.six');
+      if (bloc) bloc.style.transform = '';
+      return 600;
+    },
     defilerCommeLui(){
       const t = gesteAccueil();
       /* la phrase du bas, et on ATTEND qu'elle soit finie avant de remonter :
          c'est lui qui a dit « je rappuie vite pour figer » — il ne remonte pas
          pendant qu'elle parle. */
       const direLesVisages = () => new Promise(r => {
-        let passe = false; const fini = () => { if (!passe){ passe = true; r(); } };
-        son.onended = fini; son.onerror = () => apres(fini, 1500);
-        son.src = sonCommun('01c-visages');
-        son.play().catch(() => apres(fini, 1500));
+        GESTES.montrerLesSix();
+        let passe = false;
+        const fini = () => { if (!passe){ passe = true; apres(() => { GESTES.rendreLesSix(); apres(r, 500); }, 900); } };
+        apres(() => {
+          son.onended = fini; son.onerror = () => apres(fini, 1500);
+          son.src = sonCommun('01c-visages');
+          son.play().catch(() => apres(fini, 1500));
+        }, 900);
       });
       /* deux traces enregistrees a sa main : descente, puis remontee */
       if (t && t.descente && t.remontee)
@@ -623,6 +657,7 @@
 
   function finir(){
     arrete = true; fil++;   /* tout ce qui revient d'avant est desormais perime */
+    libererOrientation();
     try { son.onended = son.onerror = null; } catch(e){}
     try { son.pause(); } catch(e){}
     document.body.classList.remove('enVisite', 'menu');
@@ -661,6 +696,7 @@
      Les suites s'appellent « alors », maintenant. Deux noms, deux choses. */
   function attendre(quoi, alors){
     if (quoi === 'paysage'){
+      libererOrientation();
       if (innerWidth > innerHeight) return alors();
       tourne.classList.add('la');
       const voir = () => { if (innerWidth > innerHeight){
@@ -1047,9 +1083,22 @@
     +   '<button class="non">Non merci, je regarde seul</button>'
     + '</div></div>');
 
+  /* ⚠️ 12 septembre — Mickael : « il faut que ce soit automatiquement en mode
+     portrait. Si elle met en paysage, ca reste en portrait. C'est tres
+     important, sinon le paysage va tout decaler. » On verrouille pendant la
+     visite (ca ne marche qu'en application installee, ce qui est leur cas), et
+     on libere a l'arret du paysage, puis a la fin. */
+  function verrouillerPortrait(){
+    try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('portrait').catch(() => {}); } catch(e){}
+  }
+  function libererOrientation(){
+    try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch(e){}
+  }
+
   function lancer(){
     /* un depart neuf annule tout ce qui pouvait encore tourner */
     fil++; arrete = false;
+    verrouillerPortrait();
     try { son.pause(); son.onended = son.onerror = null; } catch(e){}
     mesurerLaBarreDuBas();
     entree.classList.remove('la');
