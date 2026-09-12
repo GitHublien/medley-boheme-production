@@ -51,6 +51,9 @@
       display:flex; align-items:center; justify-content:center; gap:6px;
       padding:0 8px; pointer-events:none; }
     #vEssai > *{ pointer-events:auto; }
+    /* 14 h 10 — « il y a toujours la barre » : le display:flex ci-dessus ecrasait
+       l'attribut hidden. On le dit explicitement. */
+    #vEssai[hidden], #vTexte[hidden], #vGros[hidden], #vRefaire[hidden]{ display:none !important; }
     /* ⚠️ 12 septembre, 10 h 40 — Mickael : « c'est trop petit, j'aimerais un
        truc un peu plus gros pour que je puisse bien voir. » */
     #vEssai button{ border-radius:12px; cursor:pointer;
