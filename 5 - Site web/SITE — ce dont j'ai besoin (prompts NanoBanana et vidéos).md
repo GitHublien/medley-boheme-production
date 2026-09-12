@@ -21,6 +21,7 @@ Ton fichier `logo.png` est en transparence, en 1563 pixels de côté, il est par
 ## LES DEUX RÈGLES QUI CHANGENT TOUT
 
 **1. Toujours déposer le logo en première référence.**
+
 ```
 D:\De nombreux projets dossier important pour IA\medley-boheme\5 - Site web\logo.png
 ```
@@ -39,6 +40,7 @@ références : `logo.png` **et** ton `01-scene.png` déjà validé. Le prompt le
 ```
 D:\De nombreux projets dossier important pour IA\medley-boheme\5 - Site web\site-images\
 ```
+
 Garde exactement les noms indiqués : c'est comme ça que le site les trouve tout seul.
 
 ---
@@ -46,11 +48,12 @@ Garde exactement les noms indiqués : c'est comme ça que le site les trouve tou
 # A · LES CINQ AFFICHES
 
 ## 01 — L'affiche du spectacle → `01-scene.png`
+
 **Références à déposer : `logo.png`**
 **Format : 16:9.** Fais aussi une version 9:16 nommée `01-scene-portrait.png` si tu peux.
 
 > Use the attached reference image: it is the official "Bohème Production" logo, a golden calligraphic letter B inside a golden circle. **Reproduce this logo exactly as it is, identical, unchanged, same shape, same lettering, same golden gradient. Do not redraw it, do not stylise it, do not alter a single letter.**
->
+> 
 > Scene: an empty grand theatre stage seen from the audience, deep black background, six narrow golden spotlights falling on the bare black floor in a gentle line, thin theatrical haze drifting through the beams, fine film grain.
 > Place the reference logo centred in the upper third of the image, floating above the stage, at about 20% of the image width, glowing softly as if lit by the stage lights, its transparent background blending into the darkness.
 > Below the logo, engraved in elegant thin golden serif capitals, perfectly spelled in French: "MEDLEY BOHÈME".
@@ -60,11 +63,12 @@ Garde exactement les noms indiqués : c'est comme ça que le site les trouve tou
 ---
 
 ## 02 — Monopolis, 1978 → `02-monopolis.png`
+
 **Références : `logo.png` + `01-scene.png`**
 **Format : 3:4** (affiche portrait).
 
 > Two reference images are attached. The first is the official "Bohème Production" logo: **reproduce it exactly, identical, unchanged.** The second is a poster whose visual style must be matched exactly: same deep black, same warm gold, same haze, same film grain, same typography.
->
+> 
 > Scene: a rain-wet city street at night in 1978, seen from above, neon reflections in gold and cold blue on the wet asphalt, tall towers vanishing into fog, a lone radio tower with a blinking red light.
 > Engraved across the sky in large elegant golden serif numerals, perfectly spelled: "1978".
 > Below it, smaller, in thin letter-spaced golden capitals, perfectly spelled in French: "MONOPOLIS".
@@ -74,10 +78,11 @@ Garde exactement les noms indiqués : c'est comme ça que le site les trouve tou
 ---
 
 ## 03 — Notre-Dame, 1482 → `03-notredame.png`
+
 **Références : `logo.png` + `01-scene.png` · Format : 3:4**
 
 > Two reference images are attached. The first is the official "Bohème Production" logo: **reproduce it exactly, identical, unchanged.** The second is a poster whose visual style must be matched exactly.
->
+> 
 > Scene: the silhouette of a gothic cathedral under construction at dawn, wooden scaffolding against the stone, dust floating in the golden first light, a great rose window catching the sun.
 > Engraved in the sky in large elegant golden serif numerals, perfectly spelled: "1482".
 > Below it, smaller, in thin letter-spaced golden capitals, perfectly spelled in French: "NOTRE-DAME DE PARIS".
@@ -87,10 +92,11 @@ Garde exactement les noms indiqués : c'est comme ça que le site les trouve tou
 ---
 
 ## 04 — L'Égypte → `04-egypte.png`
+
 **Références : `logo.png` + `01-scene.png` · Format : 3:4**
 
 > Two reference images are attached. The first is the official "Bohème Production" logo: **reproduce it exactly, identical, unchanged.** The second is a poster whose visual style must be matched exactly.
->
+> 
 > Scene: the Sinai desert at dusk, a lone mountain against a gold-to-indigo sky, two paths of footprints diverging in the sand, wind lifting a thin veil of dust.
 > Engraved in the sky in elegant golden serif capitals, perfectly spelled in French: "ÉGYPTE".
 > Below it, smaller, in thin letter-spaced golden capitals, perfectly spelled in French: "LES DIX COMMANDEMENTS".
@@ -100,10 +106,11 @@ Garde exactement les noms indiqués : c'est comme ça que le site les trouve tou
 ---
 
 ## 05 — La fin → `05-fin.png`
+
 **Références : `logo.png` + `01-scene.png` · Format : 16:9**
 
 > Two reference images are attached. The first is the official "Bohème Production" logo: **reproduce it exactly, identical, unchanged.** The second is a poster whose visual style must be matched exactly.
->
+> 
 > Scene: a black stage after the last note. Six golden spotlights slowly fading to embers on the bare floor, haze settling, one spotlight still bright at the centre.
 > Engraved low in the image, small, in thin letter-spaced golden capitals, perfectly spelled in French: "AIMER, C'EST CE QU'IL Y A D'PLUS BEAU".
 > Place the reference logo centred above that line, at about 12% of the image width, glowing faintly.
@@ -119,30 +126,39 @@ référence : `01-scene.png`, pour garder le même grain et la même lumière.*
 
 **Référence pour les huit : `01-scene.png`. Format : 4:3.**
 En tête de chacun :
+
 > The attached reference image sets the visual style: match it exactly, same deep black, same warm gold light, same haze, same film grain. No text, no logo, no people, no faces.
 
 **06 — Le karaoké** → `06-karaoke.png`
+
 > A single handheld wireless microphone lying on a black stage floor, caught in one golden beam, tiny gold dust particles floating in the light, extreme shallow depth of field.
 
 **07 — Les textes** → `07-textes.png`
+
 > An old opera libretto open on a black lacquered table, pages softly lit in gold, the printed lines blurred and unreadable, a fountain pen resting across the page.
 
 **08 — La mise en scène** → `08-mise-en-scene.png`
+
 > A theatre stage seen from directly above like a plan, black floor, six small glowing gold marks placed in a line, thin golden guide lines drawn in light on the floor, haze.
 
 **09 — Les documents** → `09-documents.png`
+
 > A stack of thick cream paper documents tied with a thin gold ribbon on a black surface, a plain red wax seal, dramatic side light, no readable writing.
 
 **10 — Les vidéos** → `10-videos.png`
+
 > A vintage film projector beam cutting through haze toward the viewer, gold dust floating in the beam, the projector half hidden in shadow.
 
 **11 — Le rendez-vous** → `11-calendrier.png`
+
 > The façade of the Palais des Festivals in Cannes at night, the red-carpet stairs empty and glowing gold under the lights, dark blue sea behind, no people.
 
 **12 — Les nouveautés** → `12-nouveautes.png`
+
 > A small brass theatre bell hanging on a dark velvet curtain, one gold highlight on its rim, everything else in shadow.
 
 **13 — Installer l'application** → `13-installer.png`
+
 > A smartphone lying flat on black velvet, its screen showing only a soft golden glow, no interface, no icons, warm reflections on the velvet.
 
 ---
@@ -150,9 +166,11 @@ En tête de chacun :
 # C · LES DEUX TEXTURES (carré, sans texte)
 
 **14 — Poussière d'or** → `14-poussiere.png`
+
 > Pure black background, thousands of tiny gold dust particles floating at different depths, some sharp some blurred, seamless texture, no text.
 
 **15 — Velours noir** → `15-velours.png`
+
 > Close-up texture of black theatre velvet with a faint gold sheen along the folds, soft studio light, seamless texture, no text.
 
 ---
@@ -160,12 +178,15 @@ En tête de chacun :
 # D · LES TROIS VIDÉOS (8 à 10 s, en boucle, sans son, 16:9, MP4)
 
 **V1 — La brume** → `V1-brume.mp4` (fond de l'accueil)
+
 > Slow cinematic loop, 10 seconds: on a black stage, thin theatrical haze drifts slowly from left to right through six golden spotlights, gold dust rises gently, camera perfectly still, no cuts, no people, no text.
 
 **V2 — Le velours** → `V2-velours.mp4` (fond des pages intérieures)
+
 > Slow cinematic loop, 8 seconds: black theatre velvet curtain moving almost imperceptibly, a slow warm golden light sweeping across the folds, camera still, no cuts, no text.
 
 **V3 — Le passage** → `V3-passage.mp4` (pour la nouvelle porte, plus tard)
+
 > Cinematic, 8 seconds: the camera glides forward through a dark tunnel of golden light rings passing faster and faster, ending on pure black, no people, no text.
 
 *Si Flow bloque, ne t'entête pas : AIVID avec Seedance, ou Kling, feront ces plans fixes très

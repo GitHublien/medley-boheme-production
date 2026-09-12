@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12095';
+  const VOIX_VERSION = '12096';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -66,7 +66,8 @@
     /* c'est ICI que le visage s'efface : la voix dit « voila la page d'accueil »
        au moment exact ou la page apparait. Le rideau se leve sur la phrase. */
     { son: sonCommun('01b-accueil'), vise: null, nom: 'La page d’accueil',
-      avant: 'effacerLeVisage' },
+      avant: 'effacerLeVisage',
+      pendant: [ { a: 2.6, geste: 'defilerLaPage' } ] },
     /* ⚠️ 12 septembre — Mickael : « quand on montre le bouton rouge, il ne faut
        vraiment montrer QUE le bouton rouge. Il faut resserrer et zoomer un peu
        pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
@@ -89,7 +90,9 @@
       demande: { texte: 'Tu veux le faire maintenant ?',
                  oui: 'Je le fais maintenant', non: 'Plus tard',
                  fait: '.carteEssentiel .ceLigne:first-child a[data-recu]' } },
-    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour' },
+    /* comme le bouton rouge : on eclaire LE BOUTON, pas la carte entiere.
+       « Quand on montre tout, on ne montre rien. » */
+    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child button', nom: 'Les mises à jour' },
     /* ⚠️ 12 septembre — Mickael : « les infos, on les garde et on en parlera
        dans l'aide, mais on ne les met pas au debut. » Elles ne barrent donc
        plus le chemin apres le film ; c'est ici qu'on les annonce, au moment ou
@@ -131,6 +134,42 @@
     /* pour un temps qui ne fait que deplacer la lumiere, sans rien toucher */
     rien(){ return 0; },
     effacerLeVisage(){ effacerLeBonjour(); return 900; },
+
+    /* ── LA PAGE DEFILE TOUTE SEULE ──────────────────────────────────────
+       ⚠️ 12 septembre — Mickael : « tu fais le scroll de l'accueil
+       automatiquement pendant que tu parles. Tu descends jusqu'en bas, et tu
+       remontes jusqu'en haut. »
+       Un defilement lisse du navigateur va trop vite pour etre VU : il faut
+       le mener a la main, image par image. Quatre secondes pour descendre,
+       un souffle en bas, trois pour remonter. Si son doigt touche l'ecran
+       pendant ce temps, on lache : la visite ne lutte jamais contre lui. */
+    defilerLaPage(){
+      /* la page mesure plus de 8 000 pixels : en quatre secondes, ca file sans
+         qu'on voie rien. Sept pour descendre, cinq pour remonter — c'est le
+         temps de la phrase, et c'est le temps de voir. Et on remesure le bas a
+         chaque image : les photos se chargent en route et allongent la page. */
+      const leBas = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+      if (leBas() < 40) return 0;
+      const depart = performance.now();
+      const DESCENTE = 7000, PAUSE = 700, MONTEE = 5000;
+      const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;   /* accelere puis freine */
+      let lache = false;
+      const lacher = () => { lache = true; };
+      addEventListener('pointerdown', lacher, { once: true, capture: true });
+      const pas = (now) => {
+        if (lache || arrete || enPause) return;
+        const t = now - depart, bas = leBas();
+        let y;
+        if (t < DESCENTE) y = bas * doux(t / DESCENTE);
+        else if (t < DESCENTE + PAUSE) y = bas;
+        else if (t < DESCENTE + PAUSE + MONTEE) y = bas * (1 - doux((t - DESCENTE - PAUSE) / MONTEE));
+        else { scrollTo(0, 0); removeEventListener('pointerdown', lacher, true); return; }
+        scrollTo(0, y);
+        requestAnimationFrame(pas);
+      };
+      requestAnimationFrame(pas);
+      return 0;
+    },
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
 
     /* ── LA MUSIQUE, POUR DE VRAI ────────────────────────────────────────
