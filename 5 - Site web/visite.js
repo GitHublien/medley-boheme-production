@@ -1815,7 +1815,11 @@
   }
 
   window.revoirLaVisite = () => {
-    try { localStorage.removeItem(CLE_VUE); } catch(e){}
+    /* 19 h 50 — Mickael : « pourquoi je tombe tout de suite sur le guide ? »
+       Revoir effacait le drapeau « deja vue » : a l'ouverture suivante,
+       l'accueil croyait au premier jour. Revoir ne touche plus au drapeau ;
+       il le pose meme, et oublie toute reprise en cours. */
+    try { localStorage.setItem(CLE_VUE, '1'); localStorage.removeItem(CLE_OU); } catch(e){}
     /* on coupe net ce qui tournait peut-etre encore avant de reproposer */
     fil++; arrete = false;
     try { son.pause(); son.onended = son.onerror = null; } catch(e){}
