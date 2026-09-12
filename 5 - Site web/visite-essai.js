@@ -242,9 +242,61 @@
         quoi.innerHTML = '<b>gardé</b> · descente ' + d + ' s, remontée ' + r + ' s';
         document.body.classList.add('enVisite');
         setTimeout(rafraichir, 5000);
+        /* ⚠️ 12 septembre, 10 h 45 — Mickael : « la quatrieme touche valide le
+           tout, mais il faudrait que tu me montres si ca a ete valide. Et
+           comment je peux te l'envoyer ? » Une vraie carte, pas une ligne qui
+           s'efface : ce qui a ete garde, un bouton pour le rejouer et juger, et
+           un bouton pour me l'envoyer si le cable n'est pas branche. */
+        montrerLaValidation(d, r);
       });
     }
   });
+  const carte = document.createElement('div');
+  carte.id = 'vValide'; carte.className = 'visiteGarde'; carte.hidden = true;
+  document.body.appendChild(carte);
+  const sty2 = document.createElement('style');
+  sty2.textContent = `#vValide{ position:fixed; inset:0; z-index:205; display:grid; place-items:center;
+      background:rgba(4,4,4,.9); padding:6vw; }
+    #vValide[hidden]{ display:none; }
+    #vValide .b{ width:100%; max-width:26rem; display:grid; gap:.8rem; text-align:center;
+      background:rgba(12,11,10,.98); border:2px solid rgba(120,220,120,.6); border-radius:1.2rem;
+      padding:1.6rem 1.3rem; }
+    #vValide h3{ margin:0; color:#a9e6a0; font:800 1.5rem system-ui; }
+    #vValide p{ margin:0; color:#ddd5c2; font:400 1rem/1.5 system-ui; }
+    #vValide button{ padding:1rem; border-radius:999px; cursor:pointer; font:700 1.05rem system-ui;
+      border:1px solid rgba(212,175,55,.5); -webkit-tap-highlight-color:transparent; }
+    #vValide .rejouer{ background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
+    #vValide .envoyer{ background:rgba(212,175,55,.1); color:#f1d27a; }
+    #vValide .fermer{ background:transparent; color:#8f867a; border-color:transparent; }`;
+  document.head.appendChild(sty2);
+
+  function montrerLaValidation(d, r){
+    carte.innerHTML = '<div class="b"><h3>✔ Geste enregistré</h3>'
+      + '<p>Descente : <b>' + d + ' s</b><br>Remontée : <b>' + r + ' s</b></p>'
+      + '<p>La visite le rejouera exactement comme ça, avec les deux phrases aux mêmes endroits.</p>'
+      + '<button class="rejouer">▶ Rejouer pour vérifier</button>'
+      + '<button class="envoyer">📤 Envoyer à Claude</button>'
+      + '<button class="fermer">Fermer</button></div>';
+    carte.hidden = false;
+    carte.querySelector('.rejouer').addEventListener('click', () => {
+      carte.hidden = true; scrollTo(0, 0);
+      document.body.classList.add('enVisite');
+      V.allerA(1);
+    });
+    carte.querySelector('.envoyer').addEventListener('click', async () => {
+      /* on allege : un point toutes les 200 ms suffit a rejouer fidelement */
+      const g = window.gesteEnregistre() || {};
+      const leger = { descente: (g.descente || []).filter((_, i) => i % 4 === 0),
+                      remontee: (g.remontee || []).filter((_, i) => i % 4 === 0) };
+      const texte = 'GESTE ACCUEIL ' + JSON.stringify(leger);
+      try {
+        if (navigator.share) await navigator.share({ text: texte });
+        else { await navigator.clipboard.writeText(texte); alert('Copié : colle-le où tu veux.'); }
+      } catch(e){}
+    });
+    carte.querySelector('.fermer').addEventListener('click', () => { carte.hidden = true; });
+  }
+
   window.gesteEnregistre = () => { try { return JSON.parse(localStorage.getItem(CLE_GESTE) || 'null'); } catch(e){ return null; } };
 
   /* ── la fiche de note ───────────────────────────────────────────────── */
