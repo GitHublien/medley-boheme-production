@@ -138,7 +138,7 @@
   const GESTES = {
     /* pour un temps qui ne fait que deplacer la lumiere, sans rien toucher */
     rien(){ return 0; },
-    effacerLeVisage(){ effacerLeBonjour(); return 900; },
+    effacerLeVisage(){ effacerLeBonjour(); return 350; },
 
     /* ── LA PAGE DEFILE, DOUCEMENT, ET LA PAROLE SUIT ─────────────────────
        ⚠️ 12 septembre, 10 h 10 — Mickael : « pendant que tu parles il faut que
@@ -296,7 +296,9 @@
     const t0 = t[0][0];
     t = t.map(p => [p[0] - t0, p[1]]);
     /* le lissage : moyenne glissante sur 7 points (350 ms), bords gardes */
-    const L = 7, h = Math.floor(L / 2), lisse = [];
+    /* onze points (550 ms) : les a-coups du doigt et l'inertie d'Android
+       s'effacent, la forme du geste reste. « Il faut que ce soit beau. » */
+    const L = 11, h = Math.floor(L / 2), lisse = [];
     for (let i = 0; i < t.length; i++){
       let somme = 0, n = 0;
       for (let j = Math.max(0, i - h); j <= Math.min(t.length - 1, i + h); j++){ somme += t[j][1]; n++; }
@@ -995,7 +997,7 @@
         if (arrete || passe || monFil !== fil) return;
         passe = true;
         /* en mode essai, on s'arrete la : c'est lui qui appuie sur ▶ */
-        const aller = () => { if (window.__modeEssai && window.__modeEssai()) return; apres(() => jouer(k + 1, monFil), 900); };
+        const aller = () => { if (window.__modeEssai && window.__modeEssai()) return; apres(() => jouer(k + 1, monFil), 350); };
         const puis = () => { if (a.demande) demander(a.demande, aller); else aller(); };
         if (gesteEnCours){ const g = gesteEnCours; gesteEnCours = null; g.then(puis); }
         else puis();
@@ -1020,7 +1022,12 @@
     };
     const d = a.avant && GESTES[a.avant] ? GESTES[a.avant]() : 0;
 
-    /* ── UN ARRET EN PLUSIEURS ETAPES ──────────────────────────────────
+    /* ⚠️ 12 septembre, 11 h — Mickael : « entre le moment ou la phrase a
+     termine et la suivante, il y a deux ou trois secondes a chaque fois. Quand
+     c'est fini, tout de suite il faut parler de l'accueil. » Les respirations
+     entre arrets et entre etapes sont passees de 900 a 350 ms, et de 250 a 80
+     entre un son et le geste qui le suit. On respire, on ne baille plus. */
+  /* ── UN ARRET EN PLUSIEURS ETAPES ──────────────────────────────────
        Quand un arret porte « etapes », on les joue l'une apres l'autre : un son
        (on attend qu'il finisse), un geste (on attend sa promesse), une pause.
        Rien ne se chevauche. C'est ce qui permet a la voix de ne dire « voila »
@@ -1030,13 +1037,13 @@
         if (monFil !== fil || arrete) return;
         if (n >= a.etapes.length){
           if (window.__modeEssai && window.__modeEssai()) return;   /* on attend ▶ */
-          apres(() => jouer(k + 1, monFil), 900); return;
+          apres(() => jouer(k + 1, monFil), 350); return;
         }
         const e = a.etapes[n];
         const encore = () => jouerEtape(n + 1);
         if (e.son){
           let passe = false;
-          const fini = () => { if (!passe){ passe = true; apres(encore, 250); } };
+          const fini = () => { if (!passe){ passe = true; apres(encore, 80); } };
           son.onended = fini;
           son.onerror = () => apres(fini, 2500);
           son.src = e.son;
