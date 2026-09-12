@@ -281,7 +281,12 @@
      La trace figee ci-dessous est celle qu'il a validee ; celle du telephone
      (mode essai) passe devant, pour qu'il puisse en refaire une sans attendre
      une publication. */
-  const GESTE_ACCUEIL = null;   /* rempli quand il en aura enregistre un */
+  /* ⚠️ 12 septembre, 12 h — LE GESTE DE MICKAEL, valide par lui : « parfait,
+     pour moi c'est bon. » Enregistre a sa main sur son telephone, lu par le
+     cable, fige ici pour les six. Descente 4,3 s jusqu'aux six visages,
+     remontee 4,7 s. Un point toutes les 100 ms, le rejeu interpole entre.
+     Ce n'est pas une vitesse reglee au juge : c'est SA main. */
+  const GESTE_ACCUEIL = {"descente":[[50,0],[151,0],[250,0],[350,0],[450,0],[550,0],[650,0],[750,0],[850,0],[1001,20],[1100,1512],[1200,2012],[1300,2934],[1400,3500],[1500,4009],[1601,4540],[1700,4762],[1802,5435],[1903,5756],[2000,6016],[2100,6266],[2200,6468],[2300,6691],[2400,6855],[2500,6976],[2600,7061],[2703,7217],[2800,7314],[2900,7353],[3001,7353],[3100,7495],[3200,7531],[3300,7557],[3401,7571],[3500,7577],[3601,7578],[3700,7578],[3807,7578],[3902,7578],[4001,7578],[4100,7578],[4200,7578],[4318,7578],[4350,7578]],"remontee":[[51,7578],[150,7578],[250,7578],[351,7578],[450,7578],[550,7578],[650,7578],[753,7407],[852,6506],[952,5863],[1053,5018],[1150,4364],[1250,3777],[1350,3255],[1450,2796],[1553,2391],[1650,2036],[1751,1724],[1850,1450],[1950,1229],[2050,1017],[2150,846],[2250,658],[2351,531],[2451,401],[2550,300],[2651,208],[2752,139],[2850,87],[2952,39],[3051,9],[3150,0],[3250,0],[3351,0],[3450,0],[3551,0],[3650,0],[3751,0],[3851,0],[3951,0],[4051,0],[4150,0],[4250,0],[4350,0],[4452,0],[4551,0],[4651,0],[4700,0]]};
   /* ── NETTOYER UNE TRACE AVANT DE LA REJOUER ─────────────────────────────
      ⚠️ 12 septembre, 10 h 55 — Mickael : « des que j'appuie sur le bouton, ca
      prend une certaine latence avant que ca descende. Et il faut que ce soit
