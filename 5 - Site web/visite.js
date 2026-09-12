@@ -141,12 +141,19 @@
          sur les deux voix : « nouveautes » a 39-40 % de la phrase, « prenom » a
          43-45 %, « halo bleu » a 67-68 %, « je le referme » a 80 %. */
       pendant: [ { part: 0.10, geste: 'ouvrirMenu', vise: '.voile nav' },
-                 { part: 0.385, geste: 'rien', vise: '.voile nav a[href*="NOUVEAUT"]', surligne: '.voile nav a[href*="NOUVEAUT"]' },
-                 { part: 0.43,  geste: 'rien', vise: ['.voile nav a[href*="NOUVEAUT"]', '.voile nav a[href*="PRENOM"]'],
-                                surligne: '.voile nav a[href*="NOUVEAUT"], .voile nav a[href*="PRENOM"]' },
-                 { part: 0.67,  geste: 'rien', vise: '.voile .legendeMenu', surligne: null },
-                 { part: 0.79,  geste: 'fermerMenu', vise: '.nav .burger' },
-                 { part: 0.86,  geste: 'rien', vise: '.nav .marque' } ] },
+                 /* 17 h 55 — Mickael : « tu allumes les nouveautes en jaune, puis ton
+                    prenom en jaune, et APRES seulement tu zoomes sur les deux en meme
+                    temps, net. Puis tu rouvres tout, tu allumes le halo bleu pareil, tu
+                    zoomes, tu rouvres tout, et la musique. » Un seul zoom par idee. */
+                 { part: 0.385, geste: 'rien', surligne: '.voile nav a[href*="NOUVEAUT"]' },
+                 { part: 0.43,  geste: 'rien', surligne: '.voile nav a[href*="NOUVEAUT"], .voile nav a[href*="PRENOM"]' },
+                 { part: 0.50,  geste: 'rien', vise: ['.voile nav a[href*="NOUVEAUT"]', '.voile nav a[href*="PRENOM"]'] },
+                 { part: 0.61,  geste: 'rien', vise: '.voile nav', surligne: null },
+                 { part: 0.67,  geste: 'rien', surligne: '.voile .legendeMenu .ex' },
+                 { part: 0.71,  geste: 'rien', vise: '.voile .legendeMenu' },
+                 { part: 0.77,  geste: 'rien', vise: '.voile nav', surligne: null },
+                 { part: 0.80,  geste: 'fermerMenu', vise: '.nav .burger' },
+                 { part: 0.87,  geste: 'rien', vise: '.nav .marque' } ] },
 
     /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
     { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',

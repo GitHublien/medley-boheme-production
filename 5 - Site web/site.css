@@ -1130,14 +1130,16 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 /* 12 septembre, 17 h 45 — Mickael : « le halo bleu n'est pas assez puissant,
    pas assez fluorescent. » Bleu plus vif, plus opaque, et une lueur qui deborde. */
 .duNeuf::before{
-  background:linear-gradient(90deg, rgba(90,200,255,.48) 0%, rgba(90,200,255,.26) 38%,
-    rgba(90,200,255,.08) 68%, rgba(90,200,255,0) 100%) !important;
-  border-left-color:rgba(140,230,255,1) !important;
-  box-shadow:-8px 0 26px -4px rgba(90,200,255,1), 0 0 14px rgba(90,200,255,.55) !important;
+  /* 17 h 55 — « toujours aussi fade » : on y va franchement. Un bleu cyan
+     presque plein sur le premier tiers, trait de 4 px, lueur large. */
+  background:linear-gradient(90deg, rgba(40,210,255,.85) 0%, rgba(40,210,255,.55) 30%,
+    rgba(40,210,255,.18) 65%, rgba(40,210,255,0) 100%) !important;
+  border-left:4px solid rgb(120,240,255) !important;
+  box-shadow:-10px 0 34px -2px rgba(40,210,255,1), 0 0 22px rgba(40,210,255,.8), inset 0 0 20px rgba(40,210,255,.35) !important;
 }
 .bas a.duNeuf::before{
-  background:linear-gradient(180deg, rgba(90,200,255,.42), rgba(90,200,255,0) 75%) !important;
-  box-shadow:inset 0 2px 0 rgba(140,230,255,1), 0 -6px 18px -4px rgba(90,200,255,.8) !important;
+  background:linear-gradient(180deg, rgba(40,210,255,.8), rgba(40,210,255,.25) 50%, rgba(40,210,255,0) 85%) !important;
+  box-shadow:inset 0 4px 0 rgb(120,240,255), 0 -8px 26px -2px rgba(40,210,255,1) !important;
 }
 /* Et LES TRAITS DU MENU : la voix le promet (« les trois traits s'eclairent en
    bleu »), rien ne le faisait. Quand une page a du neuf, le bouton du menu, en
@@ -1145,7 +1147,7 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 .nav .burger.duNeuf{ border-color:rgba(140,230,255,.9) !important;
   box-shadow:0 0 0 1px rgba(90,200,255,.5), 0 0 22px rgba(90,200,255,.85), inset 0 0 12px rgba(90,200,255,.35) !important;
   animation:souffleNeuf 3.4s ease-in-out infinite; }
-.nav .burger.duNeuf i{ background:rgb(150,235,255) !important; box-shadow:0 0 8px rgba(120,220,255,.9); }
+.nav .burger.duNeuf i{ background:rgb(120,240,255) !important; box-shadow:0 0 10px rgba(40,210,255,1), 0 0 3px #fff; }
 /* le surlignage jaune de la visite guidee : « eclaire les nouveautes et ton prenom » */
 .visiteSurligne{ box-shadow:0 0 0 2px rgba(255,230,109,.95), 0 0 24px rgba(255,216,74,.85), inset 0 0 18px rgba(255,216,74,.25) !important;
   background:rgba(255,216,74,.16) !important; border-radius:.6rem; transition:box-shadow .35s, background .35s; }
@@ -1162,9 +1164,9 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 }
 .voile .legendeMenu .ex::before{
   content:''; position:absolute; inset:-.1rem -.35rem; z-index:-1; border-radius:inherit;
-  background:linear-gradient(90deg, rgba(90,200,255,.48), rgba(90,200,255,.12) 60%, rgba(90,200,255,0));
-  border-left:2px solid rgba(140,230,255,1);
-  box-shadow:-8px 0 26px -4px rgba(90,200,255,1), 0 0 14px rgba(90,200,255,.55);
+  background:linear-gradient(90deg, rgba(40,210,255,.85), rgba(40,210,255,.3) 60%, rgba(40,210,255,0));
+  border-left:4px solid rgb(120,240,255);
+  box-shadow:-10px 0 34px -2px rgba(40,210,255,1), 0 0 22px rgba(40,210,255,.8);
   animation:souffleNeuf 3.4s ease-in-out infinite;
 }
 .voile .legendeMenu .dit{ color:var(--gris2); font-size:.8rem; line-height:1.55; }
@@ -1174,9 +1176,9 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 }
 /* et la légende de l'accueil prend le même bleu */
 .legendeNeuf .ex::before{
-  background:linear-gradient(90deg, rgba(90,200,255,.48), rgba(90,200,255,.12) 60%, rgba(90,200,255,0)) !important;
-  border-left-color:rgba(140,230,255,1) !important;
-  box-shadow:-8px 0 26px -4px rgba(90,200,255,1), 0 0 14px rgba(90,200,255,.55) !important;
+  background:linear-gradient(90deg, rgba(40,210,255,.85), rgba(40,210,255,.3) 60%, rgba(40,210,255,0)) !important;
+  border-left:4px solid rgb(120,240,255) !important;
+  box-shadow:-10px 0 34px -2px rgba(40,210,255,1), 0 0 22px rgba(40,210,255,.8) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
