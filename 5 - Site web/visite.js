@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12094';
+  const VOIX_VERSION = '12095';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -63,6 +63,10 @@
      corrige ; « ca ne va pas » ne se corrige pas. */
   const ARRETS = [
     { son: sonPerso('01-bonjour'),        vise: null, nom: "L’accueil" },
+    /* c'est ICI que le visage s'efface : la voix dit « voila la page d'accueil »
+       au moment exact ou la page apparait. Le rideau se leve sur la phrase. */
+    { son: sonCommun('01b-accueil'), vise: null, nom: 'La page d’accueil',
+      avant: 'effacerLeVisage' },
     /* ⚠️ 12 septembre — Mickael : « quand on montre le bouton rouge, il ne faut
        vraiment montrer QUE le bouton rouge. Il faut resserrer et zoomer un peu
        pour qu'on le voie vraiment, et qu'on ne voie pas autour. »
@@ -126,6 +130,7 @@
   const GESTES = {
     /* pour un temps qui ne fait que deplacer la lumiere, sans rien toucher */
     rien(){ return 0; },
+    effacerLeVisage(){ effacerLeBonjour(); return 900; },
     ouvrirMenu(){ document.body.classList.add('menu'); return 700; },
 
     /* ── LA MUSIQUE, POUR DE VRAI ────────────────────────────────────────
@@ -270,7 +275,12 @@
     #vDemande .oui, #vPause .oui, #vDepart .oui{ background:linear-gradient(180deg,#f4d97f,#c9a13a); color:#1a1408; }
     #vDemande .non, #vPause .non{ background:rgba(212,175,55,.08); color:#f1d27a; }
     /* l'ecran de bienvenue : un visage, un prenom, sa couleur */
-    #vBonjour{ position:fixed; inset:0; z-index:165; display:grid; place-items:center;
+    /* ⚠️ 12 septembre — LE VISAGE PASSAIT PAR-DESSUS LE BOUTON « COMMENCER ».
+       Vu en essai : quand le telephone refuse le son, le seul bouton qui debloque
+       tout se retrouvait DERRIERE le portrait, donc intouchable. La visite
+       restait muette et personne ne pouvait rien y faire. Le visage descend sous
+       les boites qui demandent quelque chose. */
+    #vBonjour{ position:fixed; inset:0; z-index:158; display:grid; place-items:center;
       background:#060505; opacity:0; transition:opacity .9s ease; }
     #vBonjour.la{ opacity:1; }
     #vBonjour .bCarte{ text-align:center; display:grid; gap:.9rem; justify-items:center;
@@ -495,6 +505,7 @@
     try { son.pause(); } catch(e){}
     document.body.classList.remove('enVisite', 'menu');
     voile.style.background = 'transparent';
+    effacerLeBonjour();
     eteindreLesHorloges();
     tourne.classList.remove('la');
     try { localStorage.setItem(CLE_VUE, '1'); localStorage.removeItem(CLE_OU); } catch(e){}
@@ -830,6 +841,12 @@
   const PORTRAITS = { adrien:'Adrien', stephanie:'Stéphanie', candice:'Candice',
                       mickael:'Mickaël', bry:'Bry', elie:'Élie' };
   let bonjour = null;
+  function effacerLeBonjour(){
+    if (!bonjour) return;
+    const b = bonjour; bonjour = null;
+    b.classList.remove('la');
+    apres(() => b.remove(), 1100);
+  }
   function montrerLeBonjour(alors){
     const nom = PORTRAITS[qui];
     if (!nom) return alors();              /* on ne sait pas qui c'est : on passe */
@@ -845,15 +862,21 @@
     const img = bonjour.querySelector('img');
     img.addEventListener('error', () => { const c = img.closest('.bCadre'); if (c) c.style.display = 'none'; });
     apres(() => bonjour.classList.add('la'), 60);
-    /* ⚠️ 12 septembre — Mickael : « j'aimerais que quand tu dis bienvenue, tu
-       restes un petit peu plus longtemps avec la photo de la personne. »
-       Trois secondes et demie, c'etait le temps de la reconnaitre, pas celui de
-       la regarder. Six secondes : de quoi laisser l'image s'installer avant que
-       la voix ne commence. */
-    apres(() => {
-      bonjour.classList.remove('la');
-      apres(() => { if (bonjour) bonjour.remove(); bonjour = null; alors(); }, 1100);
-    }, 6000);
+    /* ⚠️ 12 septembre, corrige deux fois — Mickael, d'abord : « reste un peu plus
+       longtemps avec la photo ». Puis, en le voyant tourner : « tu laisses la
+       photo TANT QUE le premier bloc n'est pas passe. Et a partir de la premiere
+       phrase qui est passee, la tu enleves la photo et tu dis : voici la page
+       d'accueil. »
+
+       Il a raison, et c'est mieux que ce que j'avais fait : le visage
+       disparaissait au bout de six secondes pendant que la voix parlait encore,
+       et on se retrouvait a ecouter un ecran vide. Il accompagne maintenant TOUTE
+       la premiere phrase, et c'est sa disparition qui ouvre la visite — le rideau
+       se leve au moment ou la voix dit « voila la page d'accueil ».
+
+       On n'attend donc plus une duree : la suite demarre aussitot, et c'est
+       l'arret suivant qui dira quand effacer. */
+    alors();
   }
 
   /* ── la carte d'entrée ────────────────────────────────────────────────── */

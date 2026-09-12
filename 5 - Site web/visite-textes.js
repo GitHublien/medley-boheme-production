@@ -10,6 +10,8 @@
 window.TEXTES_VISITE = {
   '01-bonjour':
     'Bonjour {prénom}. J\'espère que le film t\'a plu. Il n\'a pas été fait pour rien : c\'est la trame du spectacle, ce que vous allez raconter le quatre octobre. Le jour venu, il y aura des images derrière vous — pas tout le temps, mais à des moments précis, selon ce que vous chanterez. Certaines viendront peut-être de ce film, d\'autres restent à créer : rien n\'est encore arrêté. Et ce film-là pourra servir ailleurs : en changeant la musique et le texte, les mêmes images font une présentation du spectacle, pour ceux qui ne l\'ont pas encore vu. Voilà pourquoi il fallait que tu le voies en premier — avant d\'apprendre les notes, il faut savoir ce qu\'on raconte. Et si tu as envie de le revoir, c\'est possible : il est rangé dans l\'application, je te montrerai où tout à l\'heure. Bon. Passons au vif du sujet.',
+  '01b-accueil':
+    'Voilà la page d\'accueil. C\'est d\'ici que tout part, et c\'est ici que tu reviendras toujours. Tout ce dont tu as besoin est derrière ces quelques portes. Je te les montre une par une.',
   '02-le-bouton-rouge':
     'Une chose d\'abord, et c\'est la seule qu\'on te demande. Ce bouton rouge prépare un message tout prêt, et il t\'emmène directement dans WhatsApp. Tu n\'as rien à écrire, rien à chercher : tu choisis juste le groupe du medley, et tu envoies. Vise bien, quand même — sinon quelqu\'un va recevoir un message parfaitement mystérieux, et il faudra tout lui expliquer. Fais-le tout de suite, si tu peux : tant que Mickaël ne sait pas que l\'application s\'ouvre chez chacun de vous, il ne peut rien vous envoyer — ni les mises à jour, ni les vidéos de la mise en scène. Alors maintenant, ou à la fin, mais aujourd\'hui.',
   '02b-mises-a-jour':
