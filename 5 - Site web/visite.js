@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12102';
+  const VOIX_VERSION = '12103';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -373,6 +373,31 @@
     return GESTE_ACCUEIL;
   }
 
+  /* glisser jusqu'a un element, a la vitesse de la main de Mickael, pour que
+     la tuile arrive au centre de l'ecran (entre les deux barres) */
+  const VITESSE_MAIN = 7578 / 4.3;      /* pixels par seconde, mesures sur lui */
+  function glisserVersElement(c){
+    const r = c.getBoundingClientRect();
+    const haut = (document.querySelector('.nav') || {}).getBoundingClientRect?.().height || 56;
+    const bas  = (document.querySelector('.bas') || {}).getBoundingClientRect?.().height || 92;
+    const utile = innerHeight - haut - bas;
+    let cible = r.top + scrollY - haut - Math.max(0, (utile - r.height) / 2);
+    const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+    cible = Math.max(0, Math.min(max, cible));
+    const distance = Math.abs(cible - scrollY);
+    if (distance < 30) return;
+    const duree = Math.max(500, Math.min(6000, distance / VITESSE_MAIN * 1000));
+    const depuis = scrollY, t0 = performance.now();
+    const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;
+    const pas = (now) => {
+      if (arrete) return;
+      const t = Math.min(1, (now - t0) / duree);
+      scrollTo({ top: depuis + (cible - depuis) * doux(t), behavior: 'instant' });
+      if (t < 1) requestAnimationFrame(pas);
+    };
+    requestAnimationFrame(pas);
+  }
+
   /* le glissement lui-meme : de la ou on est jusqu'a la cible, en douceur */
   function glisser(vers, duree){
     return new Promise(resoudre => {
@@ -675,11 +700,17 @@
        application, en pleine lumiere, pendant que la voix parle. */
     if (!c){ voile.style.background = 'transparent'; haloActuel = null; rangerLePasser(null); return; }
     /* ⚠️ UNE BARRE ANCREE NE DEFILE PAS. Le logo, la barre du bas, la note de
-       la musique sont fixes a l'ecran : les « amener au centre » ne les bouge
-       pas d'un pixel, mais ca fait defiler toute la page derriere — et la barre
-       du haut se compacte au passage, ce qui deplace le logo APRES ma mesure.
-       Le cadre tombait donc a cote. On ne defile que pour ce qui defile. */
-    if (!estAncre(c)) c.scrollIntoView({ behavior:'smooth', block:'center' });
+       la musique sont fixes a l'ecran : on ne defile que pour ce qui defile.
+
+       ⚠️ 12 h 45 — Mickael : « a chaque fois qu'on va dans les images, il faut
+       qu'on se mette sur la page d'accueil, et ensuite que ca aille a cet
+       endroit comme je l'ai fait pour les photos, et ensuite qu'il y ait le
+       halo. C'est pour montrer d'ou on le trouve. »
+       Plus de defilement lisse du navigateur, trop rapide et sans ame : la page
+       GLISSE jusqu'a la tuile a la vitesse de sa main — celle mesuree sur sa
+       descente aux visages, 7 578 pixels en 4,3 secondes — et le halo ne
+       s'allume qu'une fois arrivee. */
+    if (!estAncre(c)) glisserVersElement(c);
     let avant = null, stable = 0, tours = 0;
     const H2 = (window.__horlogeHorsSurveillance || window).setInterval;
     const montre = guette = H2.call(window, () => {
@@ -691,7 +722,7 @@
       /* deux mesures identiques : l'objet s'est arrete, on peut poser la lumiere.
          Et au bout de trois secondes on la pose de toute facon : on ne reste
          jamais bloque a attendre quelque chose qui ne s'immobilise pas. */
-      if (stable >= 2 || tours > 30){
+      if (stable >= 2 || tours > 80){     /* jusqu'a 8 s : le temps d'un glissement a sa main */
         clearInterval(montre); guette = null;
         const r2 = poserSur(c);
         rangerLePasser(r2);

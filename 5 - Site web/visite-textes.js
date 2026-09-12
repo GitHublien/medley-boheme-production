@@ -25,7 +25,7 @@ window.TEXTES_VISITE = {
   '02d-plus-tard':
     'Très bien, tu as fait ton choix. Le bouton reste là, en haut de l\'accueil, et il restera rouge tant que tu ne l\'auras pas touché. Un appui suffira, quand tu voudras. On continue.',
   '02e-les-infos':
-    'Une porte que tu ne remarquerais pas forcément : les informations utiles. Tout y est écrit noir sur blanc, chaque page, chaque bouton. Je te dis tout à l\'oreille aujourd\'hui, mais dans trois semaines, quand tu voudras revérifier un détail, c\'est là qu\'il sera.',
+    'Une porte que tu ne remarquerais pas forcément : les informations utiles. C\'est comme une aide personnelle, écrite. Il y a déjà pas mal de choses, et ça évoluera avec le spectacle. Quand tu voudras revérifier un détail, c\'est là.',
   '02f-le-film':
     'Et voilà ce que je t\'avais promis : le film. Il est là, sur l\'accueil, et tu peux le revoir autant de fois que tu veux — mais il ne se relancera plus jamais tout seul. Un appui, et il repart du début.',
   '02g-pas-fait':
