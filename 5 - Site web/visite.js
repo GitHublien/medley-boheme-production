@@ -69,7 +69,10 @@
        attend la precedente. */
     { nom: 'La page d’accueil', vise: null, avant: 'effacerLeVisage',
       etapes: [
-        { son: sonCommun('01b-accueil'), chevauche: 1.3 },   /* le geste part SUR « regarde » */
+        /* 11 h 55 — « la, pour le coup, tu es parti trop tot. » 1,3 s compensait
+           l'ancien retard ; en direct, ca coupait le mot. Une demi-seconde : la
+           page part sur la fin de « regarde », pas avant. */
+        { son: sonCommun('01b-accueil'), chevauche: 0.5 },
         { geste: 'defilerCommeLui' },                    /* SON geste, rejoue tel quel — descente, arret, remontee */
         { son: sonCommun('01d-en-haut') },               /* « et voila, on est de nouveau a l'accueil » */
       ] },
