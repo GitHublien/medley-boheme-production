@@ -565,6 +565,18 @@ const VERSION_SITE = '12/09/2026 · 13h24';
     };
     window.marquerLeRecuEnvoye = marquerEnvoye;
     window.effacerLeRecuNet = effacerNet;
+    /* 13 h 55 — pour ses essais : « quand je retourne en arriere, ca ne va pas
+       sur le truc rouge, c'est comme si c'etait saute. » Le bouton envoye est
+       efface, et l'arret d'un bouton absent se saute. En mode essai, on le
+       remet en rouge a chaque passage. */
+    window.remettreLeRecuRouge = () => {
+      try { localStorage.removeItem(CLE); } catch(e){}
+      delete recu.dataset.vientDeLEnvoyer;
+      recu.style.display = ''; recu.style.opacity = ''; recu.style.maxHeight = '';
+      recu.style.margin = ''; recu.style.paddingTop = ''; recu.style.paddingBottom = '';
+      pb.classList.add('doux');
+      peindre(); direMot();
+    };
 
     const demanderSiEnvoye = () => {
       if (document.querySelector('.boiteEnvoye')) return;

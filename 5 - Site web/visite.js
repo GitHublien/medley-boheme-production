@@ -1524,6 +1524,8 @@
          partent de la ou la page est, comme en vrai */
       if (k <= 1) scrollTo({ top: 0, behavior: 'instant' });
       if (k < 6) taireLaMusique();     /* avant l'arret de la musique, elle se tait */
+      /* en essai, le bouton rouge revient a chaque passage sur son arret */
+      if (k === 2 && window.__modeEssai && window.__modeEssai() && typeof window.remettreLeRecuRouge === 'function') window.remettreLeRecuRouge();
       const p = document.querySelector('#vPause'); if (p) p.remove();
       const d = document.querySelector('#vDemande'); if (d) d.remove();
       try { son.pause(); son.onended = son.onerror = null; } catch(e){}
