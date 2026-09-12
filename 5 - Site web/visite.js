@@ -136,9 +136,17 @@
     /* 19 · le menu du haut : on remonte, il s'ouvre, on referme, le logo */
     { son: sonCommun('07-menu'), nom: 'Le menu', vise: null,
       avant: 'remonterEnHaut',
+      /* 17 h 45 — Mickael : « quand elle dit "les nouveautes et ton prenom",
+         eclaire-les, au moment ou elle le dit, en jaune. » Mesure a la machine
+         sur les deux voix : « nouveautes » a 39-40 % de la phrase, « prenom » a
+         43-45 %, « halo bleu » a 67-68 %, « je le referme » a 80 %. */
       pendant: [ { part: 0.10, geste: 'ouvrirMenu', vise: '.voile nav' },
-                 { part: 0.74, geste: 'fermerMenu', vise: '.nav .burger' },
-                 { part: 0.86, geste: 'rien', vise: '.nav .marque' } ] },
+                 { part: 0.385, geste: 'rien', vise: '.voile nav a[href*="NOUVEAUT"]', surligne: '.voile nav a[href*="NOUVEAUT"]' },
+                 { part: 0.43,  geste: 'rien', vise: ['.voile nav a[href*="NOUVEAUT"]', '.voile nav a[href*="PRENOM"]'],
+                                surligne: '.voile nav a[href*="NOUVEAUT"], .voile nav a[href*="PRENOM"]' },
+                 { part: 0.67,  geste: 'rien', vise: '.voile .legendeMenu', surligne: null },
+                 { part: 0.79,  geste: 'fermerMenu', vise: '.nav .burger' },
+                 { part: 0.86,  geste: 'rien', vise: '.nav .marque' } ] },
 
     /* 20 · la musique : elle s'allume, on la laisse jouer, puis le panneau, puis on coupe */
     { son: sonCommun('03-musique'), nom: 'La musique', vise: '.nav .musique .mRond',
@@ -781,7 +789,12 @@
     haloAnim = requestAnimationFrame(pas);
     return r;
   }
-  function eteindreLaLumiere(){ voile.style.background = 'rgba(4,4,4,.86)'; }
+  /* le surlignage jaune : un ou plusieurs elements, et on efface le precedent */
+  function surligner(sel){
+    document.querySelectorAll('.visiteSurligne').forEach(e => e.classList.remove('visiteSurligne'));
+    if (sel) document.querySelectorAll(sel).forEach(e => e.classList.add('visiteSurligne'));
+  }
+  function eteindreLaLumiere(){ surligner(null); voile.style.background = 'rgba(4,4,4,.86)'; }
   function eclairer(selecteur){
     eteindreLesHorloges();
     /* ⚠️ 13 h 45 — Mickael, sur la musique : « quand tu cliques dessus, on ne
@@ -1212,6 +1225,7 @@
         const poser = (quand) => apres(() => {
           if (monFil !== fil || arrete || enPause) return;
           if (GESTES[g.geste]) GESTES[g.geste]();
+          if (g.surligne !== undefined) surligner(g.surligne);
           if (g.vise !== undefined) eclairer(g.vise);
         }, Math.round(quand * 1000));
         if (g.part !== undefined){

@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '12/09/2026 · 17h39';
+const VERSION_SITE = '12/09/2026 · 17h47';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -470,6 +470,10 @@ const VERSION_SITE = '12/09/2026 · 17h39';
         const i = document.createElement('i'); i.className = 'pastille'; i.title = 'du nouveau ici'; a.appendChild(i);
       }
     });
+    /* 17 h 45 — les traits du menu s'eclairent en bleu tant qu'il reste du neuf
+       non vu : c'est ce que la voix de la visite promet depuis ce matin. */
+    const resteDuNeuf = NOUVEAU.some(h => !vu(h));
+    document.querySelectorAll('.nav .burger').forEach(b => b.classList.toggle('duNeuf', resteDuNeuf));
   }
   pastiller();
 

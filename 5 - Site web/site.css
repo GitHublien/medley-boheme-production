@@ -1127,16 +1127,28 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
    vient d'être mise à jour, le point bleu d'un message non lu. Sur notre noir
    et or, il tranche sans agresser : on le voit, on ne le craint pas.
    ═══════════════════════════════════════════════════════════════════════════ */
+/* 12 septembre, 17 h 45 — Mickael : « le halo bleu n'est pas assez puissant,
+   pas assez fluorescent. » Bleu plus vif, plus opaque, et une lueur qui deborde. */
 .duNeuf::before{
-  background:linear-gradient(90deg, rgba(120,190,255,.26) 0%, rgba(120,190,255,.13) 38%,
-    rgba(120,190,255,.04) 68%, rgba(120,190,255,0) 100%) !important;
-  border-left-color:rgba(150,205,255,.95) !important;
-  box-shadow:-6px 0 18px -6px rgba(120,190,255,.7) !important;
+  background:linear-gradient(90deg, rgba(90,200,255,.48) 0%, rgba(90,200,255,.26) 38%,
+    rgba(90,200,255,.08) 68%, rgba(90,200,255,0) 100%) !important;
+  border-left-color:rgba(140,230,255,1) !important;
+  box-shadow:-8px 0 26px -4px rgba(90,200,255,1), 0 0 14px rgba(90,200,255,.55) !important;
 }
 .bas a.duNeuf::before{
-  background:linear-gradient(180deg, rgba(120,190,255,.24), rgba(120,190,255,0) 75%) !important;
-  box-shadow:inset 0 2px 0 rgba(150,205,255,.9) !important;
+  background:linear-gradient(180deg, rgba(90,200,255,.42), rgba(90,200,255,0) 75%) !important;
+  box-shadow:inset 0 2px 0 rgba(140,230,255,1), 0 -6px 18px -4px rgba(90,200,255,.8) !important;
 }
+/* Et LES TRAITS DU MENU : la voix le promet (« les trois traits s'eclairent en
+   bleu »), rien ne le faisait. Quand une page a du neuf, le bouton du menu, en
+   haut comme en bas, passe au bleu fluorescent et respire. */
+.nav .burger.duNeuf{ border-color:rgba(140,230,255,.9) !important;
+  box-shadow:0 0 0 1px rgba(90,200,255,.5), 0 0 22px rgba(90,200,255,.85), inset 0 0 12px rgba(90,200,255,.35) !important;
+  animation:souffleNeuf 3.4s ease-in-out infinite; }
+.nav .burger.duNeuf i{ background:rgb(150,235,255) !important; box-shadow:0 0 8px rgba(120,220,255,.9); }
+/* le surlignage jaune de la visite guidee : « eclaire les nouveautes et ton prenom » */
+.visiteSurligne{ box-shadow:0 0 0 2px rgba(255,230,109,.95), 0 0 24px rgba(255,216,74,.85), inset 0 0 18px rgba(255,216,74,.25) !important;
+  background:rgba(255,216,74,.16) !important; border-radius:.6rem; transition:box-shadow .35s, background .35s; }
 
 /* ── la légende, au pied du menu ─────────────────────────────────────────── */
 .voile .legendeMenu{
@@ -1150,9 +1162,9 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 }
 .voile .legendeMenu .ex::before{
   content:''; position:absolute; inset:-.1rem -.35rem; z-index:-1; border-radius:inherit;
-  background:linear-gradient(90deg, rgba(120,190,255,.26), rgba(120,190,255,.06) 60%, rgba(120,190,255,0));
-  border-left:2px solid rgba(150,205,255,.95);
-  box-shadow:-6px 0 18px -6px rgba(120,190,255,.7);
+  background:linear-gradient(90deg, rgba(90,200,255,.48), rgba(90,200,255,.12) 60%, rgba(90,200,255,0));
+  border-left:2px solid rgba(140,230,255,1);
+  box-shadow:-8px 0 26px -4px rgba(90,200,255,1), 0 0 14px rgba(90,200,255,.55);
   animation:souffleNeuf 3.4s ease-in-out infinite;
 }
 .voile .legendeMenu .dit{ color:var(--gris2); font-size:.8rem; line-height:1.55; }
@@ -1162,9 +1174,9 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 }
 /* et la légende de l'accueil prend le même bleu */
 .legendeNeuf .ex::before{
-  background:linear-gradient(90deg, rgba(120,190,255,.26), rgba(120,190,255,.06) 60%, rgba(120,190,255,0)) !important;
-  border-left-color:rgba(150,205,255,.95) !important;
-  box-shadow:-6px 0 18px -6px rgba(120,190,255,.7) !important;
+  background:linear-gradient(90deg, rgba(90,200,255,.48), rgba(90,200,255,.12) 60%, rgba(90,200,255,0)) !important;
+  border-left-color:rgba(140,230,255,1) !important;
+  box-shadow:-8px 0 26px -4px rgba(90,200,255,1), 0 0 14px rgba(90,200,255,.55) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
