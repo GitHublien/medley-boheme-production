@@ -53,7 +53,7 @@
      donc un numero derriere l'adresse : il change le jour ou je refabrique des
      voix, et ce jour-la seulement. Le reste du temps, rien n'est retelecharge.
      (La meme lecon que les portraits, qu'il a fallu renommer en -2.jpg.) */
-  const VOIX_VERSION = '12112';
+  const VOIX_VERSION = '12165';
   const sonCommun = n => DOSSIER + n + '--' + voix + '.mp3?v=' + VOIX_VERSION;
   const sonPerso  = n => DOSSIER + n + '--' + (qui || 'adrien') + '.mp3?v=' + VOIX_VERSION;
 
@@ -153,15 +153,13 @@
        compteur du jour (100 voix par compte). Le deux-temps ci-dessus est
        pret ; en attendant, l'ancien morceau unique, dont la voix existe.
        A remettre des que 11a/11b sont fabriques (voir fabriquer_visite.py). */
-    { son: sonCommun('11-paysage'), nom: 'Le paysage', vise: null, attend: 'paysage' },
-    /* -- version deux temps, a retablir :
+    /* 16 h 55 — les voix 11a/11b sont la (modele Pro) : le deux-temps est retabli. */
     { nom: 'Le paysage', vise: null,
       etapes: [
         { son: sonCommun('11a-paysage-avant') },
         { geste: 'attendreLePaysage' },
         { son: sonCommun('11b-paysage-apres') },
       ] },
-    -- */
 
     /* 22 · la fin : son visage revient, en grand, pendant qu'elle parle, puis
        s'efface en fondu ; et on rend le portrait, puis la liberte de tourner */
@@ -1443,7 +1441,7 @@
      ?essai=1, ni l'appui long sur le logo, ni le menu), et le drapeau qui
      trainerait dans un telephone est efface. Remettre true pour le rendre.
      Le meme interrupteur existe dans site.js (le bouton du menu). */
-  const ESSAI_DISPONIBLE = false;
+  const ESSAI_DISPONIBLE = true;   /* 16 h 58 — « je vais reprendre le systeme de test » */
   if (!ESSAI_DISPONIBLE){ try { localStorage.removeItem(CLE_ESSAI); } catch(e){} }
   try {
     const d = ESSAI_DISPONIBLE ? new URLSearchParams(location.search).get('essai') : null;
