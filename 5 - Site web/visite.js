@@ -105,7 +105,10 @@
                  fait: '.carteEssentiel .ceLigne:first-child a[data-recu]' } },
     /* comme le bouton rouge : on eclaire LE BOUTON, pas la carte entiere.
        « Quand on montre tout, on ne montre rien. » */
-    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child button', nom: 'Les mises à jour' },
+    { son: sonCommun('02b-mises-a-jour'), vise: '.carteEssentiel .ceLigne:last-child', nom: 'Les mises à jour',
+      /* d'abord toute la carte, puis, quand la voix dit « ce bouton », la
+         lumiere se resserre en glissant sur le bouton lui-meme */
+      pendant: [ { part: 0.42, geste: 'rien', vise: '.carteEssentiel .ceLigne:last-child button' } ] },
     /* ⚠️ 12 septembre — Mickael : « les infos, on les garde et on en parlera
        dans l'aide, mais on ne les met pas au debut. » Elles ne barrent donc
        plus le chemin apres le film ; c'est ici qu'on les annonce, au moment ou
@@ -617,6 +620,19 @@
   /* La douche de lumiere. On centre l'ellipse sur l'objet, on lui donne la
      taille de l'objet plus une marge, et on la laisse s'eteindre vers le noir.
      La fine bande d'or a 70 % fait l'ourlet chaud d'une vraie poursuite. */
+  /* ⚠️ 12 h 35 — Mickael : « montre le gros truc, puis va jusqu'a mise a jour,
+     une sorte de zoom. » Le halo ne saute donc plus d'une cible a l'autre : il
+     GLISSE, centre et rayon, en six dixiemes de seconde. Comme une poursuite
+     qui se resserre sur un chanteur. */
+  let haloActuel = null, haloAnim = null;
+  function peindreHalo(cx, cy, rx, ry){
+    voile.style.background =
+      'radial-gradient(ellipse ' + Math.round(rx) + 'px ' + Math.round(ry) + 'px at '
+      + Math.round(cx) + 'px ' + Math.round(cy) + 'px, '
+      + 'rgba(4,4,4,0) 0%, rgba(4,4,4,0) 70%, '
+      + 'rgba(241,210,122,.26) 77%, '
+      + 'rgba(4,4,4,.80) 88%, rgba(4,4,4,.94) 100%)';
+  }
   function poserSur(c){
     const r = c.getBoundingClientRect();
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -631,12 +647,24 @@
        d'eclairer son quartier. */
     const rx = Math.max(28, (r.width  / 2 + 6)) / 0.70;
     const ry = Math.max(24, (r.height / 2 + 6)) / 0.70;
-    voile.style.background =
-      'radial-gradient(ellipse ' + Math.round(rx) + 'px ' + Math.round(ry) + 'px at '
-      + Math.round(cx) + 'px ' + Math.round(cy) + 'px, '
-      + 'rgba(4,4,4,0) 0%, rgba(4,4,4,0) 70%, '
-      + 'rgba(241,210,122,.26) 77%, '
-      + 'rgba(4,4,4,.80) 88%, rgba(4,4,4,.94) 100%)';
+    const vise = { cx, cy, rx, ry };
+    /* premiere pose, ou meme cible qui a juste bouge de quelques pixels : direct */
+    if (!haloActuel || (Math.abs(haloActuel.rx - rx) < 30 && Math.abs(haloActuel.ry - ry) < 30
+                        && Math.abs(haloActuel.cx - cx) < 60 && Math.abs(haloActuel.cy - cy) < 60)){
+      haloActuel = vise; peindreHalo(cx, cy, rx, ry); return r;
+    }
+    /* sinon on glisse : 600 ms de l'ancien halo au nouveau */
+    if (haloAnim) cancelAnimationFrame(haloAnim);
+    const de = haloActuel, t0 = performance.now(), D = 600;
+    const doux = t => t < .5 ? 2*t*t : -1 + (4 - 2*t)*t;
+    const pas = (now) => {
+      const t = Math.min(1, (now - t0) / D), k = doux(t);
+      const h = { cx: de.cx + (vise.cx - de.cx) * k, cy: de.cy + (vise.cy - de.cy) * k,
+                  rx: de.rx + (vise.rx - de.rx) * k, ry: de.ry + (vise.ry - de.ry) * k };
+      haloActuel = h; peindreHalo(h.cx, h.cy, h.rx, h.ry);
+      if (t < 1) haloAnim = requestAnimationFrame(pas); else haloAnim = null;
+    };
+    haloAnim = requestAnimationFrame(pas);
     return r;
   }
   function eteindreLaLumiere(){ voile.style.background = 'rgba(4,4,4,.86)'; }
@@ -645,7 +673,7 @@
     const c = selecteur && document.querySelector(selecteur);
     /* rien a designer : on n'assombrit rien non plus. On regarde la vraie
        application, en pleine lumiere, pendant que la voix parle. */
-    if (!c){ voile.style.background = 'transparent'; rangerLePasser(null); return; }
+    if (!c){ voile.style.background = 'transparent'; haloActuel = null; rangerLePasser(null); return; }
     /* ⚠️ UNE BARRE ANCREE NE DEFILE PAS. Le logo, la barre du bas, la note de
        la musique sont fixes a l'ecran : les « amener au centre » ne les bouge
        pas d'un pixel, mais ca fait defiler toute la page derriere — et la barre
