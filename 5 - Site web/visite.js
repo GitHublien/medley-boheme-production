@@ -1428,8 +1428,16 @@
      la visite guidee », dans le menu, le bascule — c'est le chemin le plus
      court depuis son doigt. */
   const CLE_ESSAI = 'boheme-visite-essai';
+  /* ⚠️ 12 septembre, 17 h — Mickael : « enleve-moi maintenant le systeme de
+     test, je n'en ai plus besoin. Si j'en ai besoin, tu me le remettras. »
+     UN SEUL INTERRUPTEUR : false = aucune porte vers le mode essai (ni
+     ?essai=1, ni l'appui long sur le logo, ni le menu), et le drapeau qui
+     trainerait dans un telephone est efface. Remettre true pour le rendre.
+     Le meme interrupteur existe dans site.js (le bouton du menu). */
+  const ESSAI_DISPONIBLE = false;
+  if (!ESSAI_DISPONIBLE){ try { localStorage.removeItem(CLE_ESSAI); } catch(e){} }
   try {
-    const d = new URLSearchParams(location.search).get('essai');
+    const d = ESSAI_DISPONIBLE ? new URLSearchParams(location.search).get('essai') : null;
     if (d === '1') localStorage.setItem(CLE_ESSAI, '1');
     if (d === '0') localStorage.removeItem(CLE_ESSAI);
   } catch(e){}
@@ -1443,8 +1451,9 @@
     return 'le bouton redevient rouge — recharge la page';
   };
 
-  window.__modeEssai = () => { try { return localStorage.getItem(CLE_ESSAI) === '1'; } catch(e){ return false; } };
+  window.__modeEssai = () => { if (!ESSAI_DISPONIBLE) return false; try { return localStorage.getItem(CLE_ESSAI) === '1'; } catch(e){ return false; } };
   window.basculerModeEssai = () => {
+    if (!ESSAI_DISPONIBLE) return 'Revoir la visite guidée';
     let on = false;
     try {
       on = localStorage.getItem(CLE_ESSAI) !== '1';
@@ -1463,7 +1472,7 @@
      Boheme, en haut a gauche, pendant la visite. Deux secondes et demie —
      personne ne tombe dessus par hasard, et lui le trouve du premier coup. */
   {
-    const logo = document.querySelector('.nav .marque');
+    const logo = ESSAI_DISPONIBLE ? document.querySelector('.nav .marque') : null;
     if (logo){
       let t = null;
       const debut = () => { t = apres(() => {
