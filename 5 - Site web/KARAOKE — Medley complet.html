@@ -3444,9 +3444,14 @@ addEventListener('keydown', e => {
     try { const o = screen.orientation; if (o && o.lock) o.lock('portrait').catch(() => {}); } catch(e){}
   }
   window.addEventListener('load', verrouillerDebout);
+  /* Android n'accepte la demande qu'après un geste : on la refait au premier appui,
+     et à chaque fois que l'écran tourne (dans l'appli installée aussi) */
+  document.addEventListener('pointerdown', verrouillerDebout, { once: true });
+  window.addEventListener('orientationchange', verrouillerDebout);
+  try { screen.orientation && screen.orientation.addEventListener('change', verrouillerDebout); } catch(e){}
   const remettre = () => {
     const e = document.documentElement;
-    if (window.EN_APPLI) return;
+    if (window.EN_APPLI){ verrouillerDebout(); return; }
   const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
     if (f) { try { f.call(e, {navigationUI:'hide'}); } catch(err){ try{ f.call(e); }catch(e2){} } }
     verrouillerDebout();
@@ -5960,7 +5965,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '21/09/2026 · 13h00';
+const VERSION_APPLI = '21/09/2026 · 13h50';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
