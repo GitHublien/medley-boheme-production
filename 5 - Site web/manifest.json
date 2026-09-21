@@ -5,7 +5,7 @@
   "start_url": "./PORTE%20%E2%80%94%20Boh%C3%A8me.html",
   "scope": "./",
   "display": "fullscreen",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
