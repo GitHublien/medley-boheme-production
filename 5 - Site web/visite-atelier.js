@@ -979,7 +979,8 @@
     c.innerHTML = '<div class="vaBulle"><h3>' + (reprise ? 'On reprend la visite ?' : 'La visite de l\'atelier') + '</h3>'
       + '<p>' + (reprise ? 'Tu t\'étais arrêté à l\'arrêt ' + (k + 1) + ' · ' + ARRETS[k].nom + '.' : 'Rudy et Koraly te montrent l\'atelier, bouton par bouton. Cinq minutes, et tu peux partir quand tu veux.') + '</p>'
       + (EN_CHANTIER ? '<p style="color:#ffc814;border:1px solid rgba(255,200,20,.5);border-radius:10px;padding:.5rem .7rem;font-size:.9rem">🚧 <b>En chantier.</b> Ce guide est en cours de fabrication : il peut être en désordre, ça ne casse rien.</p>' : '')
-      + '<p>🎧 Monte le son.</p>'
+      + (!reprise && PUBLIES < ARRETS.length ? '<p style="font-size:.9rem;opacity:.85">Neuf arrêts pour l’instant, jusqu’au visage. La suite arrive bientôt.</p>' : '')
+      + '<p>🎧 Monte le son, et garde le téléphone debout.' + (/iPhone|iPad/.test(navigator.userAgent) ? '<br><small style="opacity:.8">Sur iPhone : le cadenas du centre de contrôle bloque la rotation.</small>' : '') + '</p>'
       + '<button class="oui">' + (reprise ? 'Reprendre là' : 'Commencer') + '</button>'
       + (reprise ? '<button class="non">Depuis le début</button>' : '<button class="non">Plus tard</button>') + '</div>';
     document.body.appendChild(c);

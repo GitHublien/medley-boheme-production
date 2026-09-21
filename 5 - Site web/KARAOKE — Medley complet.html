@@ -3437,11 +3437,19 @@ addEventListener('keydown', e => {
   try { sessionStorage.removeItem('boheme-plein-ecran'); } catch(e){}
   if (document.fullscreenElement) return;
   if (localStorage.getItem('boheme-sans-plein-ecran') === '1') return;
+  /* 21/09 — l'atelier reste DEBOUT (Mickaël) : sur Android, une fois installée ou en plein écran,
+     l'appli demande au système de ne plus tourner l'écran. Safari (iPhone) refuse ce verrouillage :
+     là, le dessin couché reste le filet, et la carte du guide conseille le cadenas du centre de contrôle. */
+  function verrouillerDebout(){
+    try { const o = screen.orientation; if (o && o.lock) o.lock('portrait').catch(() => {}); } catch(e){}
+  }
+  window.addEventListener('load', verrouillerDebout);
   const remettre = () => {
     const e = document.documentElement;
     if (window.EN_APPLI) return;
   const f = e.requestFullscreen || e.webkitRequestFullscreen || e.msRequestFullscreen;
     if (f) { try { f.call(e, {navigationUI:'hide'}); } catch(err){ try{ f.call(e); }catch(e2){} } }
+    verrouillerDebout();
     document.removeEventListener('click', remettre);
     document.removeEventListener('keydown', remettre);
   };
@@ -5952,7 +5960,7 @@ if (window.QUATRE_CANAUX) bascule_quatre_canaux(); else bascule_deux_fichiers();
    L'application ne se réinstalle jamais : c'est le contenu qui se
    renouvelle, comme une page qu'on rafraîchit.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION_APPLI = '11/09/2026 · 19h31';
+const VERSION_APPLI = '21/09/2026 · 12h50';
 (function(){
   const toast = document.getElementById('toastMaj');
   let minuteur = null;
