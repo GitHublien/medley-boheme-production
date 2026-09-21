@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '21/09/2026 · 13h10';
+const VERSION_SITE = '21/09/2026 · 13h30';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -410,7 +410,7 @@ const VERSION_SITE = '21/09/2026 · 13h10';
       /* la version vit dans site.js : c'est lui qu'on interroge, pas la page */
       const r = await fetch('site.js?verif=' + Date.now(), { cache: 'no-store' });
       const t = await r.text();
-      const m = t.match(/const VERSION_SITE = '21/09/2026 · 13h10']+)'/);
+      const m = t.match(/const VERSION_SITE = '([^']+)'/);
       const enLigne = m ? m[1] : null;
       if (!enLigne){ if (!silencieux) dire('Je n\'ai pas pu vérifier. Réessaie dans un moment.', 5000); return; }
       if (enLigne === VERSION_SITE){
