@@ -17,6 +17,10 @@
   .haut{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
          flex-wrap:wrap; margin-bottom:.5rem; }
   .type{ font-family:var(--disp); letter-spacing:.2em; color:var(--or); font-size:.95rem; }
+  /* 22 sept : le document tout neuf se repère en bleu, sans crier */
+  .type.bleu{ color:var(--bleu); }
+  .coque.neuf{ box-shadow:0 0 0 1px rgba(143,176,216,.45), 0 18px 50px rgba(143,176,216,.12); }
+  .coque.neuf .coeur{ background:linear-gradient(180deg, rgba(143,176,216,.10), transparent 60%); }
   .doc h3{ margin:.1rem 0 0; }
   .doc p{ color:var(--gris); max-width:66ch; }
   .quand{ color:var(--gris2); font-size:.85rem; }
@@ -72,15 +76,20 @@
 
   </div>
 
-  <!-- 10 sept : Mickael — « il va y avoir les textes qui seront prets aussi, que tu
-       pourras telecharger. C'est ce qu'il faut dire. » -->
-  <div class="coque rev" style="margin-top:1.2rem"><div class="coeur" style="padding:1.2rem 1.3rem">
-    <div class="haut"><span class="type">BIENTÔT</span><span class="quand">en préparation</span></div>
-    <h3>Vos textes, à télécharger</h3>
-    <p>Le livre des textes mis en page, bloc par bloc, à garder sur le téléphone ou
-       à imprimer. Il arrivera ici, à côté de la fiche technique. En attendant, tout
-       est déjà lisible dans <b>Les textes</b>.</p>
-  </div></div>
+    <!-- 22 septembre 2026 : le livre des textes est prêt. Repéré en BLEU, pour qu'on le
+         retrouve d'un coup d'œil au milieu des autres documents (demande de Mickaël). -->
+    <article class="coque rev d2 neuf"><div class="coeur">
+      <div class="haut"><span class="type bleu">PDF · NOUVEAU</span><span class="quand">22 septembre 2026</span></div>
+      <h3>Les textes du medley, le livre</h3>
+      <p>Les vingt blocs, du premier mot au dernier, chaque voix dans sa couleur.
+         Un sommaire au début : un appui sur un titre mène à sa page, et « ↑ Sommaire »
+         en haut de chaque page ramène à la table. En bleu, les narrations : la voix
+         vient de la bande, personne ne chante à ce moment-là.</p>
+      <div class="gestes">
+        <a class="btn" href="media/textes/textes-medley-22-septembre-2026.pdf" download>Télécharger le PDF <b><i class="ico ico-telecharger"></i></b></a>
+        <a class="btn doux" href="LIVRE — Les textes du medley.html">Lire ici, avec la musique <b><i class="ico ico-fleche"></i></b></a>
+      </div>
+    </div></article>
 </section>
 
 <section class="page">

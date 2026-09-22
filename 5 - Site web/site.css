@@ -1319,3 +1319,19 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 .voile .legendeMenu .modeEssai.allume{
   color:#ffd9d9; background:rgba(120,30,30,.35); border:1px solid rgba(255,120,120,.45);
 }
+
+
+/* ═══ LE BANDEAU DE MISE À JOUR (22 septembre 2026) ═══
+   Un bleu très clair, en haut de chaque page, tant qu'il reste du neuf non vu. */
+.bandeauMaj{ display:grid; gap:.15rem; text-decoration:none;
+  margin:.7rem auto 0; max-width:min(92vw, 62rem);
+  padding:.85rem 1.1rem .95rem; border-radius:16px;
+  border:1px solid rgba(143,176,216,.45);
+  background:linear-gradient(180deg, rgba(143,176,216,.16), rgba(143,176,216,.05));
+  box-shadow:0 14px 40px rgba(143,176,216,.10); }
+.bandeauMaj .pt{ font-family:var(--disp); letter-spacing:.2em; text-transform:uppercase;
+  color:var(--bleu); font-size:.8rem; }
+.bandeauMaj b{ font-family:var(--disp); font-weight:500; font-size:1.25rem; color:var(--encre); }
+.bandeauMaj .sous{ color:var(--gris); font-size:.95rem; }
+.bandeauMaj .go{ color:var(--bleu); font-size:.95rem; margin-top:.25rem; }
+@media (max-width:700px){ .bandeauMaj b{ font-size:1.1rem; } }

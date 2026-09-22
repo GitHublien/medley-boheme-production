@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '21/09/2026 · 13h30';
+const VERSION_SITE = '22/09/2026 · 23h40';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -393,7 +393,7 @@ const VERSION_SITE = '21/09/2026 · 13h30';
      Cette liste ne se remplit donc QUE sur sa parole, quand il a vraiment changé
      quelque chose : un texte du medley, une répartition, une mise en scène
      écrite, un document, une date. Jamais une retouche de mon côté. */
-  const NOUVEAU = [];
+  const NOUVEAU = ['DOCUMENTS — Bohème.html', 'NOUVEAUTÉS — Bohème.html'];   /* 22 sept : le livre des textes */
   const mot = document.createElement('div'); mot.className = 'mot';
   document.body.appendChild(mot);
   let motMinuteur = null;
@@ -478,6 +478,33 @@ const VERSION_SITE = '21/09/2026 · 13h30';
        non vu : c'est ce que la voix de la visite promet depuis ce matin. */
     const resteDuNeuf = NOUVEAU.some(h => !vu(h));
     document.querySelectorAll('.nav .burger').forEach(b => b.classList.toggle('duNeuf', resteDuNeuf));
+    /* le bandeau ne parle que de LA page qu'il annonce : dès qu'on y est allé, il s'en va */
+    bandeauDuNeuf(!vu(MAJ.ou));
+  }
+
+  /* ═══ LE BANDEAU DE MISE À JOUR (22 septembre 2026) ═══
+     Mickaël : « comment ils peuvent savoir qu'il y a une nouvelle mise à jour ?
+     Je ne vois pas qu'il y en a une. » Un trait qui s'éclaire dans le menu, personne
+     ne le remarque. Il faut une phrase, en haut de la page, qu'on ne peut pas rater :
+     un bandeau bleu très clair, visible sur CHAQUE page tant que le neuf n'a pas été
+     ouvert, et qui disparaît tout seul une fois qu'on est allé voir. */
+  const MAJ = { titre: 'Les textes du medley sont en ligne',
+                texte: 'Le livre entier, à télécharger ou à lire ici.',
+                ou: 'DOCUMENTS — Bohème.html', bouton: 'Aller voir' };
+  function bandeauDuNeuf(reste){
+    const vieux = document.getElementById('bandeauMaj');
+    if (!reste || premiereVisite){ if (vieux) vieux.remove(); return; }
+    if (vieux) return;
+    const d = document.createElement('a');
+    d.id = 'bandeauMaj'; d.className = 'bandeauMaj';
+    d.href = MAJ.ou + (pour ? '?pour=' + encodeURIComponent(pour) : '');
+    d.innerHTML = '<span class="pt">Nouvelle mise à jour</span>'
+                + '<b>' + MAJ.titre + '</b>'
+                + '<span class="sous">' + MAJ.texte + '</span>'
+                + '<span class="go">' + MAJ.bouton + ' →</span>';
+    const nav = document.querySelector('.nav');
+    if (nav && nav.parentNode) nav.parentNode.insertBefore(d, nav.nextSibling);
+    else document.body.insertBefore(d, document.body.firstChild);
   }
   pastiller();
 
