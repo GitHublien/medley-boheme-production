@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '25/09/2026 · 13h30';
+const VERSION_SITE = '25/09/2026 · 14h05';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -396,13 +396,15 @@ const VERSION_SITE = '25/09/2026 · 13h30';
   /* 25 septembre 2026 — Mickaël : « il faut que tu colories la bonne cage, pour qu'on sache
      à quel endroit il y a la mise à jour, et pas ailleurs ». Chaque porte touchée s'éclaire
      donc en bleu, AVEC un mot qui dit ce qui a changé derrière. */
+  /* ⚠️ 25 septembre, 14 h — DEUX DÉFAUTS CORRIGÉS ICI.
+     1. « Il y a du bleu de partout, on ne comprend rien. » On n'éclaire plus que DEUX
+        portes : les nouveautés, qui racontent, et les documents, où se télécharge le PDF.
+     2. Le bleu ne s'éteignait jamais sur l'atelier et sur les textes : ces deux pages
+        NE CHARGENT PAS site.js, elles ne pouvaient donc pas dire « je suis vue ».
+        On ne met plus dans cette liste que des pages qui chargent ce fichier. */
   const QUOI_DE_NEUF = {
-    'KARAOKE — Medley complet.html'  : 'Les uns contre les autres se chante à six',
-    'LIVRE — Les textes du medley.html': 'Les uns contre les autres, refait à six',
-    'QUI CHANTE QUOI — Bohème.html'  : 'la répartition du bloc 09 à jour',
-    'MISE EN SCÈNE — Bohème.html'    : 'Élie et Bry restent en scène, au lointain',
-    'DOCUMENTS — Bohème.html'        : 'le PDF des textes, refait',
-    'NOUVEAUTÉS — Bohème.html'       : 'le détail de la mise à jour',
+    'NOUVEAUTÉS — Bohème.html' : 'ce qui a changé le 25 septembre',
+    'DOCUMENTS — Bohème.html'  : 'les textes en PDF, refaits à six',
   };
   const NOUVEAU = Object.keys(QUOI_DE_NEUF);
   const mot = document.createElement('div'); mot.className = 'mot';
@@ -495,6 +497,11 @@ const VERSION_SITE = '25/09/2026 · 13h30';
         return;
       }
       a.classList.add('tuileNeuve');
+      /* et on éteint DÈS LE CLIC, sans attendre que la page d'arrivée le fasse */
+      if (!a.dataset.neufClic){
+        a.dataset.neufClic = '1';
+        a.addEventListener('click', () => { try { localStorage.setItem('boheme-vu-' + h, VERSION_SITE); } catch(e){} });
+      }
       if (!a.querySelector('.quoiNeuf')){
         const e = document.createElement('span'); e.className = 'quoiNeuf';
         e.innerHTML = '<b>Mis à jour</b>' + quoi;
@@ -517,7 +524,7 @@ const VERSION_SITE = '25/09/2026 · 13h30';
      ouvert, et qui disparaît tout seul une fois qu'on est allé voir. */
   const MAJ = { titre: 'Les uns contre les autres se chante à six',
                 texte: 'Élie et Bry rejoignent les chœurs. Textes et mise en scène à jour.',
-                ou: 'DOCUMENTS — Bohème.html', bouton: 'Aller voir' };
+                ou: 'NOUVEAUTÉS — Bohème.html', bouton: 'Voir ce qui a changé' };
   function bandeauDuNeuf(reste){
     const vieux = document.getElementById('bandeauMaj');
     if (!reste || premiereVisite){ if (vieux) vieux.remove(); return; }
