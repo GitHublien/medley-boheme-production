@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '25/09/2026 · 12h10';
+const VERSION_SITE = '25/09/2026 · 13h30';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -393,7 +393,18 @@ const VERSION_SITE = '25/09/2026 · 12h10';
      Cette liste ne se remplit donc QUE sur sa parole, quand il a vraiment changé
      quelque chose : un texte du medley, une répartition, une mise en scène
      écrite, un document, une date. Jamais une retouche de mon côté. */
-  const NOUVEAU = ['DOCUMENTS — Bohème.html', 'NOUVEAUTÉS — Bohème.html'];   /* 22 sept : le livre des textes */
+  /* 25 septembre 2026 — Mickaël : « il faut que tu colories la bonne cage, pour qu'on sache
+     à quel endroit il y a la mise à jour, et pas ailleurs ». Chaque porte touchée s'éclaire
+     donc en bleu, AVEC un mot qui dit ce qui a changé derrière. */
+  const QUOI_DE_NEUF = {
+    'KARAOKE — Medley complet.html'  : 'Les uns contre les autres se chante à six',
+    'LIVRE — Les textes du medley.html': 'Les uns contre les autres, refait à six',
+    'QUI CHANTE QUOI — Bohème.html'  : 'la répartition du bloc 09 à jour',
+    'MISE EN SCÈNE — Bohème.html'    : 'Élie et Bry restent en scène, au lointain',
+    'DOCUMENTS — Bohème.html'        : 'le PDF des textes, refait',
+    'NOUVEAUTÉS — Bohème.html'       : 'le détail de la mise à jour',
+  };
+  const NOUVEAU = Object.keys(QUOI_DE_NEUF);
   const mot = document.createElement('div'); mot.className = 'mot';
   document.body.appendChild(mot);
   let motMinuteur = null;
@@ -472,6 +483,22 @@ const VERSION_SITE = '25/09/2026 · 12h10';
            pour ceux qui ne distinguent pas bien les couleurs. */
         a.classList.add('duNeuf');
         const i = document.createElement('i'); i.className = 'pastille'; i.title = 'du nouveau ici'; a.appendChild(i);
+      }
+    });
+    /* 25 sept : la TUILE elle-même s'éclaire, et porte l'étiquette de ce qui a changé */
+    document.querySelectorAll('a.tuile, a.coque').forEach(a => {
+      const h = decodeURIComponent((a.getAttribute('href') || '').split('?')[0]);
+      const quoi = QUOI_DE_NEUF[h];
+      if (!quoi || vu(h) || premiereVisite){
+        a.classList.remove('tuileNeuve');
+        const v = a.querySelector('.quoiNeuf'); if (v) v.remove();
+        return;
+      }
+      a.classList.add('tuileNeuve');
+      if (!a.querySelector('.quoiNeuf')){
+        const e = document.createElement('span'); e.className = 'quoiNeuf';
+        e.innerHTML = '<b>Mis à jour</b>' + quoi;
+        a.appendChild(e);
       }
     });
     /* 17 h 45 — les traits du menu s'eclairent en bleu tant qu'il reste du neuf

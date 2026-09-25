@@ -1335,3 +1335,28 @@ html, body, .nav, .bas, .tuile, .coque, section, header, footer{ touch-action:ma
 .bandeauMaj .sous{ color:var(--gris); font-size:.95rem; }
 .bandeauMaj .go{ color:var(--bleu); font-size:.95rem; margin-top:.25rem; }
 @media (max-width:700px){ .bandeauMaj b{ font-size:1.1rem; } }
+
+
+/* ═══ LA TUILE MISE À JOUR (25 septembre 2026) ═══
+   « Il faut colorier la bonne cage » : la porte qui a changé s'éclaire en bleu et dit
+   ce qui a changé derrière elle. Elle redevient normale dès qu'on y est allé. */
+/* 25 septembre, 13 h 30 — Mickaël : « beaucoup plus brillant, vraiment, qu'on voie la
+   différence ». Le bleu pâle se perdait sur le fond sombre : on passe au cyan vif de
+   l'application, avec un halo qui respire. Impossible de la rater. */
+.tuileNeuve{ box-shadow:0 0 0 2px rgba(140,230,255,.95), 0 0 26px rgba(140,230,255,.55),
+             0 0 70px rgba(140,230,255,.28) !important;
+  border-color:rgba(140,230,255,1) !important; animation:neuvePulse 2.2s ease-in-out infinite; }
+@keyframes neuvePulse{
+  0%,100%{ box-shadow:0 0 0 2px rgba(140,230,255,.95), 0 0 22px rgba(140,230,255,.45), 0 0 60px rgba(140,230,255,.22); }
+  50%    { box-shadow:0 0 0 2px rgba(140,230,255,1),   0 0 38px rgba(140,230,255,.75), 0 0 95px rgba(140,230,255,.40); } }
+.tuileNeuve .coeur{ position:relative; }
+.tuileNeuve .coeur::after{ content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, rgba(140,230,255,.38), rgba(140,230,255,.06) 60%, transparent); }
+.quoiNeuf{ display:block; margin:.6rem 0 0; padding:.6rem .8rem; border-radius:12px;
+  border:1px solid rgba(140,230,255,.85); background:rgba(140,230,255,.20);
+  color:#d8f6ff; font-size:.92rem; line-height:1.4; font-weight:600;
+  box-shadow:0 0 18px rgba(140,230,255,.30) inset, 0 0 14px rgba(140,230,255,.25); }
+.quoiNeuf b{ display:block; font-family:var(--disp); letter-spacing:.2em; text-transform:uppercase;
+  font-size:.78rem; font-weight:700; color:#8ce6ff; opacity:1; margin-bottom:.15rem;
+  text-shadow:0 0 12px rgba(140,230,255,.8); }
+@media (prefers-reduced-motion: reduce){ .tuileNeuve{ animation:none; } }
