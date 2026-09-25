@@ -11,7 +11,7 @@
    version faux est pire qu'un compteur — il fait croire a une publication qui
    n'a pas eu lieu. Desormais l'heure est LUE sur la machine a chaque
    publication, jamais tapee. */
-const VERSION_SITE = '22/09/2026 · 23h40';
+const VERSION_SITE = '25/09/2026 · 12h10';
 (function(){
   const PAGES = [
     { f:'ACCUEIL — Bohème.html',        t:'Accueil',        g:'⌂', i:'maison', s:'le hall' },
@@ -488,8 +488,8 @@ const VERSION_SITE = '22/09/2026 · 23h40';
      ne le remarque. Il faut une phrase, en haut de la page, qu'on ne peut pas rater :
      un bandeau bleu très clair, visible sur CHAQUE page tant que le neuf n'a pas été
      ouvert, et qui disparaît tout seul une fois qu'on est allé voir. */
-  const MAJ = { titre: 'Les textes du medley sont en ligne',
-                texte: 'Le livre entier, à télécharger ou à lire ici.',
+  const MAJ = { titre: 'Les uns contre les autres se chante à six',
+                texte: 'Élie et Bry rejoignent les chœurs. Textes et mise en scène à jour.',
                 ou: 'DOCUMENTS — Bohème.html', bouton: 'Aller voir' };
   function bandeauDuNeuf(reste){
     const vieux = document.getElementById('bandeauMaj');

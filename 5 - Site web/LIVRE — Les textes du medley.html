@@ -727,7 +727,7 @@
 
 <section class="bloc" id="bloc09" data-i="8">
 <div class="entete"><span class="num">09</span><h2>Les uns contre les autres</h2></div>
-<p class="place"><b>En place</b> Bry et Élie sortent pendant la transition chantée · Stéphanie, Mickaël, Candice et Adrien se placent dans le noir, chacun sous sa douche</p>
+<p class="place"><b>En place</b> Chacun sous sa douche · Stéphanie seule devant · Mickaël au lointain centre, Élie à sa gauche, Bry à sa droite · Adrien et Candice au milieu · le refrain se chante à six</p>
 <div class="lecteur" data-i="8">
   <button class="lire" title="Lecture / pause (Espace)"><span class="ico"></span></button>
   <div class="regle" title="Clique ou glisse n'importe où"><div class="fond"></div><div class="joue"></div><div class="tete"></div><div class="graduations"></div></div>
@@ -757,7 +757,7 @@
 <p class="ligne c-stephanie" id="l09_6">Qu&#x27;ils sont toujours tout seuls au monde.</p>
 </div>
 <div class="groupe g-tous">
-<div class="qui"><span class="q-tous">Stéphanie, Mickaël, Candice et Adrien</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b></span></div>
+<div class="qui"><span class="q-tous">Tous les six</span><span class="noms"><b class="c-adrien">Adrien</b> · <b class="c-stephanie">Stéphanie</b> · <b class="c-candice">Candice</b> · <b class="c-mickael">Mickaël</b> · <b class="c-bry">Bry</b> · <b class="c-elie">Élie</b></span></div>
 <p class="ligne c-tous" id="l09_7">On danse les uns avec les autres</p>
 <p class="ligne c-tous" id="l09_8">On court les uns après les autres</p>
 <p class="ligne c-tous" id="l09_9">On se déteste, on se déchire</p>
@@ -1531,13 +1531,13 @@ lecteurs.forEach(L => {
   }
 });
 
-/* ⚠️ 25 septembre 2026 — LE SON NE PARTAIT PAS SUR IPHONE (signalé par Élie).
+/* 25 septembre 2026 — LE SON NE PARTAIT PAS SUR IPHONE (signalé par Bry).
    Écrire « au.currentTime » AVANT que Safari ait chargé les métadonnées du fichier
-   lève une erreur : la fonction s'arrêtait là, et « au.play() » n'était jamais
+   peut lever une erreur : la fonction s'arrêtait là, et « au.play() » n'était jamais
    atteint. Le bouton, lui, était déjà passé en pause : d'où l'écran figé à 0:00.
-   Android, lui, ignorait silencieusement l'écriture, donc le bug ne s'y voyait pas.
-   Désormais : on se place dans un try, et si les métadonnées manquent encore, on
-   garde le temps visé et on y saute dès qu'elles arrivent. Le son part toujours. */
+   Désormais on se place dans un try, et si les métadonnées manquent encore, on garde
+   le temps visé et on y saute dès qu'elles arrivent. Et surtout : si trois secondes
+   après l'appui la bande n'a pas bougé, l'application LE DIT au lieu de se taire. */
 let aRattraper = null;
 function seSituer(t){
   try {
@@ -1550,32 +1550,6 @@ function seSituer(t){
     aRattraper = null;
   }, { once: true });
 }
-function poser(i, t){                      // aller à un temps du bloc i
-  const b = D[i]; t = Math.max(b.deb, Math.min(b.fin, t));
-  if (actif !== i){ arreter(); actif = i; secs[i].classList.add('joue'); lecteurs[i].classList.add('joue'); }
-  seSituer(t); dessiner();
-}
-function jouer(i, t){
-  const b = D[i];
-  let cible = (t === undefined) ? (aRattraper !== null ? aRattraper : au.currentTime) : t;
-  cible = Math.max(b.deb, Math.min(b.fin, cible));
-  if (cible < b.deb || cible >= b.fin - 0.05) cible = b.deb;
-  poser(i, cible);
-  tDepart = cible; gain = 0; appliquerVolumes();      // fondu d'ouverture
-  const promesse = au.play();                          // et si Safari refuse, on le sait
-  if (promesse && promesse.catch) promesse.catch(err => {
-    lecteurs[i].classList.remove('joue');
-    direSon('Le téléphone a refusé de lancer le son. Réappuie sur le bouton.');
-  });
-  lecteurs[i].classList.add('joue');
-  veiller(i, cible);
-}
-
-/* ⚠️ 25 septembre 2026 — « les audios ne se lancent pas sur cette page » (Élie, iPhone).
-   Le vrai défaut n'était pas seulement que le son ne parte pas : c'est que RIEN ne le
-   disait. Le bouton passait en pause, le temps restait à 0:00, et on pouvait attendre
-   là sans comprendre. Désormais l'application surveille : si trois secondes après
-   l'appui la bande n'a pas avancé d'un pouce, elle le dit en clair. */
 let veilleur = null, motSon = null;
 function direSon(texte){
   if (!motSon){
@@ -1602,6 +1576,26 @@ function veiller(i, depart){
   }, 3000);
 }
 function calmerLaVeille(){ clearTimeout(veilleur); }
+function poser(i, t){                      // aller à un temps du bloc i
+  const b = D[i]; t = Math.max(b.deb, Math.min(b.fin, t));
+  if (actif !== i){ arreter(); actif = i; secs[i].classList.add('joue'); lecteurs[i].classList.add('joue'); }
+  seSituer(t); dessiner();
+}
+function jouer(i, t){
+  const b = D[i];
+  let cible = (t === undefined) ? (aRattraper !== null ? aRattraper : au.currentTime) : t;
+  cible = Math.max(b.deb, Math.min(b.fin, cible));
+  if (cible < b.deb || cible >= b.fin - 0.05) cible = b.deb;
+  poser(i, cible);
+  tDepart = cible; gain = 0; appliquerVolumes();      // fondu d'ouverture
+  const promesse = au.play();
+  if (promesse && promesse.catch) promesse.catch(() => {
+    lecteurs[i].classList.remove('joue');
+    direSon('Le téléphone a refusé de lancer le son. Réappuie sur le bouton.');
+  });
+  lecteurs[i].classList.add('joue');
+  veiller(i, cible);
+}
 function pause(){ calmerLaVeille(); au.pause(); if (actif >= 0) lecteurs[actif].classList.remove('joue'); }
 function arreter(){
   au.pause();
