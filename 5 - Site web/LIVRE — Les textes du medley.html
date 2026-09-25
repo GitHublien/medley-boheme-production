@@ -1531,18 +1531,78 @@ lecteurs.forEach(L => {
   }
 });
 
+/* ⚠️ 25 septembre 2026 — LE SON NE PARTAIT PAS SUR IPHONE (signalé par Élie).
+   Écrire « au.currentTime » AVANT que Safari ait chargé les métadonnées du fichier
+   lève une erreur : la fonction s'arrêtait là, et « au.play() » n'était jamais
+   atteint. Le bouton, lui, était déjà passé en pause : d'où l'écran figé à 0:00.
+   Android, lui, ignorait silencieusement l'écriture, donc le bug ne s'y voyait pas.
+   Désormais : on se place dans un try, et si les métadonnées manquent encore, on
+   garde le temps visé et on y saute dès qu'elles arrivent. Le son part toujours. */
+let aRattraper = null;
+function seSituer(t){
+  try {
+    if (au.readyState >= 1){ au.currentTime = t; aRattraper = null; return; }
+  } catch(e){}
+  aRattraper = t;
+  au.addEventListener('loadedmetadata', function rattrape(){
+    if (aRattraper === null) return;
+    try { au.currentTime = aRattraper; } catch(e){}
+    aRattraper = null;
+  }, { once: true });
+}
 function poser(i, t){                      // aller à un temps du bloc i
   const b = D[i]; t = Math.max(b.deb, Math.min(b.fin, t));
   if (actif !== i){ arreter(); actif = i; secs[i].classList.add('joue'); lecteurs[i].classList.add('joue'); }
-  au.currentTime = t; dessiner();
+  seSituer(t); dessiner();
 }
 function jouer(i, t){
-  poser(i, t === undefined ? au.currentTime : t);
-  if (actif === i && (au.currentTime < D[i].deb || au.currentTime >= D[i].fin - 0.05)) au.currentTime = D[i].deb;
-  tDepart = au.currentTime; gain = 0; appliquerVolumes();      // fondu d'ouverture
-  au.play(); lecteurs[i].classList.add('joue');
+  const b = D[i];
+  let cible = (t === undefined) ? (aRattraper !== null ? aRattraper : au.currentTime) : t;
+  cible = Math.max(b.deb, Math.min(b.fin, cible));
+  if (cible < b.deb || cible >= b.fin - 0.05) cible = b.deb;
+  poser(i, cible);
+  tDepart = cible; gain = 0; appliquerVolumes();      // fondu d'ouverture
+  const promesse = au.play();                          // et si Safari refuse, on le sait
+  if (promesse && promesse.catch) promesse.catch(err => {
+    lecteurs[i].classList.remove('joue');
+    direSon('Le téléphone a refusé de lancer le son. Réappuie sur le bouton.');
+  });
+  lecteurs[i].classList.add('joue');
+  veiller(i, cible);
 }
-function pause(){ au.pause(); if (actif >= 0) lecteurs[actif].classList.remove('joue'); }
+
+/* ⚠️ 25 septembre 2026 — « les audios ne se lancent pas sur cette page » (Élie, iPhone).
+   Le vrai défaut n'était pas seulement que le son ne parte pas : c'est que RIEN ne le
+   disait. Le bouton passait en pause, le temps restait à 0:00, et on pouvait attendre
+   là sans comprendre. Désormais l'application surveille : si trois secondes après
+   l'appui la bande n'a pas avancé d'un pouce, elle le dit en clair. */
+let veilleur = null, motSon = null;
+function direSon(texte){
+  if (!motSon){
+    motSon = document.createElement('div');
+    motSon.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 18px);'
+      + 'z-index:80;max-width:min(92vw,30rem);padding:.85rem 1.1rem;border-radius:14px;'
+      + 'background:rgba(20,18,16,.97);border:1px solid rgba(212,175,55,.45);color:#e8e2d6;'
+      + 'font:400 15px/1.45 system-ui,sans-serif;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.6)';
+    document.body.appendChild(motSon);
+  }
+  motSon.textContent = texte; motSon.style.display = 'block';
+  clearTimeout(motSon._t); motSon._t = setTimeout(() => { motSon.style.display = 'none'; }, 7000);
+}
+function veiller(i, depart){
+  clearTimeout(veilleur);
+  veilleur = setTimeout(() => {
+    if (actif !== i) return;
+    if (au.paused || Math.abs(au.currentTime - depart) < 0.25){
+      lecteurs[i].classList.remove('joue');
+      direSon(au.networkState === 3 || au.error
+        ? "La bande n'a pas pu être chargée. Vérifie ta connexion, puis réappuie."
+        : "Le son ne démarre pas. Vérifie que le petit bouton sur le côté du téléphone n'est pas sur silencieux, puis réappuie.");
+    }
+  }, 3000);
+}
+function calmerLaVeille(){ clearTimeout(veilleur); }
+function pause(){ calmerLaVeille(); au.pause(); if (actif >= 0) lecteurs[actif].classList.remove('joue'); }
 function arreter(){
   au.pause();
   if (actif >= 0){ secs[actif].classList.remove('joue'); lecteurs[actif].classList.remove('joue');
@@ -1622,7 +1682,7 @@ lecteurs.forEach(L => {
   const versTemps = ev => { const r = R.getBoundingClientRect(); const p = Math.max(0, Math.min(1, (ev.clientX - r.left)/r.width)); return D[i].deb + p*(D[i].fin - D[i].deb); };
   R.addEventListener('pointerdown', ev => { R.setPointerCapture(ev.pointerId); glisse = {i, jouait: actif === i && !au.paused}; if (glisse.jouait) au.pause(); poser(i, versTemps(ev)); });
   R.addEventListener('pointermove', ev => { if (glisse && glisse.i === i) poser(i, versTemps(ev)); });
-  const lacher = ev => { if (!glisse || glisse.i !== i) return; if (glisse.jouait) au.play(); glisse = null; };
+  const lacher = ev => { if (!glisse || glisse.i !== i) return; if (glisse.jouait){ const q = au.play(); if (q && q.catch) q.catch(()=>{}); } glisse = null; };
   R.addEventListener('pointerup', lacher); R.addEventListener('pointercancel', lacher);
 });
 

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bohème — le son ne part pas ?</title><meta name="theme-color" content="#050505">
+<link rel="icon" href="icone-192.png">
+<!-- 25 septembre 2026 — Bry : « les audios ne se lancent pas sur cette page ».
+     Impossible de reproduire la panne sur le banc d'essai. Cette page fait le test
+     SUR SON TELEPHONE et affiche le resultat en clair. Elle n'envoie rien nulle part :
+     il regarde, il fait une capture, il la renvoie. Elle n'est pas dans le menu :
+     on donne le lien a la main, a celui qui en a besoin. -->
+<style>
+  :root{ --or:#d4af37; --or2:#f1d27a; --encre:#e8e2d6; --gris:#b9b2a0; --bleu:#8fb0d8;
+         --vert:#7fd18f; --rouge:#e8837f; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#050505; color:var(--encre);
+        font:400 16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+        padding:calc(env(safe-area-inset-top) + 22px) 18px calc(env(safe-area-inset-bottom) + 40px);
+        max-width:34rem; margin-inline:auto; }
+  h1{ font:500 1.7rem/1.25 Georgia,"Palatino Linotype",serif; color:var(--or2); margin:0 0 .4rem; }
+  .sous{ color:var(--gris); margin:0 0 1.6rem; }
+  button{ font:inherit; }
+  .gros{ width:100%; padding:18px; border-radius:999px; border:0; cursor:pointer;
+         background:linear-gradient(180deg,#f1d27a,#d4af37); color:#1a1508; font-weight:700; font-size:1.15rem; }
+  .gros[disabled]{ opacity:.5; }
+  .etape{ display:flex; gap:12px; align-items:flex-start; padding:14px 0; border-top:1px solid rgba(255,255,255,.08); }
+  .etape .p{ width:30px; height:30px; flex:none; border-radius:50%; display:grid; place-items:center;
+             border:1px solid rgba(212,175,55,.5); color:var(--or2); font-size:.9rem; }
+  .etape .t{ flex:1; }
+  .etape .t b{ display:block; font-weight:600; }
+  .etape .t span{ color:var(--gris); font-size:.95rem; }
+  .ok .p{ border-color:var(--vert); color:var(--vert); }
+  .ko .p{ border-color:var(--rouge); color:var(--rouge); }
+  .verdict{ margin:1.6rem 0 0; padding:1.1rem 1.2rem; border-radius:16px;
+            border:1px solid rgba(143,176,216,.45);
+            background:linear-gradient(180deg, rgba(143,176,216,.14), rgba(143,176,216,.04)); display:none; }
+  .verdict.la{ display:block; }
+  .verdict b{ display:block; font-size:1.15rem; color:var(--or2); margin-bottom:.4rem;
+              font-family:Georgia,serif; font-weight:500; }
+  .fiche{ margin-top:1.4rem; }
+  .fiche pre{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:12px;
+              padding:12px; color:var(--gris); font-size:12.5px; white-space:pre-wrap; word-break:break-word; margin:0 0 10px; }
+  .doux{ width:100%; padding:13px; border-radius:999px; cursor:pointer;
+         border:1px solid rgba(212,175,55,.5); background:rgba(212,175,55,.08); color:var(--or2); }
+</style>
+</head>
+<body>
+
+<h1>Le son ne part pas ?</h1>
+<p class="sous">Ce test se fait sur ton téléphone, il n'envoie rien nulle part.
+   Monte le son avant de commencer, puis appuie.</p>
+
+<button id="go" class="gros">Lancer le test</button>
+
+<div id="etapes" style="margin-top:1.2rem"></div>
+
+<div id="verdict" class="verdict"></div>
+
+<div class="fiche">
+  <pre id="fiche">Appuie sur « Lancer le test » pour remplir cette fiche.</pre>
+  <button id="copier" class="doux">Copier ces informations</button>
+</div>
+
+<audio id="petit" preload="none" src="media/visite-atelier/clic.mp3"></audio>
+<audio id="bande" preload="none" src="media/bande-voix-temoins.mp3"></audio>
+
+<script>
+const $ = s => document.querySelector(s);
+const etapes = $('#etapes');
+const infos = [];
+
+function etape(titre, detail, etat){
+  const d = document.createElement('div');
+  d.className = 'etape' + (etat ? ' ' + etat : '');
+  d.innerHTML = '<div class="p">' + (etat === 'ok' ? '✓' : etat === 'ko' ? '!' : '·') + '</div>'
+              + '<div class="t"><b>' + titre + '</b><span>' + detail + '</span></div>';
+  etapes.appendChild(d);
+  infos.push((etat === 'ok' ? 'OK  ' : etat === 'ko' ? 'NON ' : '..  ') + titre + ' : ' + detail);
+  return d;
+}
+
+/* on essaie de lire un fichier, et on regarde si l'horloge AVANCE vraiment.
+   C'est le seul test qui tranche : si elle avance, le son sort du téléphone,
+   et s'il n'entend rien c'est le silencieux ou le volume. */
+function essayer(el, secondes){
+  return new Promise(resolve => {
+    let refus = null;
+    const p = el.play();
+    const suite = () => setTimeout(() => {
+      resolve({ avance: el.currentTime > 0.05, t: +el.currentTime.toFixed(2),
+                pause: el.paused, pret: el.readyState, reseau: el.networkState,
+                erreur: el.error ? el.error.code : null, refus: refus });
+      try { el.pause(); el.currentTime = 0; } catch(e){}
+    }, secondes * 1000);
+    if (p && p.catch) p.catch(e => { refus = e.name + ' : ' + e.message; suite(); }).then(suite);
+    else suite();
+  });
+}
+
+const CODES = { 1: 'lecture interrompue', 2: 'réseau', 3: 'fichier illisible', 4: 'fichier introuvable ou format refusé' };
+
+$('#go').addEventListener('click', async () => {
+  $('#go').disabled = true; $('#go').textContent = 'Test en cours…';
+  etapes.innerHTML = ''; infos.length = 0; $('#verdict').classList.remove('la');
+
+  const ua = navigator.userAgent;
+  const iOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const installee = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  const v = (ua.match(/OS (\d+[_.]\d+)/) || [,'?'])[1].replace('_', '.');
+  etape('Le téléphone', (iOS ? 'iPhone ou iPad, iOS ' + v : 'Android ou ordinateur') + ' · '
+        + (installee ? 'application installée' : 'ouvert dans le navigateur'));
+
+  const a = await essayer($('#petit'), 2);
+  etape('Un son très court', a.avance
+      ? 'il se lance, l’horloge avance'
+      : (a.refus ? 'refusé par le téléphone (' + a.refus + ')'
+                 : a.erreur ? 'erreur ' + a.erreur + ' · ' + (CODES[a.erreur] || '')
+                 : 'il ne démarre pas, l’horloge reste à zéro'),
+      a.avance ? 'ok' : 'ko');
+
+  const b = await essayer($('#bande'), 5);
+  etape('La bande du medley', b.avance
+      ? 'elle se lance, l’horloge avance (' + b.t + ' s)'
+      : (b.refus ? 'refusée par le téléphone (' + b.refus + ')'
+                 : b.erreur ? 'erreur ' + b.erreur + ' · ' + (CODES[b.erreur] || '')
+                 : b.pret === 0 ? 'elle n’est pas encore arrivée (chargement)'
+                 : 'elle ne démarre pas'),
+      b.avance ? 'ok' : 'ko');
+
+  const V = $('#verdict'); V.classList.add('la');
+  if (a.avance && b.avance){
+    V.innerHTML = '<b>Le son part bien.</b>Le téléphone lit les deux fichiers. Si tu n’entends rien, '
+      + 'c’est le silencieux ou le volume : bascule le petit interrupteur sur la tranche gauche '
+      + '(ou le bouton Action selon le modèle), puis relance la lecture et monte le volume '
+      + '<b style="display:inline;font-size:inherit;color:inherit">pendant</b> que ça joue.';
+  } else if (!a.avance && !b.avance){
+    V.innerHTML = '<b>Rien ne se lance.</b>Ce n’est pas le volume : le téléphone refuse de démarrer la lecture. '
+      + 'Envoie la capture de cette page à Mickaël, tout est écrit dessous.';
+  } else if (a.avance && !b.avance){
+    V.innerHTML = '<b>C’est la bande qui n’arrive pas.</b>Le son marche, mais le fichier du medley, '
+      + 'qui fait vingt-six minutes, n’a pas été chargé. Mets-toi en wifi, laisse la page ouverte '
+      + 'une minute, puis recommence.';
+  } else {
+    V.innerHTML = '<b>Résultat inhabituel.</b>Envoie la capture de cette page à Mickaël.';
+  }
+
+  $('#fiche').textContent = 'BOHÈME · test du son · ' + new Date().toLocaleString('fr-FR') + '\n'
+    + infos.join('\n')
+    + '\npetit : t=' + a.t + ' pause=' + a.pause + ' pret=' + a.pret + ' reseau=' + a.reseau
+    + ' err=' + a.erreur + ' refus=' + (a.refus || 'non')
+    + '\nbande : t=' + b.t + ' pause=' + b.pause + ' pret=' + b.pret + ' reseau=' + b.reseau
+    + ' err=' + b.erreur + ' refus=' + (b.refus || 'non')
+    + '\n' + ua;
+
+  $('#go').disabled = false; $('#go').textContent = 'Refaire le test';
+});
+
+$('#copier').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('#fiche').textContent);
+        $('#copier').textContent = 'Copié, tu peux le coller dans WhatsApp'; }
+  catch(e){ $('#copier').textContent = 'Fais plutôt une capture d’écran'; }
+});
+</script>
+</body>
+</html>
